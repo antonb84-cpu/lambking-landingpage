@@ -207,9 +207,9 @@ export default function Books() {
   const [cat, setCat] = useState<Category | 'alle'>('alle')
   const [zoom, setZoom] = useState<string | null>(null)
 
-  // Bücher der aktiven Sprache (Fallback: alle, falls es in der Sprache noch keine gibt)
-  const langBooks = BOOKS.filter((b) => b.lang === lang)
-  const books = langBooks.length > 0 ? langBooks : BOOKS
+  // Strikte Trennung: Auf der englischen Seite erscheinen nur englische
+  // Bücher (und umgekehrt) – keine deutschen Bücher als Ersatz.
+  const books = BOOKS.filter((b) => b.lang === lang)
 
   // Deep-Link: ?buch=david öffnet das Buch-Fenster direkt (z. B. aus der App oder Social Media)
   useEffect(() => {
@@ -335,20 +335,26 @@ export default function Books() {
         ) : (
           <Reveal className="mt-10">
             <div className="mx-auto max-w-lg rounded-2xl border border-accent/35 bg-gradient-to-b from-accent/10 to-accent/5 px-8 py-14 text-center shadow-sm">
-              <p className="font-display text-2xl font-semibold">
-                {catLabel(cat)} – {t.books.comingSoonSuffix}
+              {cat !== 'alle' && (
+                <p className="font-display text-2xl font-semibold">
+                  {catLabel(cat)} – {t.books.comingSoonSuffix}
+                </p>
+              )}
+              <p className={cat === 'alle' ? 'font-display text-2xl font-semibold' : 'mt-3 text-muted-foreground'}>
+                {emptyHint(cat)}
               </p>
-              <p className="mt-3 text-muted-foreground">{emptyHint(cat)}</p>
             </div>
           </Reveal>
         )}
 
-        <Reveal delay={200} className="mt-12 rounded-2xl border border-accent/35 bg-gradient-to-r from-accent/10 via-accent/5 to-accent/10 px-6 py-5 text-center shadow-sm">
-          <p className="text-sm font-semibold text-muted-foreground">
-            <span className="mr-2 font-bold text-foreground">{t.books.growing}</span>
-            {COMING_SOON.join(' · ')}
-          </p>
-        </Reveal>
+        {lang === 'de' && (
+          <Reveal delay={200} className="mt-12 rounded-2xl border border-accent/35 bg-gradient-to-r from-accent/10 via-accent/5 to-accent/10 px-6 py-5 text-center shadow-sm">
+            <p className="text-sm font-semibold text-muted-foreground">
+              <span className="mr-2 font-bold text-foreground">{t.books.growing}</span>
+              {COMING_SOON.join(' · ')}
+            </p>
+          </Reveal>
+        )}
       </div>
 
       <BookDialog

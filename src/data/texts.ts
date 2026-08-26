@@ -169,7 +169,7 @@ export const TEXTS = {
       all: 'All',
       categories: { geschichten: 'Stories', malbuecher: 'Coloring Books', komics: 'Comics' },
       emptyKomis: 'Bible comic adventures are in the making – check back soon!',
-      emptyAll: 'New books are in the making – check back soon!',
+      emptyAll: 'Our English editions are on their way – check back soon!',
       comingSoonSuffix: 'coming soon',
       newBadge: 'New',
       lookInside: 'Look inside',
