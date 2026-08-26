@@ -291,8 +291,12 @@
   <!-- ═══ VERÖFFENTLICHEN ═══ -->
   <section>
     <h2>🚀 Veröffentlichen</h2>
-    <p class="hint">Nach dem Speichern hier einmal klicken – die Landingpage wird mit den neuen Büchern neu gebaut.</p>
-    <button class="btn btn-gold" id="buildBtn2" onclick="runBuild()">🚀 Landingpage jetzt aktualisieren</button>
+    <p class="hint">Nach dem Speichern hier einmal klicken – die Landingpage wird neu gebaut.</p>
+    <div style="display:flex; gap:12px; flex-wrap:wrap;">
+      <button class="btn btn-gold" id="buildBtn2" onclick="runBuild()">🚀 Landingpage jetzt aktualisieren</button>
+      <button class="btn btn-blue" id="publishBtn" onclick="runPublish()">🌍 Auch die öffentliche Internet-Seite aktualisieren</button>
+    </div>
+    <p class="hint" style="margin-top:8px;">„Öffentliche Seite" = der Link, den du teilen kannst (GitHub). Nach dem Klick dauert es ca. 1–2 Minuten, bis die Änderung weltweit sichtbar ist.</p>
     <div id="buildOut"></div>
   </section>
 
@@ -551,6 +555,26 @@ setupDrop('photoZone', 'photoFile', f => {
 });
 
 /* ── Build ── */
+async function runPublish(){
+  const btn = $('publishBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Lade hoch …';
+  $('buildOut').innerHTML = '';
+  try{
+    const d = await api('/api/publish', {method:'POST'});
+    if (d.ok){
+      $('buildOut').innerHTML = '<p class="ok-line">✓ Die öffentliche Seite ist aktualisiert! <a href="' + d.url + '" target="_blank">' + d.url + '</a><br><small style="color:var(--muted)">Es kann 1–2 Minuten dauern, bis sie überall sichtbar ist.</small></p>';
+      toast('✓ Öffentliche Seite aktualisiert!');
+    } else {
+      $('buildOut').innerHTML = '<p style="color:var(--red); font-weight:600; margin-top:10px;">✗ Hochladen fehlgeschlagen:</p><pre id="buildlog">' + esc(d.log || d.error || 'Unbekannter Fehler') + '</pre>';
+    }
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '🌍 Auch die öffentliche Internet-Seite aktualisieren';
+  }
+}
+
+
 async function runBuild(){
   const btns = [$('buildBtn'), $('buildBtn2')];
   btns.forEach(b => { b.disabled = true; b.innerHTML = '<span class="spinner"></span>Baue …'; });

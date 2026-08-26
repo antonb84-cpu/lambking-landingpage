@@ -15,6 +15,7 @@ import datetime
 import io
 import json
 import re
+import shutil
 import subprocess
 import sys
 import urllib.request
@@ -27,6 +28,8 @@ ADMIN = Path(__file__).resolve().parent               # app/admin/
 IMAGES = APP / "public" / "images"
 DATA_JSON = APP / "src" / "data" / "books.json"
 BOOKS_TS = APP / "src" / "data" / "books.ts"
+REPO = APP.parent / "_tmp" / "repo"                   # lokale Git-Arbeitskopie
+PAGES_BASE = "/lambking-landingpage"                  # Unterpfad der Live-Seite
 
 PORT = 8123
 UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -288,6 +291,20 @@ def parse_multipart(body: bytes, boundary: str):
     return fields, files
 
 
+def fix_base_paths():
+    """Macht dist/ unter dem GitHub-Pages-Unterpfad lauffähig."""
+    dist = APP / "dist"
+    for f in list(dist.rglob("*.js")) + list(dist.rglob("*.css")) + list(dist.rglob("*.html")):
+        txt = f.read_text(encoding="utf-8")
+        orig = txt
+        for prefix in ("/images/", "/fonts/"):
+            txt = txt.replace('"' + prefix, '"' + PAGES_BASE + prefix)
+            txt = txt.replace("'" + prefix, "'" + PAGES_BASE + prefix)
+            txt = txt.replace("url(" + prefix, "url(" + PAGES_BASE + prefix)
+        if txt != orig:
+            f.write_text(txt, encoding="utf-8")
+
+
 # ─────────────────────────── HTTP-Server ───────────────────────────
 
 class Handler(BaseHTTPRequestHandler):
@@ -348,6 +365,8 @@ class Handler(BaseHTTPRequestHandler):
                 self.api_site()
             elif path == "/api/build":
                 self.api_build()
+            elif path == "/api/publish":
+                self.api_publish()
             else:
                 self.send_error(404)
         except Exception as e:
@@ -522,6 +541,52 @@ class Handler(BaseHTTPRequestHandler):
             self.send_json({"ok": ok, "log": log})
         except Exception as e:
             self.send_json({"ok": False, "log": str(e)})
+
+    def api_publish(self):
+        """Baut die Seite und lädt sie auf GitHub Pages hoch (Live-Link)."""
+        try:
+            proc = subprocess.run(
+                ["cmd", "/c", "npm", "run", "build"],
+                cwd=str(APP), capture_output=True, text=True, timeout=300,
+            )
+            if proc.returncode != 0:
+                self.send_json({"ok": False, "error": "Bauen fehlgeschlagen", "log": (proc.stdout + proc.stderr)[-3000:]})
+                return
+            fix_base_paths()
+
+            def git(*args):
+                return subprocess.run(["git", "-C", str(REPO), *args],
+                                      capture_output=True, text=True, timeout=180)
+
+            # gh-pages: Live-Seite
+            git("checkout", "-q", "gh-pages")
+            git("rm", "-rfq", "--cached", ".")
+            git("clean", "-fdq")
+            shutil.copytree(APP / "dist", REPO, dirs_exist_ok=True)
+            (REPO / ".nojekyll").touch()
+            git("add", "-A")
+            git("-c", "user.name=Anton Bernt", "-c", "user.email=antonb84@gmail.com",
+                "commit", "-qm", "Live-Update vom " + datetime.datetime.now().strftime("%d.%m.%Y %H:%M"))
+            push = git("push", "-q", "origin", "gh-pages")
+            if push.returncode != 0:
+                self.send_json({"ok": False, "error": "Upload fehlgeschlagen", "log": push.stderr[-2000:]})
+                return
+
+            # main: Quellcode mitschreiben (Fehler hier sind nicht kritisch)
+            git("checkout", "-q", "main")
+            git("rm", "-rfq", "--cached", ".")
+            git("clean", "-fdq")
+            shutil.copytree(APP, REPO, dirs_exist_ok=True,
+                            ignore=shutil.ignore_patterns("node_modules", "dist"))
+            shutil.copy(APP.parent / "ADMIN-STARTEN.bat", REPO / "ADMIN-STARTEN.bat")
+            git("add", "-A")
+            git("-c", "user.name=Anton Bernt", "-c", "user.email=antonb84@gmail.com",
+                "commit", "-qm", "Quellcode-Update")
+            git("push", "-q", "origin", "main")
+
+            self.send_json({"ok": True, "url": "https://antonb84-cpu.github.io/lambking-landingpage/"})
+        except Exception as e:
+            self.send_json({"ok": False, "error": str(e)})
 
 
 def main():
