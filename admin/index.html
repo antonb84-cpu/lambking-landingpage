@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LambKing Admin – Bücher verwalten</title>
+<style>
+  :root{
+    --cream:#FBF7EF; --gold:#C9A227; --gold-light:#F3E8C8; --blue:#1B3A5C;
+    --ink:#2B2620; --muted:#8A8172; --card:#FFFFFF; --line:#E8E0D0;
+    --green:#2E7D4F; --red:#B3402E;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:'Segoe UI',system-ui,sans-serif; background:var(--cream); color:var(--ink); min-height:100vh;}
+  button{font-family:inherit; cursor:pointer;}
+
+  /* ── Kopfzeile ── */
+  header{background:var(--blue); color:#fff; padding:16px 24px; display:flex; align-items:center; gap:14px; flex-wrap:wrap;}
+  header img{height:44px; width:auto;}
+  header h1{font-size:20px; font-weight:600;}
+  header .spacer{flex:1;}
+  .btn{border:none; border-radius:999px; padding:10px 20px; font-size:14px; font-weight:600; transition:transform .1s, box-shadow .1s;}
+  .btn:hover{transform:translateY(-1px); box-shadow:0 3px 10px rgba(0,0,0,.18);}
+  .btn:disabled{opacity:.55; cursor:wait; transform:none; box-shadow:none;}
+  .btn-gold{background:var(--gold); color:#fff;}
+  .btn-white{background:#fff; color:var(--blue);}
+  .btn-blue{background:var(--blue); color:#fff;}
+  .btn-ghost{background:transparent; color:var(--blue); border:2px solid var(--blue);}
+  .btn-red{background:#fff; color:var(--red); border:2px solid var(--red);}
+
+  main{max-width:980px; margin:0 auto; padding:28px 20px 80px;}
+
+  section{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:24px; margin-bottom:24px;}
+  section h2{font-size:18px; margin-bottom:4px; color:var(--blue);}
+  section .hint{font-size:13px; color:var(--muted); margin-bottom:16px;}
+
+  /* ── Buchliste ── */
+  .book-row{display:flex; align-items:center; gap:16px; padding:12px; border:1px solid var(--line); border-radius:12px; margin-bottom:10px; background:#fff;}
+  .book-row img{width:52px; height:70px; object-fit:cover; border-radius:6px; border:1px solid var(--line); background:var(--gold-light);}
+  .book-row .info{flex:1; min-width:0;}
+  .book-row .info b{display:block; font-size:15px;}
+  .book-row .info span{font-size:12.5px; color:var(--muted);}
+  .badge{display:inline-block; font-size:11px; font-weight:700; padding:2px 10px; border-radius:999px; background:var(--gold-light); color:#7a611a; margin-right:6px;}
+  .badge.neu{background:#FCE4EC; color:#B3402E;}
+  .row-btns{display:flex; gap:6px;}
+  .icon-btn{width:38px; height:38px; border-radius:10px; border:1px solid var(--line); background:#fff; font-size:16px; line-height:1;}
+  .icon-btn:hover{background:var(--gold-light);}
+
+  /* ── Formular ── */
+  .step{border:1px solid var(--line); border-radius:12px; padding:18px; margin-bottom:14px;}
+  .step-head{display:flex; align-items:center; gap:10px; margin-bottom:12px;}
+  .step-num{width:28px; height:28px; border-radius:50%; background:var(--gold); color:#fff; font-weight:700; display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0;}
+  .step-head b{font-size:15px;}
+  .step-head span{font-size:12.5px; color:var(--muted); display:block;}
+
+  label{display:block; font-size:13px; font-weight:600; margin:12px 0 4px; color:var(--ink);}
+  input[type=text], input[type=url], select, textarea{
+    width:100%; padding:10px 12px; border:1.5px solid var(--line); border-radius:10px; font-size:14px; font-family:inherit; background:#fff;
+  }
+  input:focus, select:focus, textarea:focus{outline:none; border-color:var(--gold);}
+  textarea{resize:vertical;}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:0 16px;}
+  @media (max-width:640px){.grid2{grid-template-columns:1fr;}}
+
+  .dropzone{border:2px dashed var(--gold); border-radius:12px; padding:22px; text-align:center; background:var(--cream); transition:background .15s;}
+  .dropzone.over{background:var(--gold-light);}
+  .dropzone p{font-size:14px; margin-bottom:8px;}
+  .dropzone small{color:var(--muted); font-size:12px;}
+  .dropzone img{max-height:150px; border-radius:8px; margin-top:10px; border:1px solid var(--line);}
+  .file-pill{display:inline-block; margin-top:10px; background:var(--gold-light); border-radius:999px; padding:6px 14px; font-size:13px;}
+
+  .checkline{display:flex; align-items:center; gap:8px; margin-top:14px; font-size:14px;}
+  .checkline input{width:18px; height:18px; accent-color:var(--gold);}
+
+  .form-actions{display:flex; gap:12px; margin-top:18px; flex-wrap:wrap;}
+  .hidden{display:none !important;}
+
+  /* ── Toast & Log ── */
+  #toast{position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:var(--ink); color:#fff; padding:12px 22px; border-radius:999px; font-size:14px; opacity:0; transition:opacity .25s; pointer-events:none; max-width:90vw; text-align:center; z-index:99;}
+  #toast.show{opacity:1;}
+  #toast.err{background:var(--red);}
+  #buildlog{background:#1d1d1d; color:#c8e6c9; font-family:Consolas,monospace; font-size:12px; padding:14px; border-radius:10px; white-space:pre-wrap; max-height:260px; overflow:auto; margin-top:12px;}
+  .spinner{display:inline-block; width:14px; height:14px; border:2px solid rgba(255,255,255,.4); border-top-color:#fff; border-radius:50%; animation:spin .7s linear infinite; vertical-align:-2px; margin-right:6px;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  details summary{cursor:pointer; font-size:15px; font-weight:600; color:var(--blue); padding:4px 0;}
+  .ok-line{color:var(--green); font-weight:600; margin-top:10px; font-size:14px;}
+</style>
+</head>
+<body>
+
+<header>
+  <img src="/images/lambking-logo.png" alt="LambKing Logo" onerror="this.style.display='none'">
+  <div>
+    <h1>LambKing Admin</h1>
+    <small style="opacity:.8">Bücher zur Landingpage hinzufügen &amp; verwalten</small>
+  </div>
+  <div class="spacer"></div>
+  <a href="http://localhost:7100/" target="_blank"><button class="btn btn-white">👁 Landingpage ansehen</button></a>
+  <button class="btn btn-gold" id="buildBtn" onclick="runBuild()">🚀 Veröffentlichen</button>
+</header>
+
+<main>
+
+  <!-- ═══ BUCHLISTE ═══ -->
+  <section>
+    <h2>📚 Deine Bücher</h2>
+    <p class="hint">Reihenfolge mit den Pfeilen ändern – so erscheinen die Bücher auf der Landingpage.</p>
+    <div style="display:flex; gap:8px; margin-bottom:16px;">
+      <button class="btn" id="langDeBtn" onclick="setLang('de')">🇩🇪 Deutsche Bücher</button>
+      <button class="btn" id="langEnBtn" onclick="setLang('en')">🇬🇧 Englische Bücher</button>
+    </div>
+    <div id="bookList"></div>
+    <button class="btn btn-blue" onclick="openForm()">＋ <span id="addBtnLabel">Neues Buch hinzufügen</span></button>
+  </section>
+
+  <!-- ═══ FORMULAR ═══ -->
+  <section id="formSection" class="hidden">
+    <h2 id="formTitle">Neues Buch</h2>
+    <p class="hint">Einfach der Reihe nach ausfüllen – alles Weitere passiert automatisch.</p>
+
+    <!-- Schritt 1: Amazon -->
+    <div class="step">
+      <div class="step-head"><div class="step-num">1</div>
+        <div><b>Amazon-Link einfügen</b><span>Titel, Preis, Beschreibung und Cover werden automatisch geholt.</span></div>
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <input type="url" id="f_amazonFetch" placeholder="https://www.amazon.de/dp/B0…" style="flex:1; min-width:260px;">
+        <button class="btn btn-gold" id="amazonBtn" onclick="fetchAmazon()">⬇ Infos von Amazon holen</button>
+      </div>
+    </div>
+
+    <!-- Schritt 2: Cover -->
+    <div class="step">
+      <div class="step-head"><div class="step-num">2</div>
+        <div><b>Cover</b><span>Kommt automatisch von Amazon – oder ein eigenes Bild hierher ziehen.</span></div>
+      </div>
+      <div class="dropzone" id="coverZone">
+        <p>📖 Cover-Bild hierher ziehen</p>
+        <small>oder</small><br>
+        <button class="btn btn-ghost" style="margin-top:8px;" onclick="document.getElementById('coverFile').click()">Datei auswählen</button>
+        <input type="file" id="coverFile" accept="image/*" class="hidden">
+        <div id="coverPreview"></div>
+      </div>
+    </div>
+
+    <!-- Schritt 3: PDF -->
+    <div class="step">
+      <div class="step-head"><div class="step-num">3</div>
+        <div><b>Buch-PDF (optional)</b><span>Die 4 schönsten Beispielseiten für die Vorschau werden automatisch aus der PDF geholt.</span></div>
+      </div>
+      <div class="dropzone" id="pdfZone">
+        <p>📄 Buch-PDF hierher ziehen</p>
+        <small>oder</small><br>
+        <button class="btn btn-ghost" style="margin-top:8px;" onclick="document.getElementById('pdfFile').click()">PDF auswählen</button>
+        <input type="file" id="pdfFile" accept="application/pdf" class="hidden">
+        <div id="pdfPreview"></div>
+      </div>
+    </div>
+
+    <!-- Schritt 4: Details -->
+    <div class="step">
+      <div class="step-head"><div class="step-num">4</div>
+        <div><b>Details prüfen &amp; speichern</b><span>Die Felder sind schon vorausgefüllt – du kannst alles ändern.</span></div>
+      </div>
+
+      <label for="f_title">Titel *</label>
+      <input type="text" id="f_title" placeholder="z. B. Noah und die Arche – Ein Malbuch …">
+
+      <div class="grid2">
+        <div>
+          <label for="f_category">Kategorie</label>
+          <select id="f_category">
+            <option value="geschichten">Geschichten</option>
+            <option value="malbuecher" selected>Malbücher</option>
+            <option value="komics">Comics</option>
+          </select>
+        </div>
+        <div>
+          <label for="f_series">Reihe / Band (optional)</label>
+          <input type="text" id="f_series" placeholder="z. B. Bibelgeschichten zum Ausmalen · Band 2">
+        </div>
+        <div>
+          <label for="f_age">Altersempfehlung</label>
+          <input type="text" id="f_age" placeholder="z. B. Ab 5 Jahren">
+        </div>
+        <div>
+          <label for="f_detail">Umfang / Detail</label>
+          <input type="text" id="f_detail" placeholder="z. B. 35 Seiten">
+        </div>
+        <div>
+          <label for="f_price">Preis</label>
+          <input type="text" id="f_price" placeholder="z. B. 11,95 €">
+        </div>
+        <div>
+          <label for="f_rating">Bewertung (optional)</label>
+          <input type="text" id="f_rating" placeholder="z. B. 5,0 von 5">
+        </div>
+      </div>
+
+      <label for="f_description">Beschreibung</label>
+      <textarea id="f_description" rows="4" placeholder="Worum geht es in dem Buch?"></textarea>
+
+      <label for="f_highlights">Highlights (eine Zeile = ein Punkt, optional)</label>
+      <textarea id="f_highlights" rows="3" placeholder="Große, klare Motive&#10;Biblisch fundiert&#10;Ideal für Familie & Kindergottesdienst"></textarea>
+
+      <div class="grid2">
+        <div>
+          <label for="f_amazon">Amazon-Kauf-Link</label>
+          <input type="url" id="f_amazon" placeholder="https://www.amazon.de/dp/B0…">
+        </div>
+        <div>
+          <label for="f_tiktok">TikTok-Shop-Link (optional)</label>
+          <input type="url" id="f_tiktok" placeholder="Sobald vorhanden hier eintragen">
+        </div>
+      </div>
+
+      <div class="checkline">
+        <input type="checkbox" id="f_isNew" checked>
+        <label for="f_isNew" style="margin:0; font-weight:500;">Als <b>„Neu"</b> markieren (Abzeichen erscheint 30 Tage ab heute)</label>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-gold" id="saveBtn" onclick="saveBook()">💾 Speichern</button>
+        <button class="btn btn-ghost" onclick="closeForm()">Abbrechen</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ EINSTELLUNGEN ═══ -->
+  <section>
+    <details>
+      <summary>⚙️ Website-Einstellungen (PayPal, App-Link, „Demnächst"-Liste …)</summary>
+      <div style="margin-top:14px;">
+        <label for="s_paypal">PayPal-Spendenlink</label>
+        <input type="url" id="s_paypal">
+        <label for="s_appUrl">App-Link</label>
+        <input type="url" id="s_appUrl">
+        <label for="s_playStore">Google-Play-Link (sobald die App im Store ist – dann erscheint der Play-Store-Button auf der Seite)</label>
+        <input type="url" id="s_playStore" placeholder="https://play.google.com/store/apps/details?id=…">
+        <div class="grid2">
+          <div>
+            <label for="s_author">Autorenname</label>
+            <input type="text" id="s_author">
+          </div>
+          <div>
+            <label for="s_brand">Markenname</label>
+            <input type="text" id="s_brand">
+          </div>
+        </div>
+        <label>🖼 Dein Foto (erscheint bei „Über das Projekt")</label>
+        <div class="dropzone" id="photoZone" style="padding:16px;">
+          <p style="font-size:13.5px;">Foto hierher ziehen</p>
+          <small>oder</small>
+          <button class="btn btn-ghost" style="margin-top:6px; padding:8px 16px;" onclick="document.getElementById('photoFile').click()">Foto auswählen</button>
+          <input type="file" id="photoFile" accept="image/*" class="hidden">
+          <div id="photoPreview" style="margin-top:10px;"></div>
+        </div>
+        <div class="grid2">
+          <div>
+            <label for="s_photoShape">Form des Fotos</label>
+            <select id="s_photoShape">
+              <option value="rund">Rund</option>
+              <option value="abgerundet">Abgerundete Ecken</option>
+              <option value="eckig">Eckig</option>
+            </select>
+          </div>
+          <div>
+            <label for="s_photoSize">Größe des Fotos</label>
+            <select id="s_photoSize">
+              <option value="klein">Klein (unauffällig)</option>
+              <option value="mittel">Mittel</option>
+              <option value="gross">Groß</option>
+            </select>
+          </div>
+        </div>
+        <label for="s_comingSoon">„Demnächst erhältlich"-Liste (eine Zeile = ein Titel)</label>
+        <textarea id="s_comingSoon" rows="6"></textarea>
+
+        <label for="s_impressum">⚖️ Impressum (eine Leerzeile = neuer Absatz)</label>
+        <textarea id="s_impressum" rows="9"></textarea>
+        <label for="s_datenschutz">🔒 Datenschutzerklärung</label>
+        <textarea id="s_datenschutz" rows="9"></textarea>
+        <p class="hint" style="margin-top:6px;">Die Texte erscheinen auf der Landingpage, wenn Besucher unten auf „Impressum" bzw. „Datenschutz" klicken. Ersetze die [Platzhalter] durch deine echten Angaben.</p>
+        <div class="form-actions">
+          <button class="btn btn-blue" onclick="saveSite()">💾 Einstellungen speichern</button>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ═══ VERÖFFENTLICHEN ═══ -->
+  <section>
+    <h2>🚀 Veröffentlichen</h2>
+    <p class="hint">Nach dem Speichern hier einmal klicken – die Landingpage wird neu gebaut.</p>
+    <div style="display:flex; gap:12px; flex-wrap:wrap;">
+      <button class="btn btn-gold" id="buildBtn2" onclick="runBuild()">🚀 Landingpage jetzt aktualisieren</button>
+      <button class="btn btn-blue" id="publishBtn" onclick="runPublish()">🌍 Auch die öffentliche Internet-Seite aktualisieren</button>
+    </div>
+    <p class="hint" style="margin-top:8px;">„Öffentliche Seite" = der Link, den du teilen kannst (GitHub). Nach dem Klick dauert es ca. 1–2 Minuten, bis die Änderung weltweit sichtbar ist.</p>
+    <div id="buildOut"></div>
+  </section>
+
+</main>
+
+<div id="toast"></div>
+
+<script>
+let state = null;
+let editId = null;          // null = neues Buch
+let amazonCover = '';       // vom Amazon-Abruf geladenes Cover
+let coverData = null;       // eigene hochgeladene Cover-Datei
+let pdfData = null;         // hochgeladene PDF
+let photoData = null;       // hochgeladenes Autorenfoto
+let currentLang = 'de';     // welche Bücher gerade angezeigt/bearbeitet werden
+
+const $ = id => document.getElementById(id);
+
+function toast(msg, isErr=false){
+  const t = $('toast');
+  t.textContent = msg;
+  t.className = 'show' + (isErr ? ' err' : '');
+  setTimeout(() => t.className = '', 3500);
+}
+
+async function api(path, opts){
+  const r = await fetch(path, opts);
+  return r.json();
+}
+
+/* ── Laden ── */
+async function load(){
+  state = await api('/api/state');
+  renderList();
+  $('s_paypal').value = state.site.paypalUrl || '';
+  $('s_appUrl').value = state.site.appUrl || '';
+  $('s_playStore').value = state.site.playStoreUrl || '';
+  $('s_author').value = state.site.authorName || '';
+  $('s_brand').value = state.site.brand || '';
+  $('s_comingSoon').value = (state.comingSoon || []).join('\n');
+  $('s_impressum').value = state.site.impressum || '';
+  $('s_datenschutz').value = state.site.datenschutz || '';
+  $('s_photoShape').value = state.site.authorPhotoShape || 'rund';
+  $('s_photoSize').value = state.site.authorPhotoSize || 'klein';
+  if (state.site.authorPhoto){
+    $('photoPreview').innerHTML = `<img src="${state.site.authorPhoto}" style="max-height:120px; border-radius:${state.site.authorPhotoShape==='eckig'?'4px':'50%'}; border:1px solid var(--line);"><br><small>Aktuelles Foto</small>`;
+  }
+}
+
+/* ── Sprach-Umschalter für die Buchliste ── */
+function setLang(l){
+  currentLang = l;
+  $('langDeBtn').className = 'btn ' + (l === 'de' ? 'btn-blue' : 'btn-ghost');
+  $('langEnBtn').className = 'btn ' + (l === 'en' ? 'btn-blue' : 'btn-ghost');
+  $('addBtnLabel').textContent = l === 'de' ? 'Neues deutsches Buch hinzufügen' : 'Neues englisches Buch hinzufügen';
+  renderList();
+}
+
+const CAT_LABELS = {geschichten:'Geschichten', malbuecher:'Malbücher', komics:'Comics'};
+
+function renderList(){
+  const el = $('bookList');
+  el.innerHTML = '';
+  const books = state.books.filter(b => (b.lang || 'de') === currentLang);
+  if (!books.length){
+    el.innerHTML = `<p style="padding:14px; color:var(--muted); font-size:14px;">${currentLang === 'en' ? 'Noch keine englischen Bücher – füge unten das erste hinzu!' : 'Noch keine Bücher in dieser Sprache.'}</p>`;
+    return;
+  }
+  books.forEach((b, i) => {
+    const row = document.createElement('div');
+    row.className = 'book-row';
+    const isNew = b.releaseDate && (Date.now() - new Date(b.releaseDate+'T00:00:00').getTime()) < 30*24*3600*1000;
+    row.innerHTML = `
+      <img src="${b.cover}" alt="" onerror="this.style.visibility='hidden'">
+      <div class="info">
+        <b>${esc(b.title)}</b>
+        <span><span class="badge">${CAT_LABELS[b.category]||b.category}</span>${isNew?'<span class="badge neu">NEU</span>':''}${esc(b.price||'')} ${b.samples&&b.samples.length?('· '+b.samples.length+' Vorschauseiten'):''}</span>
+      </div>
+      <div class="row-btns">
+        <button class="icon-btn" title="Nach oben" ${i===0?'disabled':''} onclick="moveBook('${b.id}',-1)">▲</button>
+        <button class="icon-btn" title="Nach unten" ${i===books.length-1?'disabled':''} onclick="moveBook('${b.id}',1)">▼</button>
+        <button class="icon-btn" title="Bearbeiten" onclick="openForm('${b.id}')">✏️</button>
+        <button class="icon-btn" title="Löschen" onclick="deleteBook('${b.id}')">🗑</button>
+      </div>`;
+    el.appendChild(row);
+  });
+}
+
+function esc(s){ return (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+/* ── Formular ── */
+function openForm(id){
+  editId = id || null;
+  amazonCover = ''; coverData = null; pdfData = null;
+  $('coverPreview').innerHTML = ''; $('pdfPreview').innerHTML = '';
+  $('coverFile').value = ''; $('pdfFile').value = '';
+  const b = id ? state.books.find(x => x.id === id) : null;
+  $('formTitle').textContent = b ? 'Buch bearbeiten: ' + b.title : 'Neues Buch hinzufügen';
+  $('f_amazonFetch').value = '';
+  $('f_title').value = b ? b.title : '';
+  $('f_category').value = b ? b.category : 'malbuecher';
+  $('f_series').value = b ? (b.series||'') : '';
+  $('f_age').value = b ? (b.age||'') : '';
+  $('f_detail').value = b ? (b.detail||'') : '';
+  $('f_price').value = b ? (b.price||'') : '';
+  $('f_rating').value = b ? (b.rating||'') : '';
+  $('f_description').value = b ? (b.description||'') : '';
+  $('f_highlights').value = b ? (b.highlights||[]).join('\n') : '';
+  $('f_amazon').value = b ? (b.amazon||'') : '';
+  $('f_tiktok').value = b ? (b.tiktok||'') : '';
+  $('f_isNew').checked = !b;
+  $('f_isNew').dataset.release = b ? (b.releaseDate||'') : '';
+  if (b && b.cover){
+    $('coverPreview').innerHTML = `<img src="${b.cover}"><br><small>Aktuelles Cover – bleibt erhalten, wenn du nichts Neues hochlädst.</small>`;
+  }
+  if (b && b.samples && b.samples.length){
+    $('pdfPreview').innerHTML = `<span class="file-pill">✓ ${b.samples.length} Vorschauseiten vorhanden – neue PDF ersetzt sie</span>`;
+  }
+  $('formSection').classList.remove('hidden');
+  $('formSection').scrollIntoView({behavior:'smooth'});
+}
+
+function closeForm(){ $('formSection').classList.add('hidden'); }
+
+/* ── Amazon ── */
+async function fetchAmazon(){
+  const url = $('f_amazonFetch').value.trim();
+  if (!url){ toast('Bitte zuerst einen Amazon-Link einfügen.', true); return; }
+  const btn = $('amazonBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Hole Infos …';
+  try{
+    const d = await api('/api/amazon', {method:'POST', body: JSON.stringify({url})});
+    if (!d.ok){ toast(d.error || 'Amazon-Abruf fehlgeschlagen.', true); return; }
+    if (d.title) $('f_title').value = d.title;
+    if (d.description) $('f_description').value = d.description;
+    if (d.price) $('f_price').value = d.price;
+    if (d.age) $('f_age').value = d.age;
+    if (d.detail) $('f_detail').value = d.detail;
+    if (d.rating) $('f_rating').value = d.rating;
+    if (d.amazon) $('f_amazon').value = d.amazon;
+    if (d.cover){
+      amazonCover = d.cover;
+      $('coverPreview').innerHTML = `<img src="${d.cover}"><br><small>✓ Cover von Amazon geladen</small>`;
+    }
+    toast('✓ Infos von Amazon übernommen – bitte unten prüfen.');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '⬇ Infos von Amazon holen';
+  }
+}
+
+/* ── Drag & Drop ── */
+function setupDrop(zoneId, inputId, cb){
+  const zone = $(zoneId), input = $(inputId);
+  ['dragover','dragenter'].forEach(e => zone.addEventListener(e, ev => { ev.preventDefault(); zone.classList.add('over'); }));
+  ['dragleave','drop'].forEach(e => zone.addEventListener(e, ev => { ev.preventDefault(); zone.classList.remove('over'); }));
+  zone.addEventListener('drop', ev => { if (ev.dataTransfer.files[0]) cb(ev.dataTransfer.files[0]); });
+  input.addEventListener('change', () => { if (input.files[0]) cb(input.files[0]); });
+}
+
+setupDrop('coverZone', 'coverFile', f => {
+  if (!f.type.startsWith('image/')){ toast('Bitte eine Bilddatei wählen.', true); return; }
+  coverData = f; amazonCover = '';
+  const r = new FileReader();
+  r.onload = e => $('coverPreview').innerHTML = `<img src="${e.target.result}"><br><small>✓ Eigenes Cover: ${esc(f.name)}</small>`;
+  r.readAsDataURL(f);
+});
+
+setupDrop('pdfZone', 'pdfFile', f => {
+  if (f.type !== 'application/pdf' && !f.name.toLowerCase().endsWith('.pdf')){ toast('Bitte eine PDF-Datei wählen.', true); return; }
+  pdfData = f;
+  $('pdfPreview').innerHTML = `<span class="file-pill">✓ ${esc(f.name)} – Beispielseiten werden beim Speichern erstellt</span>`;
+});
+
+/* ── Speichern ── */
+async function saveBook(){
+  if (!$('f_title').value.trim()){ toast('Bitte einen Titel eingeben.', true); return; }
+  const btn = $('saveBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Speichere …';
+  try{
+    const fd = new FormData();
+    fd.append('id', editId || '');
+    fd.append('lang', editId ? (state.books.find(x => x.id === editId)?.lang || currentLang) : currentLang);
+    fd.append('title', $('f_title').value);
+    fd.append('category', $('f_category').value);
+    fd.append('series', $('f_series').value);
+    fd.append('age', $('f_age').value);
+    fd.append('detail', $('f_detail').value);
+    fd.append('price', $('f_price').value);
+    fd.append('rating', $('f_rating').value);
+    fd.append('description', $('f_description').value);
+    fd.append('highlights', $('f_highlights').value);
+    fd.append('amazon', $('f_amazon').value);
+    fd.append('tiktok', $('f_tiktok').value);
+    fd.append('amazonCover', amazonCover);
+    if ($('f_isNew').checked) fd.append('isNew', '1');
+    else fd.append('releaseDate', $('f_isNew').dataset.release || '');
+    if (coverData) fd.append('cover', coverData);
+    if (pdfData) fd.append('pdf', pdfData);
+    const d = await api('/api/save', {method:'POST', body: fd});
+    if (!d.ok){ toast(d.error || 'Speichern fehlgeschlagen.', true); return; }
+    toast('✓ „' + d.book.title + '" gespeichert!');
+    closeForm();
+    await load();
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '💾 Speichern';
+  }
+}
+
+async function deleteBook(id){
+  const b = state.books.find(x => x.id === id);
+  if (!confirm('„' + (b ? b.title : id) + '" wirklich von der Landingpage entfernen?')) return;
+  const d = await api('/api/delete', {method:'POST', body: JSON.stringify({id})});
+  if (d.ok){ toast('Buch entfernt.'); await load(); }
+  else toast(d.error || 'Fehler.', true);
+}
+
+async function moveBook(id, dir){
+  await api('/api/move', {method:'POST', body: JSON.stringify({id, dir})});
+  await load();
+}
+
+async function saveSite(){
+  const fd = new FormData();
+  fd.append('paypalUrl', $('s_paypal').value);
+  fd.append('appUrl', $('s_appUrl').value);
+  fd.append('playStoreUrl', $('s_playStore').value);
+  fd.append('authorName', $('s_author').value);
+  fd.append('brand', $('s_brand').value);
+  fd.append('comingSoon', $('s_comingSoon').value);
+  fd.append('impressum', $('s_impressum').value);
+  fd.append('datenschutz', $('s_datenschutz').value);
+  fd.append('authorPhotoShape', $('s_photoShape').value);
+  fd.append('authorPhotoSize', $('s_photoSize').value);
+  if (photoData) fd.append('photo', photoData);
+  const d = await api('/api/site', {method:'POST', body: fd});
+  if (d.ok){
+    toast('✓ Einstellungen gespeichert!');
+    photoData = null;
+    await load();
+  } else {
+    toast(d.error || 'Fehler.', true);
+  }
+}
+
+/* ── Foto-Upload (Drag & Drop) ── */
+setupDrop('photoZone', 'photoFile', f => {
+  if (!f.type.startsWith('image/')){ toast('Bitte eine Bilddatei wählen.', true); return; }
+  photoData = f;
+  const r = new FileReader();
+  r.onload = e => $('photoPreview').innerHTML = `<img src="${e.target.result}" style="max-height:120px; border-radius:50%;"><br><small>✓ Neues Foto: ${esc(f.name)} – wird beim Speichern übernommen</small>`;
+  r.readAsDataURL(f);
+});
+
+/* ── Build ── */
+async function runPublish(){
+  const btn = $('publishBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Lade hoch …';
+  $('buildOut').innerHTML = '';
+  try{
+    const d = await api('/api/publish', {method:'POST'});
+    if (d.ok){
+      $('buildOut').innerHTML = '<p class="ok-line">✓ Die öffentliche Seite ist aktualisiert! <a href="' + d.url + '" target="_blank">' + d.url + '</a><br><small style="color:var(--muted)">Es kann 1–2 Minuten dauern, bis sie überall sichtbar ist.</small></p>';
+      toast('✓ Öffentliche Seite aktualisiert!');
+    } else {
+      $('buildOut').innerHTML = '<p style="color:var(--red); font-weight:600; margin-top:10px;">✗ Hochladen fehlgeschlagen:</p><pre id="buildlog">' + esc(d.log || d.error || 'Unbekannter Fehler') + '</pre>';
+    }
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '🌍 Auch die öffentliche Internet-Seite aktualisieren';
+  }
+}
+
+
+async function runBuild(){
+  const btns = [$('buildBtn'), $('buildBtn2')];
+  btns.forEach(b => { b.disabled = true; b.innerHTML = '<span class="spinner"></span>Baue …'; });
+  $('buildOut').innerHTML = '';
+  try{
+    const d = await api('/api/build', {method:'POST'});
+    if (d.ok){
+      $('buildOut').innerHTML = '<p class="ok-line">✓ Fertig! Die Landingpage ist aktualisiert. <a href="http://localhost:7100/" target="_blank">Jetzt ansehen →</a></p>';
+      toast('✓ Landingpage erfolgreich aktualisiert!');
+    } else {
+      $('buildOut').innerHTML = '<p style="color:var(--red); font-weight:600; margin-top:10px;">✗ Beim Bauen ist etwas schiefgelaufen:</p><pre id="buildlog">' + esc(d.log || 'Unbekannter Fehler') + '</pre>';
+    }
+  } finally {
+    btns.forEach((b,i) => { b.disabled = false; b.innerHTML = i===0 ? '🚀 Veröffentlichen' : '🚀 Landingpage jetzt aktualisieren'; });
+  }
+}
+
+load().then(() => setLang('de'));
+</script>
+</body>
+</html>
