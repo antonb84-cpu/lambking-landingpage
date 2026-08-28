@@ -18,16 +18,27 @@ const MIME = {
 }
 
 // Chrome finden (Windows & Linux/GitHub Actions)
+import { spawnSync } from 'node:child_process'
+
+function which(cmd) {
+  const r = spawnSync('which', [cmd], { encoding: 'utf-8' })
+  return r.status === 0 ? r.stdout.trim().split('\n')[0] : null
+}
+
 const CHROME_CANDIDATES = [
   process.env.CHROME_PATH,
   'C:/Program Files/Google/Chrome/Application/chrome.exe',
   'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe',
-  '/usr/bin/google-chrome',
-  '/usr/bin/chromium',
-  '/usr/bin/chromium-browser',
+  which('google-chrome'),
+  which('google-chrome-stable'),
+  which('chromium'),
+  which('chromium-browser'),
 ].filter(Boolean)
-const CHROME = CHROME_CANDIDATES.find((p) => existsSync(p)) ||
-  CHROME_CANDIDATES.find((p) => p.startsWith('/usr')) // unter Linux vom PATH auflösbar
+const CHROME = CHROME_CANDIDATES.find((p) => existsSync(p))
+if (!CHROME) {
+  console.error('Chrome/Chromium wurde nicht gefunden – E2E-Test kann nicht laufen.')
+  process.exit(1)
+}
 
 const server = createServer((req, res) => {
   let rel = decodeURIComponent((req.url || '/').split('?')[0].split('#')[0])
@@ -45,14 +56,27 @@ const HTTP_PORT = server.address().port
 
 const CDP_PORT = 9555
 const chrome = spawn(CHROME, [
-  '--headless=new', '--disable-gpu', '--no-sandbox',
+  '--headless=new', '--disable-gpu', '--no-sandbox', '--disable-dev-shm-usage',
   `--remote-debugging-port=${CDP_PORT}`, '--window-size=1280,1000', 'about:blank',
-], { stdio: 'ignore' })
+], { stdio: ['ignore', 'ignore', 'pipe'] })
+chrome.stderr.on('data', (d) => {
+  const t = d.toString()
+  if (/error|fatal/i.test(t)) console.error('[chrome]', t.trim().slice(0, 200))
+})
 
 let fehler = 0
 try {
-  await new Promise((r) => setTimeout(r, 3000))
-  const list = await (await fetch(`http://127.0.0.1:${CDP_PORT}/json`)).json()
+  // Warten, bis die CDP-Schnittstelle bereit ist (mit mehreren Versuchen)
+  let list = null
+  for (let i = 0; i < 20; i++) {
+    try {
+      list = await (await fetch(`http://127.0.0.1:${CDP_PORT}/json`)).json()
+      break
+    } catch {
+      await new Promise((r) => setTimeout(r, 500))
+    }
+  }
+  if (!list) throw new Error('Chrome-CDP-Schnittstelle nicht erreichbar')
   const page = list.find((t) => t.type === 'page')
   const ws = new WebSocket(page.webSocketDebuggerUrl)
 
