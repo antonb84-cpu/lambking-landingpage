@@ -136,6 +136,14 @@ try {
     const ok = after === before && dialog
     console.log(`${ok ? '✓' : '✗'} 3D-Buch-Klick öffnet Dialog (Tabs ${before}→${after})`)
     if (!ok) fehler++
+    // Dialog zuverlässig schließen (Escape), damit Folgetests sauber starten
+    await evalJs(`document.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape', bubbles: true}))`)
+    await new Promise((r) => setTimeout(r, 600))
+    const offen = await evalJs(`!!document.querySelector('[role="dialog"]')`)
+    if (offen) {
+      await evalJs(`document.querySelector('[role="dialog"] button')?.click()`)
+      await new Promise((r) => setTimeout(r, 600))
+    }
   }
 
   {
@@ -148,6 +156,25 @@ try {
     const ok = s.lang === 'en'
     console.log(`${ok ? '✓' : '✗'} Sprachwechsel → <html lang="${s.lang}">, englische Bücher: ${s.cards}`)
     if (!ok) fehler++
+  }
+
+  // Rechts-Fenster: Impressum & Datenschutz öffnen ein Fenster (kein neuer Tab)
+  await evalJs(`[...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'DE')?.click()`)
+  await new Promise((r) => setTimeout(r, 1000))
+  for (const [label, marker] of [['Impressum', 'Anton Bernt'], ['Datenschutz', 'GitHub']]) {
+    const before = await targetCount()
+    await evalJs(`[...document.querySelectorAll('footer button')].find(b => b.textContent.trim() === ${JSON.stringify(label)})?.click()`)
+    await new Promise((r) => setTimeout(r, 900))
+    const after = await targetCount()
+    const s = JSON.parse(await evalJs(`JSON.stringify({
+      dialog: !!document.querySelector('[role="dialog"]'),
+      text: ([...document.querySelectorAll('[role="dialog"]')].pop()?.textContent || ''),
+    })`) || '{}')
+    const ok = s.dialog && s.text.includes(marker) && after === before
+    console.log(`${ok ? '✓' : '✗'} „${label}" öffnet Fenster mit Inhalt (Tabs ${before}→${after})`)
+    if (!ok) fehler++
+    await evalJs(`document.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape', bubbles: true}))`)
+    await new Promise((r) => setTimeout(r, 500))
   }
 
   ws.close()

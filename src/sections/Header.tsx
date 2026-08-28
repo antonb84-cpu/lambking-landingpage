@@ -3,6 +3,7 @@ import { Menu, X } from 'lucide-react'
 import { SITE } from '@/data/books'
 import { setLang, useLang, type Lang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
+import { openLegal } from '@/data/openLegal'
 import type { ReactNode } from 'react'
 
 function FlagDE() {
@@ -67,12 +68,6 @@ export default function Header() {
     { label: t.nav.app, href: '#app' },
     { label: t.nav.about, href: '#ueber' },
     { label: t.nav.faq, href: '#faq' },
-  ]
-  // Mobile zusätzlich: Rechtsseiten (eigene URLs, gleicher Tab)
-  const NAV_MOBILE = [
-    ...NAV,
-    { label: t.footer.impressum, href: 'impressum.html' },
-    { label: t.footer.datenschutz, href: 'datenschutz.html' },
   ]
 
   // Escape schließt das Menü, Fokus geht zurück auf den Button
@@ -148,7 +143,7 @@ export default function Header() {
           className="border-t border-border bg-background px-4 py-3 lg:hidden"
         >
           <ul className="flex flex-col">
-            {NAV_MOBILE.map((n) => (
+            {NAV.map((n) => (
               <li key={n.href}>
                 <a
                   href={n.href}
@@ -159,6 +154,25 @@ export default function Header() {
                 </a>
               </li>
             ))}
+            {/* Rechtsseiten öffnen als Fenster (wie im Footer) */}
+            <li>
+              <button
+                type="button"
+                onClick={() => { setMenuOpen(false); openLegal('impressum') }}
+                className="block w-full rounded-lg px-3 py-3.5 text-left text-base font-bold text-foreground transition-colors hover:bg-secondary"
+              >
+                {t.footer.impressum}
+              </button>
+            </li>
+            <li>
+              <button
+                type="button"
+                onClick={() => { setMenuOpen(false); openLegal('datenschutz') }}
+                className="block w-full rounded-lg px-3 py-3.5 text-left text-base font-bold text-foreground transition-colors hover:bg-secondary"
+              >
+                {t.footer.datenschutz}
+              </button>
+            </li>
           </ul>
         </nav>
       )}

@@ -142,6 +142,10 @@ export const TEXTS = {
       rights: 'Alle Rechte vorbehalten.',
       impressum: 'Impressum',
       datenschutz: 'Datenschutz',
+      impressumTitle: 'Impressum',
+      datenschutzTitle: 'Datenschutzerklärung',
+      legalEmpty: 'Dieser Text wird gerade vorbereitet.',
+      legalFullPage: 'Als eigene Seite öffnen',
     },
   },
 
@@ -282,6 +286,10 @@ export const TEXTS = {
       rights: 'All rights reserved.',
       impressum: 'Imprint',
       datenschutz: 'Privacy Policy',
+      impressumTitle: 'Imprint',
+      datenschutzTitle: 'Privacy Policy',
+      legalEmpty: 'This text is currently being prepared.',
+      legalFullPage: 'Open as a separate page',
     },
   },
 }

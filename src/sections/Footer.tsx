@@ -1,9 +1,47 @@
+import { useEffect, useState } from 'react'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { SITE } from '@/data/books'
 import { useLang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
+import { OPEN_LEGAL_EVENT, type LegalKind } from '@/data/openLegal'
+
+function LegalText({ text }: { text: string }) {
+  // Leerzeile = neuer Absatz; eine Zeile, die wie eine Überschrift aussieht, wird fett
+  const blocks = text.split(/\n\s*\n/)
+  return (
+    <div className="space-y-4 text-sm leading-relaxed text-muted-foreground">
+      {blocks.map((b, i) => {
+        const lines = b.split('\n')
+        const [first, ...rest] = lines
+        const looksLikeHeading = rest.length > 0 && first.length < 70 && !first.endsWith('.')
+        return (
+          <div key={i}>
+            {looksLikeHeading ? (
+              <>
+                <p className="font-bold text-foreground">{first}</p>
+                <p className="mt-1 whitespace-pre-line">{rest.join('\n')}</p>
+              </>
+            ) : (
+              <p className="whitespace-pre-line">{b}</p>
+            )}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
 
 export default function Footer() {
   const t = textsFor(useLang())
+  const [legal, setLegal] = useState<LegalKind | null>(null)
+  const legalText = legal === 'impressum' ? SITE.impressum : SITE.datenschutz
+
+  // Auch aus dem mobilen Menü heraus öffnen
+  useEffect(() => {
+    const onOpen = (e: Event) => setLegal((e as CustomEvent<LegalKind>).detail)
+    window.addEventListener(OPEN_LEGAL_EVENT, onOpen)
+    return () => window.removeEventListener(OPEN_LEGAL_EVENT, onOpen)
+  }, [])
 
   const NAV = [
     { label: t.nav.books, href: '#buecher' },
@@ -53,16 +91,40 @@ export default function Footer() {
         <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-primary-foreground/15 pt-6 text-xs text-primary-foreground/60 sm:flex-row">
           <p>© {new Date().getFullYear()} LambKing Stories. {t.footer.rights}</p>
           <div className="flex gap-5">
-            {/* Eigene, direkt aufrufbare Seiten – gleicher Tab */}
-            <a href="impressum.html" className="hover:text-primary-foreground">
+            {/* Öffnen ein Fenster auf derselben Seite – kein neuer Tab */}
+            <button type="button" onClick={() => setLegal('impressum')} className="hover:text-primary-foreground">
               {t.footer.impressum}
-            </a>
-            <a href="datenschutz.html" className="hover:text-primary-foreground">
+            </button>
+            <button type="button" onClick={() => setLegal('datenschutz')} className="hover:text-primary-foreground">
               {t.footer.datenschutz}
-            </a>
+            </button>
           </div>
         </div>
       </div>
+
+      <Dialog open={!!legal} onOpenChange={(open) => !open && setLegal(null)}>
+        <DialogContent className="max-h-[85vh] w-[92vw] max-w-2xl overflow-y-auto rounded-md border-2 bg-background">
+          <DialogHeader>
+            <DialogTitle className="font-display text-2xl font-semibold">
+              {legal === 'impressum' ? t.footer.impressumTitle : t.footer.datenschutzTitle}
+            </DialogTitle>
+          </DialogHeader>
+          {legalText ? (
+            <LegalText text={legalText} />
+          ) : (
+            <p className="text-sm text-muted-foreground">{t.footer.legalEmpty}</p>
+          )}
+          {/* Zusätzlich als eigene, direkt verlinkbare Seite (z. B. für Behörden/Druck) */}
+          <p className="mt-6 border-t border-border pt-4 text-xs text-muted-foreground">
+            <a
+              href={legal === 'impressum' ? 'impressum.html' : 'datenschutz.html'}
+              className="font-bold text-primary underline underline-offset-2"
+            >
+              {t.footer.legalFullPage} →
+            </a>
+          </p>
+        </DialogContent>
+      </Dialog>
     </footer>
   )
 }
