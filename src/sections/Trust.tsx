@@ -3,7 +3,7 @@ import Reveal from '@/components/Reveal'
 import { useLang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
 
-const ICONS = ['/images/icons/bibeltreu.png', '/images/icons/kindgerecht.png', '/images/icons/werbefrei.png']
+const ICONS = ['images/icons/bibeltreu.png', 'images/icons/kindgerecht.png', 'images/icons/werbefrei.png']
 
 export default function Trust() {
   const t = textsFor(useLang())

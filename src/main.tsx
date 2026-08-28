@@ -1,14 +1,13 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { HashRouter } from 'react-router'
 import './index.css'
 import App from './App.tsx'
 
-// HashRouter: funktioniert auf jeder Unterseite (GitHub Pages) ohne Server-Konfiguration
+// Keine Router-Bibliothek: Die Seite ist eine einzige Landingpage.
+// Interne Navigation läuft über normale Anker (#buecher …) im selben Tab,
+// Deep-Links über URL-Parameter (?buch=…, ?lang=…).
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <HashRouter>
-      <App />
-    </HashRouter>
+    <App />
   </StrictMode>,
 )

@@ -1,0 +1,6 @@
+# LambKing Admin – Python-Abhängigkeiten
+# Installation: pip install -r admin/requirements.txt
+
+PyMuPDF>=1.24    # echte PDF-Seiten für die Buchvorschau rendern
+Pillow>=10.0     # Bilder prüfen & weboptimiert verkleinern
+pypdf>=4.0       # Fallback, falls PyMuPDF fehlt

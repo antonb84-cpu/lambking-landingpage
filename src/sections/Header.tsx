@@ -1,3 +1,5 @@
+import { useEffect, useRef, useState } from 'react'
+import { Menu, X } from 'lucide-react'
 import { SITE } from '@/data/books'
 import { setLang, useLang, type Lang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
@@ -44,6 +46,7 @@ function LangSwitch() {
   return (
     <div
       className="flex items-center gap-0.5 rounded-full border-2 border-border bg-card p-0.5"
+      role="group"
       aria-label="Sprache wählen / Choose language"
     >
       {btn('de', <FlagDE />, 'DE')}
@@ -54,6 +57,10 @@ function LangSwitch() {
 
 export default function Header() {
   const t = textsFor(useLang())
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuBtnRef = useRef<HTMLButtonElement>(null)
+  const menuRef = useRef<HTMLElement>(null)
+
   const NAV = [
     { label: t.nav.books, href: '#buecher' },
     { label: t.nav.how, href: '#so-funktionierts' },
@@ -61,18 +68,39 @@ export default function Header() {
     { label: t.nav.about, href: '#ueber' },
     { label: t.nav.faq, href: '#faq' },
   ]
+  // Mobile zusätzlich: Rechtsseiten (eigene URLs, gleicher Tab)
+  const NAV_MOBILE = [
+    ...NAV,
+    { label: t.footer.impressum, href: 'impressum.html' },
+    { label: t.footer.datenschutz, href: 'datenschutz.html' },
+  ]
+
+  // Escape schließt das Menü, Fokus geht zurück auf den Button
+  useEffect(() => {
+    if (!menuOpen) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setMenuOpen(false)
+        menuBtnRef.current?.focus()
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    // Fokus ins Menü setzen
+    menuRef.current?.querySelector('a')?.focus()
+    return () => window.removeEventListener('keydown', onKey)
+  }, [menuOpen])
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/90 backdrop-blur-md">
       <div className="mx-auto flex h-20 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
         <a href="#top" className="flex items-center" aria-label="LambKing Stories – Startseite">
           <img
-            src="/images/logo.webp"
+            src="images/logo.webp"
             alt="LambKing Stories"
             className="h-11 w-auto transition-transform hover:scale-[1.04] sm:h-14"
           />
         </a>
-        <nav className="hidden items-center gap-6 text-sm font-bold text-muted-foreground lg:flex">
+        <nav className="hidden items-center gap-6 text-sm font-bold text-muted-foreground lg:flex" aria-label="Hauptnavigation">
           {NAV.map((n) => (
             <a key={n.href} href={n.href} className="transition-colors hover:text-foreground">
               {n.label}
@@ -81,21 +109,59 @@ export default function Header() {
         </nav>
         <div className="flex items-center gap-3">
           <LangSwitch />
-          <a
-            href={SITE.paypalUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block transition-transform hover:scale-[1.05]"
-            aria-label="Projekt mit PayPal unterstützen"
+          {SITE.paypalUrl && (
+            <a
+              href={SITE.paypalUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden transition-transform hover:scale-[1.05] sm:inline-block"
+              aria-label={t.support.paypalAlt}
+            >
+              <img
+                src="images/buttons/paypal.png"
+                alt={t.support.paypalAlt}
+                className="h-9 w-auto sm:h-10"
+              />
+            </a>
+          )}
+          {/* Hamburger – nur mobil sichtbar */}
+          <button
+            ref={menuBtnRef}
+            type="button"
+            onClick={() => setMenuOpen((o) => !o)}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-menu"
+            aria-label={menuOpen ? 'Menü schließen' : 'Menü öffnen'}
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full border-2 border-border bg-card text-foreground lg:hidden"
           >
-            <img
-              src="/images/buttons/paypal.png"
-              alt="PayPal – Projekt unterstützen"
-              className="h-9 w-auto sm:h-10"
-            />
-          </a>
+            {menuOpen ? <X className="h-5 w-5" aria-hidden /> : <Menu className="h-5 w-5" aria-hidden />}
+          </button>
         </div>
       </div>
+
+      {/* Mobiles Menü */}
+      {menuOpen && (
+        <nav
+          id="mobile-menu"
+          ref={menuRef}
+          aria-label="Mobile Navigation"
+          className="border-t border-border bg-background px-4 py-3 lg:hidden"
+        >
+          <ul className="flex flex-col">
+            {NAV_MOBILE.map((n) => (
+              <li key={n.href}>
+                <a
+                  href={n.href}
+                  onClick={() => setMenuOpen(false)}
+                  className="block rounded-lg px-3 py-3.5 text-base font-bold text-foreground transition-colors hover:bg-secondary"
+                >
+                  {n.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )}
     </header>
   )
 }

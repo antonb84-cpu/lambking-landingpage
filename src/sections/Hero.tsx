@@ -4,6 +4,7 @@ import Reveal from '@/components/Reveal'
 import { BOOKS, isNew } from '@/data/books'
 import { useLang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
+import { openBookById } from '@/data/openBook'
 
 const TRUST_ICONS = [ShieldCheck, Sparkles, BookOpen]
 
@@ -26,7 +27,8 @@ const LEAF_STEP = 0.6
 
 function Book3D() {
   const lang = useLang()
-  // Das neueste Buch der aktiven Sprache wird gezeigt (Fallback: alle Bücher)
+  // Das neueste Buch der aktiven Sprache wird gezeigt (Fallback: alle Bücher,
+  // damit die Startseite nie leer aussieht – reine Deko, keine Buchliste)
   const langBooks = BOOKS.filter((b) => b.lang === lang)
   const pool = langBooks.length > 0 ? langBooks : BOOKS
   const featured = pool.find(isNew) ?? pool[0]
@@ -49,25 +51,12 @@ function Book3D() {
   useEffect(() => {
     const s = sim.current
     s.angles = Array(count).fill(0)
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-    const tick = (now: number) => {
-      const dt = Math.min(0.05, (now - s.last) / 1000) // Sekunden, gedeckelt
-      s.last = now
-      let busy = false
+    const paint = () => {
       for (let i = 0; i < count; i++) {
         const el = leafEls.current[i]
         if (!el) continue
-        const delay = s.hovering ? i * OPEN_DELAY : (count - 1 - i) * CLOSE_DELAY
-        const released = now - s.stateSince >= delay
-        const angle = s.angles[i]
-        // Vor Freigabe: Blatt ruht an seiner aktuellen Position
-        const target = released ? (s.hovering ? OPEN_ANGLE : 0) : angle
-        const rate = s.hovering ? OPEN_RATE : CLOSE_RATE
-        const next = angle + (target - angle) * (1 - Math.exp(-dt * rate))
-        s.angles[i] = Math.abs(target - next) < 0.02 ? target : next
-        if (s.angles[i] !== target || !released) busy = true
-        // Wölbung + Abheben aus dem Winkel ableiten (Mitte am stärksten,
-        // am Endwinkel exakt 0 – die Seite liegt glatt auf)
         const t = Math.min(1, Math.abs(s.angles[i]) / Math.abs(OPEN_ANGLE))
         const bow = Math.sin(t * Math.PI) * 4.5
         const lift = Math.sin(t * Math.PI) * 10
@@ -81,6 +70,24 @@ function Book3D() {
         if (front) front.style.visibility = showFront ? 'visible' : 'hidden'
         if (back) back.style.visibility = showFront ? 'hidden' : 'visible'
       }
+    }
+
+    const tick = (now: number) => {
+      const dt = Math.min(0.05, (now - s.last) / 1000) // Sekunden, gedeckelt
+      s.last = now
+      let busy = false
+      for (let i = 0; i < count; i++) {
+        const delay = s.hovering ? i * OPEN_DELAY : (count - 1 - i) * CLOSE_DELAY
+        const released = now - s.stateSince >= delay
+        const angle = s.angles[i]
+        // Vor Freigabe: Blatt ruht an seiner aktuellen Position
+        const target = released ? (s.hovering ? OPEN_ANGLE : 0) : angle
+        const rate = s.hovering ? OPEN_RATE : CLOSE_RATE
+        const next = angle + (target - angle) * (1 - Math.exp(-dt * rate))
+        s.angles[i] = Math.abs(target - next) < 0.02 ? target : next
+        if (s.angles[i] !== target || !released) busy = true
+      }
+      paint()
       if (busy) {
         s.raf = requestAnimationFrame(tick)
       } else {
@@ -96,18 +103,27 @@ function Book3D() {
       if (s.hovering === hovering) return
       s.hovering = hovering
       s.stateSince = performance.now()
+      if (reducedMotion) {
+        // Ohne Bewegung: Seiten direkt umlegen
+        s.angles = s.angles.map(() => (hovering ? OPEN_ANGLE : 0))
+        paint()
+        return
+      }
       start()
     }
     return () => cancelAnimationFrame(s.raf)
   }, [count])
 
   return (
-    <a
-      href="#buecher"
-      aria-label={`${featured.title} – in der Buchübersicht ansehen`}
-      className="book3d-scene relative mx-auto block w-60 sm:w-72 lg:w-80"
+    <button
+      type="button"
+      onClick={() => openBookById(featured.id)}
+      aria-label={`${featured.title} – ${textsFor(lang).books.lookInside}`}
+      className="book3d-scene relative mx-auto block w-60 cursor-pointer sm:w-72 lg:w-80"
       onMouseEnter={() => kickRef.current(true)}
       onMouseLeave={() => kickRef.current(false)}
+      onFocus={() => kickRef.current(true)}
+      onBlur={() => kickRef.current(false)}
     >
       <div className="book3d-float">
         <div className="book3d">
@@ -120,6 +136,7 @@ function Book3D() {
             alt={`Seite aus ${featured.title}`}
             className="book3d-page-base"
             loading="eager"
+            fetchPriority="high"
           />
           {/* Blätter: Umschlag zuerst, dann Seite für Seite */}
           {leaves.map((src, i) => (
@@ -143,10 +160,10 @@ function Book3D() {
           <div className="book3d-shadow" />
         </div>
       </div>
-      <p className="mt-12 text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+      <span className="mt-12 block text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground">
         {textsFor(lang).hero.bookHint}
-      </p>
-    </a>
+      </span>
+    </button>
   )
 }
 
@@ -168,14 +185,14 @@ export default function Hero() {
               href="#buecher"
               className="inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3.5 font-bold text-primary-foreground shadow-lg shadow-primary/25 transition-transform hover:scale-[1.03]"
             >
-              <BookOpen className="h-5 w-5" />
+              <BookOpen className="h-5 w-5" aria-hidden />
               {t.hero.ctaBooks}
             </a>
             <a
               href="#app"
               className="inline-flex items-center gap-2 rounded-full border-2 border-primary/25 bg-card px-7 py-3 font-bold text-primary transition-colors hover:border-primary/50"
             >
-              <Smartphone className="h-5 w-5" />
+              <Smartphone className="h-5 w-5" aria-hidden />
               {t.hero.ctaApp}
             </a>
           </div>
@@ -184,7 +201,7 @@ export default function Hero() {
               const Icon = TRUST_ICONS[i]
               return (
                 <div key={label} className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
-                  <Icon className="h-4 w-4 text-accent" />
+                  <Icon className="h-4 w-4 text-accent" aria-hidden />
                   {label}
                 </div>
               )

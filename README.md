@@ -2,34 +2,61 @@
 
 **Live-Seite:** https://antonb84-cpu.github.io/lambking-landingpage/
 
-## Aufbau
+## Was ist was?
 
-- `src/` – React + Vite + Tailwind Landingpage (Deutsch/Englisch umschaltbar)
-- `src/data/books.json` – zentrale Daten (Bücher, Website-Einstellungen, Impressum/Datenschutz)
-- `src/data/books.ts` – wird **automatisch** aus books.json erzeugt (nicht von Hand ändern)
-- `src/data/texts.ts` – alle Oberflächentexte DE/EN
-- `admin/` – lokales Verwaltungsprogramm (Python, keine Installation nötig)
-- `tools/` – älteres Kommandozeilen-Werkzeug (wird durch `admin/` ersetzt)
+| Teil | Was es ist |
+|---|---|
+| `src/`, `index.html`, `public/` | Die Landingpage (React + Vite + Tailwind), Deutsch/Englisch umschaltbar |
+| `admin/` | Das lokale Verwaltungsprogramm (Python) – nur auf deinem PC |
+| `ADMIN-STARTEN.bat` | Doppelklick-Start des Admins (mit automatischem Start-Check) |
+| `.github/workflows/deploy.yml` | GitHub Actions: baut & veröffentlicht die Live-Seite automatisch |
+| `WIEDERHERSTELLUNG.md` | Anleitung: Projekt auf einem neuen PC wieder aufsetzen |
 
-## Lokal starten
+## Admin starten (Bücher pflegen ohne Code)
 
-```bash
-npm install
-npm run dev      # Entwicklung
-npm run build    # produktiver Build nach dist/
-```
-
-## Admin-Programm (Bücher pflegen ohne Code)
-
-Doppelklick auf `ADMIN-STARTEN.bat` (im Ordner oberhalb von `app/`) oder:
-
-```bash
-cd app/admin
-python admin_server.py
-```
-
+Doppelklick auf **ADMIN-STARTEN.bat** (oder das Desktop-Symbol „LambKing Admin").
 Der Browser öffnet sich automatisch auf http://localhost:8123/
-Funktionen: Bücher hinzufügen/bearbeiten/löschen, Amazon-Daten abrufen,
-Cover & PDF hochladen (Beispielseiten werden aus der PDF erzeugt),
-Autorenfoto, Impressum/Datenschutz, PayPal-/Play-Store-Links,
-DE/EN-Bücher getrennt verwalten, danach „Veröffentlichen" (npm run build).
+
+**Im Admin kannst du:**
+- Bücher hinzufügen / bearbeiten / löschen (deutsch & englisch getrennt)
+- Amazon-Link einfügen → Titel, Beschreibung, Cover kommen automatisch
+- Cover & Buch-PDF hochladen → 4 Beispielseiten werden automatisch gerendert
+- Autorenfoto ändern (Form & Größe wählbar)
+- PayPal-, Ko-fi-, Web-App- und Google-Play-Links pflegen
+- Impressum & Datenschutz bearbeiten
+- GitHub-Sicherungsstatus sehen
+- veröffentlichen (mit automatischer Prüfung vorher)
+
+## Veröffentlichen – so läuft es
+
+1. **Speichern** im Admin = nur lokal auf deinem PC.
+2. **Veröffentlichen** im Admin = Prüfung (Rechtstexte, Tests, Bau) → Git-Commit → Push zu GitHub `main`.
+3. **GitHub Actions** baut danach automatisch die Live-Seite (ca. 1–2 Minuten).
+4. Status siehst du im Admin oder unter „Deployment bei GitHub ansehen".
+
+## Entwicklung
+
+```bash
+npm install        # einmalig (oder npm ci)
+npm run dev        # lokale Entwicklungsvorschau
+npm run lint       # Code-Stil prüfen
+npm run test       # strukturelle Tests (Links, Rechtstexte, Netzwerk-Reinheit …)
+npm run build      # baut dist/ (inkl. impressum.html, datenschutz.html, sitemap, JSON-LD)
+npm run check      # lint + test + build in einem
+```
+
+## Wichtige Daten
+
+- `src/data/books.json` – alle Bücher & Website-Einstellungen (wird vom Admin gepflegt)
+- `src/data/books.ts` – wird **automatisch** daraus erzeugt, nie von Hand ändern
+- `src/data/texts.ts` – alle Oberflächentexte Deutsch/Englisch
+
+## Grundsätze
+
+- Amazon ist der einzige Verkaufsweg der Bücher.
+- PayPal & Ko-fi sind freiwillige Unterstützung – kein Verkauf.
+- Kein TikTok Shop, kein Tracking, keine Cookies, keine Google-Fonts-Verbindung.
+- Keine Passwörter/Tokens im Repository – die GitHub-Anmeldung läuft über die normale Git-Anmeldung des PCs.
+- Die Live-Seite läuft auf GitHub Pages – unabhängig davon, ob dein PC an ist.
+- Zusätzlich zum GitHub-Backup kannst du den kompletten Ordner `LambKing.de`
+  gelegentlich auf ein zweites Laufwerk oder in ein Cloud-Backup kopieren.

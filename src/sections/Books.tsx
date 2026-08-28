@@ -1,58 +1,28 @@
 import { useEffect, useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Eye, Palette, Star, X, ZoomIn } from 'lucide-react'
+import { Eye, Palette, X, ZoomIn } from 'lucide-react'
 import Reveal from '@/components/Reveal'
-import { BOOKS, CATEGORIES, COMING_SOON, isNew, type Book, type Category } from '@/data/books'
+import { BOOKS, CATEGORY_IDS, COMING_SOON, isNew, type Book, type Category } from '@/data/books'
 import { useLang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
+import { OPEN_BOOK_EVENT } from '@/data/openBook'
 
-function TikTokIcon({ className }: { className?: string }) {
-  const d =
-    'M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z'
-  return (
-    <svg viewBox="0 0 24 24" className={className} aria-hidden>
-      <path d={d} fill="#25F4EE" transform="translate(-0.7 0.5)" />
-      <path d={d} fill="#FE2C55" transform="translate(0.7 -0.5)" />
-      <path d={d} fill="#ffffff" />
-    </svg>
-  )
-}
-
-function BuyButtons({ book, size = 'md' }: { book: Book; size?: 'md' | 'lg' }) {
+function BuyButton({ book, size = 'md' }: { book: Book; size?: 'md' | 'lg' }) {
   const t = textsFor(useLang())
   const h = size === 'lg' ? 'h-12 sm:h-14' : 'h-10 sm:h-11'
+  // Kein gültiger Amazon-Link → kein kaputter Button
+  if (!book.amazon.startsWith('https://')) return null
   return (
-    <div className="flex flex-wrap items-center gap-2.5">
-      <a
-        href={book.amazon}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-block transition-transform hover:scale-[1.05]"
-        aria-label={`${book.title} – ${t.buy.amazon}`}
-      >
-        <img src="/images/buttons/amazon.png" alt={t.buy.amazon} className={`${h} w-auto`} />
-      </a>
-      {book.tiktok ? (
-        <a
-          href={book.tiktok}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-block transition-transform hover:scale-[1.05]"
-          aria-label={`${book.title} – ${t.buy.tiktok}`}
-        >
-          <img src="/images/buttons/tiktok.png" alt={t.buy.tiktok} className={`${h} w-auto`} />
-        </a>
-      ) : (
-        <span
-          className="inline-flex cursor-default items-center gap-2.5 rounded-full border-2 border-dashed border-foreground/15 px-5 py-2.5 text-sm font-semibold text-muted-foreground"
-          title={t.books.tiktokSoonTitle}
-        >
-          <TikTokIcon className="h-4 w-4" />
-          {t.books.tiktokSoon}
-        </span>
-      )}
-    </div>
+    <a
+      href={book.amazon}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-block transition-transform hover:scale-[1.05]"
+      aria-label={`${book.title} – ${t.books.buyAmazon}`}
+    >
+      <img src="images/buttons/amazon.png" alt={t.books.buyAmazon} className={`${h} w-auto`} />
+    </a>
   )
 }
 
@@ -90,15 +60,9 @@ function BookDialog({
             <div className="p-8 lg:p-12">
               <DialogHeader>
                 <div className="mb-3 flex flex-wrap gap-2">
-                  <Badge variant="secondary" className="rounded-full">{book.type}</Badge>
-                  <Badge variant="secondary" className="rounded-full">{book.age}</Badge>
-                  <Badge variant="secondary" className="rounded-full">{book.detail}</Badge>
-                  {book.rating && (
-                    <Badge className="rounded-full bg-accent/15 text-accent hover:bg-accent/15">
-                      <Star className="mr-1 h-3 w-3 fill-current" />
-                      {book.rating}
-                    </Badge>
-                  )}
+                  <Badge variant="secondary" className="rounded-full">{t.books.types[book.category]}</Badge>
+                  {book.age && <Badge variant="secondary" className="rounded-full">{book.age}</Badge>}
+                  {book.detail && <Badge variant="secondary" className="rounded-full">{book.detail}</Badge>}
                 </div>
                 <DialogTitle className="font-display text-3xl font-semibold leading-tight lg:text-4xl">
                   {book.title}
@@ -115,7 +79,7 @@ function BookDialog({
               <ul className="mt-6 grid max-w-2xl gap-2.5 sm:grid-cols-2">
                 {book.highlights.map((h) => (
                   <li key={h} className="flex items-center gap-2.5 font-semibold">
-                    <span className="h-2 w-2 rounded-full bg-accent" />
+                    <span className="h-2 w-2 rounded-full bg-accent" aria-hidden />
                     {h}
                   </li>
                 ))}
@@ -140,7 +104,7 @@ function BookDialog({
                           loading="lazy"
                         />
                         <span className="absolute bottom-2 right-2 flex items-center gap-1 rounded-full bg-foreground/80 px-2.5 py-1 text-xs font-bold text-background opacity-0 transition-opacity group-hover:opacity-100">
-                          <ZoomIn className="h-3.5 w-3.5" />
+                          <ZoomIn className="h-3.5 w-3.5" aria-hidden />
                           {t.books.zoom}
                         </span>
                       </button>
@@ -149,12 +113,8 @@ function BookDialog({
                 </>
               )}
               <div className="mt-9 flex flex-wrap items-center justify-between gap-4 border-t-2 border-border pt-7">
-                {book.price ? (
-                  <p className="font-display text-3xl font-semibold">{book.price}</p>
-                ) : (
-                  <p className="font-semibold text-muted-foreground">{t.books.seePrice}</p>
-                )}
-                <BuyButtons book={book} size="lg" />
+                <p className="font-semibold text-muted-foreground">{t.books.seePrice}</p>
+                <BuyButton book={book} size="lg" />
               </div>
             </div>
           </div>
@@ -179,6 +139,7 @@ function Lightbox({ src, onClose, label }: { src: string | null; onClose: () => 
       className="fixed inset-0 z-[70] flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm"
       onClick={onClose}
       role="dialog"
+      aria-modal="true"
       aria-label={label}
     >
       <img
@@ -190,37 +151,66 @@ function Lightbox({ src, onClose, label }: { src: string | null; onClose: () => 
       <button
         type="button"
         onClick={onClose}
+        autoFocus
         aria-label={label}
         className="absolute right-4 top-4 flex items-center gap-2 rounded-full bg-white px-5 py-2.5 font-bold text-foreground shadow-lg transition-transform hover:scale-105"
       >
-        <X className="h-5 w-5" />
+        <X className="h-5 w-5" aria-hidden />
         {label}
       </button>
     </div>
   )
 }
 
+function setBookParam(id: string | null) {
+  const url = new URL(window.location.href)
+  if (id) url.searchParams.set('buch', id)
+  else url.searchParams.delete('buch')
+  window.history.replaceState(null, '', url)
+}
+
 export default function Books() {
   const lang = useLang()
   const t = textsFor(lang)
-  const [active, setActive] = useState<Book | null>(null)
+
+  // Deep-Link beim ersten Laden direkt als Startzustand lesen (?buch=david).
+  // Ungültige IDs werden ignoriert – die Seite bleibt benutzbar.
+  const [active, setActive] = useState<Book | null>(() => {
+    const params = new URLSearchParams(window.location.search)
+    return BOOKS.find((b) => b.id === params.get('buch')) ?? null
+  })
   const [cat, setCat] = useState<Category | 'alle'>('alle')
-  const [zoom, setZoom] = useState<string | null>(null)
-
-  // Strikte Trennung: Auf der englischen Seite erscheinen nur englische
-  // Bücher (und umgekehrt) – keine deutschen Bücher als Ersatz.
-  const books = BOOKS.filter((b) => b.lang === lang)
-
-  // Deep-Link: ?buch=david öffnet das Buch-Fenster direkt (z. B. aus der App oder Social Media)
-  useEffect(() => {
+  const [zoom, setZoom] = useState<string | null>(() => {
     const params = new URLSearchParams(window.location.search)
     const found = BOOKS.find((b) => b.id === params.get('buch'))
-    if (found) {
-      setActive(found)
-      const z = Number(params.get('zoom'))
-      if (z >= 1 && found.samples[z - 1]) setZoom(found.samples[z - 1])
+    const z = Number(params.get('zoom'))
+    return found && z >= 1 && found.samples[z - 1] ? found.samples[z - 1] : null
+  })
+
+  const openBook = (b: Book) => {
+    setActive(b)
+    setBookParam(b.id)
+  }
+
+  const closeBook = () => {
+    setActive(null)
+    setZoom(null)
+    setBookParam(null) // URL beim Schließen bereinigen
+  }
+
+  // Strikte Trennung: die englische Seite zeigt nur englische Bücher (und umgekehrt)
+  const books = BOOKS.filter((b) => b.lang === lang)
+
+  // Klick auf das 3D-Buch im Hero öffnet den Dialog des gezeigten Buches
+  useEffect(() => {
+    const onOpen = (e: Event) => {
+      const id = (e as CustomEvent<string>).detail
+      const found = BOOKS.find((b) => b.id === id)
+      if (found) openBook(found)
     }
-  }, [])
+    window.addEventListener(OPEN_BOOK_EVENT, onOpen)
+    return () => window.removeEventListener(OPEN_BOOK_EVENT, onOpen)
+  })
 
   const visible = cat === 'alle' ? books : books.filter((b) => b.category === cat)
 
@@ -228,7 +218,7 @@ export default function Books() {
     id === 'alle' ? t.books.all : t.books.categories[id]
 
   const emptyHint = (id: Category | 'alle'): string =>
-    id === 'komics' ? t.books.emptyKomis : t.books.emptyAll
+    id === 'komics' ? t.books.emptyComics : t.books.emptyAll
 
   return (
     <section id="buecher" className="scroll-mt-28 py-16 lg:py-24">
@@ -243,13 +233,15 @@ export default function Books() {
 
         {/* Kategorien */}
         <Reveal delay={100} className="mt-9 flex flex-wrap justify-center gap-2.5">
-          {(['alle', ...CATEGORIES.map((c) => c.id)] as const).map((id) => {
+          {(['alle', ...CATEGORY_IDS] as const).map((id) => {
             const count = id === 'alle' ? books.length : books.filter((b) => b.category === id).length
             const activeTab = cat === id
             return (
               <button
                 key={id}
+                type="button"
                 onClick={() => setCat(id)}
+                aria-pressed={activeTab}
                 className={`rounded-full border-2 px-5 py-2 text-sm font-bold transition-all ${
                   activeTab
                     ? 'border-primary bg-primary text-primary-foreground shadow-md'
@@ -275,7 +267,8 @@ export default function Books() {
               <Reveal key={b.id} delay={i * 100}>
                 <article className="group flex h-full flex-col overflow-hidden rounded-md border-2 border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/10">
                   <button
-                    onClick={() => setActive(b)}
+                    type="button"
+                    onClick={() => openBook(b)}
                     className="relative block bg-secondary/50 p-6 text-left"
                     aria-label={`${t.books.lookInside}: ${b.title}`}
                   >
@@ -291,41 +284,29 @@ export default function Books() {
                       className="mx-auto max-h-72 w-auto max-w-full rounded-md object-contain shadow-lg shadow-primary/15 transition-transform duration-500 group-hover:scale-[1.03]"
                     />
                     <span className="absolute bottom-4 right-4 inline-flex items-center gap-1.5 rounded-full bg-foreground/85 px-3 py-1.5 text-xs font-bold text-background opacity-0 backdrop-blur transition-opacity group-hover:opacity-100">
-                      <Eye className="h-3.5 w-3.5" />
+                      <Eye className="h-3.5 w-3.5" aria-hidden />
                       {t.books.lookInside}
                     </span>
                   </button>
                   <div className="flex flex-1 flex-col p-5">
                     <div className="mb-2 flex flex-wrap gap-1.5">
                       <Badge variant="secondary" className="gap-1 rounded-full">
-                        <Palette className="h-3 w-3" />
-                        {b.type}
+                        <Palette className="h-3 w-3" aria-hidden />
+                        {t.books.types[b.category]}
                       </Badge>
-                      <Badge variant="secondary" className="rounded-full">{b.age}</Badge>
+                      {b.age && <Badge variant="secondary" className="rounded-full">{b.age}</Badge>}
                     </div>
                     <h3 className="font-display text-xl font-semibold leading-snug">{b.title}</h3>
                     {b.series && <p className="mt-1 text-xs font-semibold text-muted-foreground">{b.series}</p>}
-                    <div className="mt-4 flex items-center justify-between">
-                      {b.price ? (
-                        <p className="font-display text-lg font-semibold">{b.price}</p>
-                      ) : (
-                        <p className="text-xs font-semibold text-muted-foreground">{t.books.priceOnAmazon}</p>
-                      )}
-                      {b.rating && (
-                        <p className="flex items-center gap-1 text-xs font-bold text-accent">
-                          <Star className="h-3.5 w-3.5 fill-current" />
-                          {b.rating}
-                        </p>
-                      )}
-                    </div>
                     <div className="mt-4 flex-1">
                       <button
-                        onClick={() => setActive(b)}
+                        type="button"
+                        onClick={() => openBook(b)}
                         className="mb-3 w-full rounded-full border-2 border-primary/20 py-2.5 text-sm font-bold text-primary transition-colors hover:border-primary/50 hover:bg-primary/5"
                       >
                         {t.books.lookInside}
                       </button>
-                      <BuyButtons book={b} />
+                      <BuyButton book={b} />
                     </div>
                   </div>
                 </article>
@@ -359,7 +340,7 @@ export default function Books() {
 
       <BookDialog
         book={active}
-        onClose={() => setActive(null)}
+        onClose={closeBook}
         onZoom={setZoom}
         zoom={zoom}
         onZoomClose={() => setZoom(null)}
@@ -368,4 +349,4 @@ export default function Books() {
   )
 }
 
-export { BuyButtons }
+export { BuyButton }

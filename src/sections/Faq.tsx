@@ -25,16 +25,29 @@ export default function Faq() {
                 </AccordionTrigger>
                 <AccordionContent className="leading-relaxed text-muted-foreground">
                   {f.a}
-                  {i === 3 && SITE.playStoreUrl && (
+                  {/* Frage „digital?" → Web-App-Link anhängen */}
+                  {i === 4 && SITE.appUrl.startsWith('https://') && (
                     <>
                       {' '}
                       <a
-                        href={SITE.playStoreUrl}
+                        href={SITE.appUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="font-bold text-primary underline underline-offset-2"
                       >
-                        {t.faq.playLink}
+                        {t.faq.webAppLink}
+                      </a>
+                    </>
+                  )}
+                  {/* Kontaktfrage → E-Mail-Adresse als mailto-Link */}
+                  {i === 6 && (
+                    <>
+                      {' '}
+                      <a
+                        href={`mailto:${t.faq.mailLink}`}
+                        className="font-bold text-primary underline underline-offset-2"
+                      >
+                        {t.faq.mailLink}
                       </a>
                     </>
                   )}
