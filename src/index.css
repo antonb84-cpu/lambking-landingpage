@@ -37,10 +37,12 @@
   }
   html {
     scroll-behavior: smooth;
+    overflow-x: clip; /* nichts darf über den rechten Rand laufen (Mobil) */
   }
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Quicksand', 'Segoe UI', system-ui, sans-serif;
+    overflow-x: clip;
   }
   /* Sichtbarer Tastaturfokus */
   :focus-visible {

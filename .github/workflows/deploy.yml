@@ -41,6 +41,9 @@ jobs:
       - name: Build (inkl. Rechtsseiten, Sitemap, JSON-LD)
         run: npm run build
 
+      - name: E2E-Test (Navigation ohne leere Tabs, Buch-Dialog, Sprachwechsel)
+        run: npm run test:e2e
+
       - name: Netzwerk-Reinheit prüfen (keine Google-Fonts-/TikTok-/Ko-fi-Requests im Build)
         run: |
           ! grep -ri "fonts.googleapis.com\|fonts.gstatic.com\|tiktok\|storage.ko-fi.com" dist/ && echo "Build ist sauber ✓"
