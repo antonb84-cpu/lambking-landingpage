@@ -89,9 +89,38 @@ def render_books_ts(state: dict):
     out.append(f"  datenschutz: {ts_str(s.get('datenschutz', ''))},")
     out.append("}")
     out.append("")
-    out.append("export type Category = 'geschichten' | 'malbuecher' | 'komics'")
+    out.append("export type Category = string")
     out.append("")
-    out.append("export const CATEGORY_IDS: Category[] = ['geschichten', 'malbuecher', 'komics']")
+    out.append("// Kategorien – im Admin-Programm verwaltbar (Label + Farbe)")
+    out.append("export interface CategoryDef {")
+    out.append("  id: string")
+    out.append("  labelDe: string")
+    out.append("  labelEn: string")
+    out.append("  typeDe: string")
+    out.append("  typeEn: string")
+    out.append("  color: string")
+    out.append("}")
+    out.append("")
+    out.append("export const CATEGORIES: CategoryDef[] = [")
+
+    default_cats = [
+        {"id": "geschichten", "labelDe": "Geschichten", "labelEn": "Stories",
+         "typeDe": "Kinderbuch", "typeEn": "Children's Book", "color": "#2E7D4F"},
+        {"id": "malbuecher", "labelDe": "Malbücher", "labelEn": "Coloring Books",
+         "typeDe": "Malbuch", "typeEn": "Coloring Book", "color": "#1B3A5C"},
+        {"id": "komics", "labelDe": "Comics", "labelEn": "Comics",
+         "typeDe": "Comic", "typeEn": "Comic", "color": "#B3402E"},
+    ]
+    for c in state.get("categories", default_cats):
+        out.append("  {")
+        out.append(f"    id: '{c['id']}',")
+        out.append(f"    labelDe: {ts_str(c.get('labelDe', c['id']))},")
+        out.append(f"    labelEn: {ts_str(c.get('labelEn', c.get('labelDe', c['id'])))},")
+        out.append(f"    typeDe: {ts_str(c.get('typeDe', ''))},")
+        out.append(f"    typeEn: {ts_str(c.get('typeEn', c.get('typeDe', '')))},")
+        out.append(f"    color: '{c.get('color', '#1B3A5C')}',")
+        out.append("  },")
+    out.append("]")
     out.append("")
     out.append("export interface Book {")
     out.append("  id: string")
@@ -436,6 +465,8 @@ class Handler(BaseHTTPRequestHandler):
                 self.api_move()
             elif path == "/api/site":
                 self.api_site()
+            elif path == "/api/categories":
+                self.api_categories()
             elif path == "/api/orphans":
                 self.api_orphans()
             elif path == "/api/build":
@@ -512,9 +543,10 @@ class Handler(BaseHTTPRequestHandler):
         else:
             book = existing
 
-        category = fields.get("category", "malbuecher")
-        if category not in CATEGORIES:
-            category = "malbuecher"
+        category = fields.get("category", "")
+        valid_ids = [c["id"] for c in state.get("categories", [])] or ["malbuecher"]
+        if category not in valid_ids:
+            category = valid_ids[0]
         lang = fields.get("lang", "de")
         book["lang"] = lang if lang in ("de", "en") else "de"
         book["title"] = title
@@ -664,6 +696,50 @@ class Handler(BaseHTTPRequestHandler):
             state["site"]["authorPhoto"] = f"images/autor.jpg?v={int(datetime.datetime.now().timestamp())}"
         save_state(state)
         self.send_json({"ok": True, "site": state["site"]})
+
+    # ---------- Kategorien ----------
+    def api_categories(self):
+        """Kategorien hinzufügen/umbenennen/umfärben/löschen."""
+        d = self.read_json()
+        action = d.get("action")
+        state = load_state()
+        cats = state.setdefault("categories", [])
+        if action == "add":
+            label_de = (d.get("labelDe") or "").strip()
+            if not label_de:
+                self.send_json({"ok": False, "error": "Bitte einen Namen für die Kategorie eingeben."})
+                return
+            cid = slugify(d.get("id") or label_de)
+            cid = re.sub(r"[^a-z0-9-]", "", cid)
+            if not cid or any(c["id"] == cid for c in cats):
+                self.send_json({"ok": False, "error": "Diese Kategorie existiert schon."})
+                return
+            color = (d.get("color") or "#1B3A5C").strip()
+            if not re.fullmatch(r"#[0-9a-fA-F]{6}", color):
+                color = "#1B3A5C"
+            cats.append({
+                "id": cid,
+                "labelDe": label_de,
+                "labelEn": (d.get("labelEn") or label_de).strip(),
+                "typeDe": (d.get("typeDe") or label_de).strip(),
+                "typeEn": (d.get("typeEn") or d.get("typeDe") or label_de).strip(),
+                "color": color,
+            })
+        elif action == "delete":
+            cid = d.get("id", "")
+            if any(b.get("category") == cid for b in state["books"]):
+                self.send_json({"ok": False, "error": "In dieser Kategorie gibt es noch Bücher. Bitte die Bücher zuerst einer anderen Kategorie zuordnen."})
+                return
+            if len(cats) <= 1:
+                self.send_json({"ok": False, "error": "Es muss mindestens eine Kategorie geben."})
+                return
+            cats = [c for c in cats if c["id"] != cid]
+            state["categories"] = cats
+        else:
+            self.send_json({"ok": False, "error": "Unbekannte Aktion."})
+            return
+        save_state(state)
+        self.send_json({"ok": True, "categories": state["categories"]})
 
     # ---------- Git / GitHub ----------
     def api_git_status(self):

@@ -3,10 +3,21 @@ import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Eye, Palette, X, ZoomIn } from 'lucide-react'
 import Reveal from '@/components/Reveal'
-import { BOOKS, CATEGORY_IDS, COMING_SOON, isNew, type Book, type Category } from '@/data/books'
+import { BOOKS, CATEGORIES, COMING_SOON, isNew, type Book, type Category } from '@/data/books'
 import { useLang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
 import { OPEN_BOOK_EVENT } from '@/data/openBook'
+
+// Kategorie-Helfer (Labels/Typen kommen aus den Buchdaten, sprachabhängig)
+const catDefOf = (id: string) => CATEGORIES.find((c) => c.id === id)
+const typeLabelOf = (b: Book, lang: 'de' | 'en'): string => {
+  const c = catDefOf(b.category)
+  return c ? (lang === 'en' ? c.typeEn : c.typeDe) : b.category
+}
+const catLabelOf = (id: string, lang: 'de' | 'en'): string => {
+  const c = catDefOf(id)
+  return c ? (lang === 'en' ? c.labelEn : c.labelDe) : id
+}
 
 function BuyButton({ book, size = 'md' }: { book: Book; size?: 'md' | 'lg' }) {
   const t = textsFor(useLang())
@@ -40,6 +51,7 @@ function BookDialog({
   onZoomClose: () => void
 }) {
   const t = textsFor(useLang())
+  const lang = useLang()
   const zoomOpen = !!zoom
   return (
     <Dialog open={!!book} onOpenChange={(open) => !open && !zoomOpen && onClose()}>
@@ -60,7 +72,7 @@ function BookDialog({
             <div className="p-8 lg:p-12">
               <DialogHeader>
                 <div className="mb-3 flex flex-wrap gap-2">
-                  <Badge variant="secondary" className="rounded-full">{t.books.types[book.category]}</Badge>
+                  <Badge variant="secondary" className="rounded-full">{typeLabelOf(book, lang)}</Badge>
                   {book.age && <Badge variant="secondary" className="rounded-full">{book.age}</Badge>}
                   {book.detail && <Badge variant="secondary" className="rounded-full">{book.detail}</Badge>}
                 </div>
@@ -215,10 +227,13 @@ export default function Books() {
   const visible = cat === 'alle' ? books : books.filter((b) => b.category === cat)
 
   const catLabel = (id: Category | 'alle'): string =>
-    id === 'alle' ? t.books.all : t.books.categories[id]
+    id === 'alle' ? t.books.all : catLabelOf(id, lang)
+  const typeLabel = (b: Book): string => typeLabelOf(b, lang)
+  const catColor = (id: Category | 'alle'): string | undefined =>
+    id === 'alle' ? undefined : catDefOf(id)?.color
 
   const emptyHint = (id: Category | 'alle'): string =>
-    id === 'komics' ? t.books.emptyComics : t.books.emptyAll
+    id === 'alle' ? t.books.emptyAll : t.books.emptyComics
 
   return (
     <section id="buecher" className="scroll-mt-28 py-16 lg:py-24">
@@ -233,25 +248,29 @@ export default function Books() {
 
         {/* Kategorien */}
         <Reveal delay={100} className="mt-9 flex flex-wrap justify-center gap-2.5">
-          {(['alle', ...CATEGORY_IDS] as const).map((id) => {
+          {(['alle', ...CATEGORIES.map((c) => c.id)] as const).map((id) => {
             const count = id === 'alle' ? books.length : books.filter((b) => b.category === id).length
             const activeTab = cat === id
+            const color = catColor(id)
             return (
               <button
                 key={id}
                 type="button"
                 onClick={() => setCat(id)}
                 aria-pressed={activeTab}
+                style={activeTab && color ? { backgroundColor: color, borderColor: color, color: '#fff' } : undefined}
                 className={`rounded-full border-2 px-5 py-2 text-sm font-bold transition-all ${
                   activeTab
-                    ? 'border-primary bg-primary text-primary-foreground shadow-md'
+                    ? color
+                      ? 'shadow-md'
+                      : 'border-primary bg-primary text-primary-foreground shadow-md'
                     : 'border-border bg-card text-muted-foreground hover:border-primary/40 hover:text-foreground'
                 }`}
               >
                 {catLabel(id)}
                 <span
                   className={`ml-2 rounded-full px-2 py-0.5 text-xs ${
-                    activeTab ? 'bg-primary-foreground/20' : 'bg-secondary'
+                    activeTab ? 'bg-white/25' : 'bg-secondary'
                   }`}
                 >
                   {count}
@@ -292,7 +311,7 @@ export default function Books() {
                     <div className="mb-2 flex flex-wrap gap-1.5">
                       <Badge variant="secondary" className="gap-1 rounded-full">
                         <Palette className="h-3 w-3" aria-hidden />
-                        {t.books.types[b.category]}
+                        {typeLabel(b)}
                       </Badge>
                       {b.age && <Badge variant="secondary" className="rounded-full">{b.age}</Badge>}
                     </div>

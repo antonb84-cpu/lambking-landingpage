@@ -29,8 +29,6 @@ export const TEXTS = {
       subtitle:
         'Sorgfältig ausgewählt, biblisch fundiert erzählt. Klicke auf ein Buch, um den Inhalt anzusehen – zur Bestellung geht es über den Amazon-Link.',
       all: 'Alle',
-      categories: { geschichten: 'Geschichten', malbuecher: 'Malbücher', komics: 'Comics' },
-      types: { geschichten: 'Kinderbuch', malbuecher: 'Malbuch', komics: 'Comic' },
       emptyComics: 'Hier entstehen gerade biblische Comic-Abenteuer – schau bald wieder vorbei!',
       emptyAll: 'Hier entstehen gerade neue Bücher – schau bald wieder vorbei!',
       comingSoonSuffix: 'bald erhältlich',
@@ -171,8 +169,6 @@ export const TEXTS = {
       subtitle:
         'Carefully selected and faithfully told. Click a book to look inside – ordering takes place via the Amazon link.',
       all: 'All',
-      categories: { geschichten: 'Stories', malbuecher: 'Coloring Books', komics: 'Comics' },
-      types: { geschichten: "Children's Book", malbuecher: 'Coloring Book', komics: 'Comic' },
       emptyComics: 'Bible comic adventures are in the making – check back soon!',
       emptyAll: 'Our English editions are on their way – check back soon!',
       comingSoonSuffix: 'coming soon',

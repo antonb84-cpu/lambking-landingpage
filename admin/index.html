@@ -192,11 +192,7 @@
       <div class="grid2">
         <div>
           <label for="f_category">Kategorie</label>
-          <select id="f_category" class="draft">
-            <option value="geschichten">Geschichten</option>
-            <option value="malbuecher" selected>Malbücher</option>
-            <option value="komics">Comics</option>
-          </select>
+          <select id="f_category" class="draft"></select>
         </div>
         <div>
           <label for="f_series">Reihe / Band (optional)</label>
@@ -294,6 +290,30 @@
         <label for="s_comingSoon">„Demnächst erhältlich"-Liste (eine Zeile = ein Titel)</label>
         <textarea id="s_comingSoon" rows="6"></textarea>
 
+        <label>🏷 Kategorien (Name + Farbe der Filter-Buttons)</label>
+        <div id="catList" style="margin-bottom:10px;"></div>
+        <div class="step" style="padding:14px;">
+          <div class="grid2">
+            <div>
+              <label for="c_nameDe">Name (Deutsch) *</label>
+              <input type="text" id="c_nameDe" placeholder="z. B. Vorlesebücher">
+            </div>
+            <div>
+              <label for="c_nameEn">Name (Englisch)</label>
+              <input type="text" id="c_nameEn" placeholder="z. B. Read-aloud books">
+            </div>
+            <div>
+              <label for="c_typeDe">Art-Bezeichnung (Deutsch)</label>
+              <input type="text" id="c_typeDe" placeholder="z. B. Vorlesebuch">
+            </div>
+            <div>
+              <label for="c_color">Farbe</label>
+              <input type="color" id="c_color" value="#1B3A5C" style="height:44px; padding:4px;">
+            </div>
+          </div>
+          <button class="btn btn-blue" style="margin-top:10px;" onclick="addCategory()">＋ Kategorie hinzufügen</button>
+        </div>
+
         <label for="s_impressum">⚖️ Impressum (eine Leerzeile = neuer Absatz)</label>
         <textarea id="s_impressum" rows="8"></textarea>
         <label for="s_datenschutz">🔒 Datenschutzerklärung</label>
@@ -386,6 +406,7 @@ async function refreshGhStatus(){
 async function load(){
   state = await api('/api/state');
   renderList();
+  renderCategories();
   $('s_paypal').value = state.site.paypalUrl || '';
   $('s_kofi').value = state.site.kofiUrl || '';
   $('s_appUrl').value = state.site.appUrl || '';
@@ -413,7 +434,52 @@ function setLangFilter(l){
   renderList();
 }
 
-const CAT_LABELS = {geschichten:'Geschichten', malbuecher:'Malbücher', komics:'Comics'};
+const CAT_LABELS = {};
+
+function catLabelDe(id){
+  const c = (state.categories||[]).find(x => x.id === id);
+  return c ? c.labelDe : id;
+}
+
+function renderCategories(){
+  // Auswahl im Buch-Formular
+  const sel = $('f_category');
+  const prev = sel.value;
+  sel.innerHTML = (state.categories||[]).map(c =>
+    `<option value="${c.id}">${esc(c.labelDe)}</option>`).join('');
+  if (prev && [...sel.options].some(o => o.value === prev)) sel.value = prev;
+  // Verwaltungsliste in den Einstellungen
+  $('catList').innerHTML = (state.categories||[]).map(c => `
+    <div class="book-row" style="padding:8px 12px;">
+      <span style="width:26px; height:26px; border-radius:50%; background:${c.color}; border:1px solid var(--line);"></span>
+      <div class="info"><b>${esc(c.labelDe)}</b><span>${esc(c.labelEn||'')} · Typ: ${esc(c.typeDe||'')}</span></div>
+      <div class="row-btns">
+        <button class="icon-btn" title="Kategorie löschen" onclick="deleteCategory('${c.id}')">🗑</button>
+      </div>
+    </div>`).join('');
+}
+
+async function addCategory(){
+  const d = await api('/api/categories', {method:'POST', body: JSON.stringify({
+    action: 'add',
+    labelDe: $('c_nameDe').value,
+    labelEn: $('c_nameEn').value,
+    typeDe: $('c_typeDe').value,
+    color: $('c_color').value,
+  })});
+  if (!d.ok){ toast(d.error, true); return; }
+  toast('✓ Kategorie hinzugefügt (lokal – noch nicht veröffentlicht)');
+  $('c_nameDe').value = ''; $('c_nameEn').value = ''; $('c_typeDe').value = '';
+  await load();
+}
+
+async function deleteCategory(id){
+  if (!confirm('Kategorie „' + catLabelDe(id) + '" wirklich löschen?')) return;
+  const d = await api('/api/categories', {method:'POST', body: JSON.stringify({action:'delete', id})});
+  if (!d.ok){ toast(d.error, true); return; }
+  toast('✓ Kategorie gelöscht');
+  await load();
+}
 
 function renderList(){
   const el = $('bookList');
@@ -431,7 +497,7 @@ function renderList(){
       <img src="/${b.cover}" alt="" onerror="this.style.visibility='hidden'">
       <div class="info">
         <b>${esc(b.title)}</b>
-        <span><span class="badge">${CAT_LABELS[b.category]||b.category}</span>${isNew?'<span class="badge neu">NEU</span>':''}${b.samples&&b.samples.length?(b.samples.length+' Vorschauseiten'):''}</span>
+        <span><span class="badge">${catLabelDe(b.category)}</span>${isNew?'<span class="badge neu">NEU</span>':''}${b.samples&&b.samples.length?(b.samples.length+' Vorschauseiten'):''}</span>
       </div>
       <div class="row-btns">
         <button class="icon-btn" title="Nach oben" ${i===0?'disabled':''} onclick="moveBook('${b.id}',-1)">▲</button>
@@ -481,7 +547,7 @@ function openForm(id){
   $('formTitle').textContent = b ? 'Buch bearbeiten: ' + b.title : 'Neues Buch hinzufügen';
   $('f_amazonFetch').value = '';
   $('f_title').value = b ? b.title : '';
-  $('f_category').value = b ? b.category : 'malbuecher';
+  $('f_category').value = b ? b.category : ((state.categories||[])[0]?.id || 'malbuecher');
   $('f_series').value = b ? (b.series||'') : '';
   $('f_age').value = b ? (b.age||'') : '';
   $('f_detail').value = b ? (b.detail||'') : '';

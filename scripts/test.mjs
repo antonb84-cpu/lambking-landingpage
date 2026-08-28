@@ -81,10 +81,11 @@ const booksJson = JSON.parse(readFileSync(join(SRC, 'data/books.json'), 'utf-8')
 
 test('Buchdaten: Pflichtfelder und gültige Links', () => {
   assert(Array.isArray(booksJson.books), 'books fehlt')
+  const catIds = (booksJson.categories || []).map((c) => c.id)
   for (const b of booksJson.books) {
     assert(b.id && b.title, `Buch ohne id/titel: ${JSON.stringify(b).slice(0, 60)}`)
     assert(['de', 'en'].includes(b.lang), `${b.id}: ungültige Sprache`)
-    assert(['geschichten', 'malbuecher', 'komics'].includes(b.category), `${b.id}: ungültige Kategorie`)
+    assert(catIds.includes(b.category), `${b.id}: ungültige Kategorie`)
     assert(!b.amazon || b.amazon.startsWith('https://'), `${b.id}: Amazon-Link ungültig`)
     assert(!('tiktok' in b), `${b.id}: TikTok-Feld vorhanden`)
     assert(!('price' in b), `${b.id}: statischer Preis vorhanden`)
@@ -102,13 +103,18 @@ test('Buchdaten: Cover und Beispielseiten existieren als Datei', () => {
   }
 })
 
-test('Buchtypen sind lokalisiert (kein gemischter Sprach-String in Daten)', () => {
-  const texts = readFileSync(join(SRC, 'data/texts.ts'), 'utf-8')
-  for (const cat of ['geschichten', 'malbuecher', 'komics']) {
-    assert(texts.includes(`types: {`), 'types-Mapping fehlt in texts.ts')
-    break
+test('Buchtypen/Kategorien sind lokalisiert und konsistent', () => {
+  const cats = booksJson.categories || []
+  assert(cats.length >= 1, 'keine Kategorien definiert')
+  const ids = cats.map((c) => c.id)
+  assert(new Set(ids).size === ids.length, 'doppelte Kategorie-IDs')
+  for (const c of cats) {
+    assert(c.labelDe && c.labelEn && c.typeDe && c.typeEn, `Kategorie ${c.id} unvollständig`)
+    assert(/^#[0-9a-fA-F]{6}$/.test(c.color), `Kategorie ${c.id}: ungültige Farbe`)
   }
-  assert(texts.includes('Coloring Book') && texts.includes('Malbuch'), 'DE/EN-Typen fehlen')
+  for (const b of booksJson.books) {
+    assert(ids.includes(b.category), `${b.id}: unbekannte Kategorie ${b.category}`)
+  }
 })
 
 // ── 3. Rechtliches ────────────────────────────────────────────

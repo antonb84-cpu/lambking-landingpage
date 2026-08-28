@@ -96,5 +96,31 @@
       "releaseDate": "",
       "lang": "de"
     }
+  ],
+  "categories": [
+    {
+      "id": "geschichten",
+      "labelDe": "Geschichten",
+      "labelEn": "Stories",
+      "typeDe": "Kinderbuch",
+      "typeEn": "Children's Book",
+      "color": "#2E7D4F"
+    },
+    {
+      "id": "malbuecher",
+      "labelDe": "Malbücher",
+      "labelEn": "Coloring Books",
+      "typeDe": "Malbuch",
+      "typeEn": "Coloring Book",
+      "color": "#1B3A5C"
+    },
+    {
+      "id": "komics",
+      "labelDe": "Comics",
+      "labelEn": "Comics",
+      "typeDe": "Comic",
+      "typeEn": "Comic",
+      "color": "#B3402E"
+    }
   ]
 }

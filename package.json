@@ -4,7 +4,9 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "predev": "node scripts/gen-legal.mjs",
     "dev": "vite",
+    "prebuild": "node scripts/gen-legal.mjs",
     "build": "tsc -b && vite build && node scripts/postbuild.mjs",
     "lint": "eslint .",
     "test": "node scripts/test.mjs",

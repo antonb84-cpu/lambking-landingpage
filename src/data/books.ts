@@ -22,9 +22,44 @@ export const SITE = {
   datenschutz: "1. Verantwortlicher\n\nAnton Bernt, LambKing Stories, Allmendstr. 35, 75223 Niefern-Öschelbronn, Deutschland\nE-Mail: hello@lambking.de\n\n2. Hosting über GitHub Pages\n\nDiese Website wird über GitHub Pages (GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, USA) bereitgestellt. Beim Aufruf der Seite verarbeitet GitHub technisch notwendige Verbindungsdaten (z. B. IP-Adresse, Datum und Uhrzeit des Zugriffs, aufgerufene Seite, Browsertyp) in Server-Logfiles. Diese Verarbeitung ist erforderlich, um die Website auszuliefern (Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO – berechtigtes Interesse am sicheren Betrieb dieser Website). Da GitHub seinen Sitz in den USA hat, kann eine Datenverarbeitung in den USA nicht ausgeschlossen werden. Details dazu finden Sie im GitHub Privacy Statement.\n\n3. Spracheinstellung (lokale Speicherung)\n\nDiese Website speichert Ihre gewählte Sprache (Deutsch/Englisch) ausschließlich lokal in Ihrem Browser (localStorage, Schlüssel „lambking-lang\"). Zweck: Die Seite beim nächsten Besuch in Ihrer Sprache anzuzeigen. Diese Information wird nicht an uns oder Dritte übertragen und nicht für Werbung oder Tracking verwendet. Sie können sie jederzeit über die Browser-Einstellungen löschen.\n\n4. Keine Cookies, kein Tracking\n\nDiese Website verwendet keine Cookies und keine Analyse- oder Marketing-Dienste. Schriftarten werden lokal von dieser Website geladen, nicht von externen Diensten.\n\n5. Externe Links\n\nDiese Website enthält Links zu externen Anbietern:\n- Amazon (Kauf der Bücher)\n- PayPal (freiwillige Unterstützung) – als reiner Link, ohne eingebettetes Zahlungsformular\n- Ko-fi (freiwillige Unterstützung) – als reiner Link, ohne JavaScript-Widget oder iFrame; erst wenn Sie den Ko-fi-Link anklicken, wird die Website von Ko-fi geöffnet, und ab diesem Zeitpunkt erfolgt die Datenverarbeitung nach den Datenschutzbestimmungen von Ko-fi\n- LambKing Web-App (ebenfalls über GitHub Pages)\n\nErst wenn Sie einen dieser Links anklicken, verlassen Sie diese Website. Ab diesem Zeitpunkt erfolgt die Datenverarbeitung nach den Datenschutzbestimmungen des jeweiligen Anbieters.\n\n6. Kontaktaufnahme per E-Mail\n\nBei Kontaktaufnahme per E-Mail werden die übermittelten Daten (E-Mail-Adresse, Inhalt der Nachricht) zur Bearbeitung der Anfrage verarbeitet (Art. 6 Abs. 1 lit. b und f DSGVO).\n\n7. Ihre Rechte\n\nSie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch. Zudem haben Sie das Recht, sich bei einer Datenschutz-Aufsichtsbehörde zu beschweren.\n\nStand: August 2026",
 }
 
-export type Category = 'geschichten' | 'malbuecher' | 'komics'
+export type Category = string
 
-export const CATEGORY_IDS: Category[] = ['geschichten', 'malbuecher', 'komics']
+// Kategorien – im Admin-Programm verwaltbar (Label + Farbe)
+export interface CategoryDef {
+  id: string
+  labelDe: string
+  labelEn: string
+  typeDe: string
+  typeEn: string
+  color: string
+}
+
+export const CATEGORIES: CategoryDef[] = [
+  {
+    id: 'geschichten',
+    labelDe: "Geschichten",
+    labelEn: "Stories",
+    typeDe: "Kinderbuch",
+    typeEn: "Children's Book",
+    color: '#2E7D4F',
+  },
+  {
+    id: 'malbuecher',
+    labelDe: "Malbücher",
+    labelEn: "Coloring Books",
+    typeDe: "Malbuch",
+    typeEn: "Coloring Book",
+    color: '#1B3A5C',
+  },
+  {
+    id: 'komics',
+    labelDe: "Comics",
+    labelEn: "Comics",
+    typeDe: "Comic",
+    typeEn: "Comic",
+    color: '#B3402E',
+  },
+]
 
 export interface Book {
   id: string
