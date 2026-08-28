@@ -118,7 +118,7 @@ def main():
         if r.returncode == 0 and "github.com" in r.stdout:
             ok("GitHub-Verknüpfung vorhanden")
         else:
-            problem("Keine GitHub-Verknüpfung (Remote „origin") im Repository gefunden.")
+            problem("Keine GitHub-Verknüpfung (Remote „origin“) im Repository gefunden.")
     else:
         problem("Kein Git-Repository gefunden – das Projekt wurde vermutlich nicht richtig geklont.")
 
