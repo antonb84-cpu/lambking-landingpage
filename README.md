@@ -20,7 +20,7 @@ Der Browser öffnet sich automatisch auf http://localhost:8123/
 **Im Admin kannst du:**
 - Bücher hinzufügen / bearbeiten / löschen (deutsch & englisch getrennt)
 - Amazon-Link einfügen → Titel, Beschreibung, Cover kommen automatisch
-- Cover & Buch-PDF hochladen → 4 Beispielseiten werden automatisch gerendert
+- Cover sowie Buch-PDF oder einzelne Bilder/Screenshots hochladen → die Vorschauseiten werden automatisch vorbereitet
 - Autorenfoto ändern (Form & Größe wählbar)
 - PayPal-, Ko-fi-, Web-App- und Google-Play-Links pflegen
 - Impressum & Datenschutz bearbeiten

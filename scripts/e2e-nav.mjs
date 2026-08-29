@@ -136,14 +136,9 @@ try {
     const ok = after === before && dialog
     console.log(`${ok ? '✓' : '✗'} 3D-Buch-Klick öffnet Dialog (Tabs ${before}→${after})`)
     if (!ok) fehler++
-    // Dialog zuverlässig schließen (Escape), damit Folgetests sauber starten
-    await evalJs(`document.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape', bubbles: true}))`)
-    await new Promise((r) => setTimeout(r, 600))
-    const offen = await evalJs(`!!document.querySelector('[role="dialog"]')`)
-    if (offen) {
-      await evalJs(`document.querySelector('[role="dialog"] button')?.click()`)
-      await new Promise((r) => setTimeout(r, 600))
-    }
+    // Den Buchdialog für die folgenden, unabhängigen Prüfungen wieder schließen.
+    await evalJs(`document.querySelector('[data-slot="dialog-close"]')?.click()`)
+    await new Promise((r) => setTimeout(r, 400))
   }
 
   {
@@ -168,13 +163,13 @@ try {
     const after = await targetCount()
     const s = JSON.parse(await evalJs(`JSON.stringify({
       dialog: !!document.querySelector('[role="dialog"]'),
-      text: ([...document.querySelectorAll('[role="dialog"]')].pop()?.textContent || ''),
+      text: (document.querySelector('[role="dialog"]')?.textContent || ''),
     })`) || '{}')
     const ok = s.dialog && s.text.includes(marker) && after === before
     console.log(`${ok ? '✓' : '✗'} „${label}" öffnet Fenster mit Inhalt (Tabs ${before}→${after})`)
     if (!ok) fehler++
-    await evalJs(`document.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape', bubbles: true}))`)
-    await new Promise((r) => setTimeout(r, 500))
+    await evalJs(`document.querySelector('[role="dialog"] button[class*="absolute"]')?.click()`)
+    await new Promise((r) => setTimeout(r, 400))
   }
 
   ws.close()

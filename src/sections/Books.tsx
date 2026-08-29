@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Badge } from '@/components/ui/badge'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Eye, Palette, X, ZoomIn } from 'lucide-react'
 import Reveal from '@/components/Reveal'
 import { BOOKS, CATEGORIES, COMING_SOON, isNew, type Book, type Category } from '@/data/books'
@@ -85,9 +85,9 @@ function BookDialog({
                   </p>
                 )}
               </DialogHeader>
-              <p className="mt-6 max-w-2xl text-lg leading-loose text-muted-foreground">
+              <DialogDescription className="mt-6 max-w-2xl whitespace-pre-line text-lg leading-loose text-muted-foreground">
                 {book.description}
-              </p>
+              </DialogDescription>
               <ul className="mt-6 grid max-w-2xl gap-2.5 sm:grid-cols-2">
                 {book.highlights.map((h) => (
                   <li key={h} className="flex items-center gap-2.5 font-semibold">
@@ -102,7 +102,7 @@ function BookDialog({
                     {t.books.samplesHint}
                   </p>
                   <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-                    {book.samples.map((s) => (
+                    {book.samples.map((s, index) => (
                       <button
                         key={s}
                         type="button"
@@ -111,7 +111,7 @@ function BookDialog({
                       >
                         <img
                           src={s}
-                          alt={`${book.title}`}
+                          alt={`${book.title} – Vorschauseite ${index + 1}`}
                           className="w-full rounded-md"
                           loading="lazy"
                         />
@@ -124,20 +124,35 @@ function BookDialog({
                   </div>
                 </>
               )}
-              <div className="mt-9 flex flex-wrap items-center justify-between gap-4 border-t-2 border-border pt-7">
+              <div className="sticky bottom-0 z-10 -mx-8 mt-9 flex flex-wrap items-center justify-between gap-4 border-t-2 border-border bg-background/95 px-8 py-5 shadow-[0_-8px_20px_-16px_rgba(30,42,74,0.35)] backdrop-blur lg:-mx-12 lg:px-12">
                 <p className="font-semibold text-muted-foreground">{t.books.seePrice}</p>
                 <BuyButton book={book} size="lg" />
               </div>
             </div>
           </div>
         )}
-        <Lightbox src={zoom} onClose={onZoomClose} label={t.books.backToBook} />
+        <Lightbox
+          src={zoom}
+          onClose={onZoomClose}
+          label={t.books.backToBook}
+          imageAlt={book ? `${book.title} – vergrößerte Vorschauseite` : ''}
+        />
       </DialogContent>
     </Dialog>
   )
 }
 
-function Lightbox({ src, onClose, label }: { src: string | null; onClose: () => void; label: string }) {
+function Lightbox({
+  src,
+  onClose,
+  label,
+  imageAlt,
+}: {
+  src: string | null
+  onClose: () => void
+  label: string
+  imageAlt: string
+}) {
   useEffect(() => {
     if (!src) return
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
@@ -156,7 +171,7 @@ function Lightbox({ src, onClose, label }: { src: string | null; onClose: () => 
     >
       <img
         src={src}
-        alt={label}
+        alt={imageAlt}
         className="max-h-[80vh] max-w-full rounded-sm bg-white shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       />
@@ -248,7 +263,7 @@ export default function Books() {
 
         {/* Kategorien */}
         <Reveal delay={100} className="mt-9 flex flex-wrap justify-center gap-2.5">
-          {(['alle', ...CATEGORIES.map((c) => c.id)] as const).map((id) => {
+          {(['alle', ...CATEGORIES.map((c) => c.id).filter((id) => books.some((b) => b.category === id))] as const).map((id) => {
             const count = id === 'alle' ? books.length : books.filter((b) => b.category === id).length
             const activeTab = cat === id
             const color = catColor(id)
@@ -351,6 +366,7 @@ export default function Books() {
           <Reveal delay={200} className="mt-12 rounded-2xl border border-accent/35 bg-gradient-to-r from-accent/10 via-accent/5 to-accent/10 px-6 py-5 text-center shadow-sm">
             <p className="text-sm font-semibold text-muted-foreground">
               <span className="mr-2 font-bold text-foreground">{t.books.growing}</span>
+              {' '}
               {COMING_SOON.join(' · ')}
             </p>
           </Reveal>

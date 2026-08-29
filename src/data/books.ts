@@ -91,27 +91,6 @@ export function isNew(book: Book): boolean {
 
 export const BOOKS: Book[] = [
   {
-    id: 'schoepfung',
-    lang: 'de',
-    title: "Die Schöpfung – Gott macht die Welt",
-    series: "Bibelgeschichten zum Ausmalen · Band 1",
-    category: 'malbuecher',
-    age: "Ab 5 Jahren",
-    detail: "25 Ausmalbilder",
-    cover: 'images/cover-schoepfung.jpg',
-    description: "Von Licht, Himmel, Land und Meer über Pflanzen, Sonne, Sterne und Tiere bis hin zu Adam und Eva im Garten Eden: 25 liebevoll gestaltete Ausmalbilder mit klaren Linien erzählen die biblische Schöpfungsgeschichte Schritt für Schritt (1. Mose 1–3) und laden zum Malen, Entdecken und Erzählen ein.",
-    highlights: ["25 große, klare Motive", "Biblisch fundiert", "Ideal für Familie & Kindergottesdienst"],
-    samples: [
-      'images/schoepfung-seite-gehoert.jpg',
-      'images/schoepfung-seite-geschichte.jpg',
-      'images/schoepfung-seite-1.jpg',
-      'images/schoepfung-seite-2.jpg',
-      'images/schoepfung-seite-3.jpg',
-      'images/schoepfung-seite-4.jpg',
-    ],
-    amazon: "https://www.amazon.de/dp/B0HFWX8DH5",
-  },
-  {
     id: 'david',
     lang: 'de',
     title: "David und Goliath – Ein Malbuch für kleine Helden",
@@ -146,6 +125,24 @@ export const BOOKS: Book[] = [
     highlights: ["Farbenfroh illustriert", "Bibeltreu & kindgerecht", "Taschenbuch & Kindle"],
     samples: [],
     amazon: "https://www.amazon.de/dp/B0G9MDSJVL",
+  },
+  {
+    id: 'bibelgeschichten-zum-ausmalen',
+    lang: 'de',
+    title: "Bibelgeschichten zum Ausmalen: Band 1 - Die Schöpfung - Gott macht die Welt",
+    series: "Bibelgeschichten zum Ausmalen",
+    category: 'malbuecher',
+    age: "5–8 Jahre",
+    detail: "55 Seiten",
+    cover: 'images/cover-bibelgeschichten-zum-ausmalen.jpg',
+    description: "Die Schöpfung – Gott macht die Welt ist Band 1 der Reihe Bibelgeschichten zum Ausmalen.\r\n\r\nDieses Malbuch nimmt Kinder ab 5 Jahren mit zu den Anfängen der Bibel: von Licht, Himmel, Land und Meer über Pflanzen, Sonne, Sterne und Tiere bis hin zu Adam und Eva im Garten Eden.\r\n\r\n25 liebevoll gestaltete Ausmalbilder mit klaren Linien erzählen die biblische Geschichte Schritt für Schritt und laden zum Malen, Entdecken und Erzählen ein.\r\n\r\nEine schöne Beschäftigung für zu Hause, Familie, Kindergottesdienst, Sonntagsschule und christliche Gemeinden.\r\n\r\nBibelstelle: 1. Mose 1–3",
+    highlights: [],
+    samples: [
+      'images/bibelgeschichten-zum-ausmalen-seite-1.jpg',
+      'images/bibelgeschichten-zum-ausmalen-seite-2.jpg',
+    ],
+    amazon: "https://www.amazon.de/dp/B0HFWX8DH5",
+    releaseDate: '2026-08-29',
   },
 ]
 

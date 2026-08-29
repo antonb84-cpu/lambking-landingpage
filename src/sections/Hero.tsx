@@ -161,7 +161,10 @@ function Book3D() {
         </div>
       </div>
       <span className="mt-12 block text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-        {textsFor(lang).hero.bookHint}
+        <span className="hidden sm:inline">{textsFor(lang).hero.bookHint}</span>
+        <span className="sm:hidden">
+          {lang === 'de' ? 'Antippen, um das Buch anzusehen' : 'Tap to look inside'}
+        </span>
       </span>
     </button>
   )

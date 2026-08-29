@@ -73,6 +73,15 @@
   .dropzone small{color:var(--muted); font-size:12px;}
   .dropzone img{max-height:150px; border-radius:8px; margin-top:10px; border:1px solid var(--line);}
   .file-pill{display:inline-block; margin-top:10px; background:var(--gold-light); border-radius:999px; padding:6px 14px; font-size:13px;}
+  .sample-preview{display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-top:10px;}
+  .sample-preview img{width:84px; height:108px; object-fit:cover; margin:0;}
+  .media-thumb{position:relative; display:inline-flex; flex-direction:column; align-items:center; gap:4px;}
+  .media-remove{position:absolute; top:-6px; right:-6px; width:25px; height:25px; border:0; border-radius:50%; background:#A53A32; color:#fff; cursor:pointer; font-weight:700; box-shadow:0 2px 6px rgba(0,0,0,.24);}
+  .media-actions{display:flex; justify-content:center; gap:8px; flex-wrap:wrap; margin-top:10px;}
+  .status-panel{margin-top:14px; padding:12px 14px; border-radius:10px; background:#F4F7FA; border:1px solid var(--line); font-size:14px; line-height:1.5;}
+  .import-status{margin-top:10px; font-size:13px; color:var(--muted); min-height:20px;}
+  .import-status.ok{color:var(--green); font-weight:600;}
+  .import-status.warn{color:#8A6500; font-weight:600;}
 
   .checkline{display:flex; align-items:center; gap:8px; margin-top:14px; font-size:14px;}
   .checkline input{width:18px; height:18px; accent-color:var(--gold);}
@@ -110,7 +119,7 @@
     <small style="opacity:.8">Bücher zur Landingpage hinzufügen &amp; verwalten</small>
   </div>
   <div class="spacer"></div>
-  <a href="/vorschau/" target="_blank"><button class="btn btn-white">👁 Vorschau (lokal)</button></a>
+  <a href="/vorschau/" target="_blank"><button class="btn btn-white">👁 Vorschau aktualisieren</button></a>
   <a id="liveLink" href="#" target="_blank"><button class="btn btn-white">🌍 Live-Seite</button></a>
 </header>
 
@@ -147,12 +156,13 @@
 
     <div class="step">
       <div class="step-head"><div class="step-num">1</div>
-        <div><b>Amazon-Link einfügen</b><span>Titel, Beschreibung, Alter und Cover werden automatisch geholt.</span></div>
+        <div><b>Amazon-Link einfügen</b><span>Titel, Beschreibung, Alter, Umfang, Cover und verfügbare Produktbilder werden automatisch geholt.</span></div>
       </div>
       <div style="display:flex; gap:10px; flex-wrap:wrap;">
         <input type="url" id="f_amazonFetch" placeholder="https://www.amazon.de/dp/B0…" style="flex:1; min-width:260px;">
         <button class="btn btn-gold" id="amazonBtn" onclick="fetchAmazon()">⬇ Infos von Amazon holen</button>
       </div>
+      <div id="amazonImportStatus" class="import-status" role="status" aria-live="polite"></div>
     </div>
 
     <div class="step">
@@ -170,14 +180,14 @@
 
     <div class="step">
       <div class="step-head"><div class="step-num">3</div>
-        <div><b>Buch-PDF (optional, max. 60 MB)</b><span>4 schöne Beispielseiten für die Vorschau werden automatisch aus der PDF gerendert.</span></div>
+        <div><b>Vorschauseiten (optional, zusammen max. 60 MB)</b><span>Lade eine PDF oder bis zu 12 Bilder/Screenshots hoch. Aus einer PDF werden automatisch 4 Beispielseiten erstellt.</span></div>
       </div>
-      <div class="dropzone" id="pdfZone">
-        <p>📄 Buch-PDF hierher ziehen</p>
+      <div class="dropzone" id="sampleZone">
+        <p>📄 PDF oder Bilder/Screenshots hierher ziehen</p>
         <small>oder</small><br>
-        <button class="btn btn-ghost" style="margin-top:8px;" onclick="document.getElementById('pdfFile').click()">PDF auswählen</button>
-        <input type="file" id="pdfFile" accept="application/pdf" class="hidden">
-        <div id="pdfPreview"></div>
+        <button class="btn btn-ghost" style="margin-top:8px;" onclick="document.getElementById('sampleFile').click()">PDF oder Bilder auswählen</button>
+        <input type="file" id="sampleFile" accept="application/pdf,image/jpeg,image/png,image/webp" multiple class="hidden">
+        <div id="samplePreview"></div>
       </div>
     </div>
 
@@ -209,7 +219,7 @@
       </div>
 
       <label for="f_description">Beschreibung</label>
-      <textarea id="f_description" class="draft" rows="4" placeholder="Worum geht es in dem Buch?"></textarea>
+      <textarea id="f_description" class="draft" rows="8" placeholder="Worum geht es in dem Buch?"></textarea>
 
       <label for="f_highlights">Highlights (eine Zeile = ein Punkt, optional)</label>
       <textarea id="f_highlights" class="draft" rows="3" placeholder="Große, klare Motive&#10;Biblisch fundiert&#10;Ideal für Familie & Kindergottesdienst"></textarea>
@@ -336,28 +346,31 @@
     </details>
   </section>
 
-  <!-- ═══ VERÖFFENTLICHEN ═══ -->
+  <!-- ═══ LIVE-SEITE AKTUALISIEREN ═══ -->
   <section>
-    <h2>🚀 Veröffentlichen</h2>
-    <p class="hint">„Speichern" bleibt lokal auf diesem PC. „Veröffentlichen" prüft alles, sichert auf GitHub und baut die Live-Seite. Das dauert ein paar Minuten – bitte das Fenster offen lassen.</p>
+    <h2>🌍 Live-Seite aktualisieren</h2>
+    <p class="hint">„Speichern“ ändert zuerst deine lokale Vorschau. Mit dem goldenen Knopf werden alle hinzugefügten, geänderten oder gelöschten Inhalte einmal zu GitHub übertragen. Danach aktualisiert GitHub die Live-Seite automatisch. Du musst den Knopf nicht noch einmal drücken.</p>
     <ul id="ampel"></ul>
     <div style="display:flex; gap:12px; flex-wrap:wrap;">
       <button class="btn btn-blue" id="precheckBtn" onclick="runPrecheck()">✅ Alles prüfen</button>
-      <button class="btn btn-gold" id="publishBtn" onclick="runPublish()">🚀 Jetzt veröffentlichen</button>
+      <button class="btn btn-gold" id="publishBtn" onclick="runPublish()">⬆ Änderungen zur Live-Seite senden</button>
     </div>
     <div id="buildOut"></div>
   </section>
 
 </main>
 
-<div id="toast"></div>
+<div id="toast" role="status" aria-live="polite"></div>
 
 <script>
 let state = null;
 let editId = null;
 let amazonCover = '';
+let amazonSamples = [];
 let coverData = null;
-let pdfData = null;
+let sampleData = [];
+let existingSamples = [];
+let removeCover = false;
 let photoData = null;
 let currentLang = 'de';
 
@@ -372,7 +385,9 @@ function toast(msg, isErr=false){
 
 async function api(path, opts){
   const r = await fetch(path, opts);
-  return r.json();
+  const d = await r.json();
+  if (!r.ok && d.ok !== false) d.ok = false;
+  return d;
 }
 
 /* ── GitHub-Status-Banner ── */
@@ -380,20 +395,24 @@ async function refreshGhStatus(){
   const banner = $('ghBanner'), txt = $('ghText'), link = $('ghActions');
   try{
     const d = await api('/api/git-status');
-    if (!d.ok) throw new Error();
+    if (!d.ok){
+      banner.className = 'warn';
+      txt.textContent = '⚠ ' + (d.error || 'GitHub-Status konnte nicht geprüft werden.');
+      return;
+    }
     const parts = [];
     const unsaved = d.unsaved + d.unpublished;
     if (unsaved === 0){
       banner.className = 'ok';
-      parts.push('GitHub-Sicherung: aktuell ✓');
+      parts.push('Keine unübertragenen lokalen Änderungen ✓');
     } else {
       banner.className = 'warn';
-      parts.push(unsaved + ' lokale Änderung' + (unsaved > 1 ? 'en' : '') + ' noch nicht auf GitHub gesichert');
+      parts.push(unsaved + ' lokale Änderung' + (unsaved > 1 ? 'en' : '') + (unsaved > 1 ? ' warten' : ' wartet') + ' auf die Übertragung zur Live-Seite');
     }
     if (d.behind > 0) parts.push('⚠ Auf GitHub liegt eine neuere Version – bitte Kimi um Synchronisierung bitten');
     if (d.lastBackup){
       const dt = new Date(d.lastBackup);
-      parts.push('Letzte Sicherung: ' + dt.toLocaleString('de-DE', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'}) + ' Uhr');
+      parts.push('Letzte Übertragung an GitHub: ' + dt.toLocaleString('de-DE', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'}) + ' Uhr');
     }
     txt.innerHTML = parts.join(' · <small>') + (parts.length > 1 ? '</small>' : '');
   } catch {
@@ -537,12 +556,88 @@ function discardDraft(){
   $('draftNote').classList.add('hidden');
 }
 
+function renderCoverPreview(src='', label=''){
+  if (!src){
+    $('coverPreview').innerHTML = removeCover
+      ? '<span class="file-pill">✓ Cover wird beim Speichern entfernt. Du kannst vorher noch ein neues auswählen.</span>'
+      : '';
+    return;
+  }
+  $('coverPreview').innerHTML = `<img src="${src}"><br><small>${esc(label)}</small><div class="media-actions"><button type="button" class="btn btn-ghost" onclick="document.getElementById('coverFile').click()">↻ Ersetzen</button><button type="button" class="btn btn-ghost" onclick="clearCover()">🗑 Entfernen</button></div>`;
+}
+
+function clearCover(){
+  coverData = null;
+  amazonCover = '';
+  removeCover = true;
+  $('coverFile').value = '';
+  renderCoverPreview();
+}
+
+function renderExistingSamples(){
+  if (!existingSamples.length){
+    $('samplePreview').innerHTML = '<span class="file-pill">✓ Keine vorhandenen Vorschauseiten bleiben gespeichert.</span>';
+    return;
+  }
+  $('samplePreview').innerHTML = `<span class="file-pill">✓ ${existingSamples.length} gespeicherte Vorschauseite${existingSamples.length === 1 ? '' : 'n'}</span><div class="sample-preview">${existingSamples.map((src, i) => `<span class="media-thumb"><img src="/${esc(src)}" alt="Gespeicherte Vorschauseite ${i + 1}"><button type="button" class="media-remove" aria-label="Vorschauseite ${i + 1} entfernen" onclick="removeExistingSample(${i})">×</button></span>`).join('')}</div><div class="media-actions"><button type="button" class="btn btn-ghost" onclick="clearAllSamples()">🗑 Alle entfernen</button><button type="button" class="btn btn-ghost" onclick="document.getElementById('sampleFile').click()">↻ Alle ersetzen</button></div>`;
+}
+
+function removeExistingSample(index){
+  existingSamples.splice(index, 1);
+  renderExistingSamples();
+}
+
+function renderAmazonSamples(){
+  $('samplePreview').innerHTML = `<span class="file-pill">✓ ${amazonSamples.length} Produktbild${amazonSamples.length === 1 ? '' : 'er'} von Amazon ausgewählt</span><div class="sample-preview">${amazonSamples.map((src, i) => `<span class="media-thumb"><img src="/${esc(src)}" alt="Amazon-Vorschaubild ${i + 1}"><button type="button" class="media-remove" aria-label="Amazon-Vorschaubild ${i + 1} entfernen" onclick="removeAmazonSample(${i})">×</button></span>`).join('')}</div><div class="media-actions"><button type="button" class="btn btn-ghost" onclick="clearAllSamples()">🗑 Alle entfernen</button><button type="button" class="btn btn-ghost" onclick="document.getElementById('sampleFile').click()">↻ Ersetzen</button></div>`;
+}
+
+function removeAmazonSample(index){
+  amazonSamples.splice(index, 1);
+  if (amazonSamples.length) renderAmazonSamples(); else clearAllSamples();
+}
+
+function renderLocalSamples(){
+  const preview = $('samplePreview');
+  if (!sampleData.length){ clearAllSamples(); return; }
+  const isPdf = sampleData.length === 1 && (sampleData[0].type === 'application/pdf' || sampleData[0].name.toLowerCase().endsWith('.pdf'));
+  if (isPdf){
+    preview.innerHTML = `<span class="file-pill">✓ ${esc(sampleData[0].name)} – 4 Beispielseiten werden beim Speichern erstellt</span><div class="media-actions"><button type="button" class="btn btn-ghost" onclick="clearAllSamples()">🗑 Auswahl entfernen</button><button type="button" class="btn btn-ghost" onclick="document.getElementById('sampleFile').click()">↻ Ersetzen</button></div>`;
+    return;
+  }
+  preview.innerHTML = `<span class="file-pill">✓ ${sampleData.length} Bild${sampleData.length === 1 ? '' : 'er'} ausgewählt</span><div class="sample-preview" id="localSampleThumbs"></div><div class="media-actions"><button type="button" class="btn btn-ghost" onclick="clearAllSamples()">🗑 Alle entfernen</button><button type="button" class="btn btn-ghost" onclick="document.getElementById('sampleFile').click()">↻ Ersetzen</button></div>`;
+  sampleData.forEach((file, index) => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const holder = document.createElement('span');
+      holder.className = 'media-thumb';
+      holder.innerHTML = `<img src="${e.target.result}" alt="Vorschau ${index + 1}: ${esc(file.name)}"><button type="button" class="media-remove" aria-label="Vorschau ${index + 1} entfernen" onclick="removeLocalSample(${index})">×</button>`;
+      $('localSampleThumbs')?.appendChild(holder);
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function removeLocalSample(index){
+  sampleData.splice(index, 1);
+  if (sampleData.length) renderLocalSamples(); else clearAllSamples();
+}
+
+function clearAllSamples(){
+  sampleData = [];
+  amazonSamples = [];
+  existingSamples = [];
+  $('sampleFile').value = '';
+  $('samplePreview').innerHTML = '<span class="file-pill">✓ Vorschauseiten werden beim Speichern entfernt. Du kannst vorher neue auswählen.</span>';
+}
+
 /* ── Formular ── */
 function openForm(id){
   editId = id || null;
-  amazonCover = ''; coverData = null; pdfData = null;
-  $('coverPreview').innerHTML = ''; $('pdfPreview').innerHTML = '';
-  $('coverFile').value = ''; $('pdfFile').value = '';
+  amazonCover = ''; amazonSamples = []; coverData = null; sampleData = []; existingSamples = []; removeCover = false;
+  $('coverPreview').innerHTML = ''; $('samplePreview').innerHTML = '';
+  $('amazonImportStatus').textContent = '';
+  $('amazonImportStatus').className = 'import-status';
+  $('coverFile').value = ''; $('sampleFile').value = '';
   const b = id ? state.books.find(x => x.id === id) : null;
   $('formTitle').textContent = b ? 'Buch bearbeiten: ' + b.title : 'Neues Buch hinzufügen';
   $('f_amazonFetch').value = '';
@@ -557,10 +652,11 @@ function openForm(id){
   $('f_isNew').checked = !b;
   $('f_isNew').dataset.release = b ? (b.releaseDate||'') : '';
   if (b && b.cover){
-    $('coverPreview').innerHTML = `<img src="/${b.cover}"><br><small>Aktuelles Cover – bleibt erhalten, wenn du nichts Neues hochlädst.</small>`;
+    renderCoverPreview('/' + b.cover, 'Aktuelles Cover');
   }
   if (b && b.samples && b.samples.length){
-    $('pdfPreview').innerHTML = `<span class="file-pill">✓ ${b.samples.length} Vorschauseiten vorhanden – neue PDF ersetzt sie</span>`;
+    existingSamples = [...b.samples];
+    renderExistingSamples();
   }
   $('draftNote').classList.toggle('hidden', !!b || !hasDraft());
   $('formSection').classList.remove('hidden');
@@ -582,18 +678,44 @@ async function fetchAmazon(){
   btn.innerHTML = '<span class="spinner"></span>Hole Infos …';
   try{
     const d = await api('/api/amazon', {method:'POST', body: JSON.stringify({url})});
-    if (!d.ok){ toast(d.error || 'Amazon-Abruf fehlgeschlagen.', true); return; }
+    if (!d.ok){
+      $('amazonImportStatus').textContent = d.error || 'Amazon-Abruf fehlgeschlagen.';
+      $('amazonImportStatus').className = 'import-status warn';
+      toast(d.error || 'Amazon-Abruf fehlgeschlagen.', true);
+      return;
+    }
     if (d.title) $('f_title').value = d.title;
     if (d.description) $('f_description').value = d.description;
     if (d.age) $('f_age').value = d.age;
     if (d.detail) $('f_detail').value = d.detail;
+    if (d.series) $('f_series').value = d.series;
+    if (d.category && [...$('f_category').options].some(o => o.value === d.category)) $('f_category').value = d.category;
     if (d.amazon) $('f_amazon').value = d.amazon;
     if (d.cover){
       amazonCover = d.cover;
-      $('coverPreview').innerHTML = `<img src="/${d.cover}"><br><small>✓ Cover von Amazon geladen</small>`;
+      coverData = null;
+      removeCover = false;
+      $('coverFile').value = '';
+      renderCoverPreview('/' + d.cover, '✓ Cover von Amazon geladen');
     }
+    if (d.samples && d.samples.length){
+      amazonSamples = d.samples;
+      sampleData = [];
+      existingSamples = [];
+      $('sampleFile').value = '';
+      renderAmazonSamples();
+    }
+    const labels = {title:'Titel', description:'Beschreibung', age:'Alter', detail:'Umfang', series:'Reihe', category:'Kategorie', cover:'Cover', samples:'Produktbilder'};
+    const imported = (d.imported || []).map(key => labels[key] || key);
+    const missing = (d.missing || []).map(key => labels[key] || key);
+    $('amazonImportStatus').textContent = 'Übernommen: ' + imported.join(', ') + (missing.length ? '. Nicht gefunden: ' + missing.join(', ') + '.' : '.');
+    $('amazonImportStatus').className = 'import-status ' + (missing.length ? 'warn' : 'ok');
     saveDraft();
-    toast('✓ Infos von Amazon übernommen – bitte unten prüfen.');
+    toast('✓ Amazon-Daten übernommen – bitte unten prüfen.');
+  } catch {
+    $('amazonImportStatus').textContent = 'Der Amazon-Abruf ist fehlgeschlagen. Bitte erneut versuchen.';
+    $('amazonImportStatus').className = 'import-status warn';
+    toast('Amazon-Abruf fehlgeschlagen. Bitte erneut versuchen.', true);
   } finally {
     btn.disabled = false;
     btn.innerHTML = '⬇ Infos von Amazon holen';
@@ -601,29 +723,40 @@ async function fetchAmazon(){
 }
 
 /* ── Drag & Drop ── */
-function setupDrop(zoneId, inputId, cb){
+function setupDrop(zoneId, inputId, cb, multiple=false){
   const zone = $(zoneId), input = $(inputId);
+  const deliver = files => {
+    const list = Array.from(files || []);
+    if (list.length) cb(multiple ? list : list[0]);
+  };
   ['dragover','dragenter'].forEach(e => zone.addEventListener(e, ev => { ev.preventDefault(); zone.classList.add('over'); }));
   ['dragleave','drop'].forEach(e => zone.addEventListener(e, ev => { ev.preventDefault(); zone.classList.remove('over'); }));
-  zone.addEventListener('drop', ev => { if (ev.dataTransfer.files[0]) cb(ev.dataTransfer.files[0]); });
-  input.addEventListener('change', () => { if (input.files[0]) cb(input.files[0]); });
+  zone.addEventListener('drop', ev => deliver(ev.dataTransfer.files));
+  input.addEventListener('change', () => deliver(input.files));
 }
 
 setupDrop('coverZone', 'coverFile', f => {
   if (!f.type.startsWith('image/')){ toast('Bitte eine Bilddatei wählen.', true); return; }
   if (f.size > 15*1024*1024){ toast('Das Bild ist größer als 15 MB.', true); return; }
-  coverData = f; amazonCover = '';
+  coverData = f; amazonCover = ''; removeCover = false;
   const r = new FileReader();
-  r.onload = e => $('coverPreview').innerHTML = `<img src="${e.target.result}"><br><small>✓ Eigenes Cover: ${esc(f.name)}</small>`;
+  r.onload = e => renderCoverPreview(e.target.result, '✓ Eigenes Cover: ' + f.name);
   r.readAsDataURL(f);
 });
 
-setupDrop('pdfZone', 'pdfFile', f => {
-  if (f.type !== 'application/pdf' && !f.name.toLowerCase().endsWith('.pdf')){ toast('Bitte eine PDF-Datei wählen.', true); return; }
-  if (f.size > 60*1024*1024){ toast('Die PDF ist größer als 60 MB.', true); return; }
-  pdfData = f;
-  $('pdfPreview').innerHTML = `<span class="file-pill">✓ ${esc(f.name)} – Beispielseiten werden beim Speichern erstellt</span>`;
-});
+setupDrop('sampleZone', 'sampleFile', files => {
+  const pdfs = files.filter(f => f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf'));
+  if (pdfs.length && files.length !== 1){ toast('Bitte entweder eine PDF oder mehrere Bilder auswählen – nicht beides zusammen.', true); return; }
+  if (!pdfs.length && files.some(f => !f.type.startsWith('image/'))){ toast('Bitte nur eine PDF oder Bilddateien (JPG, PNG, WebP) auswählen.', true); return; }
+  if (!pdfs.length && files.length > 12){ toast('Bitte höchstens 12 Bilder auswählen.', true); return; }
+  if (files.some(f => !pdfs.length && f.size > 15*1024*1024)){ toast('Ein Bild ist größer als 15 MB.', true); return; }
+  const total = files.reduce((sum, f) => sum + f.size, 0);
+  if (total > 60*1024*1024){ toast('Die Auswahl ist zusammen größer als 60 MB.', true); return; }
+  sampleData = files;
+  amazonSamples = [];
+  existingSamples = [];
+  renderLocalSamples();
+}, true);
 
 setupDrop('photoZone', 'photoFile', f => {
   if (!f.type.startsWith('image/')){ toast('Bitte eine Bilddatei wählen.', true); return; }
@@ -653,10 +786,14 @@ async function saveBook(){
     fd.append('highlights', $('f_highlights').value);
     fd.append('amazon', $('f_amazon').value);
     fd.append('amazonCover', amazonCover);
+    fd.append('amazonSamples', JSON.stringify(amazonSamples));
+    fd.append('keepSamples', JSON.stringify(existingSamples));
+    if (removeCover) fd.append('removeCover', '1');
     if ($('f_isNew').checked) fd.append('isNew', '1');
     else fd.append('releaseDate', $('f_isNew').dataset.release || '');
     if (coverData) fd.append('cover', coverData);
-    if (pdfData) fd.append('pdf', pdfData);
+    if (sampleData.length === 1 && (sampleData[0].type === 'application/pdf' || sampleData[0].name.toLowerCase().endsWith('.pdf'))) fd.append('pdf', sampleData[0]);
+    else sampleData.forEach((file, index) => fd.append(`sample_${index}`, file));
     const d = await api('/api/save', {method:'POST', body: fd});
     if (!d.ok){ toast(d.error || 'Speichern fehlgeschlagen.', true); return; }
     toast('✓ „' + d.book.title + '" gespeichert (lokal – noch nicht veröffentlicht)');
@@ -674,6 +811,7 @@ async function deleteBook(id){
   if (!confirm('„' + (b ? b.title : id) + '" wirklich löschen?\n\nDas Buch und seine Bilddateien (Cover, Vorschauseiten) werden entfernt.')) return;
   const d = await api('/api/delete', {method:'POST', body: JSON.stringify({id})});
   if (d.ok){
+    if (editId === id) closeForm();
     toast('Buch gelöscht' + (d.removedFiles && d.removedFiles.length ? ` (${d.removedFiles.length} Dateien entfernt)` : '') + ' – lokal, noch nicht veröffentlicht.');
     await load();
   }
@@ -731,36 +869,68 @@ async function runPrecheck(){
     const d = await api('/api/precheck');
     renderAmpel(d.checks);
     const rot = (d.checks||[]).filter(c => c[0] === 'rot').length;
-    toast(rot ? '⚠ Es gibt noch ' + rot + ' Blocker – siehe Liste.' : '✓ Alles in Ordnung – bereit zum Veröffentlichen!', !!rot);
+    toast(rot ? '⚠ Es gibt noch ' + rot + ' Blocker – siehe Liste.' : '✓ Alles in Ordnung – bereit zur Übertragung!', !!rot);
+    $('buildOut').innerHTML = rot
+      ? '<div class="status-panel" style="background:#FFF0EE; border-color:#E4B6B0; color:var(--red);">Die Prüfung hat Probleme gefunden. Es wurde noch nichts übertragen.</div>'
+      : '<div class="status-panel" style="background:#FFF8E5; border-color:#E7D39A;"><b>✓ Prüfung bestanden.</b> Es wurde noch nichts zur Live-Seite übertragen. Klicke dafür einmal auf den goldenen Knopf und warte auf die Meldung „Fertig“.</div>';
   } finally {
     btn.disabled = false; btn.innerHTML = '✅ Alles prüfen';
   }
 }
 
-/* ── Veröffentlichen ── */
+async function monitorDeployment(expectedCommit, actionsUrl){
+  const out = $('buildOut');
+  for (let attempt = 0; attempt < 60; attempt++){
+    await new Promise(resolve => setTimeout(resolve, 5000));
+    const d = await api('/api/action-status');
+    if (!d.ok || (expectedCommit && d.headSha && d.headSha !== expectedCommit)){
+      out.innerHTML = `<div class="status-panel">⏳ Die Änderungen sind bei GitHub angekommen. Der automatische Aufbau der Live-Seite startet gleich. Bitte nicht erneut senden.</div>` + (actionsUrl ? `<p style="margin-top:8px;"><a href="${actionsUrl}" target="_blank" style="color:var(--blue); font-weight:600;">Fortschritt bei GitHub ansehen →</a></p>` : '');
+      continue;
+    }
+    if (d.status === 'completed'){
+      if (d.conclusion === 'success'){
+        out.innerHTML = `<div class="status-panel" style="background:#ECF7EF; border-color:#B8DCC3; color:var(--green); font-weight:600;">✓ Fertig: Die Live-Seite wurde von GitHub aktualisiert. Du musst nichts mehr drücken.</div><p style="margin-top:8px;"><a href="${$('liveLink').href}" target="_blank" style="color:var(--blue); font-weight:600;">Aktualisierte Live-Seite öffnen →</a></p>`;
+        toast('✓ Die Live-Seite ist jetzt aktualisiert.');
+      } else {
+        out.innerHTML = `<div class="status-panel" style="background:#FFF0EE; border-color:#E4B6B0; color:var(--red); font-weight:600;">✗ GitHub konnte die Live-Seite nicht fertigstellen. Nicht erneut senden – bitte zuerst die Fehlermeldung bei GitHub prüfen.</div>` + (d.url ? `<p style="margin-top:8px;"><a href="${d.url}" target="_blank" style="color:var(--blue); font-weight:600;">Fehler bei GitHub ansehen →</a></p>` : '');
+        toast('✗ Aktualisierung der Live-Seite fehlgeschlagen.', true);
+      }
+      return;
+    }
+    out.innerHTML = `<div class="status-panel">⏳ GitHub baut gerade die neue Live-Seite. Das läuft automatisch im Hintergrund – bitte nicht erneut senden.</div>` + (d.url ? `<p style="margin-top:8px;"><a href="${d.url}" target="_blank" style="color:var(--blue); font-weight:600;">Fortschritt bei GitHub ansehen →</a></p>` : '');
+  }
+  out.innerHTML = `<div class="status-panel">⏳ Die Änderungen wurden übertragen, aber die Rückmeldung von GitHub dauert länger. Bitte nicht erneut senden; prüfe den Fortschritt über den Link.</div>` + (actionsUrl ? `<p style="margin-top:8px;"><a href="${actionsUrl}" target="_blank" style="color:var(--blue); font-weight:600;">Fortschritt bei GitHub ansehen →</a></p>` : '');
+}
+
+/* ── Änderungen zur Live-Seite senden ── */
 async function runPublish(){
-  if (!confirm('Jetzt veröffentlichen?\n\n1. Alles wird geprüft (Rechtstexte, Links, Tests, Bau der Seite)\n2. Sicherung zu GitHub\n3. GitHub baut die Live-Seite automatisch\n\nDas dauert ein paar Minuten – Fenster offen lassen.')) return;
+  if (!confirm('Änderungen zur Live-Seite senden?\n\nDabei werden alle seit der letzten Aktualisierung hinzugefügten, bearbeiteten und gelöschten Inhalte übertragen. Danach aktualisiert GitHub die Live-Seite automatisch.\n\nNur einmal drücken und dieses Fenster geöffnet lassen.')) return;
   const btn = $('publishBtn');
   btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span>Veröffentliche … (dauert ein paar Minuten)';
+  btn.innerHTML = '<span class="spinner"></span>Prüfe und übertrage …';
   $('buildOut').innerHTML = '';
   try{
     const d = await api('/api/publish', {method:'POST'});
     if (d.checks) renderAmpel(d.checks);
     if (d.ok){
-      $('buildOut').innerHTML = `<p class="ok-line">✓ ${esc(d.message || 'Veröffentlicht!')}</p>` +
-        (d.actionsUrl ? `<p style="margin-top:8px;"><a href="${d.actionsUrl}" target="_blank" style="color:var(--blue); font-weight:600;">Deployment bei GitHub ansehen →</a></p>` : '');
-      toast('✓ Veröffentlicht! Die Live-Seite wird in ca. 1–2 Minuten aktualisiert.');
+      if (d.already){
+        $('buildOut').innerHTML = `<div class="status-panel" style="background:#ECF7EF; border-color:#B8DCC3; color:var(--green); font-weight:600;">✓ ${esc(d.message)}</div>`;
+        toast('✓ Keine neuen lokalen Änderungen vorhanden.');
+      } else {
+        $('buildOut').innerHTML = `<div class="status-panel">✓ ${esc(d.message)}</div>`;
+        toast('✓ Übertragen. GitHub aktualisiert die Live-Seite jetzt automatisch.');
+        await monitorDeployment(d.commit || '', d.actionsUrl || '');
+      }
       refreshGhStatus();
     } else {
-      $('buildOut').innerHTML = `<p class="err-line">✗ ${esc(d.error || 'Veröffentlichung abgebrochen.')}</p>` +
+      $('buildOut').innerHTML = `<p class="err-line">✗ ${esc(d.error || 'Übertragung abgebrochen.')}</p>` +
         (d.details ? '<ul style="margin:8px 0 0 20px; font-size:14px;">' + d.details.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>' : '') +
         (d.log ? '<pre id="buildlog">' + esc(d.log) + '</pre>' : '');
-      toast('✗ Veröffentlichung abgebrochen – bitte die Meldung lesen.', true);
+      toast('✗ Es wurde nichts zur Live-Seite übertragen – bitte die Meldung lesen.', true);
     }
   } finally {
     btn.disabled = false;
-    btn.innerHTML = '🚀 Jetzt veröffentlichen';
+    btn.innerHTML = '⬆ Änderungen zur Live-Seite senden';
   }
 }
 

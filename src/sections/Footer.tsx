@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { SITE } from '@/data/books'
 import { useLang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
@@ -108,6 +108,9 @@ export default function Footer() {
             <DialogTitle className="font-display text-2xl font-semibold">
               {legal === 'impressum' ? t.footer.impressumTitle : t.footer.datenschutzTitle}
             </DialogTitle>
+            <DialogDescription className="sr-only">
+              {legal === 'impressum' ? t.footer.impressumTitle : t.footer.datenschutzTitle}
+            </DialogDescription>
           </DialogHeader>
           {legalText ? (
             <LegalText text={legalText} />

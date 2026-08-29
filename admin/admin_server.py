@@ -13,12 +13,14 @@ die Website automatisch.
 """
 
 import datetime
+import html as html_lib
 import io
 import json
 import re
 import shutil
 import subprocess
 import sys
+import threading
 import urllib.request
 import webbrowser
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -36,6 +38,9 @@ PORT = 8123
 MAX_IMAGE_BYTES = 15 * 1024 * 1024    # 15 MB für Cover/Fotos
 MAX_PDF_BYTES = 60 * 1024 * 1024      # 60 MB für Buch-PDFs
 MAX_IMAGE_PIXELS = 40_000_000         # Schutz vor riesigen Bildern
+MAX_SAMPLE_IMAGES = 12                 # einzelne Vorschauseiten/Screenshots
+
+PREVIEW_BUILD_LOCK = threading.Lock()
 
 UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/126.0 Safari/537.36")
@@ -207,39 +212,169 @@ def unique_id(state: dict, base: str) -> str:
     return f"{base}-{i}"
 
 
+def decode_html(data: bytes, charset: str = "") -> str:
+    """Dekodiert Shop-Seiten ohne kaputte Umlaute.
+
+    Amazon liefert deutsche Produkttexte je nach Antwort als UTF-8 oder
+    ISO-8859-1. Ein stilles ``replace`` würde daraus Fragezeichen machen.
+    """
+    candidates = [charset, "utf-8", "iso-8859-1"]
+    for encoding in candidates:
+        if not encoding:
+            continue
+        try:
+            return data.decode(encoding)
+        except (LookupError, UnicodeDecodeError):
+            continue
+    return data.decode("utf-8", "replace")
+
+
 def fetch(url: str) -> str:
-    req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept-Language": "de-DE,de;q=0.9"})
+    req = urllib.request.Request(url, headers={
+        "User-Agent": UA,
+        "Accept-Language": "de-DE,de;q=0.9",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+        "Cookie": "i18n-prefs=EUR; lc-main=de_DE",
+    })
     with urllib.request.urlopen(req, timeout=30) as r:
-        return r.read().decode("utf-8", "replace")
+        return decode_html(r.read(), r.headers.get_content_charset() or "")
+
+
+def fetch_amazon_html(asin: str) -> str:
+    """Lädt eine Amazon-Produktseite.
+
+    Amazon liefert einfachen Python-Anfragen gelegentlich nur eine
+    "Weiter shoppen"-Zwischenseite. In diesem Fall wird das auf Windows
+    ohnehin vorhandene curl als zweiter, normaler HTTP-Client verwendet.
+    """
+    url = f"https://www.amazon.de/dp/{asin}?th=1&psc=1"
+    page = ""
+    try:
+        page = fetch(url)
+    except Exception:
+        pass
+    if len(page) > 20_000 and re.search(r'id=["\']productTitle["\']', page):
+        return page
+
+    curl = shutil.which("curl") or shutil.which("curl.exe")
+    if curl:
+        result = subprocess.run([
+            curl, "--silent", "--show-error", "--location", "--compressed",
+            "--max-time", "45", url,
+            "--user-agent", UA,
+            "--header", "Accept-Language: de-DE,de;q=0.9",
+            "--header", "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+            "--header", "Cookie: i18n-prefs=EUR; lc-main=de_DE",
+        ], capture_output=True, timeout=50)
+        if result.returncode == 0:
+            page = decode_html(result.stdout)
+            if len(page) > 20_000 and re.search(r'id=["\']productTitle["\']', page):
+                return page
+    raise RuntimeError("Amazon-Produktseite nicht verfügbar")
+
+
+def clean_amazon_text(value: str, multiline: bool = False) -> str:
+    value = re.sub(r"<br\s*/?>", "\n", value, flags=re.I)
+    if multiline:
+        value = re.sub(r"</?(?:p|li|h[1-6])\b[^>]*>", "\n", value, flags=re.I)
+    value = re.sub(r"<[^>]+>", " ", value)
+    value = html_lib.unescape(value).replace("\xa0", " ")
+    if not multiline:
+        return re.sub(r"\s+([.,;:!?])", r"\1", re.sub(r"\s+", " ", value)).strip()
+    lines = [re.sub(r"[ \t]+", " ", line).strip() for line in value.splitlines()]
+    result = "\n\n".join(line for line in lines if line)
+    return re.sub(r"\s+([.,;:!?])", r"\1", result)
+
+
+def first_match(source: str, patterns: list[str], flags=re.S) -> str:
+    for pattern in patterns:
+        match = re.search(pattern, source, flags)
+        if match:
+            return match.group(1)
+    return ""
 
 
 def parse_amazon(html: str) -> dict:
     """Nur Inhalte holen – keine Preise/Bewertungen scrapen (die stehen live bei Amazon)."""
     d = {}
-    m = re.search(r'<span[^>]*id="productTitle"[^>]*>(.*?)</span>', html, re.S)
-    if m:
-        d["title"] = re.sub(r"\s+", " ", m.group(1)).strip()
+    title = first_match(html, [
+        r'<(?:span|h1)[^>]*\bid=["\']productTitle["\'][^>]*>(.*?)</(?:span|h1)>',
+        r'<title[^>]*>(.*?)</title>',
+    ])
+    if title:
+        title = clean_amazon_text(title)
+        d["title"] = re.sub(r"\s*:\s*Amazon\.de.*$", "", title).strip()
+
+    description = first_match(html, [
+        r'id=["\']bookDescription_feature_div["\'][\s\S]*?<div[^>]*class=["\'][^"\']*a-expander-content[^"\']*["\'][^>]*>([\s\S]*?)<div[^>]*class=["\'][^"\']*a-expander-header',
+        r'<div[^>]*\bid=["\']bookDescription_feature_div["\'][^>]*>([\s\S]*?)<div[^>]+\bid=["\']globalStoreInfoBullets_feature_div["\']',
+        r'<div[^>]*\bid=["\']productDescription["\'][^>]*>(.*?)</div>',
+        r'<meta[^>]*(?:name|property)=["\']description["\'][^>]*content=["\'](.*?)["\']',
+        r'<meta[^>]*content=["\'](.*?)["\'][^>]*(?:name|property)=["\']description["\']',
+    ])
+    if description:
+        description = re.sub(r"\s*Mehr lesen\s*$", "", clean_amazon_text(description, multiline=True))
+        if description:
+            d["description"] = description
+
+    age = first_match(html, [
+        r'book_details-customer_recommended_age[\s\S]{0,1200}?rpi-attribute-value[^>]*>[\s\S]*?<span[^>]*>(.*?)</span>',
+        r'Lesealter[\s\S]{0,1200}?<span[^>]*>\s*([\d–\-+\s\xa0]+Jahre[^<]*)</span>',
+    ])
+    if age:
+        age = clean_amazon_text(age)
+        if age.lower().startswith("ab ") or re.search(r"\d\s*[–-]\s*\d", age):
+            d["age"] = age
+        else:
+            d["age"] = "Ab " + re.sub(r"\bJahre\b", "Jahren", age)
+
+    pages = first_match(html, [
+        r'Seitenzahl der Print-Ausgabe[\s\S]{0,1200}?<span[^>]*>\s*(\d+)\s*Seiten',
+        r'book_details-fiona_pages[\s\S]{0,1200}?rpi-attribute-value[^>]*>[\s\S]*?<span[^>]*>\s*(\d+)',
+    ])
+    if pages:
+        d["detail"] = f"{pages} Seiten"
+
+    series = first_match(html, [
+        r'book_details-series[\s\S]{0,1200}?rpi-attribute-value[^>]*>[\s\S]*?<span[^>]*>(.*?)</span>',
+    ])
+    if series:
+        d["series"] = clean_amazon_text(series)
+
+    image_urls = []
+    landing = re.search(r'<img[^>]*\bid=["\']landingImage["\'][^>]*>', html, re.I)
+    if landing:
+        high = first_match(landing.group(0), [r'data-old-hires=["\'](https://m\.media-amazon\.com/images/I/.*?)["\']'])
+        if high:
+            image_urls.append(high)
+    for match in re.finditer(r'"(?:hiRes|large)":"(https://m\.media-amazon\.com/images/I/[^"]+)"', html):
+        image_urls.append(match.group(1))
+    cleaned_urls = []
+    for url in image_urls:
+        url = html_lib.unescape(url.replace("\\u0026", "&").replace("\\/", "/"))
+        if url not in cleaned_urls:
+            cleaned_urls.append(url)
+    if cleaned_urls:
+        d["cover_url"] = cleaned_urls[0]
+        d["image_urls"] = cleaned_urls[1:MAX_SAMPLE_IMAGES + 1]
+
+    haystack = f"{d.get('title', '')} {d.get('description', '')}".lower()
+    if "malbuch" in haystack or "ausmal" in haystack or "coloring book" in haystack:
+        d["category"] = "malbuecher"
+    elif "comic" in haystack:
+        d["category"] = "komics"
     else:
-        m = re.search(r"<title>(.*?)</title>", html, re.S)
-        if m:
-            t = re.sub(r"\s+", " ", m.group(1)).strip()
-            d["title"] = re.sub(r"\s*[:\-–]\s*Amazon\.de.*$", "", t)
-    m = re.search(r'"hiRes":"(https://m\.media-amazon\.com/images/I/[^"]+)"', html)
-    if m:
-        d["cover_url"] = m.group(1).replace("\\u0026", "&")
-    m = re.search(r'<div[^>]*id="bookDescription_feature_div".*?<span[^>]*>(.*?)</span>', html, re.S)
-    if m:
-        txt = re.sub(r"<[^>]+>", " ", m.group(1))
-        txt = re.sub(r"\s+", " ", txt).replace("&uuml;", "ü").replace("&auml;", "ä").replace("&ouml;", "ö").strip()
-        txt = re.sub(r"\s*Mehr lesen\s*$", "", txt)
-        d["description"] = txt
-    m = re.search(r'Lesealter\s*</span>.*?<span[^>]*>\s*([\d–\-+ ]+Jahre[^<]*)<', html, re.S)
-    if m:
-        d["age"] = m.group(1).strip()
-    m = re.search(r'Seitenzahl der Print-Ausgabe\s*</span>.*?<span[^>]*>\s*(\d+)\s*Seiten', html, re.S)
-    if m:
-        d["detail"] = f'{m.group(1)} Seiten'
+        d["category"] = "geschichten"
     return d
+
+
+def download_image(url: str) -> bytes:
+    req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "image/avif,image/webp,image/apng,image/*,*/*;q=0.8"})
+    with urllib.request.urlopen(req, timeout=30) as response:
+        data = response.read(MAX_IMAGE_BYTES + 1)
+    if len(data) > MAX_IMAGE_BYTES:
+        raise ValueError("LIMIT")
+    return data
 
 
 def save_image(data: bytes, dest: Path, width: int = 760):
@@ -307,6 +442,19 @@ def git(*args, timeout=180):
                           capture_output=True, text=True, timeout=timeout)
 
 
+def git_connection() -> tuple[bool, str]:
+    """Prüft nicht nur Git, sondern die echte Verbindung dieses Projekts."""
+    if not shutil.which("git"):
+        return False, "Git ist auf diesem Computer nicht verfügbar."
+    inside = git("rev-parse", "--is-inside-work-tree")
+    if inside.returncode != 0 or inside.stdout.strip() != "true":
+        return False, "Dieser Projektordner ist noch nicht mit GitHub verbunden."
+    remote = git("remote", "get-url", "origin")
+    if remote.returncode != 0 or not remote.stdout.strip():
+        return False, "Für dieses Projekt ist kein GitHub-Ziel eingerichtet."
+    return True, "Projekt ist mit GitHub verbunden"
+
+
 def repo_slug() -> str:
     """Besitzer/Repo aus der Git-Remote ermitteln (nicht fest einprogrammiert)."""
     try:
@@ -317,6 +465,16 @@ def repo_slug() -> str:
     except Exception:
         pass
     return ""
+
+
+def build_site(command="build", timeout=600):
+    """Baut die lokale Website und gibt (ok, log) zurück."""
+    with PREVIEW_BUILD_LOCK:
+        proc = subprocess.run(
+            ["cmd", "/c", "npm", "run", command],
+            cwd=str(ROOT), capture_output=True, text=True, timeout=timeout,
+        )
+    return proc.returncode == 0, (proc.stdout + "\n" + proc.stderr).strip()[-4000:]
 
 
 def precheck(state: dict) -> list:
@@ -337,7 +495,8 @@ def precheck(state: dict) -> list:
     no_amazon = [b["title"] for b in state["books"] if not b.get("amazon", "").startswith("https://")]
     checks.append(("rot" if no_amazon else "gruen",
                    "Alle Amazon-Links gültig" if not no_amazon else f"Amazon-Link fehlt: {', '.join(no_amazon)}"))
-    checks.append(("gruen" if shutil.which("git") else "rot", "Git verfügbar"))
+    git_ok, git_text = git_connection()
+    checks.append(("gruen" if git_ok else "rot", git_text))
     try:
         urllib.request.urlopen("https://api.github.com", timeout=5)
         gh = True
@@ -389,11 +548,13 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(data)
 
-    def send_file(self, path: Path, ctype: str):
+    def send_file(self, path: Path, ctype: str, no_cache=False):
         data = path.read_bytes()
         self.send_response(200)
         self.send_header("Content-Type", ctype)
         self.send_header("Content-Length", str(len(data)))
+        if no_cache:
+            self.send_header("Cache-Control", "no-store, max-age=0")
         self.end_headers()
         self.wfile.write(data)
 
@@ -422,9 +583,18 @@ class Handler(BaseHTTPRequestHandler):
         elif path == "/api/precheck":
             self.send_json({"ok": True, "checks": precheck(load_state())})
         elif path.startswith("/vorschau"):
-            # Lokale Vorschau der gebauten Seite (dist/) – mit Traversal-Schutz
+            # Beim Öffnen/Neuladen der Vorschau immer frisch bauen. Dadurch
+            # können gespeicherte Bücher nicht mehr in einem alten dist/ hängen.
             rel = path[len("/vorschau"):].lstrip("/") or "index.html"
             dist = ROOT / "dist"
+            if rel == "index.html":
+                try:
+                    ok, log = build_site()
+                except Exception:
+                    ok, log = False, "Lokale Vorschau konnte nicht gebaut werden."
+                if not ok:
+                    self.send_json({"ok": False, "error": "Lokale Vorschau konnte nicht aktualisiert werden.", "log": log}, 500)
+                    return
             f = (dist / rel).resolve()
             if not str(f).startswith(str(dist.resolve())) or not f.is_file():
                 self.send_error(404)
@@ -435,7 +605,7 @@ class Handler(BaseHTTPRequestHandler):
                 ".jpeg": "image/jpeg", ".webp": "image/webp", ".woff2": "font/woff2",
                 ".txt": "text/plain; charset=utf-8", ".xml": "application/xml",
             }.get(f.suffix.lower(), "application/octet-stream")
-            self.send_file(f, ct)
+            self.send_file(f, ct, no_cache=True)
         elif path.startswith("/images/"):
             # Nur Dateiname erlauben – kein Zugriff außerhalb von public/images
             name = Path(path[len("/images/"):]).name
@@ -477,7 +647,7 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_error(404)
         except ValueError as e:
             if str(e) == "LIMIT":
-                self.send_json({"ok": False, "error": "Datei ist zu groß (Bilder max. 15 MB, PDF max. 60 MB)."}, 413)
+                self.send_json({"ok": False, "error": "Datei ist zu groß (ein Bild max. 15 MB, PDF bzw. Bildauswahl zusammen max. 60 MB)."}, 413)
             else:
                 self.send_json({"ok": False, "error": "Ungültige Anfrage."}, 400)
         except Exception:
@@ -500,23 +670,40 @@ class Handler(BaseHTTPRequestHandler):
             return
         asin = m.group(1)
         try:
-            info = parse_amazon(fetch(f"https://www.amazon.de/dp/{asin}"))
+            info = parse_amazon(fetch_amazon_html(asin))
         except Exception:
-            self.send_json({"ok": False, "error": "Amazon konnte nicht gelesen werden. Du kannst die Felder auch von Hand ausfüllen."})
+            self.send_json({"ok": False, "error": "Amazon konnte die Produktseite gerade nicht freigeben. Bitte versuche es in einer Minute erneut oder fülle die Felder von Hand aus."})
             return
-        info["ok"] = True
+        image_urls = info.pop("image_urls", [])
+        cover_url = info.pop("cover_url", "")
+        if not info.get("title") and not info.get("description") and not cover_url:
+            self.send_json({"ok": False, "error": "Auf der Amazon-Seite wurden keine Buchdaten gefunden. Bitte prüfe den Link oder versuche es später erneut."})
+            return
+
         info["amazon"] = f"https://www.amazon.de/dp/{asin}"
-        if info.get("cover_url"):
+        if cover_url:
             try:
-                req = urllib.request.Request(info["cover_url"], headers={"User-Agent": UA})
-                with urllib.request.urlopen(req, timeout=30) as r:
-                    data = r.read()
-                if len(data) <= MAX_IMAGE_BYTES:
-                    dest = IMAGES / f"cover-amazon-{asin}.jpg"
-                    save_image(data, dest)
-                    info["cover"] = f"images/cover-amazon-{asin}.jpg"
+                dest = IMAGES / f"cover-amazon-{asin}.jpg"
+                save_image(download_image(cover_url), dest)
+                info["cover"] = f"images/{dest.name}"
             except Exception:
                 pass
+
+        samples = []
+        for index, image_url in enumerate(image_urls[:MAX_SAMPLE_IMAGES], 1):
+            try:
+                dest = IMAGES / f"sample-amazon-{asin}-{index}.jpg"
+                save_image(download_image(image_url), dest, width=1200)
+                samples.append(f"images/{dest.name}")
+            except Exception:
+                continue
+        if samples:
+            info["samples"] = samples
+
+        imported = [key for key in ("title", "description", "age", "detail", "series", "category", "cover", "samples") if info.get(key)]
+        info["imported"] = imported
+        info["missing"] = [key for key in ("title", "description", "cover") if not info.get(key)]
+        info["ok"] = True
         self.send_json(info)
 
     def api_save(self):
@@ -542,6 +729,8 @@ class Handler(BaseHTTPRequestHandler):
             state["books"].append(book)
         else:
             book = existing
+        old_cover = book.get("cover", "")
+        old_samples = list(book.get("samples", []))
 
         category = fields.get("category", "")
         valid_ids = [c["id"] for c in state.get("categories", [])] or ["malbuecher"]
@@ -565,7 +754,8 @@ class Handler(BaseHTTPRequestHandler):
         else:
             book["releaseDate"] = fields.get("releaseDate", "").strip()
 
-        # Cover: hochgeladene Datei hat Vorrang, sonst Amazon-Cover, sonst altes behalten
+        # Cover: hochgeladene Datei hat Vorrang, sonst Amazon-Cover, sonst
+        # ausdrücklich entfernen oder altes behalten.
         if "cover" in files:
             fname, data = files["cover"]
             if len(data) > MAX_IMAGE_BYTES:
@@ -586,10 +776,42 @@ class Handler(BaseHTTPRequestHandler):
                     dest.write_bytes(src.read_bytes())
                     src.unlink()
                 book["cover"] = f"images/cover-{book_id}.jpg"
-        book.setdefault("cover", f"images/cover-{book_id}.jpg")
+        elif fields.get("removeCover") == "1":
+            book["cover"] = ""
+        book.setdefault("cover", "")
 
-        # PDF → echte gerenderte Beispielseiten
-        if "pdf" in files:
+        # PDF oder einzelne Bilder/Screenshots → Vorschauseiten
+        sample_files = sorted(
+            ((name, file_data) for name, file_data in files.items() if name.startswith("sample_")),
+            key=lambda item: int(item[0].split("_", 1)[1]) if item[0].split("_", 1)[1].isdigit() else 999,
+        )
+        if len(sample_files) > MAX_SAMPLE_IMAGES:
+            self.send_json({"ok": False, "error": f"Bitte höchstens {MAX_SAMPLE_IMAGES} Bilder auswählen."})
+            return
+        if sum(len(file_data[1]) for _, file_data in sample_files) > MAX_PDF_BYTES:
+            self.send_json({"ok": False, "error": "Die ausgewählten Bilder sind zusammen größer als 60 MB."})
+            return
+
+        if sample_files:
+            samples = []
+            try:
+                for index, (_, (_, data)) in enumerate(sample_files, 1):
+                    if len(data) > MAX_IMAGE_BYTES:
+                        raise ValueError("IMAGE_LIMIT")
+                    dest = IMAGES / f"{book_id}-seite-{index}.jpg"
+                    save_image(data, dest, width=1200)
+                    samples.append(f"images/{dest.name}")
+            except ValueError as exc:
+                if str(exc) == "IMAGE_LIMIT":
+                    self.send_json({"ok": False, "error": "Ein Vorschaubild ist größer als 15 MB."})
+                else:
+                    self.send_json({"ok": False, "error": "Ein Vorschaubild konnte nicht gelesen werden – bitte JPG, PNG oder WebP verwenden."})
+                return
+            except Exception:
+                self.send_json({"ok": False, "error": "Ein Vorschaubild konnte nicht gelesen werden – bitte JPG, PNG oder WebP verwenden."})
+                return
+            book["samples"] = samples
+        elif "pdf" in files:
             fname, data = files["pdf"]
             if len(data) > MAX_PDF_BYTES:
                 self.send_json({"ok": False, "error": "Die PDF ist größer als 60 MB."})
@@ -604,6 +826,44 @@ class Handler(BaseHTTPRequestHandler):
             except Exception:
                 self.send_json({"ok": False, "error": "Die PDF konnte nicht verarbeitet werden."})
                 return
+        elif fields.get("amazonSamples", "").strip():
+            try:
+                amazon_samples = json.loads(fields["amazonSamples"])
+            except json.JSONDecodeError:
+                amazon_samples = []
+            samples = []
+            for index, item in enumerate(amazon_samples[:MAX_SAMPLE_IMAGES], 1):
+                src = IMAGES / Path(str(item)).name
+                if not src.is_file() or not src.name.startswith("sample-amazon-"):
+                    continue
+                dest = IMAGES / f"{book_id}-seite-{index}.jpg"
+                if src.resolve() != dest.resolve():
+                    dest.write_bytes(src.read_bytes())
+                    src.unlink()
+                samples.append(f"images/{dest.name}")
+            if samples:
+                book["samples"] = samples
+        elif "keepSamples" in fields:
+            try:
+                requested_samples = json.loads(fields.get("keepSamples", "[]"))
+            except json.JSONDecodeError:
+                requested_samples = []
+            allowed = set(old_samples)
+            book["samples"] = [
+                item for item in requested_samples
+                if isinstance(item, str) and item in allowed and (IMAGES / Path(item).name).is_file()
+            ][:MAX_SAMPLE_IMAGES]
+
+        # Erst nach erfolgreicher Verarbeitung alte, jetzt nicht mehr verwendete
+        # Dateien entfernen. So lassen sich Cover und einzelne Seiten sicher
+        # löschen oder ersetzen, ohne bei einem Fehler Daten zu verlieren.
+        new_media = {book.get("cover", ""), *book.get("samples", [])}
+        for item in {old_cover, *old_samples} - new_media:
+            name = Path(item).name
+            managed = name == f"cover-{book_id}.jpg" or name.startswith(f"{book_id}-seite-")
+            target = IMAGES / name
+            if managed and name and target.is_file():
+                target.unlink()
 
         save_state(state)
         self.send_json({"ok": True, "book": book})
@@ -652,7 +912,7 @@ class Handler(BaseHTTPRequestHandler):
         orphans = []
         for f in IMAGES.iterdir():
             n = f.name
-            if (n.startswith("cover-") or "-seite-" in n) and n not in used and not n.startswith("cover-amazon-"):
+            if (n.startswith("cover-") or "-seite-" in n or n.startswith("sample-amazon-")) and n not in used and not n.startswith("cover-amazon-"):
                 orphans.append(n)
         self.send_json({"ok": True, "orphans": sorted(orphans)})
 
@@ -744,14 +1004,30 @@ class Handler(BaseHTTPRequestHandler):
     # ---------- Git / GitHub ----------
     def api_git_status(self):
         """Echter Status aus Git: ungesicherte Änderungen + letzte Sicherung."""
-        git("fetch", "-q", "origin", timeout=60)
-        status = git("status", "--porcelain").stdout
+        connected, error = git_connection()
+        if not connected:
+            self.send_json({"ok": False, "configured": False, "error": error})
+            return
+        fetched = git("fetch", "-q", "origin", timeout=60)
+        if fetched.returncode != 0:
+            self.send_json({"ok": False, "configured": True, "error": "GitHub konnte nicht erreicht werden. Lokale Änderungen bleiben erhalten."})
+            return
+        status_proc = git("status", "--porcelain")
+        if status_proc.returncode != 0:
+            self.send_json({"ok": False, "configured": True, "error": "Der lokale Änderungsstand konnte nicht gelesen werden."})
+            return
+        status = status_proc.stdout
         changed = len([l for l in status.splitlines() if l.strip()])
-        ahead = git("rev-list", "--count", "origin/main..HEAD").stdout.strip()
-        behind = git("rev-list", "--count", "HEAD..origin/main").stdout.strip()
+        ahead_proc = git("rev-list", "--count", "origin/main..HEAD")
+        behind_proc = git("rev-list", "--count", "HEAD..origin/main")
+        if ahead_proc.returncode != 0 or behind_proc.returncode != 0:
+            self.send_json({"ok": False, "configured": True, "error": "Der Abgleich mit GitHub ist fehlgeschlagen."})
+            return
+        ahead = ahead_proc.stdout.strip()
+        behind = behind_proc.stdout.strip()
         last = git("log", "origin/main", "-1", "--format=%ci").stdout.strip()
         self.send_json({
-            "ok": True,
+            "ok": True, "configured": True,
             "unsaved": changed,
             "unpublished": int(ahead or 0),
             "behind": int(behind or 0),
@@ -775,6 +1051,9 @@ class Handler(BaseHTTPRequestHandler):
                 "ok": True,
                 "status": run.get("status", ""),
                 "conclusion": run.get("conclusion", ""),
+                "headSha": run.get("head_sha", ""),
+                "createdAt": run.get("created_at", ""),
+                "updatedAt": run.get("updated_at", ""),
                 "url": run.get("html_url", f"https://github.com/{slug}/actions"),
             })
         except Exception:
@@ -784,12 +1063,7 @@ class Handler(BaseHTTPRequestHandler):
     # ---------- Build & Veröffentlichen ----------
     def api_build(self):
         try:
-            proc = subprocess.run(
-                ["cmd", "/c", "npm", "run", "build"],
-                cwd=str(ROOT), capture_output=True, text=True, timeout=300,
-            )
-            ok = proc.returncode == 0
-            log = (proc.stdout + "\n" + proc.stderr).strip()[-4000:]
+            ok, log = build_site(timeout=300)
             self.send_json({"ok": ok, "log": log})
         except Exception:
             self.send_json({"ok": False, "log": "Build konnte nicht gestartet werden."})
@@ -798,6 +1072,11 @@ class Handler(BaseHTTPRequestHandler):
         """Veröffentlichen = prüfen → committen → zu GitHub main pushen.
         GitHub Actions baut danach automatisch die Live-Seite."""
         state = load_state()
+
+        connected, connection_error = git_connection()
+        if not connected:
+            self.send_json({"ok": False, "stage": "git", "error": connection_error + " Es wurde nichts zur Live-Seite übertragen."})
+            return
 
         # 1. Pflichtdaten validieren (Pre-Publish-Ampel)
         checks = precheck(state)
@@ -809,17 +1088,23 @@ class Handler(BaseHTTPRequestHandler):
             return
 
         # 2. Qualität prüfen (lint + Tests + Build)
-        proc = subprocess.run(["cmd", "/c", "npm", "run", "check"],
-                              cwd=str(ROOT), capture_output=True, text=True, timeout=600)
-        if proc.returncode != 0:
+        ok, check_log = build_site(command="check", timeout=600)
+        if not ok:
             self.send_json({"ok": False, "stage": "build",
                             "error": "Veröffentlichung abgebrochen: Prüfung oder Bau der Seite ist fehlgeschlagen.",
-                            "log": (proc.stdout + "\n" + proc.stderr)[-4000:], "checks": checks})
+                            "log": check_log, "checks": checks})
             return
 
         # 3. Remote-Konflikte erkennen – nichts blind überschreiben
-        git("fetch", "-q", "origin", timeout=60)
-        behind = git("rev-list", "--count", "HEAD..origin/main").stdout.strip()
+        fetched = git("fetch", "-q", "origin", timeout=60)
+        if fetched.returncode != 0:
+            self.send_json({"ok": False, "stage": "git", "error": "GitHub konnte nicht erreicht werden. Es wurde nichts übertragen.", "checks": checks})
+            return
+        behind_proc = git("rev-list", "--count", "HEAD..origin/main")
+        if behind_proc.returncode != 0:
+            self.send_json({"ok": False, "stage": "git", "error": "Der Abgleich mit GitHub ist fehlgeschlagen. Es wurde nichts übertragen.", "checks": checks})
+            return
+        behind = behind_proc.stdout.strip()
         if behind not in ("", "0"):
             self.send_json({"ok": False, "stage": "git",
                             "error": "Auf GitHub befindet sich eine neuere Version. Bitte zuerst synchronisieren.",
@@ -827,10 +1112,17 @@ class Handler(BaseHTTPRequestHandler):
             return
 
         # 4. Commit (nachvollziehbare Nachricht für die Versionshistorie)
-        git("add", "-A")
-        if not git("status", "--porcelain").stdout.strip():
+        added = git("add", "-A")
+        if added.returncode != 0:
+            self.send_json({"ok": False, "stage": "git", "error": "Die lokalen Änderungen konnten nicht vorbereitet werden. Es wurde nichts übertragen.", "checks": checks})
+            return
+        status = git("status", "--porcelain")
+        if status.returncode != 0:
+            self.send_json({"ok": False, "stage": "git", "error": "Der lokale Änderungsstand konnte nicht gelesen werden. Es wurde nichts übertragen.", "checks": checks})
+            return
+        if not status.stdout.strip():
             self.send_json({"ok": True, "already": True, "checks": checks,
-                            "message": "Keine neuen Änderungen – alles ist bereits auf GitHub gesichert."})
+                            "message": "Keine neuen lokalen Änderungen. Du musst den Knopf nicht noch einmal drücken."})
             return
         msg = f"LambKing Inhalte aktualisiert ({datetime.datetime.now().strftime('%d.%m.%Y %H:%M')})"
         commit = git("-c", "user.name=Anton Bernt", "-c", "user.email=antonb84@gmail.com",
@@ -852,8 +1144,9 @@ class Handler(BaseHTTPRequestHandler):
                             "log": push.stderr[-2000:], "checks": checks})
             return
 
-        self.send_json({"ok": True, "checks": checks,
-                        "message": "Die Änderungen wurden zu GitHub übertragen. GitHub erstellt jetzt automatisch die neue LambKing-Seite.",
+        head = git("rev-parse", "HEAD").stdout.strip()
+        self.send_json({"ok": True, "checks": checks, "commit": head,
+                        "message": "Die Änderungen wurden vollständig zu GitHub übertragen. GitHub aktualisiert jetzt automatisch die Live-Seite. Du musst nicht erneut klicken.",
                         "actionsUrl": f"https://github.com/{repo_slug()}/actions" if repo_slug() else ""})
 
 

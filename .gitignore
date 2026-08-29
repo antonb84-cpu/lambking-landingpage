@@ -6,3 +6,5 @@ __pycache__/
 *.pyd
 .DS_Store
 Thumbs.db
+public/images/cover-amazon-*.jpg
+public/images/sample-amazon-*.jpg
