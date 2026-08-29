@@ -136,9 +136,11 @@ try {
     const ok = after === before && dialog
     console.log(`${ok ? '✓' : '✗'} 3D-Buch-Klick öffnet Dialog (Tabs ${before}→${after})`)
     if (!ok) fehler++
-    // Den Buchdialog für die folgenden, unabhängigen Prüfungen wieder schließen.
-    await evalJs(`document.querySelector('[data-slot="dialog-close"]')?.click()`)
-    await new Promise((r) => setTimeout(r, 400))
+    // Für die folgenden Prüfungen auf einen garantiert sauberen Seitenzustand
+    // zurückkehren. Das ist auch auf langsameren GitHub-Runnern stabiler als
+    // auf das Ende einer Dialog-Schließanimation zu warten.
+    await send('Page.navigate', { url: `http://127.0.0.1:${HTTP_PORT}/` })
+    await new Promise((r) => setTimeout(r, 1800))
   }
 
   {
