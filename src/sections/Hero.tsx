@@ -27,15 +27,16 @@ const LEAF_STEP = 0.6
 
 function Book3D() {
   const lang = useLang()
-  // Das neueste Buch der aktiven Sprache wird gezeigt (Fallback: alle Bücher,
-  // damit die Startseite nie leer aussieht – reine Deko, keine Buchliste)
+  // Im Backend kann genau ein Buch pro Sprache für die Vorschau markiert
+  // werden. Ohne Auswahl bleibt das bisherige Verhalten erhalten.
   const langBooks = BOOKS.filter((b) => b.lang === lang)
   const pool = langBooks.length > 0 ? langBooks : BOOKS
-  const featured = pool.find(isNew) ?? pool[0]
+  const featured = pool.find((book) => book.showInHero) ?? pool.find(isNew) ?? pool[0]
+  const previewPages = featured.samples.slice(0, 10)
   // Umschlag + alle Vorschauseiten außer der letzten als Blätter;
   // die letzte Seite bleibt als Grundseite liegen
-  const leaves = [featured.cover, ...featured.samples.slice(0, -1)]
-  const basePage = featured.samples[featured.samples.length - 1] ?? featured.cover
+  const leaves = [featured.cover, ...previewPages.slice(0, -1)]
+  const basePage = previewPages[previewPages.length - 1] ?? featured.cover
   const count = leaves.length
 
   const leafEls = useRef<(HTMLDivElement | null)[]>([])

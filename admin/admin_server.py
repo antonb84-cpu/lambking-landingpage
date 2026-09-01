@@ -31,14 +31,19 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent        # Projektordner
 ADMIN = Path(__file__).resolve().parent              # admin/
 IMAGES = ROOT / "public" / "images"
+FLYERS = ROOT / "public" / "flyers"
 DATA_JSON = ROOT / "src" / "data" / "books.json"
 BOOKS_TS = ROOT / "src" / "data" / "books.ts"
+TEXT_DEFAULTS_JSON = ROOT / "src" / "data" / "texts.defaults.json"
 
 PORT = 8123
 MAX_IMAGE_BYTES = 15 * 1024 * 1024    # 15 MB für Cover/Fotos
 MAX_PDF_BYTES = 60 * 1024 * 1024      # 60 MB für Buch-PDFs
 MAX_IMAGE_PIXELS = 40_000_000         # Schutz vor riesigen Bildern
-MAX_SAMPLE_IMAGES = 12                 # einzelne Vorschauseiten/Screenshots
+MAX_SAMPLE_IMAGES = 10                 # einzelne Vorschauseiten/Screenshots
+MAX_FLYER_BYTES = 25 * 1024 * 1024    # 25 MB je Organisations-Flyer
+MAX_SUPPORTED_ORGANIZATIONS = 20       # ausreichend erweiterbar, trotzdem begrenzt
+MAX_SITE_UPLOAD_BYTES = 200 * 1024 * 1024
 
 PREVIEW_BUILD_LOCK = threading.Lock()
 
@@ -66,6 +71,24 @@ def ts_str(value: str) -> str:
     return json.dumps(value, ensure_ascii=False)
 
 
+def sanitize_text_tree(value, depth=0):
+    """Erlaubt nur die für Frontend-Texte nötigen JSON-Typen und Größen."""
+    if depth > 8:
+        raise ValueError("TEXTS_INVALID")
+    if isinstance(value, str):
+        return value[:5000]
+    if isinstance(value, list):
+        return [sanitize_text_tree(item, depth + 1) for item in value[:30]]
+    if isinstance(value, dict):
+        cleaned = {}
+        for key, item in list(value.items())[:200]:
+            if not isinstance(key, str) or not re.fullmatch(r"[A-Za-z0-9_-]{1,80}", key):
+                raise ValueError("TEXTS_INVALID")
+            cleaned[key] = sanitize_text_tree(item, depth + 1)
+        return cleaned
+    raise ValueError("TEXTS_INVALID")
+
+
 def render_books_ts(state: dict):
     """Erzeugt src/data/books.ts komplett neu aus books.json."""
     s = state["site"]
@@ -81,8 +104,15 @@ def render_books_ts(state: dict):
     out.append(f"  appUrl: {ts_str(s['appUrl'])},")
     out.append("  // Google-Play-Link – im Admin eintragen, sobald die App im Store ist.")
     out.append(f"  playStoreUrl: {ts_str(s.get('playStoreUrl', ''))},")
+    out.append("  // App-Store-Link – der Badge bleibt grau, solange dieses Feld leer ist.")
+    out.append(f"  iosStoreUrl: {ts_str(s.get('iosStoreUrl', ''))},")
     out.append(f"  paypalUrl: {ts_str(s.get('paypalUrl', ''))},")
     out.append(f"  kofiUrl: {ts_str(s.get('kofiUrl', ''))},")
+    out.append(f"  contactEmail: {ts_str(s.get('contactEmail', 'hello@lambking.de'))},")
+    out.append(f"  showRatings: {'true' if s.get('showRatings', True) else 'false'},")
+    out.append(f"  frontendTexts: {json.dumps(s.get('frontendTexts', {}), ensure_ascii=False)},")
+    organizations = s.get('supportedOrganizations', [])[:MAX_SUPPORTED_ORGANIZATIONS]
+    out.append(f"  supportedOrganizations: {json.dumps(organizations, ensure_ascii=False)},")
     out.append(f"  publicUrl: {ts_str(s.get('publicUrl', ''))},")
     out.append(f"  authorPhoto: {ts_str(s.get('authorPhoto', 'images/autor.jpg'))},")
     out.append(f"  authorName: {ts_str(s.get('authorName', ''))},")
@@ -141,6 +171,11 @@ def render_books_ts(state: dict):
     out.append("  highlights: string[]")
     out.append("  samples: string[]")
     out.append("  amazon: string")
+    out.append("  /** Beim letzten Amazon-Import übernommene Kundenbewertung. */")
+    out.append("  amazonRating?: number")
+    out.append("  amazonRatingCount?: number")
+    out.append("  /** Dieses Buch wird im Startbereich als bewegbares Vorschaubuch gezeigt. */")
+    out.append("  showInHero?: boolean")
     out.append("  /** ISO-Datum 'YYYY-MM-DD' – das „Neu\"-Badge erscheint 30 Tage. */")
     out.append("  releaseDate?: string")
     out.append("}")
@@ -179,6 +214,14 @@ def render_books_ts(state: dict):
         else:
             out.append("    samples: [],")
         out.append(f"    amazon: {ts_str(b.get('amazon', ''))},")
+        rating = b.get("amazonRating")
+        if isinstance(rating, (int, float)) and not isinstance(rating, bool):
+            out.append(f"    amazonRating: {float(rating):.1f},")
+        rating_count = b.get("amazonRatingCount")
+        if isinstance(rating_count, int) and not isinstance(rating_count, bool) and rating_count >= 0:
+            out.append(f"    amazonRatingCount: {rating_count},")
+        if b.get("showInHero"):
+            out.append("    showInHero: true,")
         if b.get("releaseDate"):
             out.append(f"    releaseDate: '{b['releaseDate']}',")
         out.append("  },")
@@ -295,7 +338,7 @@ def first_match(source: str, patterns: list[str], flags=re.S) -> str:
 
 
 def parse_amazon(html: str) -> dict:
-    """Nur Inhalte holen – keine Preise/Bewertungen scrapen (die stehen live bei Amazon)."""
+    """Buchinhalte und die aktuell auf Amazon sichtbare Kundenbewertung holen."""
     d = {}
     title = first_match(html, [
         r'<(?:span|h1)[^>]*\bid=["\']productTitle["\'][^>]*>(.*?)</(?:span|h1)>',
@@ -341,6 +384,29 @@ def parse_amazon(html: str) -> dict:
     if series:
         d["series"] = clean_amazon_text(series)
 
+    rating_raw = first_match(html, [
+        r'id=["\']acrPopover["\'][^>]*\btitle=["\']\s*([\d,.]+)\s+von\s+5',
+        r'\btitle=["\']\s*([\d,.]+)\s+von\s+5\s+Sternen',
+        r'"ratingValue"\s*:\s*"?([\d,.]+)"?',
+    ], flags=re.I | re.S)
+    if rating_raw:
+        try:
+            rating = float(rating_raw.replace(",", "."))
+            if 0 < rating <= 5:
+                d["amazonRating"] = round(rating, 1)
+        except ValueError:
+            pass
+
+    rating_count_raw = first_match(html, [
+        r'id=["\']acrCustomerReviewText["\'][^>]*>(.*?)</span>',
+        r'"reviewCount"\s*:\s*"?([\d.,]+)"?',
+        r'"ratingCount"\s*:\s*"?([\d.,]+)"?',
+    ], flags=re.I | re.S)
+    if rating_count_raw:
+        digits = re.sub(r"\D", "", clean_amazon_text(rating_count_raw))
+        if digits:
+            d["amazonRatingCount"] = int(digits)
+
     image_urls = []
     landing = re.search(r'<img[^>]*\bid=["\']landingImage["\'][^>]*>', html, re.I)
     if landing:
@@ -383,7 +449,14 @@ def save_image(data: bytes, dest: Path, width: int = 760):
     PILImage.MAX_IMAGE_PIXELS = MAX_IMAGE_PIXELS
     im = PILImage.open(io.BytesIO(data))
     im.verify()  # wirft bei beschädigten/gefälschten Bildern
-    im = PILImage.open(io.BytesIO(data)).convert("RGB")
+    im = PILImage.open(io.BytesIO(data))
+    if "A" in im.getbands():
+        rgba = im.convert("RGBA")
+        background = PILImage.new("RGB", rgba.size, "white")
+        background.paste(rgba, mask=rgba.getchannel("A"))
+        im = background
+    else:
+        im = im.convert("RGB")
     if im.width > width:
         r = width / im.width
         im = im.resize((width, round(im.height * r)), PILImage.LANCZOS)
@@ -575,7 +648,12 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/" or path == "/index.html":
             self.send_file(ADMIN / "index.html", "text/html; charset=utf-8")
         elif path == "/api/state":
-            self.send_json(load_state())
+            state = load_state()
+            try:
+                state["textDefaults"] = json.loads(TEXT_DEFAULTS_JSON.read_text(encoding="utf-8"))
+            except Exception:
+                state["textDefaults"] = {"de": {}, "en": {}}
+            self.send_json(state)
         elif path == "/api/git-status":
             self.api_git_status()
         elif path == "/api/action-status":
@@ -603,6 +681,8 @@ class Handler(BaseHTTPRequestHandler):
                 ".html": "text/html; charset=utf-8", ".js": "text/javascript",
                 ".css": "text/css", ".png": "image/png", ".jpg": "image/jpeg",
                 ".jpeg": "image/jpeg", ".webp": "image/webp", ".woff2": "font/woff2",
+                ".svg": "image/svg+xml",
+                ".pdf": "application/pdf",
                 ".txt": "text/plain; charset=utf-8", ".xml": "application/xml",
             }.get(f.suffix.lower(), "application/octet-stream")
             self.send_file(f, ct, no_cache=True)
@@ -613,6 +693,19 @@ class Handler(BaseHTTPRequestHandler):
             if f.is_file() and f.suffix.lower() in (".jpg", ".jpeg", ".png", ".webp"):
                 ct = "image/png" if f.suffix.lower() == ".png" else ("image/webp" if f.suffix.lower() == ".webp" else "image/jpeg")
                 self.send_file(f, ct)
+            else:
+                self.send_error(404)
+        elif path.startswith("/flyers/"):
+            # Flyer liegen getrennt von Buchbildern und dürfen PDF oder Bild sein.
+            name = Path(path[len("/flyers/"):]).name
+            f = FLYERS / name
+            content_types = {
+                ".pdf": "application/pdf",
+                ".jpg": "image/jpeg", ".jpeg": "image/jpeg",
+                ".png": "image/png", ".webp": "image/webp",
+            }
+            if f.is_file() and f.suffix.lower() in content_types:
+                self.send_file(f, content_types[f.suffix.lower()])
             else:
                 self.send_error(404)
         else:
@@ -639,6 +732,8 @@ class Handler(BaseHTTPRequestHandler):
                 self.api_categories()
             elif path == "/api/orphans":
                 self.api_orphans()
+            elif path == "/api/orphans/delete":
+                self.api_delete_orphans()
             elif path == "/api/build":
                 self.api_build()
             elif path == "/api/publish":
@@ -700,7 +795,7 @@ class Handler(BaseHTTPRequestHandler):
         if samples:
             info["samples"] = samples
 
-        imported = [key for key in ("title", "description", "age", "detail", "series", "category", "cover", "samples") if info.get(key)]
+        imported = [key for key in ("title", "description", "age", "detail", "series", "category", "cover", "samples", "amazonRating", "amazonRatingCount") if info.get(key) is not None]
         info["imported"] = imported
         info["missing"] = [key for key in ("title", "description", "cover") if not info.get(key)]
         info["ok"] = True
@@ -738,6 +833,13 @@ class Handler(BaseHTTPRequestHandler):
             category = valid_ids[0]
         lang = fields.get("lang", "de")
         book["lang"] = lang if lang in ("de", "en") else "de"
+        if fields.get("showInHero") == "1":
+            for other in state["books"]:
+                if other is not book and other.get("lang", "de") == book["lang"]:
+                    other.pop("showInHero", None)
+            book["showInHero"] = True
+        else:
+            book.pop("showInHero", None)
         book["title"] = title
         book["series"] = fields.get("series", "").strip()
         book["category"] = category
@@ -748,6 +850,32 @@ class Handler(BaseHTTPRequestHandler):
         if book["amazon"] and not book["amazon"].startswith("https://"):
             self.send_json({"ok": False, "error": "Der Amazon-Link muss mit https:// beginnen."})
             return
+        rating_raw = fields.get("amazonRating", "").strip()
+        if rating_raw:
+            try:
+                rating = float(rating_raw.replace(",", "."))
+            except ValueError:
+                self.send_json({"ok": False, "error": "Die Amazon-Bewertung ist ungültig."})
+                return
+            if not 0 < rating <= 5:
+                self.send_json({"ok": False, "error": "Die Amazon-Bewertung muss zwischen 1 und 5 liegen."})
+                return
+            book["amazonRating"] = round(rating, 1)
+        else:
+            book.pop("amazonRating", None)
+        rating_count_raw = fields.get("amazonRatingCount", "").strip()
+        if rating_count_raw:
+            try:
+                rating_count = int(rating_count_raw)
+            except ValueError:
+                self.send_json({"ok": False, "error": "Die Amazon-Bewertungsanzahl ist ungültig."})
+                return
+            if rating_count < 0:
+                self.send_json({"ok": False, "error": "Die Amazon-Bewertungsanzahl darf nicht negativ sein."})
+                return
+            book["amazonRatingCount"] = rating_count
+        else:
+            book.pop("amazonRatingCount", None)
         book["highlights"] = [h.strip() for h in fields.get("highlights", "").split("\n") if h.strip()]
         if fields.get("isNew") == "1":
             book["releaseDate"] = datetime.date.today().isoformat()
@@ -785,22 +913,107 @@ class Handler(BaseHTTPRequestHandler):
             ((name, file_data) for name, file_data in files.items() if name.startswith("sample_")),
             key=lambda item: int(item[0].split("_", 1)[1]) if item[0].split("_", 1)[1].isdigit() else 999,
         )
-        if len(sample_files) > MAX_SAMPLE_IMAGES:
-            self.send_json({"ok": False, "error": f"Bitte höchstens {MAX_SAMPLE_IMAGES} Bilder auswählen."})
+        try:
+            requested_samples = json.loads(fields.get("keepSamples", "[]"))
+        except json.JSONDecodeError:
+            requested_samples = []
+        allowed_old_samples = set(old_samples)
+        kept_samples = [
+            item for item in requested_samples
+            if isinstance(item, str)
+            and item in allowed_old_samples
+            and (IMAGES / Path(item).name).is_file()
+        ][:MAX_SAMPLE_IMAGES]
+
+        if len(kept_samples) + len(sample_files) > MAX_SAMPLE_IMAGES:
+            self.send_json({"ok": False, "error": f"Bitte insgesamt höchstens {MAX_SAMPLE_IMAGES} Vorschauseiten verwenden."})
             return
         if sum(len(file_data[1]) for _, file_data in sample_files) > MAX_PDF_BYTES:
             self.send_json({"ok": False, "error": "Die ausgewählten Bilder sind zusammen größer als 60 MB."})
             return
 
-        if sample_files:
-            samples = []
+        sample_order = []
+        if fields.get("sampleOrder", "").strip():
             try:
-                for index, (_, (_, data)) in enumerate(sample_files, 1):
+                sample_order = json.loads(fields["sampleOrder"])
+            except json.JSONDecodeError:
+                self.send_json({"ok": False, "error": "Die Reihenfolge der Vorschauseiten konnte nicht gelesen werden."})
+                return
+            if not isinstance(sample_order, list) or len(sample_order) > MAX_SAMPLE_IMAGES:
+                self.send_json({"ok": False, "error": f"Bitte insgesamt höchstens {MAX_SAMPLE_IMAGES} Vorschauseiten verwenden."})
+                return
+
+        if sample_order:
+            local_files = {
+                int(name.split("_", 1)[1]): file_data
+                for name, file_data in sample_files
+                if name.split("_", 1)[1].isdigit()
+            }
+            ordered_samples = []
+            used_names = set()
+            try:
+                for item in sample_order:
+                    if not isinstance(item, dict):
+                        raise ValueError("ORDER")
+                    kind = item.get("kind")
+                    if kind == "existing":
+                        src_value = str(item.get("src", ""))
+                        if src_value not in kept_samples or src_value in ordered_samples:
+                            raise ValueError("ORDER")
+                        ordered_samples.append(src_value)
+                        used_names.add(Path(src_value).name)
+                        continue
+
+                    index = 1
+                    while f"{book_id}-seite-{index}.jpg" in used_names:
+                        index += 1
+                    dest = IMAGES / f"{book_id}-seite-{index}.jpg"
+
+                    if kind == "local":
+                        upload_index = item.get("index")
+                        if not isinstance(upload_index, int) or upload_index not in local_files:
+                            raise ValueError("ORDER")
+                        _, data = local_files[upload_index]
+                        if len(data) > MAX_IMAGE_BYTES:
+                            raise ValueError("IMAGE_LIMIT")
+                        save_image(data, dest, width=1200)
+                    elif kind == "amazon":
+                        src = IMAGES / Path(str(item.get("src", ""))).name
+                        if not src.is_file() or not src.name.startswith("sample-amazon-"):
+                            raise ValueError("ORDER")
+                        dest.write_bytes(src.read_bytes())
+                        src.unlink()
+                    else:
+                        raise ValueError("ORDER")
+
+                    ordered_samples.append(f"images/{dest.name}")
+                    used_names.add(dest.name)
+            except ValueError as exc:
+                if str(exc) == "IMAGE_LIMIT":
+                    self.send_json({"ok": False, "error": "Ein Vorschaubild ist größer als 15 MB."})
+                elif str(exc) == "ORDER":
+                    self.send_json({"ok": False, "error": "Die Reihenfolge der Vorschauseiten ist ungültig. Bitte die Buchbearbeitung neu öffnen."})
+                else:
+                    self.send_json({"ok": False, "error": "Ein Vorschaubild konnte nicht gelesen werden."})
+                return
+            except Exception:
+                self.send_json({"ok": False, "error": "Ein Vorschaubild konnte nicht gelesen werden – bitte JPG, PNG oder WebP verwenden."})
+                return
+            book["samples"] = ordered_samples
+        elif sample_files:
+            samples = list(kept_samples)
+            used_names = {Path(item).name for item in samples}
+            try:
+                for _, (_, data) in sample_files:
                     if len(data) > MAX_IMAGE_BYTES:
                         raise ValueError("IMAGE_LIMIT")
+                    index = 1
+                    while f"{book_id}-seite-{index}.jpg" in used_names:
+                        index += 1
                     dest = IMAGES / f"{book_id}-seite-{index}.jpg"
                     save_image(data, dest, width=1200)
                     samples.append(f"images/{dest.name}")
+                    used_names.add(dest.name)
             except ValueError as exc:
                 if str(exc) == "IMAGE_LIMIT":
                     self.send_json({"ok": False, "error": "Ein Vorschaubild ist größer als 15 MB."})
@@ -831,28 +1044,28 @@ class Handler(BaseHTTPRequestHandler):
                 amazon_samples = json.loads(fields["amazonSamples"])
             except json.JSONDecodeError:
                 amazon_samples = []
-            samples = []
-            for index, item in enumerate(amazon_samples[:MAX_SAMPLE_IMAGES], 1):
+            if len(kept_samples) + len(amazon_samples) > MAX_SAMPLE_IMAGES:
+                self.send_json({"ok": False, "error": f"Bitte insgesamt höchstens {MAX_SAMPLE_IMAGES} Vorschauseiten verwenden."})
+                return
+            samples = list(kept_samples)
+            used_names = {Path(item).name for item in samples}
+            for item in amazon_samples[:MAX_SAMPLE_IMAGES - len(samples)]:
                 src = IMAGES / Path(str(item)).name
                 if not src.is_file() or not src.name.startswith("sample-amazon-"):
                     continue
+                index = 1
+                while f"{book_id}-seite-{index}.jpg" in used_names:
+                    index += 1
                 dest = IMAGES / f"{book_id}-seite-{index}.jpg"
                 if src.resolve() != dest.resolve():
                     dest.write_bytes(src.read_bytes())
                     src.unlink()
                 samples.append(f"images/{dest.name}")
+                used_names.add(dest.name)
             if samples:
                 book["samples"] = samples
         elif "keepSamples" in fields:
-            try:
-                requested_samples = json.loads(fields.get("keepSamples", "[]"))
-            except json.JSONDecodeError:
-                requested_samples = []
-            allowed = set(old_samples)
-            book["samples"] = [
-                item for item in requested_samples
-                if isinstance(item, str) and item in allowed and (IMAGES / Path(item).name).is_file()
-            ][:MAX_SAMPLE_IMAGES]
+            book["samples"] = kept_samples
 
         # Erst nach erfolgreicher Verarbeitung alte, jetzt nicht mehr verwendete
         # Dateien entfernen. So lassen sich Cover und einzelne Seiten sicher
@@ -901,9 +1114,8 @@ class Handler(BaseHTTPRequestHandler):
         save_state(state)
         self.send_json({"ok": True})
 
-    def api_orphans(self):
-        """Findet Bilddateien, die keinem Buch mehr zugeordnet sind (Wartung)."""
-        state = load_state()
+    def orphan_media(self, state):
+        """Liefert ausschließlich verwaltete, nicht mehr verwendete Buchmedien."""
         used = set()
         for b in state["books"]:
             used.add(Path(b.get("cover", "")).name)
@@ -912,9 +1124,36 @@ class Handler(BaseHTTPRequestHandler):
         orphans = []
         for f in IMAGES.iterdir():
             n = f.name
-            if (n.startswith("cover-") or "-seite-" in n or n.startswith("sample-amazon-")) and n not in used and not n.startswith("cover-amazon-"):
+            is_managed_book_media = n.startswith("cover-") or "-seite-" in n or n.startswith("sample-amazon-")
+            if f.is_file() and is_managed_book_media and n not in used and not n.startswith("cover-amazon-"):
                 orphans.append(n)
-        self.send_json({"ok": True, "orphans": sorted(orphans)})
+        return sorted(orphans)
+
+    def api_orphans(self):
+        """Findet Bilddateien, die keinem Buch mehr zugeordnet sind (Wartung)."""
+        self.send_json({"ok": True, "orphans": self.orphan_media(load_state())})
+
+    def api_delete_orphans(self):
+        """Löscht nur zuvor erneut als verwaist bestätigte, verwaltete Dateien."""
+        requested = self.read_json().get("files", [])
+        if not isinstance(requested, list):
+            self.send_json({"ok": False, "error": "Ungültige Dateiliste."}, 400)
+            return
+        state = load_state()
+        allowed = set(self.orphan_media(state))
+        deleted = []
+        for name in requested:
+            if not isinstance(name, str) or name != Path(name).name or name not in allowed:
+                continue
+            target = IMAGES / name
+            if target.is_file():
+                target.unlink()
+                deleted.append(name)
+        self.send_json({
+            "ok": True,
+            "deleted": deleted,
+            "orphans": self.orphan_media(load_state()),
+        })
 
     # ---------- Website-Einstellungen ----------
     def api_site(self):
@@ -923,16 +1162,162 @@ class Handler(BaseHTTPRequestHandler):
         if not m:
             self.send_json({"ok": False, "error": "Ungültige Anfrage."}, 400)
             return
-        fields, files = parse_multipart(self.read_body(MAX_IMAGE_BYTES + 4 * 1024 * 1024),
+        fields, files = parse_multipart(self.read_body(MAX_SITE_UPLOAD_BYTES),
                                         m.group(1).strip('"'))
         state = load_state()
-        for key in ("brand", "appUrl", "playStoreUrl", "paypalUrl", "kofiUrl", "authorName"):
+        for key in ("brand", "appUrl", "playStoreUrl", "iosStoreUrl", "paypalUrl", "kofiUrl", "authorName", "contactEmail"):
             if key in fields:
                 val = fields[key].strip()
                 if key.endswith("Url") and val and not val.startswith("https://"):
                     self.send_json({"ok": False, "error": f"{key} muss mit https:// beginnen (oder leer bleiben)."})
                     return
+                if key == "contactEmail" and val and not re.fullmatch(r"[^\s@]+@[^\s@]+\.[^\s@]+", val):
+                    self.send_json({"ok": False, "error": "Bitte eine gültige Kontakt-E-Mail-Adresse eingeben."})
+                    return
                 state["site"][key] = val
+        if "showRatings" in fields:
+            state["site"]["showRatings"] = fields["showRatings"].strip().lower() in ("1", "true", "yes", "on")
+        if "frontendTexts" in fields:
+            try:
+                submitted_texts = json.loads(fields["frontendTexts"])
+                if not isinstance(submitted_texts, dict):
+                    raise ValueError("TEXTS_INVALID")
+                state["site"]["frontendTexts"] = {
+                    lang: sanitize_text_tree(submitted_texts.get(lang, {}))
+                    for lang in ("de", "en")
+                    if isinstance(submitted_texts.get(lang, {}), dict)
+                }
+            except (json.JSONDecodeError, ValueError):
+                self.send_json({"ok": False, "error": "Die Frontend-Texte konnten nicht gespeichert werden."})
+                return
+        if "supportedOrganizations" in fields:
+            try:
+                submitted = json.loads(fields["supportedOrganizations"])
+            except json.JSONDecodeError:
+                self.send_json({"ok": False, "error": "Die unterstützten Werke konnten nicht gelesen werden."})
+                return
+            if not isinstance(submitted, list):
+                self.send_json({"ok": False, "error": "Die unterstützten Werke haben ein ungültiges Format."})
+                return
+            current = state["site"].get("supportedOrganizations", [])
+            current_by_id = {}
+            for old_index, old_item in enumerate(current):
+                if not isinstance(old_item, dict):
+                    continue
+                old_id = str(old_item.get("id", "")).strip()
+                if not re.fullmatch(r"[a-z0-9-]{1,80}", old_id):
+                    old_id = f"organization-{old_index + 1}"
+                current_by_id[old_id] = old_item
+
+            def delete_asset(value: str):
+                clean = str(value or "").split("?", 1)[0]
+                if clean.startswith("images/support-work-"):
+                    target = IMAGES / Path(clean).name
+                elif clean.startswith("flyers/support-flyer-"):
+                    target = FLYERS / Path(clean).name
+                else:
+                    return
+                if target.is_file():
+                    target.unlink()
+
+            organizations = []
+            FLYERS.mkdir(parents=True, exist_ok=True)
+            timestamp = int(datetime.datetime.now().timestamp())
+            used_ids = set()
+            for index, item in enumerate(submitted[:MAX_SUPPORTED_ORGANIZATIONS]):
+                if not isinstance(item, dict):
+                    continue
+                name = str(item.get("name", "")).strip()[:120]
+                organization_id = str(item.get("id", "")).strip().lower()
+                organization_id = re.sub(r"[^a-z0-9-]", "", organization_id)[:80]
+                if not organization_id or organization_id in used_ids:
+                    base_id = slugify(name or f"organization-{index + 1}")
+                    organization_id = base_id
+                    suffix = 2
+                    while organization_id in used_ids or organization_id in current_by_id:
+                        organization_id = f"{base_id[:70]}-{suffix}"
+                        suffix += 1
+                used_ids.add(organization_id)
+                old = current_by_id.get(organization_id, {})
+                url = str(item.get("url", "")).strip()
+                if url and not url.startswith("https://"):
+                    self.send_json({"ok": False, "error": f"Der Link bei Einrichtung {index + 1} muss mit https:// beginnen."})
+                    return
+                old_logo = str(old.get("logo", "")).split("?", 1)[0]
+                logo = str(item.get("logo", old.get("logo", ""))).strip()
+                if logo and not logo.split("?", 1)[0].startswith("images/support-work-"):
+                    logo = ""
+                remove_logo = bool(item.get("removeLogo"))
+                upload_key = f"supportLogo_{index}"
+                if upload_key in files:
+                    _, image_data = files[upload_key]
+                    if len(image_data) > MAX_IMAGE_BYTES:
+                        self.send_json({"ok": False, "error": f"Das Logo bei Einrichtung {index + 1} ist größer als 15 MB."})
+                        return
+                    try:
+                        delete_asset(old_logo)
+                        destination = IMAGES / f"support-work-{organization_id}.jpg"
+                        save_image(image_data, destination, width=720)
+                        logo = f"images/{destination.name}?v={timestamp}"
+                    except Exception:
+                        self.send_json({"ok": False, "error": f"Das Logo bei Einrichtung {index + 1} konnte nicht gelesen werden."})
+                        return
+                elif remove_logo:
+                    logo = ""
+                    old_path = IMAGES / Path(old_logo).name
+                    if old_logo.startswith("images/support-work-") and old_path.is_file():
+                        old_path.unlink()
+
+                flyers = {}
+                for flyer_lang in ("de", "en"):
+                    flyer_key = "flyerDe" if flyer_lang == "de" else "flyerEn"
+                    old_flyer = str(old.get(flyer_key, old.get("flyer", "") if flyer_lang == "de" else ""))
+                    flyer = str(item.get(flyer_key, old_flyer)).strip()
+                    if flyer and not flyer.split("?", 1)[0].startswith("flyers/support-flyer-"):
+                        flyer = ""
+                    remove_flyer = bool(item.get("removeFlyerDe" if flyer_lang == "de" else "removeFlyerEn"))
+                    flyer_upload_key = f"supportFlyer_{flyer_lang}_{index}"
+                    if flyer_upload_key in files:
+                        original_name, flyer_data = files[flyer_upload_key]
+                        if len(flyer_data) > MAX_FLYER_BYTES:
+                            self.send_json({"ok": False, "error": f"Der {flyer_lang.upper()}-Flyer bei Einrichtung {index + 1} ist größer als 25 MB."})
+                            return
+                        delete_asset(old_flyer)
+                        try:
+                            if flyer_data.startswith(b"%PDF-"):
+                                destination = FLYERS / f"support-flyer-{organization_id}-{flyer_lang}.pdf"
+                                destination.write_bytes(flyer_data)
+                            else:
+                                destination = FLYERS / f"support-flyer-{organization_id}-{flyer_lang}.jpg"
+                                save_image(flyer_data, destination, width=1800)
+                            flyer = f"flyers/{destination.name}?v={timestamp}"
+                        except Exception:
+                            self.send_json({"ok": False, "error": f"Der {flyer_lang.upper()}-Flyer bei Einrichtung {index + 1} ist keine gültige PDF- oder Bilddatei."})
+                            return
+                    elif remove_flyer:
+                        delete_asset(old_flyer)
+                        flyer = ""
+                    flyers[flyer_key] = flyer
+
+                organizations.append({
+                    "id": organization_id,
+                    "name": name,
+                    "url": url[:500],
+                    "logo": logo,
+                    "logoBackground": "dark" if item.get("logoBackground") == "dark" else "light",
+                    "descriptionDe": str(item.get("descriptionDe", "")).strip()[:1200],
+                    "descriptionEn": str(item.get("descriptionEn", "")).strip()[:1200],
+                    "flyerDe": flyers["flyerDe"],
+                    "flyerEn": flyers["flyerEn"],
+                })
+
+            # Beim Löschen einer Organisation auch ihre zugehörigen Medien entfernen.
+            for old_id, old in current_by_id.items():
+                if old_id in used_ids:
+                    continue
+                for asset_key in ("logo", "flyer", "flyerDe", "flyerEn"):
+                    delete_asset(old.get(asset_key, ""))
+            state["site"]["supportedOrganizations"] = organizations
         for key in ("impressum", "datenschutz"):
             if key in fields:
                 state["site"][key] = fields[key].strip("\n")
@@ -1150,9 +1535,44 @@ class Handler(BaseHTTPRequestHandler):
                         "actionsUrl": f"https://github.com/{repo_slug()}/actions" if repo_slug() else ""})
 
 
+def acquire_instance_lock():
+    """Hält genau eine Admin-Instanz offen und wird beim Programmende freigegeben."""
+    lock_path = ROOT / ".admin-instance.lock"
+    handle = lock_path.open("a+b")
+    if lock_path.stat().st_size == 0:
+        handle.write(b"1")
+        handle.flush()
+    handle.seek(0)
+    try:
+        if sys.platform == "win32":
+            import msvcrt
+            msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
+        else:
+            import fcntl
+            fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except (OSError, IOError):
+        handle.close()
+        return None
+    return handle
+
+
 def main():
     IMAGES.mkdir(parents=True, exist_ok=True)
+    FLYERS.mkdir(parents=True, exist_ok=True)
     url = f"http://localhost:{PORT}/"
+    instance_lock = acquire_instance_lock()
+    if instance_lock is None:
+        print("=" * 56)
+        print("  LambKing Admin läuft bereits!")
+        print(f"  Öffne einfach: {url}")
+        print("=" * 56)
+        webbrowser.open(url)
+        if sys.stdin.isatty():
+            try:
+                input("\n  Zum Schließen Enter drücken …")
+            except EOFError:
+                pass
+        return
     try:
         server = ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
     except OSError:
@@ -1162,7 +1582,11 @@ def main():
         print(f"  Öffne einfach: {url}")
         print("=" * 56)
         webbrowser.open(url)
-        input("\n  Zum Schließen Enter drücken …")
+        if sys.stdin.isatty():
+            try:
+                input("\n  Zum Schließen Enter drücken …")
+            except EOFError:
+                pass
         return
     print("=" * 56)
     print("  LambKing Admin läuft!")
@@ -1177,4 +1601,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    if "--render-only" in sys.argv:
+        render_books_ts(load_state())
+    else:
+        main()

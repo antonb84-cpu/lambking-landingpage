@@ -6,6 +6,7 @@ import HowItWorks from '@/sections/HowItWorks'
 import AppSection from '@/sections/AppSection'
 import Donate from '@/sections/Donate'
 import About from '@/sections/About'
+import SupportedWorks from '@/sections/SupportedWorks'
 import Faq from '@/sections/Faq'
 import Footer from '@/sections/Footer'
 
@@ -28,6 +29,7 @@ export default function App() {
         <AppSection />
         <Donate />
         <About />
+        <SupportedWorks />
         <Faq />
       </main>
       <Footer />

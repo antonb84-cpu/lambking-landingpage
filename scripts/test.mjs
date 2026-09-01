@@ -90,6 +90,12 @@ test('Buchdaten: Pflichtfelder und gültige Links', () => {
     assert(!('tiktok' in b), `${b.id}: TikTok-Feld vorhanden`)
     assert(!('price' in b), `${b.id}: statischer Preis vorhanden`)
     assert(!('rating' in b), `${b.id}: statische Bewertung vorhanden`)
+    if ('amazonRating' in b) {
+      assert(typeof b.amazonRating === 'number' && b.amazonRating > 0 && b.amazonRating <= 5, `${b.id}: Amazon-Bewertung ungültig`)
+    }
+    if ('amazonRatingCount' in b) {
+      assert(Number.isInteger(b.amazonRatingCount) && b.amazonRatingCount >= 0, `${b.id}: Amazon-Bewertungsanzahl ungültig`)
+    }
   }
 })
 
@@ -100,7 +106,18 @@ test('Buchdaten: Cover und Beispielseiten existieren als Datei', () => {
     for (const s of b.samples || []) {
       assert(existsSync(join(ROOT, 'public', s)), `${b.id}: Beispielseite fehlt (${s})`)
     }
+    assert((b.samples || []).length <= 10, `${b.id}: mehr als 10 Beispielseiten`)
   }
+})
+
+test('Vorschauseiten lassen sich ordnen und ein Hero-Buch auswählen', () => {
+  const admin = readFileSync(join(ROOT, 'admin/index.html'), 'utf-8')
+  const server = readFileSync(join(ROOT, 'admin/admin_server.py'), 'utf-8')
+  const hero = readFileSync(join(SRC, 'sections/Hero.tsx'), 'utf-8')
+  assert(admin.includes('sampleOrder') && admin.includes('moveSampleItem'), 'Sortierung der Vorschauseiten fehlt')
+  assert(admin.includes('f_showInHero'), 'Hero-Vorschau-Schalter fehlt im Backend')
+  assert(server.includes('MAX_SAMPLE_IMAGES = 10') && server.includes('sampleOrder'), 'Server begrenzt/sortiert Vorschauseiten nicht korrekt')
+  assert(hero.includes('book.showInHero') && hero.includes('slice(0, 10)'), 'Startbereich verwendet die gewählte Vorschau nicht')
 })
 
 test('Buchtypen/Kategorien sind lokalisiert und konsistent', () => {
@@ -126,11 +143,59 @@ test('Impressum ohne Platzhalter', () => {
   assert(imp.includes('Anton Bernt') && imp.includes('@'), 'Impressum unvollständig')
 })
 
-test('Datenschutzerklärung vorhanden und aktuell (GitHub Pages, localStorage)', () => {
+test('Datenschutzerklärung vorhanden und aktuell (GitHub Pages, Spracheinstellung)', () => {
   const ds = booksJson.site.datenschutz || ''
   assert(ds.includes('GitHub'), 'GitHub-Hosting fehlt')
   assert(ds.includes('lambking-lang'), 'Sprach-speicherung fehlt')
+  assert(!ds.includes('lambking-rating-'), 'Alte lokale Sternebewertung steht noch in der Datenschutzerklärung')
   assert(ds.includes('Ko-fi'), 'Ko-fi fehlt')
+})
+
+test('Kontakt, Amazon-Bewertung und App-Store-Einstellung sind konfigurierbar', () => {
+  assert(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(booksJson.site.contactEmail || ''), 'Kontakt-E-Mail fehlt/ungültig')
+  assert(typeof booksJson.site.showRatings === 'boolean', 'Schalter für Sternebewertung fehlt')
+  assert(typeof booksJson.site.iosStoreUrl === 'string', 'App-Store-Link-Einstellung fehlt')
+  assert(existsSync(join(ROOT, 'public/images/buttons/app-store.svg')), 'App-Store-Badge fehlt')
+})
+
+test('Unterstützte Werke sind erweiterbar und können zweisprachige Flyer anzeigen', () => {
+  const organizations = booksJson.site.supportedOrganizations
+  assert(Array.isArray(organizations) && organizations.length >= 3, 'Die drei bestehenden Einrichtungen müssen erhalten bleiben')
+  const admin = readFileSync(join(ROOT, 'admin/index.html'), 'utf-8')
+  const server = readFileSync(join(ROOT, 'admin/admin_server.py'), 'utf-8')
+  const section = readFileSync(join(SRC, 'sections/SupportedWorks.tsx'), 'utf-8')
+  const generatedBooks = readFileSync(join(SRC, 'data/books.ts'), 'utf-8')
+  assert(admin.includes('supportLogo_') && admin.includes('descriptionDe'), 'Backend-Felder für unterstützte Werke fehlen')
+  assert(admin.includes('addSupportOrganization') && admin.includes('supportFlyer_de_') && admin.includes('supportFlyer_en_'), 'Organisationen oder Flyer sind im Backend nicht erweiterbar')
+  assert(section.includes('supportedOrganizations'), 'Unterstützungssektion ist nicht mit den Einstellungen verbunden')
+  assert(section.includes('viewFlyer') && section.includes('<iframe'), 'Flyer können auf der Landingpage nicht angesehen werden')
+  assert(server.includes('MAX_SUPPORTED_ORGANIZATIONS') && server.includes('supportFlyer_'), 'Flyer werden serverseitig nicht sicher verarbeitet')
+  assert(generatedBooks.includes('supportedOrganizations:'), 'Automatisch erzeugte Seitendaten verlieren die unterstützten Werke')
+})
+
+test('Alle Frontend-Texte sind zweisprachig und im Backend bearbeitbar', () => {
+  const defaults = JSON.parse(readFileSync(join(SRC, 'data/texts.defaults.json'), 'utf-8'))
+  const admin = readFileSync(join(ROOT, 'admin/index.html'), 'utf-8')
+  const server = readFileSync(join(ROOT, 'admin/admin_server.py'), 'utf-8')
+  assert(defaults.de && defaults.en, 'Deutsche oder englische Standardtexte fehlen')
+  for (const key of ['hero', 'books', 'trust', 'supportedWorks', 'about', 'support', 'faq', 'footer']) {
+    assert(defaults.de[key] && defaults.en[key], `Textbereich ${key} fehlt`)
+  }
+  assert(admin.includes('frontendTextSections') && admin.includes('settings-panel'), 'Aufklappbare Textbearbeitung fehlt')
+  assert(server.includes('frontendTexts'), 'Textänderungen werden nicht gespeichert/generiert')
+})
+
+test('Verwaiste Medien können sicher angesehen und gelöscht werden', () => {
+  const admin = readFileSync(join(ROOT, 'admin/index.html'), 'utf-8')
+  const server = readFileSync(join(ROOT, 'admin/admin_server.py'), 'utf-8')
+  assert(admin.includes('orphan-grid') && admin.includes('deleteOrphans'), 'Vorschau oder Löschknopf für verwaiste Medien fehlt')
+  assert(server.includes('/api/orphans/delete') && server.includes('name != Path(name).name'), 'Sicherer Lösch-Endpunkt für verwaiste Medien fehlt')
+})
+
+test('Sternebewertung ist reine Amazon-Anzeige und nicht lokal anklickbar', () => {
+  assert(!srcText.includes('BookRating'), 'Alte interaktive Buchbewertung ist noch eingebunden')
+  assert(!/lambking-rating-|localStorage\.setItem\([^)]*rating/i.test(srcText), 'Bewertung wird noch lokal gespeichert')
+  assert(srcText.includes('amazonRating'), 'Amazon-Bewertung wird nicht angezeigt')
 })
 
 // ── 4. Netzwerk-Reinheit ──────────────────────────────────────

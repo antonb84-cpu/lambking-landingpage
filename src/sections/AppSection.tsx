@@ -5,18 +5,36 @@ import { useLang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
 
 export default function AppSection() {
-  const t = textsFor(useLang())
-  const hasStoreLink = SITE.playStoreUrl.startsWith('https://')
+  const lang = useLang()
+  const t = textsFor(lang)
+  const hasPlayStoreLink = SITE.playStoreUrl.startsWith('https://')
+  const hasAppStoreLink = SITE.iosStoreUrl.startsWith('https://')
+
+  const playBadge = (
+    <span className="relative block h-14 w-[168px] overflow-hidden rounded-[9px] sm:h-16 sm:w-48">
+      <img
+        src="images/buttons/google-play.png"
+        alt={t.app.playAlt}
+        className="absolute left-1/2 top-1/2 h-[70px] max-w-none -translate-x-1/2 -translate-y-1/2 sm:h-20"
+      />
+    </span>
+  )
+
+  const appStoreBadge = (
+    <span className="flex h-14 w-[168px] items-center justify-center sm:h-16 sm:w-48">
+      <img src="images/buttons/app-store.svg" alt={t.app.appStoreAlt} className="h-14 w-auto sm:h-16" />
+    </span>
+  )
 
   return (
     <section id="app" className="scroll-mt-28 py-16 lg:py-24">
       <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-2">
         <Reveal>
-          <div className="mx-auto w-[60%] overflow-hidden rounded-2xl border border-border shadow-xl shadow-primary/10">
+          <div className="mx-auto aspect-[760/1647] w-[60%] overflow-hidden rounded-2xl border border-border shadow-xl shadow-primary/10">
             <img
-              src="images/app-willkommen.jpg"
+              src={lang === 'en' ? 'images/app-welcome-en.jpg' : 'images/app-willkommen.jpg'}
               alt={t.app.title}
-              className="w-full"
+              className="h-full w-full object-cover"
               loading="lazy"
             />
           </div>
@@ -42,34 +60,40 @@ export default function AppSection() {
                 {t.app.ctaWebApp}
               </a>
             )}
-            {/* Google Play: aktiver Button nur mit echter Store-URL, sonst Hinweis */}
-            {hasStoreLink ? (
-              <a
-                href={SITE.playStoreUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block transition-transform hover:scale-[1.04]"
-                aria-label={t.app.playAlt}
-              >
-                <img
-                  src="images/buttons/google-play.png"
-                  alt={t.app.playAlt}
-                  className="h-14 w-auto sm:h-16"
-                />
-              </a>
-            ) : (
-              <div>
-                <img
-                  src="images/buttons/google-play.png"
-                  alt=""
-                  aria-hidden
-                  className="h-14 w-auto opacity-60 grayscale sm:h-16"
-                />
-                <p className="mt-2 text-xs font-semibold text-muted-foreground">
-                  {t.app.playSoon}
-                </p>
-              </div>
-            )}
+            <div className="flex flex-wrap items-start gap-3">
+              {hasPlayStoreLink ? (
+                <a
+                  href={SITE.playStoreUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block transition-transform hover:scale-[1.04]"
+                  aria-label={t.app.playAlt}
+                >
+                  {playBadge}
+                </a>
+              ) : (
+                <div className="w-[168px] sm:w-48">
+                  {playBadge}
+                  <p className="mt-2 text-xs font-semibold text-muted-foreground">{t.app.playSoon}</p>
+                </div>
+              )}
+              {hasAppStoreLink ? (
+                <a
+                  href={SITE.iosStoreUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block transition-transform hover:scale-[1.04]"
+                  aria-label={t.app.appStoreAlt}
+                >
+                  {appStoreBadge}
+                </a>
+              ) : (
+                <div className="w-[168px] sm:w-48" aria-disabled="true">
+                  <span className="block opacity-45 grayscale">{appStoreBadge}</span>
+                  <p className="mt-2 text-xs font-semibold text-muted-foreground">{t.app.appStoreSoon}</p>
+                </div>
+              )}
+            </div>
           </div>
         </Reveal>
       </div>

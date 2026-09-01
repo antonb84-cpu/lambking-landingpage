@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { Menu, X } from 'lucide-react'
+import { Mail, Menu, X } from 'lucide-react'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { SITE } from '@/data/books'
 import { setLang, useLang, type Lang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
@@ -57,8 +58,10 @@ function LangSwitch() {
 }
 
 export default function Header() {
-  const t = textsFor(useLang())
+  const lang = useLang()
+  const t = textsFor(lang)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [contactOpen, setContactOpen] = useState(false)
   const menuBtnRef = useRef<HTMLButtonElement>(null)
   const menuRef = useRef<HTMLElement>(null)
 
@@ -87,38 +90,33 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/90 backdrop-blur-md">
-      <div className="mx-auto flex h-20 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
+      <div className="mx-auto flex h-24 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6">
         <a href="#top" className="flex items-center" aria-label="LambKing Stories – Startseite">
           <img
-            src="images/logo.webp"
+            src="images/lambking-logo.png"
             alt="LambKing Stories"
-            className="h-11 w-auto transition-transform hover:scale-[1.04] sm:h-14"
+            className="h-14 w-auto transition-transform hover:scale-[1.04] sm:h-16"
           />
         </a>
-        <nav className="hidden items-center gap-6 text-sm font-bold text-muted-foreground lg:flex" aria-label="Hauptnavigation">
+        <nav className="hidden items-center gap-5 text-sm font-bold text-muted-foreground lg:flex" aria-label="Hauptnavigation">
           {NAV.map((n) => (
             <a key={n.href} href={n.href} className="transition-colors hover:text-foreground">
               {n.label}
             </a>
           ))}
         </nav>
-        <div className="flex items-center gap-3">
-          <LangSwitch />
-          {SITE.paypalUrl && (
-            <a
-              href={SITE.paypalUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden transition-transform hover:scale-[1.05] sm:inline-block"
-              aria-label={t.support.paypalAlt}
+        <div className="flex items-center gap-2">
+          {SITE.contactEmail && (
+            <button
+              type="button"
+              onClick={() => setContactOpen(true)}
+              className="hidden h-10 items-center gap-2 rounded-full border-2 border-border bg-card px-3 text-xs font-bold text-primary transition-colors hover:border-primary/35 hover:bg-primary/5 xl:inline-flex"
             >
-              <img
-                src="images/buttons/paypal.png"
-                alt={t.support.paypalAlt}
-                className="h-9 w-auto sm:h-10"
-              />
-            </a>
+              <Mail className="h-4 w-4" aria-hidden />
+              {t.contact.write}
+            </button>
           )}
+          <LangSwitch />
           {/* Hamburger – nur mobil sichtbar */}
           <button
             ref={menuBtnRef}
@@ -154,6 +152,18 @@ export default function Header() {
                 </a>
               </li>
             ))}
+            {SITE.contactEmail && (
+              <li>
+                <button
+                  type="button"
+                  onClick={() => { setMenuOpen(false); setContactOpen(true) }}
+                  className="flex items-center gap-2 rounded-lg px-3 py-3.5 text-base font-bold text-foreground transition-colors hover:bg-secondary"
+                >
+                  <Mail className="h-5 w-5 text-primary" aria-hidden />
+                  {t.contact.write}
+                </button>
+              </li>
+            )}
             {/* Rechtsseiten öffnen als Fenster (wie im Footer) */}
             <li>
               <button
@@ -176,6 +186,24 @@ export default function Header() {
           </ul>
         </nav>
       )}
+
+      <Dialog open={contactOpen} onOpenChange={setContactOpen}>
+        <DialogContent className="w-[92vw] max-w-md rounded-2xl border-2 bg-background p-7 sm:p-8">
+          <DialogHeader className="text-left">
+            <DialogTitle className="font-display text-2xl font-semibold">{t.contact.title}</DialogTitle>
+            <DialogDescription className="pt-2 leading-relaxed">{t.contact.intro}</DialogDescription>
+          </DialogHeader>
+          <div className="rounded-xl border border-accent/30 bg-accent/10 p-5">
+            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t.contact.emailLabel}</p>
+            <a
+              href={`mailto:${SITE.contactEmail}`}
+              className="mt-2 block break-all font-semibold text-primary underline decoration-primary/35 underline-offset-4 hover:decoration-primary"
+            >
+              {SITE.contactEmail}
+            </a>
+          </div>
+        </DialogContent>
+      </Dialog>
     </header>
   )
 }

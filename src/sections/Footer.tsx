@@ -72,21 +72,6 @@ export default function Footer() {
               </a>
             ))}
           </nav>
-          {SITE.paypalUrl && (
-            <a
-              href={SITE.paypalUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block transition-transform hover:scale-[1.05]"
-              aria-label={t.support.paypalAlt}
-            >
-              <img
-                src="images/buttons/paypal.png"
-                alt={t.support.paypalAlt}
-                className="h-10 w-auto"
-              />
-            </a>
-          )}
         </div>
         <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-primary-foreground/15 pt-6 text-xs text-primary-foreground/60 sm:flex-row">
           <p>© {new Date().getFullYear()} LambKing Stories. {t.footer.rights}</p>

@@ -1,25 +1,14 @@
 import { HandHeart } from 'lucide-react'
 import Reveal from '@/components/Reveal'
+import KofiButton from '@/components/KofiButton'
+import PaypalButton from '@/components/PaypalButton'
 import { SITE } from '@/data/books'
 import { useLang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
 
-/** Lokal gezeichneter Ko-fi-Becher – keine externen Ressourcen,
-    keine Verbindung zu Ko-fi vor dem Klick. */
-function KofiCup({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className} aria-hidden fill="none"
-         stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M4 8h12v7a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V8z" fill="#FF5E5B" stroke="none" />
-      <path d="M16 9h2.5a2.5 2.5 0 0 1 0 5H16" stroke="#20242e" />
-      <path d="M4 8h12v7a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V8z" stroke="#20242e" />
-      <path d="M7.5 4.5c0 1 .8 1.2.8 2M10.5 3.5c0 1 .8 1.2.8 2" stroke="#20242e" />
-    </svg>
-  )
-}
-
 export default function Donate() {
-  const t = textsFor(useLang())
+  const lang = useLang()
+  const t = textsFor(lang)
   if (!SITE.paypalUrl && !SITE.kofiUrl) return null
 
   return (
@@ -43,33 +32,8 @@ export default function Donate() {
               </div>
               {/* Desktop: nebeneinander · Mobil: untereinander, große Touch-Flächen */}
               <div className="flex w-full flex-col items-center justify-center gap-3 sm:w-auto sm:flex-row sm:gap-4">
-                {SITE.paypalUrl && (
-                  <a
-                    href={SITE.paypalUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-block transition-transform hover:scale-[1.05]"
-                    aria-label={t.support.paypalAlt}
-                  >
-                    <img
-                      src="images/buttons/paypal.png"
-                      alt={t.support.paypalAlt}
-                      className="h-12 w-auto"
-                    />
-                  </a>
-                )}
-                {SITE.kofiUrl && (
-                  <a
-                    href={SITE.kofiUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={t.support.kofiAlt}
-                    className="inline-flex h-12 items-center gap-2.5 rounded-full border border-[#20242e]/15 bg-[#FFF8F0] px-6 font-bold text-[#20242e] shadow-sm transition-transform hover:scale-[1.05]"
-                  >
-                    <KofiCup className="h-6 w-6" />
-                    {t.support.kofiAlt}
-                  </a>
-                )}
+                <PaypalButton />
+                <KofiButton />
               </div>
             </div>
           </div>

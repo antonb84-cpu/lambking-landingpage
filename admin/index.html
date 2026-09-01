@@ -76,6 +76,10 @@
   .sample-preview{display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-top:10px;}
   .sample-preview img{width:84px; height:108px; object-fit:cover; margin:0;}
   .media-thumb{position:relative; display:inline-flex; flex-direction:column; align-items:center; gap:4px;}
+  .media-thumb .position{font-size:11px; font-weight:700; color:var(--blue);}
+  .media-order{display:flex; gap:3px;}
+  .media-order button{width:27px; height:25px; border:1px solid var(--line); border-radius:7px; background:#fff; color:var(--blue); font-weight:700;}
+  .media-order button:disabled{opacity:.35; cursor:not-allowed;}
   .media-remove{position:absolute; top:-6px; right:-6px; width:25px; height:25px; border:0; border-radius:50%; background:#A53A32; color:#fff; cursor:pointer; font-weight:700; box-shadow:0 2px 6px rgba(0,0,0,.24);}
   .media-actions{display:flex; justify-content:center; gap:8px; flex-wrap:wrap; margin-top:10px;}
   .status-panel{margin-top:14px; padding:12px 14px; border-radius:10px; background:#F4F7FA; border:1px solid var(--line); font-size:14px; line-height:1.5;}
@@ -104,6 +108,24 @@
   .spinner{display:inline-block; width:14px; height:14px; border:2px solid rgba(255,255,255,.4); border-top-color:#fff; border-radius:50%; animation:spin .7s linear infinite; vertical-align:-2px; margin-right:6px;}
   @keyframes spin{to{transform:rotate(360deg);}}
   details summary{cursor:pointer; font-size:15px; font-weight:600; color:var(--blue); padding:4px 0;}
+  .settings-stack{display:grid; gap:12px; margin-top:16px;}
+  .settings-panel{border:1px solid var(--line); border-radius:12px; background:#fff; overflow:hidden;}
+  .settings-panel>summary{padding:14px 16px; background:#FCFAF5; list-style:none; display:flex; align-items:center; gap:8px;}
+  .settings-panel>summary::-webkit-details-marker{display:none;}
+  .settings-panel>summary::after{content:'▾'; margin-left:auto; color:var(--gold); transition:transform .15s;}
+  .settings-panel[open]>summary::after{transform:rotate(180deg);}
+  .settings-body{padding:4px 16px 18px;}
+  .text-language-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px;}
+  .text-language{min-width:0;}
+  .text-language h4{margin:12px 0 4px; color:var(--blue); font-size:14px;}
+  .text-language textarea{min-height:76px;}
+  .settings-save{position:sticky; bottom:10px; z-index:4; display:flex; justify-content:flex-end; padding:10px; border:1px solid var(--line); border-radius:12px; background:rgba(255,255,255,.94); box-shadow:0 5px 20px rgba(27,58,92,.12);}
+  .orphan-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); gap:12px; margin-top:14px;}
+  .orphan-item{display:flex; min-width:0; flex-direction:column; gap:8px; padding:10px; border:1px solid var(--line); border-radius:12px; background:#fff;}
+  .orphan-item img{width:100%; height:150px; border-radius:8px; background:#f5f1e8; object-fit:contain;}
+  .orphan-item small{overflow-wrap:anywhere; color:var(--muted);}
+  .orphan-actions{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-top:12px;}
+  @media (max-width:760px){.text-language-grid{grid-template-columns:1fr;}.settings-save{position:static;}}
   .ok-line{color:var(--green); font-weight:600; margin-top:10px; font-size:14px;}
   .err-line{color:var(--red); font-weight:600; margin-top:10px; font-size:14px;}
   #draftNote{background:#FBF3DC; border:1px solid #EBD9A8; border-radius:10px; padding:10px 14px; font-size:13px; margin-bottom:12px; display:flex; gap:10px; align-items:center;}
@@ -180,12 +202,12 @@
 
     <div class="step">
       <div class="step-head"><div class="step-num">3</div>
-        <div><b>Vorschauseiten (optional, zusammen max. 60 MB)</b><span>Lade eine PDF oder bis zu 12 Bilder/Screenshots hoch. Aus einer PDF werden automatisch 4 Beispielseiten erstellt.</span></div>
+        <div><b>Vorschauseiten (optional, zusammen max. 60 MB)</b><span>Füge per Ziehen oder Anklicken bis zu 10 Bilder/Screenshots ein. Aus einer PDF werden automatisch 4 Beispielseiten erstellt.</span></div>
       </div>
       <div class="dropzone" id="sampleZone">
         <p>📄 PDF oder Bilder/Screenshots hierher ziehen</p>
         <small>oder</small><br>
-        <button class="btn btn-ghost" style="margin-top:8px;" onclick="document.getElementById('sampleFile').click()">PDF oder Bilder auswählen</button>
+        <button class="btn btn-ghost" style="margin-top:8px;" onclick="document.getElementById('sampleFile').click()">PDF oder Bilder hinzufügen</button>
         <input type="file" id="sampleFile" accept="application/pdf,image/jpeg,image/png,image/webp" multiple class="hidden">
         <div id="samplePreview"></div>
       </div>
@@ -232,6 +254,11 @@
         <label for="f_isNew" style="margin:0; font-weight:500;">Als <b>„Neu"</b> markieren (Abzeichen erscheint 30 Tage ab heute)</label>
       </div>
 
+      <div class="checkline">
+        <input type="checkbox" id="f_showInHero">
+        <label for="f_showInHero" style="margin:0; font-weight:500;"><b>Als Vorschau oben rechts anzeigen</b> – Cover und Beispielseiten erscheinen als bewegbares Buch im Startbereich</label>
+      </div>
+
       <div class="form-actions">
         <button class="btn btn-gold" id="saveBtn" onclick="saveBook()">💾 Speichern</button>
         <button class="btn btn-ghost" onclick="closeForm()">Abbrechen</button>
@@ -241,97 +268,100 @@
 
   <!-- ═══ EINSTELLUNGEN ═══ -->
   <section>
-    <details>
+    <details id="siteSettings">
       <summary>⚙️ Website-Einstellungen (PayPal, Ko-fi, Links, Foto, Rechtstexte …)</summary>
-      <div style="margin-top:14px;">
-        <div class="grid2">
-          <div>
-            <label for="s_paypal">PayPal-Unterstützungslink</label>
-            <input type="url" id="s_paypal">
-          </div>
-          <div>
-            <label for="s_kofi">Ko-fi-Unterstützungslink</label>
-            <input type="url" id="s_kofi" placeholder="https://ko-fi.com/…">
-          </div>
-        </div>
-        <p class="hint" style="margin-top:4px;">Ist ein Unterstützungslink leer, wird der Button auf der Seite ausgeblendet.</p>
-        <label for="s_appUrl">Web-App-Link</label>
-        <input type="url" id="s_appUrl">
-        <label for="s_playStore">Google-Play-Link (sobald die App im Store ist – erst dann erscheint der aktive Play-Store-Button)</label>
-        <input type="url" id="s_playStore" placeholder="https://play.google.com/store/apps/details?id=…">
-        <div class="grid2">
-          <div>
-            <label for="s_author">Autorenname</label>
-            <input type="text" id="s_author">
-          </div>
-          <div>
-            <label for="s_brand">Markenname</label>
-            <input type="text" id="s_brand">
-          </div>
-        </div>
+      <div class="settings-stack">
+        <p class="hint" style="margin:0;">Öffne nur den Bereich, den du gerade bearbeiten möchtest. Alle Änderungen werden gemeinsam mit dem blauen Knopf gespeichert.</p>
 
-        <label>🖼 Dein Foto (erscheint bei „Über das Projekt")</label>
-        <div class="dropzone" id="photoZone" style="padding:16px;">
-          <p style="font-size:13.5px;">Foto hierher ziehen</p>
-          <small>oder</small>
-          <button class="btn btn-ghost" style="margin-top:6px; padding:8px 16px;" onclick="document.getElementById('photoFile').click()">Foto auswählen</button>
-          <input type="file" id="photoFile" accept="image/*" class="hidden">
-          <div id="photoPreview" style="margin-top:10px;"></div>
-        </div>
-        <div class="grid2">
-          <div>
-            <label for="s_photoShape">Form des Fotos</label>
-            <select id="s_photoShape">
-              <option value="rund">Rund</option>
-              <option value="abgerundet">Abgerundete Ecken</option>
-              <option value="eckig">Eckig</option>
-            </select>
-          </div>
-          <div>
-            <label for="s_photoSize">Größe des Fotos</label>
-            <select id="s_photoSize">
-              <option value="klein">Klein (unauffällig)</option>
-              <option value="mittel">Mittel</option>
-              <option value="gross">Groß</option>
-            </select>
-          </div>
-        </div>
-
-        <label for="s_comingSoon">„Demnächst erhältlich"-Liste (eine Zeile = ein Titel)</label>
-        <textarea id="s_comingSoon" rows="6"></textarea>
-
-        <label>🏷 Kategorien (Name + Farbe der Filter-Buttons)</label>
-        <div id="catList" style="margin-bottom:10px;"></div>
-        <div class="step" style="padding:14px;">
-          <div class="grid2">
-            <div>
-              <label for="c_nameDe">Name (Deutsch) *</label>
-              <input type="text" id="c_nameDe" placeholder="z. B. Vorlesebücher">
+        <details class="settings-panel">
+          <summary>🔗 Links, Kontakt und Bewertungen</summary>
+          <div class="settings-body">
+            <div class="grid2">
+              <div><label for="s_paypal">PayPal-Unterstützungslink</label><input type="url" id="s_paypal"></div>
+              <div><label for="s_kofi">Ko-fi-Unterstützungslink</label><input type="url" id="s_kofi" placeholder="https://ko-fi.com/…"></div>
             </div>
-            <div>
-              <label for="c_nameEn">Name (Englisch)</label>
-              <input type="text" id="c_nameEn" placeholder="z. B. Read-aloud books">
-            </div>
-            <div>
-              <label for="c_typeDe">Art-Bezeichnung (Deutsch)</label>
-              <input type="text" id="c_typeDe" placeholder="z. B. Vorlesebuch">
-            </div>
-            <div>
-              <label for="c_color">Farbe</label>
-              <input type="color" id="c_color" value="#1B3A5C" style="height:44px; padding:4px;">
+            <p class="hint" style="margin-top:4px;">Ist ein Unterstützungslink leer, wird der Button auf der Seite ausgeblendet.</p>
+            <label for="s_appUrl">Web-App-Link</label><input type="url" id="s_appUrl">
+            <label for="s_playStore">Google-Play-Link</label><input type="url" id="s_playStore" placeholder="https://play.google.com/store/apps/details?id=…">
+            <label for="s_iosStore">App-Store-Link für iPhone/iPad</label><input type="url" id="s_iosStore" placeholder="https://apps.apple.com/…">
+            <div class="grid2">
+              <div><label for="s_contactEmail">Kontakt-E-Mail für „Schreiben Sie uns“</label><input type="email" id="s_contactEmail" placeholder="hello@lambking.de"></div>
+              <div>
+                <label>Sternebewertung</label>
+                <div class="checkline" style="margin-top:8px;"><input type="checkbox" id="s_showRatings"><label for="s_showRatings" style="margin:0; font-weight:500;">Amazon-Bewertungen anzeigen</label></div>
+                <small>Besucher können auf der Landingpage nicht selbst bewerten.</small>
+              </div>
             </div>
           </div>
-          <button class="btn btn-blue" style="margin-top:10px;" onclick="addCategory()">＋ Kategorie hinzufügen</button>
-        </div>
+        </details>
 
-        <label for="s_impressum">⚖️ Impressum (eine Leerzeile = neuer Absatz)</label>
-        <textarea id="s_impressum" rows="8"></textarea>
-        <label for="s_datenschutz">🔒 Datenschutzerklärung</label>
-        <textarea id="s_datenschutz" rows="10"></textarea>
-        <p class="hint" style="margin-top:6px;">Die Texte sind auf der Landingpage unter „Impressum" bzw. „Datenschutz" als eigene Seiten erreichbar.</p>
-        <div class="form-actions">
-          <button class="btn btn-blue" onclick="saveSite()">💾 Einstellungen speichern</button>
-        </div>
+        <details class="settings-panel">
+          <summary>✍️ Alle Texte der Landingpage</summary>
+          <div class="settings-body">
+            <p class="hint" style="margin-top:10px;">Jeder sichtbare Standardtext kann hier für Deutsch und Englisch geändert werden. Die einzelnen Seitenbereiche sind zusätzlich aufklappbar.</p>
+            <div id="frontendTextSections"></div>
+            <button type="button" class="btn btn-ghost" style="margin-top:12px;" onclick="resetFrontendTexts()">↺ Texte auf Standard zurücksetzen</button>
+          </div>
+        </details>
+
+        <details class="settings-panel">
+          <summary>👤 Marke, Autor und Foto</summary>
+          <div class="settings-body">
+            <div class="grid2">
+              <div><label for="s_author">Autorenname</label><input type="text" id="s_author"></div>
+              <div><label for="s_brand">Markenname</label><input type="text" id="s_brand"></div>
+            </div>
+            <label>Dein Foto (erscheint bei „Über das Projekt")</label>
+            <div class="dropzone" id="photoZone" style="padding:16px;">
+              <p style="font-size:13.5px;">Foto hierher ziehen oder anklicken</p>
+              <button class="btn btn-ghost" style="margin-top:6px; padding:8px 16px;" onclick="document.getElementById('photoFile').click()">Foto auswählen</button>
+              <input type="file" id="photoFile" accept="image/*" class="hidden">
+              <div id="photoPreview" style="margin-top:10px;"></div>
+            </div>
+            <div class="grid2">
+              <div><label for="s_photoShape">Form des Fotos</label><select id="s_photoShape"><option value="rund">Rund</option><option value="abgerundet">Abgerundete Ecken</option><option value="eckig">Eckig</option></select></div>
+              <div><label for="s_photoSize">Größe des Fotos</label><select id="s_photoSize"><option value="klein">Klein (unauffällig)</option><option value="mittel">Mittel</option><option value="gross">Groß</option></select></div>
+            </div>
+          </div>
+        </details>
+
+        <details class="settings-panel">
+          <summary>📚 Bücherbereich, demnächst und Kategorien</summary>
+          <div class="settings-body">
+            <label for="s_comingSoon">„Demnächst erhältlich"-Liste (eine Zeile = ein Titel)</label><textarea id="s_comingSoon" rows="6"></textarea>
+            <label>Kategorien (Name + Farbe der Filter-Buttons)</label>
+            <div id="catList" style="margin-bottom:10px;"></div>
+            <div class="step" style="padding:14px;">
+              <div class="grid2">
+                <div><label for="c_nameDe">Name (Deutsch) *</label><input type="text" id="c_nameDe" placeholder="z. B. Vorlesebücher"></div>
+                <div><label for="c_nameEn">Name (Englisch)</label><input type="text" id="c_nameEn" placeholder="z. B. Read-aloud books"></div>
+                <div><label for="c_typeDe">Art-Bezeichnung (Deutsch)</label><input type="text" id="c_typeDe" placeholder="z. B. Vorlesebuch"></div>
+                <div><label for="c_color">Farbe</label><input type="color" id="c_color" value="#1B3A5C" style="height:44px; padding:4px;"></div>
+              </div>
+              <button class="btn btn-blue" style="margin-top:10px;" onclick="addCategory()">＋ Kategorie hinzufügen</button>
+            </div>
+          </div>
+        </details>
+
+        <details class="settings-panel">
+          <summary>🤝 Unterstützte christliche Werke</summary>
+          <div class="settings-body">
+            <p class="hint" style="margin-top:10px;">Füge beliebig weitere Einrichtungen hinzu. Zu jeder Einrichtung kannst du ein Logo sowie einen deutschen und einen englischen Flyer als PDF oder Bild hinterlegen.</p>
+            <div id="supportOrgList"></div>
+            <button type="button" class="btn btn-blue" style="margin-top:14px;" onclick="addSupportOrganization()">＋ Weitere Organisation hinzufügen</button>
+          </div>
+        </details>
+
+        <details class="settings-panel">
+          <summary>⚖️ Impressum und Datenschutz</summary>
+          <div class="settings-body">
+            <label for="s_impressum">Impressum (eine Leerzeile = neuer Absatz)</label><textarea id="s_impressum" rows="8"></textarea>
+            <label for="s_datenschutz">Datenschutzerklärung</label><textarea id="s_datenschutz" rows="10"></textarea>
+            <p class="hint" style="margin-top:6px;">Die Texte sind auf der Landingpage auch als eigene Seiten erreichbar.</p>
+          </div>
+        </details>
+
+        <div class="settings-save"><button class="btn btn-blue" onclick="saveSite()">💾 Alle Website-Einstellungen speichern</button></div>
       </div>
     </details>
   </section>
@@ -367,14 +397,133 @@ let state = null;
 let editId = null;
 let amazonCover = '';
 let amazonSamples = [];
+let amazonRating = null;
+let amazonRatingCount = null;
 let coverData = null;
 let sampleData = [];
 let existingSamples = [];
+let sampleItems = [];
 let removeCover = false;
 let photoData = null;
 let currentLang = 'de';
+let currentOrphans = [];
+let supportOrganizationsDraft = [];
 
 const $ = id => document.getElementById(id);
+
+const TEXT_SECTIONS = [
+  ['nav', '🧭 Navigation'],
+  ['contact', '✉️ Kontaktfenster'],
+  ['hero', '🏠 Willkommen und Startbereich'],
+  ['books', '📚 Buchübersicht und Buchfenster'],
+  ['trust', '🛡 Vertrauen, das trägt'],
+  ['how', '🪜 So funktioniert es'],
+  ['app', '📱 App-Bereich'],
+  ['about', '👤 Über das Projekt'],
+  ['supportedWorks', '🤝 Wen wir unterstützen'],
+  ['support', '❤️ Unterstützungsfeld'],
+  ['faq', '❓ Häufige Fragen'],
+  ['footer', '📄 Fußzeile und Rechtstexte'],
+];
+
+const TEXT_LABELS = {
+  books:'Bücher', how:'So funktioniert es', app:'App', about:'Über das Projekt', faq:'FAQ',
+  write:'Beschriftung „Schreiben Sie uns“', title:'Überschrift', intro:'Einleitung', emailLabel:'Bezeichnung der E-Mail-Adresse',
+  title1:'Große Überschrift – Zeile 1', title2:'Große Überschrift – Zeile 2', subtitle:'Untertitel',
+  ctaBooks:'Knopf zu den Büchern', ctaApp:'Knopf zur App', bookHint:'Hinweis am animierten Buch',
+  eyebrow:'Kleine Überschrift', all:'Filter „Alle“', emptyComics:'Hinweis bei leeren Comics', emptyAll:'Hinweis bei leerer Buchliste',
+  comingSoonSuffix:'Zusatz „bald erhältlich“', newBadge:'Abzeichen „Neu“', lookInside:'Knopf „Inhalt ansehen“',
+  seePrice:'Preishinweis', samplesHint:'Hinweis über den Beispielseiten', zoom:'Vergrößern-Knopf', backToBook:'Zurück-Knopf',
+  growing:'Hinweis vor kommenden Büchern', buyAmazon:'Amazon-Knopf', childrenIconLabel:'Bildbeschreibung des Kinder-Symbols',
+  firstBefore:'Einleitender Absatz', firstStrong:'Fett hervorgehobener Text', firstAfter:'Text nach der Hervorhebung',
+  second:'Zweiter Absatz', third:'Dritter Absatz', current:'Hinweis vor den Einrichtungen', visit:'Link zu einer Einrichtung',
+  viewFlyer:'Knopf „Flyer ansehen“', flyerTitle:'Überschrift des Flyer-Fensters', flyerDescription:'Hinweis im Flyer-Fenster', openFlyerNewTab:'Link zum Öffnen des Flyers',
+  text:'Beschreibung', ctaWebApp:'Knopf zur Web-App', playSoon:'Hinweis unter Google Play', playAlt:'Bildbeschreibung Google Play',
+  appStoreSoon:'Hinweis unter App Store', appStoreAlt:'Bildbeschreibung App Store', role:'Rolle unter dem Namen', highlight:'Hervorgehobener Abschluss',
+  paypalAlt:'Bildbeschreibung PayPal', kofiAlt:'Bildbeschreibung Ko-fi', webAppLink:'Linktext zur Web-App',
+  tagline:'Kurztext im Fußbereich', rights:'Urheberrecht-Zusatz', impressum:'Knopf „Impressum“', datenschutz:'Knopf „Datenschutz“',
+  impressumTitle:'Überschrift Impressum', datenschutzTitle:'Überschrift Datenschutz', legalEmpty:'Hinweis bei leerem Rechtstext', legalFullPage:'Link zur eigenen Rechtstext-Seite',
+};
+
+function cloneJson(value){ return JSON.parse(JSON.stringify(value || {})); }
+
+function mergeTextValues(defaults, saved){
+  if (saved === undefined || saved === null) return cloneJson(defaults);
+  if (Array.isArray(defaults)) return Array.isArray(saved) ? cloneJson(saved) : cloneJson(defaults);
+  if (!defaults || typeof defaults !== 'object' || typeof saved !== 'object') return saved;
+  const result = cloneJson(defaults);
+  Object.entries(saved).forEach(([key, value]) => { result[key] = mergeTextValues(defaults[key], value); });
+  return result;
+}
+
+function flattenTextValues(value, path=[], out=[]){
+  if (typeof value === 'string') { out.push({path, value}); return out; }
+  if (Array.isArray(value)) value.forEach((item, index) => flattenTextValues(item, [...path, String(index)], out));
+  else if (value && typeof value === 'object') Object.entries(value).forEach(([key, item]) => flattenTextValues(item, [...path, key], out));
+  return out;
+}
+
+function textFieldLabel(section, path){
+  const last = path[path.length - 1];
+  const index = path.find(part => /^\d+$/.test(part));
+  if (section === 'hero' && path[0] === 'trust') return `Vertrauenshinweis ${Number(index) + 1}`;
+  if (section === 'trust' && path[0] === 'items') return `Karte ${Number(index) + 1} – ${last === 'title' ? 'Überschrift' : 'Text'}`;
+  if (section === 'how' && path[0] === 'steps') return `Schritt ${Number(index) + 1} – ${last === 'title' ? 'Überschrift' : 'Text'}`;
+  if (section === 'about' && path[0] === 'paragraphs') return `Absatz ${Number(index) + 1}`;
+  if (section === 'faq' && path[0] === 'items') return `${last === 'q' ? 'Frage' : 'Antwort'} ${Number(index) + 1}`;
+  return TEXT_LABELS[last] || last;
+}
+
+function renderFrontendTextEditors(useDefaults=false){
+  const defaults = state.textDefaults || {de:{}, en:{}};
+  const saved = useDefaults ? {} : (state.site.frontendTexts || {});
+  const effective = {
+    de: mergeTextValues(defaults.de || {}, saved.de || {}),
+    en: mergeTextValues(defaults.en || {}, saved.en || {}),
+  };
+  $('frontendTextSections').innerHTML = TEXT_SECTIONS.map(([section, label]) => {
+    const languages = [['de','🇩🇪 Deutsch'], ['en','🇬🇧 Englisch']].map(([lang, langLabel]) => {
+      const fields = flattenTextValues((effective[lang] || {})[section] || {});
+      return `<div class="text-language"><h4>${langLabel}</h4>${fields.map(({path, value}) => {
+        const fieldId = `text_${lang}_${section}_${path.join('_')}`;
+        const fieldPath = [section, ...path].join('.');
+        const multiline = value.length > 80 || ['text','subtitle','intro','a','highlight','firstBefore','firstAfter','second','third'].includes(path[path.length - 1]);
+        const control = multiline
+          ? `<textarea id="${fieldId}" rows="${value.length > 260 ? 5 : 3}" data-text-lang="${lang}" data-text-path="${fieldPath}">${esc(value)}</textarea>`
+          : `<input type="text" id="${fieldId}" data-text-lang="${lang}" data-text-path="${fieldPath}" value="${esc(value)}">`;
+        return `<label for="${fieldId}">${esc(textFieldLabel(section, path))}</label>${control}`;
+      }).join('')}</div>`;
+    }).join('');
+    return `<details class="settings-panel" style="margin-top:10px;"><summary>${label}</summary><div class="settings-body text-language-grid">${languages}</div></details>`;
+  }).join('');
+}
+
+function setNestedText(target, path, value){
+  const parts = path.split('.');
+  let cursor = target;
+  parts.forEach((part, index) => {
+    const key = /^\d+$/.test(part) ? Number(part) : part;
+    if (index === parts.length - 1) { cursor[key] = value; return; }
+    const nextIsArray = /^\d+$/.test(parts[index + 1]);
+    if (cursor[key] === undefined) cursor[key] = nextIsArray ? [] : {};
+    cursor = cursor[key];
+  });
+}
+
+function collectFrontendTexts(){
+  const result = cloneJson(state.textDefaults || {de:{}, en:{}});
+  document.querySelectorAll('[data-text-lang][data-text-path]').forEach(field => {
+    setNestedText(result[field.dataset.textLang], field.dataset.textPath, field.value);
+  });
+  return result;
+}
+
+function resetFrontendTexts(){
+  if (!confirm('Alle bearbeitbaren Landingpage-Texte auf den Standard zurücksetzen? Gespeichert wird erst mit dem blauen Knopf unten.')) return;
+  state.site.frontendTexts = {};
+  renderFrontendTextEditors(true);
+  toast('Standardtexte eingesetzt – zum Übernehmen unten speichern.');
+}
 
 function toast(msg, isErr=false){
   const t = $('toast');
@@ -430,6 +579,9 @@ async function load(){
   $('s_kofi').value = state.site.kofiUrl || '';
   $('s_appUrl').value = state.site.appUrl || '';
   $('s_playStore').value = state.site.playStoreUrl || '';
+  $('s_iosStore').value = state.site.iosStoreUrl || '';
+  $('s_contactEmail').value = state.site.contactEmail || 'hello@lambking.de';
+  $('s_showRatings').checked = state.site.showRatings !== false;
   $('s_author').value = state.site.authorName || '';
   $('s_brand').value = state.site.brand || '';
   $('s_comingSoon').value = (state.comingSoon || []).join('\n');
@@ -437,6 +589,18 @@ async function load(){
   $('s_datenschutz').value = state.site.datenschutz || '';
   $('s_photoShape').value = state.site.authorPhotoShape || 'rund';
   $('s_photoSize').value = state.site.authorPhotoSize || 'klein';
+  renderFrontendTextEditors();
+  supportOrganizationsDraft = (state.site.supportedOrganizations || []).map((organization, index) => ({
+    ...organization,
+    id: organization.id || `organization-${index + 1}`,
+    removeLogo: false,
+    removeFlyerDe: false,
+    removeFlyerEn: false,
+    _logoFile: null,
+    _flyerDeFile: null,
+    _flyerEnFile: null,
+  }));
+  renderSupportOrganizations();
   if (state.site.publicUrl) $('liveLink').href = state.site.publicUrl;
   if (state.site.authorPhoto){
     $('photoPreview').innerHTML = `<img src="/${state.site.authorPhoto}" style="max-height:120px; border-radius:${state.site.authorPhotoShape==='eckig'?'4px':'50%'}; border:1px solid var(--line);"><br><small>Aktuelles Foto</small>`;
@@ -516,7 +680,7 @@ function renderList(){
       <img src="/${b.cover}" alt="" onerror="this.style.visibility='hidden'">
       <div class="info">
         <b>${esc(b.title)}</b>
-        <span><span class="badge">${catLabelDe(b.category)}</span>${isNew?'<span class="badge neu">NEU</span>':''}${b.samples&&b.samples.length?(b.samples.length+' Vorschauseiten'):''}</span>
+        <span><span class="badge">${catLabelDe(b.category)}</span>${isNew?'<span class="badge neu">NEU</span>':''}${b.showInHero?'<span class="badge">VORSCHAU OBEN</span>':''}${b.samples&&b.samples.length?(b.samples.length+' Vorschauseiten'):''}</span>
       </div>
       <div class="row-btns">
         <button class="icon-btn" title="Nach oben" ${i===0?'disabled':''} onclick="moveBook('${b.id}',-1)">▲</button>
@@ -529,6 +693,152 @@ function renderList(){
 }
 
 function esc(s){ return (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+function renderSupportOrganizations(){
+  $('supportOrgList').innerHTML = supportOrganizationsDraft.map((organization, index) => `
+    <div class="step" style="padding:16px; margin-top:10px;">
+      <div class="step-head" style="margin-bottom:10px;">
+        <div class="step-num">${index + 1}</div>
+        <div style="flex:1;"><b>${esc(organization.name || `Einrichtung ${index + 1}`)}</b><span>Nur vollständig ausgefüllte Einrichtungen werden auf der Seite angezeigt.</span></div>
+        <div class="row-btns">
+          <button type="button" class="icon-btn" title="Nach oben" ${index === 0 ? 'disabled' : ''} onclick="moveSupportOrganization(${index},-1)">▲</button>
+          <button type="button" class="icon-btn" title="Nach unten" ${index === supportOrganizationsDraft.length - 1 ? 'disabled' : ''} onclick="moveSupportOrganization(${index},1)">▼</button>
+          <button type="button" class="icon-btn" title="Organisation löschen" onclick="removeSupportOrganization(${index})">🗑</button>
+        </div>
+      </div>
+      <div class="grid2">
+        <div>
+          <label for="support_name_${index}">Name</label>
+          <input type="text" id="support_name_${index}" value="${esc(organization.name || '')}" placeholder="Name der Einrichtung">
+        </div>
+        <div>
+          <label for="support_url_${index}">Webseite</label>
+          <input type="url" id="support_url_${index}" value="${esc(organization.url || '')}" placeholder="https://…">
+        </div>
+      </div>
+      <label for="support_description_de_${index}">Kurze Erklärung (Deutsch)</label>
+      <textarea id="support_description_de_${index}" rows="3" placeholder="Was macht diese Einrichtung?">${esc(organization.descriptionDe || '')}</textarea>
+      <label for="support_description_en_${index}">Kurze Erklärung (Englisch, optional)</label>
+      <textarea id="support_description_en_${index}" rows="3" placeholder="English description – ohne Eintrag wird der deutsche Text verwendet">${esc(organization.descriptionEn || '')}</textarea>
+      <label for="support_logo_${index}">Logo</label>
+      <input type="file" id="support_logo_${index}" accept="image/jpeg,image/png,image/webp" onchange="previewSupportLogo(${index}, this)">
+      <label for="support_logo_background_${index}">Hintergrund hinter dem Logo</label>
+      <select id="support_logo_background_${index}">
+        <option value="light" ${organization.logoBackground !== 'dark' ? 'selected' : ''}>Hell – für dunkle Logos</option>
+        <option value="dark" ${organization.logoBackground === 'dark' ? 'selected' : ''}>Dunkelblau – für weiße Logos</option>
+      </select>
+      <div style="margin-top:9px; display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+        <span id="support_logo_preview_${index}" style="display:${organization.logo ? 'flex' : 'none'}; min-height:64px; min-width:130px; align-items:center; justify-content:center; padding:8px 12px; border:1px solid var(--line); border-radius:10px; background:white;">
+          ${organization.logo ? `<img src="/${esc(organization.logo)}" alt="Aktuelles Logo" style="max-height:54px; max-width:160px; object-fit:contain;">` : ''}
+        </span>
+        <label class="checkline" style="margin:0; ${organization.logo ? '' : 'display:none;'}">
+          <input type="checkbox" id="support_remove_logo_${index}" ${organization.removeLogo ? 'checked' : ''}> Vorhandenes Logo entfernen
+        </label>
+      </div>
+      <div class="grid2" style="margin-top:14px;">
+        ${supportFlyerField(organization, index, 'de', 'Deutscher Flyer')}
+        ${supportFlyerField(organization, index, 'en', 'Englischer Flyer')}
+      </div>
+    </div>
+  `).join('') || '<p class="hint" style="padding:14px 0;">Noch keine Organisation eingetragen.</p>';
+}
+
+function supportFlyerField(organization, index, lang, label){
+  const key = lang === 'de' ? 'flyerDe' : 'flyerEn';
+  const fileKey = lang === 'de' ? '_flyerDeFile' : '_flyerEnFile';
+  const removeKey = lang === 'de' ? 'removeFlyerDe' : 'removeFlyerEn';
+  const flyer = organization[key] || '';
+  const selected = organization[fileKey];
+  const status = selected
+    ? `<span class="file-pill">✓ Neu ausgewählt: ${esc(selected.name)}</span>`
+    : flyer && !organization[removeKey]
+      ? `<a class="btn btn-ghost" href="/${esc(flyer)}" target="_blank">👁 Vorhandenen Flyer ansehen</a>`
+      : '<span class="hint">Noch kein Flyer hinterlegt.</span>';
+  return `<div class="step" style="padding:13px;">
+    <label for="support_flyer_${lang}_${index}" style="margin-top:0;">${label}</label>
+    <input type="file" id="support_flyer_${lang}_${index}" accept="application/pdf,image/jpeg,image/png,image/webp" onchange="selectSupportFlyer(${index},'${lang}',this)">
+    <div id="support_flyer_preview_${lang}_${index}" style="margin-top:9px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">${status}</div>
+    ${(flyer || selected) ? `<button type="button" class="btn btn-ghost" style="margin-top:8px;" onclick="clearSupportFlyer(${index},'${lang}')">🗑 Flyer entfernen</button>` : ''}
+  </div>`;
+}
+
+function syncSupportOrganizations(){
+  supportOrganizationsDraft.forEach((organization, index) => {
+    if (!$('support_name_' + index)) return;
+    organization.name = $('support_name_' + index).value;
+    organization.url = $('support_url_' + index).value;
+    organization.descriptionDe = $('support_description_de_' + index).value;
+    organization.descriptionEn = $('support_description_en_' + index).value;
+    organization.logoBackground = $('support_logo_background_' + index).value;
+    organization.removeLogo = $('support_remove_logo_' + index)?.checked || false;
+  });
+}
+
+function addSupportOrganization(){
+  syncSupportOrganizations();
+  if (supportOrganizationsDraft.length >= 20){ toast('Es können höchstens 20 Organisationen eingetragen werden.', true); return; }
+  supportOrganizationsDraft.push({id:`organization-${Date.now()}`, name:'', url:'', logo:'', logoBackground:'light', descriptionDe:'', descriptionEn:'', flyerDe:'', flyerEn:'', _logoFile:null, _flyerDeFile:null, _flyerEnFile:null});
+  renderSupportOrganizations();
+}
+
+function removeSupportOrganization(index){
+  syncSupportOrganizations();
+  const organization = supportOrganizationsDraft[index];
+  if (organization?.name && !confirm(`„${organization.name}“ wirklich aus der Landingpage entfernen?`)) return;
+  supportOrganizationsDraft.splice(index, 1);
+  renderSupportOrganizations();
+}
+
+function moveSupportOrganization(index, direction){
+  syncSupportOrganizations();
+  const target = index + direction;
+  if (target < 0 || target >= supportOrganizationsDraft.length) return;
+  [supportOrganizationsDraft[index], supportOrganizationsDraft[target]] = [supportOrganizationsDraft[target], supportOrganizationsDraft[index]];
+  renderSupportOrganizations();
+}
+
+function previewSupportLogo(index, input){
+  const file = input.files && input.files[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/') || file.size > 15*1024*1024){ toast('Bitte ein gültiges Logo-Bild bis 15 MB wählen.', true); input.value=''; return; }
+  supportOrganizationsDraft[index]._logoFile = file;
+  supportOrganizationsDraft[index].removeLogo = false;
+  const reader = new FileReader();
+  reader.onload = event => {
+    const preview = $('support_logo_preview_' + index);
+    preview.style.display = 'flex';
+    preview.innerHTML = `<img src="${event.target.result}" alt="Neues Logo" style="max-height:54px; max-width:160px; object-fit:contain;">`;
+    $('support_remove_logo_' + index).checked = false;
+  };
+  reader.readAsDataURL(file);
+}
+
+function selectSupportFlyer(index, lang, input){
+  const file = input.files && input.files[0];
+  if (!file) return;
+  const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+  if (!isPdf && !file.type.startsWith('image/')){ toast('Bitte eine PDF-, JPG-, PNG- oder WebP-Datei wählen.', true); input.value=''; return; }
+  if (file.size > 25*1024*1024){ toast('Der Flyer ist größer als 25 MB.', true); input.value=''; return; }
+  const organization = supportOrganizationsDraft[index];
+  const fileKey = lang === 'de' ? '_flyerDeFile' : '_flyerEnFile';
+  const removeKey = lang === 'de' ? 'removeFlyerDe' : 'removeFlyerEn';
+  organization[fileKey] = file;
+  organization[removeKey] = false;
+  const previewUrl = URL.createObjectURL(file);
+  $('support_flyer_preview_' + lang + '_' + index).innerHTML = `<span class="file-pill">✓ Neu ausgewählt: ${esc(file.name)}</span><a class="btn btn-ghost" href="${previewUrl}" target="_blank">👁 Flyer ansehen</a>`;
+}
+
+function clearSupportFlyer(index, lang){
+  syncSupportOrganizations();
+  const organization = supportOrganizationsDraft[index];
+  const fileKey = lang === 'de' ? '_flyerDeFile' : '_flyerEnFile';
+  const removeKey = lang === 'de' ? 'removeFlyerDe' : 'removeFlyerEn';
+  organization[fileKey] = null;
+  organization[removeKey] = true;
+  const input = $('support_flyer_' + lang + '_' + index);
+  if (input) input.value = '';
+  renderSupportOrganizations();
+}
 
 /* ── Entwurf (Autosave im Browser, niemals automatisch zu GitHub) ── */
 const DRAFT_KEY = 'lambking-admin-entwurf';
@@ -575,70 +885,77 @@ function clearCover(){
 }
 
 function renderExistingSamples(){
-  if (!existingSamples.length){
-    $('samplePreview').innerHTML = '<span class="file-pill">✓ Keine vorhandenen Vorschauseiten bleiben gespeichert.</span>';
-    return;
-  }
-  $('samplePreview').innerHTML = `<span class="file-pill">✓ ${existingSamples.length} gespeicherte Vorschauseite${existingSamples.length === 1 ? '' : 'n'}</span><div class="sample-preview">${existingSamples.map((src, i) => `<span class="media-thumb"><img src="/${esc(src)}" alt="Gespeicherte Vorschauseite ${i + 1}"><button type="button" class="media-remove" aria-label="Vorschauseite ${i + 1} entfernen" onclick="removeExistingSample(${i})">×</button></span>`).join('')}</div><div class="media-actions"><button type="button" class="btn btn-ghost" onclick="clearAllSamples()">🗑 Alle entfernen</button><button type="button" class="btn btn-ghost" onclick="document.getElementById('sampleFile').click()">↻ Alle ersetzen</button></div>`;
-}
-
-function removeExistingSample(index){
-  existingSamples.splice(index, 1);
-  renderExistingSamples();
+  renderSamples();
 }
 
 function renderAmazonSamples(){
-  $('samplePreview').innerHTML = `<span class="file-pill">✓ ${amazonSamples.length} Produktbild${amazonSamples.length === 1 ? '' : 'er'} von Amazon ausgewählt</span><div class="sample-preview">${amazonSamples.map((src, i) => `<span class="media-thumb"><img src="/${esc(src)}" alt="Amazon-Vorschaubild ${i + 1}"><button type="button" class="media-remove" aria-label="Amazon-Vorschaubild ${i + 1} entfernen" onclick="removeAmazonSample(${i})">×</button></span>`).join('')}</div><div class="media-actions"><button type="button" class="btn btn-ghost" onclick="clearAllSamples()">🗑 Alle entfernen</button><button type="button" class="btn btn-ghost" onclick="document.getElementById('sampleFile').click()">↻ Ersetzen</button></div>`;
-}
-
-function removeAmazonSample(index){
-  amazonSamples.splice(index, 1);
-  if (amazonSamples.length) renderAmazonSamples(); else clearAllSamples();
+  renderSamples();
 }
 
 function renderLocalSamples(){
+  renderSamples();
+}
+
+function renderSamples(){
   const preview = $('samplePreview');
-  if (!sampleData.length){ clearAllSamples(); return; }
-  const isPdf = sampleData.length === 1 && (sampleData[0].type === 'application/pdf' || sampleData[0].name.toLowerCase().endsWith('.pdf'));
-  if (isPdf){
-    preview.innerHTML = `<span class="file-pill">✓ ${esc(sampleData[0].name)} – 4 Beispielseiten werden beim Speichern erstellt</span><div class="media-actions"><button type="button" class="btn btn-ghost" onclick="clearAllSamples()">🗑 Auswahl entfernen</button><button type="button" class="btn btn-ghost" onclick="document.getElementById('sampleFile').click()">↻ Ersetzen</button></div>`;
+  const pdfItem = sampleItems.find(item => item.kind === 'pdf');
+  if (pdfItem){
+    preview.innerHTML = `<span class="file-pill">✓ ${esc(pdfItem.file.name)} – 4 Beispielseiten werden beim Speichern erstellt</span><div class="media-actions"><button type="button" class="btn btn-ghost" onclick="clearAllSamples()">🗑 Auswahl entfernen</button><button type="button" class="btn btn-ghost" onclick="document.getElementById('sampleFile').click()">↻ PDF ersetzen</button></div>`;
     return;
   }
-  preview.innerHTML = `<span class="file-pill">✓ ${sampleData.length} Bild${sampleData.length === 1 ? '' : 'er'} ausgewählt</span><div class="sample-preview" id="localSampleThumbs"></div><div class="media-actions"><button type="button" class="btn btn-ghost" onclick="clearAllSamples()">🗑 Alle entfernen</button><button type="button" class="btn btn-ghost" onclick="document.getElementById('sampleFile').click()">↻ Ersetzen</button></div>`;
-  sampleData.forEach((file, index) => {
+  const total = sampleItems.length;
+  if (!total){
+    preview.innerHTML = '<span class="file-pill">Noch keine Vorschauseiten – Bilder hierher ziehen oder über den Knopf auswählen.</span>';
+    return;
+  }
+  const thumbs = sampleItems.map((item, index) => {
+    const src = item.kind === 'local' ? '' : '/' + esc(item.src);
+    return `<span class="media-thumb" id="sample_item_${index}"><span class="position">Seite ${index + 1}</span><img src="${src}" alt="Vorschauseite ${index + 1}"><button type="button" class="media-remove" aria-label="Vorschauseite ${index + 1} entfernen" onclick="removeSampleItem(${index})">×</button><span class="media-order"><button type="button" ${index === 0 ? 'disabled' : ''} onclick="moveSampleItem(${index},-1)" aria-label="Seite ${index + 1} nach links">←</button><button type="button" ${index === total - 1 ? 'disabled' : ''} onclick="moveSampleItem(${index},1)" aria-label="Seite ${index + 1} nach rechts">→</button></span></span>`;
+  }).join('');
+  preview.innerHTML = `<span class="file-pill">✓ ${total} von 10 Vorschauseiten · ${10 - total} Plätze frei</span><div class="sample-preview">${thumbs}</div><div class="media-actions"><button type="button" class="btn btn-ghost" onclick="document.getElementById('sampleFile').click()">＋ Weitere Bilder hinzufügen</button><button type="button" class="btn btn-ghost" onclick="clearAllSamples()">🗑 Alle entfernen</button></div><small style="display:block; margin-top:8px;">Die Nummern bestimmen die Reihenfolge im bewegbaren Buch.</small>`;
+  sampleItems.forEach((item, index) => {
+    if (item.kind !== 'local') return;
     const reader = new FileReader();
-    reader.onload = e => {
-      const holder = document.createElement('span');
-      holder.className = 'media-thumb';
-      holder.innerHTML = `<img src="${e.target.result}" alt="Vorschau ${index + 1}: ${esc(file.name)}"><button type="button" class="media-remove" aria-label="Vorschau ${index + 1} entfernen" onclick="removeLocalSample(${index})">×</button>`;
-      $('localSampleThumbs')?.appendChild(holder);
+    reader.onload = event => {
+      const image = $('sample_item_' + index)?.querySelector('img');
+      if (image) image.src = event.target.result;
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(item.file);
   });
 }
 
-function removeLocalSample(index){
-  sampleData.splice(index, 1);
-  if (sampleData.length) renderLocalSamples(); else clearAllSamples();
+function removeSampleItem(index){
+  sampleItems.splice(index, 1);
+  renderSamples();
+}
+
+function moveSampleItem(index, direction){
+  const target = index + direction;
+  if (target < 0 || target >= sampleItems.length) return;
+  [sampleItems[index], sampleItems[target]] = [sampleItems[target], sampleItems[index]];
+  renderSamples();
 }
 
 function clearAllSamples(){
   sampleData = [];
   amazonSamples = [];
   existingSamples = [];
+  sampleItems = [];
   $('sampleFile').value = '';
-  $('samplePreview').innerHTML = '<span class="file-pill">✓ Vorschauseiten werden beim Speichern entfernt. Du kannst vorher neue auswählen.</span>';
+  renderSamples();
 }
 
 /* ── Formular ── */
 function openForm(id){
   editId = id || null;
-  amazonCover = ''; amazonSamples = []; coverData = null; sampleData = []; existingSamples = []; removeCover = false;
+  amazonCover = ''; amazonSamples = []; amazonRating = null; amazonRatingCount = null; coverData = null; sampleData = []; existingSamples = []; sampleItems = []; removeCover = false;
   $('coverPreview').innerHTML = ''; $('samplePreview').innerHTML = '';
   $('amazonImportStatus').textContent = '';
   $('amazonImportStatus').className = 'import-status';
   $('coverFile').value = ''; $('sampleFile').value = '';
   const b = id ? state.books.find(x => x.id === id) : null;
+  amazonRating = b && Number.isFinite(Number(b.amazonRating)) ? Number(b.amazonRating) : null;
+  amazonRatingCount = b && Number.isInteger(Number(b.amazonRatingCount)) ? Number(b.amazonRatingCount) : null;
   $('formTitle').textContent = b ? 'Buch bearbeiten: ' + b.title : 'Neues Buch hinzufügen';
   $('f_amazonFetch').value = '';
   $('f_title').value = b ? b.title : '';
@@ -651,12 +968,16 @@ function openForm(id){
   $('f_amazon').value = b ? (b.amazon||'') : '';
   $('f_isNew').checked = !b;
   $('f_isNew').dataset.release = b ? (b.releaseDate||'') : '';
+  $('f_showInHero').checked = !!(b && b.showInHero);
   if (b && b.cover){
     renderCoverPreview('/' + b.cover, 'Aktuelles Cover');
   }
   if (b && b.samples && b.samples.length){
     existingSamples = [...b.samples];
+    sampleItems = b.samples.slice(0, 10).map(src => ({kind:'existing', src}));
     renderExistingSamples();
+  } else {
+    renderSamples();
   }
   $('draftNote').classList.toggle('hidden', !!b || !hasDraft());
   $('formSection').classList.remove('hidden');
@@ -691,6 +1012,8 @@ async function fetchAmazon(){
     if (d.series) $('f_series').value = d.series;
     if (d.category && [...$('f_category').options].some(o => o.value === d.category)) $('f_category').value = d.category;
     if (d.amazon) $('f_amazon').value = d.amazon;
+    amazonRating = Number.isFinite(Number(d.amazonRating)) ? Number(d.amazonRating) : null;
+    amazonRatingCount = Number.isInteger(Number(d.amazonRatingCount)) ? Number(d.amazonRatingCount) : null;
     if (d.cover){
       amazonCover = d.cover;
       coverData = null;
@@ -702,10 +1025,11 @@ async function fetchAmazon(){
       amazonSamples = d.samples;
       sampleData = [];
       existingSamples = [];
+      sampleItems = d.samples.slice(0, 10).map(src => ({kind:'amazon', src}));
       $('sampleFile').value = '';
       renderAmazonSamples();
     }
-    const labels = {title:'Titel', description:'Beschreibung', age:'Alter', detail:'Umfang', series:'Reihe', category:'Kategorie', cover:'Cover', samples:'Produktbilder'};
+    const labels = {title:'Titel', description:'Beschreibung', age:'Alter', detail:'Umfang', series:'Reihe', category:'Kategorie', cover:'Cover', samples:'Produktbilder', amazonRating:'Amazon-Bewertung', amazonRatingCount:'Bewertungsanzahl'};
     const imported = (d.imported || []).map(key => labels[key] || key);
     const missing = (d.missing || []).map(key => labels[key] || key);
     $('amazonImportStatus').textContent = 'Übernommen: ' + imported.join(', ') + (missing.length ? '. Nicht gefunden: ' + missing.join(', ') + '.' : '.');
@@ -732,7 +1056,7 @@ function setupDrop(zoneId, inputId, cb, multiple=false){
   ['dragover','dragenter'].forEach(e => zone.addEventListener(e, ev => { ev.preventDefault(); zone.classList.add('over'); }));
   ['dragleave','drop'].forEach(e => zone.addEventListener(e, ev => { ev.preventDefault(); zone.classList.remove('over'); }));
   zone.addEventListener('drop', ev => deliver(ev.dataTransfer.files));
-  input.addEventListener('change', () => deliver(input.files));
+  input.addEventListener('change', () => { deliver(input.files); if (multiple) input.value = ''; });
 }
 
 setupDrop('coverZone', 'coverFile', f => {
@@ -748,14 +1072,20 @@ setupDrop('sampleZone', 'sampleFile', files => {
   const pdfs = files.filter(f => f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf'));
   if (pdfs.length && files.length !== 1){ toast('Bitte entweder eine PDF oder mehrere Bilder auswählen – nicht beides zusammen.', true); return; }
   if (!pdfs.length && files.some(f => !f.type.startsWith('image/'))){ toast('Bitte nur eine PDF oder Bilddateien (JPG, PNG, WebP) auswählen.', true); return; }
-  if (!pdfs.length && files.length > 12){ toast('Bitte höchstens 12 Bilder auswählen.', true); return; }
+  if (!pdfs.length && sampleItems.filter(item => item.kind !== 'pdf').length + files.length > 10){ toast('Bitte insgesamt höchstens 10 Bilder verwenden.', true); return; }
   if (files.some(f => !pdfs.length && f.size > 15*1024*1024)){ toast('Ein Bild ist größer als 15 MB.', true); return; }
   const total = files.reduce((sum, f) => sum + f.size, 0);
   if (total > 60*1024*1024){ toast('Die Auswahl ist zusammen größer als 60 MB.', true); return; }
-  sampleData = files;
-  amazonSamples = [];
-  existingSamples = [];
-  renderLocalSamples();
+  if (pdfs.length){
+    sampleItems = [{kind:'pdf', file:pdfs[0]}];
+  } else {
+    if (sampleItems.some(item => item.kind === 'pdf')) sampleItems = [];
+    sampleItems.push(...files.map(file => ({kind:'local', file})));
+  }
+  sampleData = sampleItems.filter(item => item.kind === 'local' || item.kind === 'pdf').map(item => item.file);
+  existingSamples = sampleItems.filter(item => item.kind === 'existing').map(item => item.src);
+  amazonSamples = sampleItems.filter(item => item.kind === 'amazon').map(item => item.src);
+  renderSamples();
 }, true);
 
 setupDrop('photoZone', 'photoFile', f => {
@@ -785,15 +1115,33 @@ async function saveBook(){
     fd.append('description', $('f_description').value);
     fd.append('highlights', $('f_highlights').value);
     fd.append('amazon', $('f_amazon').value);
+    fd.append('amazonRating', amazonRating === null ? '' : String(amazonRating));
+    fd.append('amazonRatingCount', amazonRatingCount === null ? '' : String(amazonRatingCount));
     fd.append('amazonCover', amazonCover);
-    fd.append('amazonSamples', JSON.stringify(amazonSamples));
-    fd.append('keepSamples', JSON.stringify(existingSamples));
+    const keptSamples = sampleItems.filter(item => item.kind === 'existing').map(item => item.src);
+    const importedSamples = sampleItems.filter(item => item.kind === 'amazon').map(item => item.src);
+    fd.append('amazonSamples', JSON.stringify(importedSamples));
+    fd.append('keepSamples', JSON.stringify(keptSamples));
+    if ($('f_showInHero').checked) fd.append('showInHero', '1');
     if (removeCover) fd.append('removeCover', '1');
     if ($('f_isNew').checked) fd.append('isNew', '1');
     else fd.append('releaseDate', $('f_isNew').dataset.release || '');
     if (coverData) fd.append('cover', coverData);
-    if (sampleData.length === 1 && (sampleData[0].type === 'application/pdf' || sampleData[0].name.toLowerCase().endsWith('.pdf'))) fd.append('pdf', sampleData[0]);
-    else sampleData.forEach((file, index) => fd.append(`sample_${index}`, file));
+    const pdfItem = sampleItems.find(item => item.kind === 'pdf');
+    if (pdfItem){
+      fd.append('pdf', pdfItem.file);
+    } else {
+      let localIndex = 0;
+      const order = sampleItems.map(item => {
+        if (item.kind === 'local'){
+          const index = localIndex++;
+          fd.append(`sample_${index}`, item.file);
+          return {kind:'local', index};
+        }
+        return {kind:item.kind, src:item.src};
+      });
+      fd.append('sampleOrder', JSON.stringify(order));
+    }
     const d = await api('/api/save', {method:'POST', body: fd});
     if (!d.ok){ toast(d.error || 'Speichern fehlgeschlagen.', true); return; }
     toast('✓ „' + d.book.title + '" gespeichert (lokal – noch nicht veröffentlicht)');
@@ -824,11 +1172,16 @@ async function moveBook(id, dir){
 }
 
 async function saveSite(){
+  syncSupportOrganizations();
   const fd = new FormData();
   fd.append('paypalUrl', $('s_paypal').value);
   fd.append('kofiUrl', $('s_kofi').value);
   fd.append('appUrl', $('s_appUrl').value);
   fd.append('playStoreUrl', $('s_playStore').value);
+  fd.append('iosStoreUrl', $('s_iosStore').value);
+  fd.append('contactEmail', $('s_contactEmail').value);
+  fd.append('showRatings', $('s_showRatings').checked ? 'true' : 'false');
+  fd.append('frontendTexts', JSON.stringify(collectFrontendTexts()));
   fd.append('authorName', $('s_author').value);
   fd.append('brand', $('s_brand').value);
   fd.append('comingSoon', $('s_comingSoon').value);
@@ -836,6 +1189,26 @@ async function saveSite(){
   fd.append('datenschutz', $('s_datenschutz').value);
   fd.append('authorPhotoShape', $('s_photoShape').value);
   fd.append('authorPhotoSize', $('s_photoSize').value);
+  const organizations = supportOrganizationsDraft.map(organization => ({
+    id: organization.id,
+    name: organization.name,
+    url: organization.url,
+    logo: organization.logo || '',
+    logoBackground: organization.logoBackground,
+    descriptionDe: organization.descriptionDe,
+    descriptionEn: organization.descriptionEn,
+    flyerDe: organization.flyerDe || '',
+    flyerEn: organization.flyerEn || '',
+    removeLogo: !!organization.removeLogo,
+    removeFlyerDe: !!organization.removeFlyerDe,
+    removeFlyerEn: !!organization.removeFlyerEn,
+  }));
+  fd.append('supportedOrganizations', JSON.stringify(organizations));
+  supportOrganizationsDraft.forEach((organization, index) => {
+    if (organization._logoFile) fd.append('supportLogo_' + index, organization._logoFile);
+    if (organization._flyerDeFile) fd.append('supportFlyer_de_' + index, organization._flyerDeFile);
+    if (organization._flyerEnFile) fd.append('supportFlyer_en_' + index, organization._flyerEnFile);
+  });
   if (photoData) fd.append('photo', photoData);
   const d = await api('/api/site', {method:'POST', body: fd});
   if (d.ok){
@@ -850,9 +1223,39 @@ async function saveSite(){
 /* ── Wartung ── */
 async function findOrphans(){
   const d = await api('/api/orphans', {method:'POST'});
-  $('orphanOut').innerHTML = d.orphans && d.orphans.length
-    ? '⚠ Verwaiste Dateien: ' + d.orphans.map(esc).join(', ') + '<br><small>Bitte Kimi um Bereinigung bitten oder von Hand im Ordner public\\images löschen.</small>'
-    : '✓ Keine verwaisten Dateien gefunden.';
+  currentOrphans = d.orphans || [];
+  if (!currentOrphans.length){
+    $('orphanOut').innerHTML = '✓ Keine verwaisten Dateien gefunden.';
+    return;
+  }
+  const cards = currentOrphans.map(name => `
+    <article class="orphan-item">
+      <a href="/images/${encodeURIComponent(name)}" target="_blank" title="Bild groß ansehen">
+        <img src="/images/${encodeURIComponent(name)}" alt="Vorschau von ${esc(name)}">
+      </a>
+      <small>${esc(name)}</small>
+      <button type="button" class="btn btn-ghost" onclick='deleteOrphans(${JSON.stringify([name])})'>🗑 Datei löschen</button>
+    </article>`).join('');
+  $('orphanOut').innerHTML = `
+    <p><b>⚠ ${currentOrphans.length} verwaiste ${currentOrphans.length === 1 ? 'Datei' : 'Dateien'} gefunden.</b> Klicke auf ein Bild, um es groß anzusehen.</p>
+    <div class="orphan-grid">${cards}</div>
+    <div class="orphan-actions">
+      <small>Es werden nur Dateien gelöscht, die aktuell keinem Buch zugeordnet sind.</small>
+      <button type="button" class="btn btn-ghost" onclick="deleteOrphans(currentOrphans)">🗑 Alle verwaisten Dateien löschen</button>
+    </div>`;
+}
+
+async function deleteOrphans(files){
+  if (!files || !files.length) return;
+  const label = files.length === 1 ? '„' + files[0] + '“' : files.length + ' verwaiste Dateien';
+  if (!confirm(label + ' wirklich dauerhaft löschen?')) return;
+  const d = await api('/api/orphans/delete', {method:'POST', body:JSON.stringify({files})});
+  if (!d.ok){
+    toast(d.error || 'Dateien konnten nicht gelöscht werden.', true);
+    return;
+  }
+  toast('✓ ' + d.deleted.length + (d.deleted.length === 1 ? ' Datei gelöscht.' : ' Dateien gelöscht.'));
+  await findOrphans();
 }
 
 /* ── Pre-Publish-Ampel ── */

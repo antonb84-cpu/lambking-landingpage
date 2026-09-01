@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Eye, Palette, X, ZoomIn } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Eye, Palette, X, ZoomIn } from 'lucide-react'
 import Reveal from '@/components/Reveal'
+import AmazonRating from '@/components/AmazonRating'
 import { BOOKS, CATEGORIES, COMING_SOON, isNew, type Book, type Category } from '@/data/books'
 import { useLang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
@@ -21,7 +22,7 @@ const catLabelOf = (id: string, lang: 'de' | 'en'): string => {
 
 function BuyButton({ book, size = 'md' }: { book: Book; size?: 'md' | 'lg' }) {
   const t = textsFor(useLang())
-  const h = size === 'lg' ? 'h-12 sm:h-14' : 'h-10 sm:h-11'
+  const width = size === 'lg' ? 'max-w-[305px]' : 'max-w-[240px]'
   // Kein gültiger Amazon-Link → kein kaputter Button
   if (!book.amazon.startsWith('https://')) return null
   return (
@@ -29,10 +30,10 @@ function BuyButton({ book, size = 'md' }: { book: Book; size?: 'md' | 'lg' }) {
       href={book.amazon}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-block transition-transform hover:scale-[1.05]"
+      className={`mx-auto block w-full ${width} transition-transform hover:scale-[1.05]`}
       aria-label={`${book.title} – ${t.books.buyAmazon}`}
     >
-      <img src="images/buttons/amazon.png" alt={t.books.buyAmazon} className={`${h} w-auto`} />
+      <img src="images/buttons/amazon.png" alt={t.books.buyAmazon} className="h-auto w-full" />
     </a>
   )
 }
@@ -96,6 +97,7 @@ function BookDialog({
                   </li>
                 ))}
               </ul>
+              <AmazonRating book={book} />
               {book.samples.length > 0 && (
                 <>
                   <p className="mb-3 mt-9 text-xs font-bold uppercase tracking-widest text-muted-foreground">
@@ -133,8 +135,13 @@ function BookDialog({
         )}
         <Lightbox
           src={zoom}
+          sources={book?.samples ?? []}
           onClose={onZoomClose}
+          onNavigate={onZoom}
           label={t.books.backToBook}
+          previousLabel={t.books.previousPage}
+          nextLabel={t.books.nextPage}
+          pageLabel={t.books.page}
           imageAlt={book ? `${book.title} – vergrößerte Vorschauseite` : ''}
         />
       </DialogContent>
@@ -144,21 +151,44 @@ function BookDialog({
 
 function Lightbox({
   src,
+  sources,
   onClose,
+  onNavigate,
   label,
+  previousLabel,
+  nextLabel,
+  pageLabel,
   imageAlt,
 }: {
   src: string | null
+  sources: string[]
   onClose: () => void
+  onNavigate: (src: string) => void
   label: string
+  previousLabel: string
+  nextLabel: string
+  pageLabel: string
   imageAlt: string
 }) {
+  const currentIndex = src ? sources.indexOf(src) : -1
+  const canNavigate = currentIndex >= 0 && sources.length > 1
+
+  const navigateBy = useCallback((direction: -1 | 1) => {
+    if (!canNavigate) return
+    const nextIndex = (currentIndex + direction + sources.length) % sources.length
+    onNavigate(sources[nextIndex])
+  }, [canNavigate, currentIndex, onNavigate, sources])
+
   useEffect(() => {
     if (!src) return
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+      if (e.key === 'ArrowLeft') navigateBy(-1)
+      if (e.key === 'ArrowRight') navigateBy(1)
+    }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [src, onClose])
+  }, [src, onClose, navigateBy])
 
   if (!src) return null
   return (
@@ -171,10 +201,43 @@ function Lightbox({
     >
       <img
         src={src}
-        alt={imageAlt}
+        alt={`${imageAlt} ${currentIndex + 1}`}
         className="max-h-[80vh] max-w-full rounded-sm bg-white shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       />
+      {canNavigate && (
+        <>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation()
+              navigateBy(-1)
+            }}
+            aria-label={previousLabel}
+            className="absolute left-3 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white text-foreground shadow-xl transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/60 sm:left-6 sm:h-14 sm:w-14"
+          >
+            <ArrowLeft className="h-6 w-6" aria-hidden />
+          </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation()
+              navigateBy(1)
+            }}
+            aria-label={nextLabel}
+            className="absolute right-3 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white text-foreground shadow-xl transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/60 sm:right-6 sm:h-14 sm:w-14"
+          >
+            <ArrowRight className="h-6 w-6" aria-hidden />
+          </button>
+          <p
+            className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-black/70 px-4 py-2 text-sm font-bold text-white shadow-lg"
+            aria-live="polite"
+            aria-label={`${pageLabel} ${currentIndex + 1} / ${sources.length}`}
+          >
+            {currentIndex + 1} / {sources.length}
+          </p>
+        </>
+      )}
       <button
         type="button"
         onClick={onClose}
@@ -332,11 +395,12 @@ export default function Books() {
                     </div>
                     <h3 className="font-display text-xl font-semibold leading-snug">{b.title}</h3>
                     {b.series && <p className="mt-1 text-xs font-semibold text-muted-foreground">{b.series}</p>}
-                    <div className="mt-4 flex-1">
+                    <AmazonRating book={b} />
+                    <div className="mt-4 flex flex-1 flex-col items-center">
                       <button
                         type="button"
                         onClick={() => openBook(b)}
-                        className="mb-3 w-full rounded-full border-2 border-primary/20 py-2.5 text-sm font-bold text-primary transition-colors hover:border-primary/50 hover:bg-primary/5"
+                        className="mb-3 flex aspect-[900/165] w-full max-w-[240px] items-center justify-center rounded-full border-2 border-primary/20 text-sm font-bold text-primary transition-colors hover:border-primary/50 hover:bg-primary/5"
                       >
                         {t.books.lookInside}
                       </button>

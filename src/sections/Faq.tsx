@@ -40,14 +40,14 @@ export default function Faq() {
                     </>
                   )}
                   {/* Kontaktfrage → E-Mail-Adresse als mailto-Link */}
-                  {i === 6 && (
+                  {i === 6 && SITE.contactEmail && (
                     <>
                       {' '}
                       <a
-                        href={`mailto:${t.faq.mailLink}`}
+                        href={`mailto:${SITE.contactEmail}`}
                         className="font-bold text-primary underline underline-offset-2"
                       >
-                        {t.faq.mailLink}
+                        {SITE.contactEmail}
                       </a>
                     </>
                   )}
