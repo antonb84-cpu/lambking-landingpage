@@ -15,7 +15,9 @@
         "logo": "images/support-work-1.png",
         "logoBackground": "light",
         "descriptionDe": "Betesda Lahr begleitet Menschen, die durch Drogen- oder Alkoholabhängigkeit in Not geraten sind. Im betreuten Wohnen erhalten sie persönliche und seelsorgerische Begleitung, Arbeitstherapie und Hilfe auf dem Weg in ein geregeltes Leben mit Jesus Christus. Mit einer Bettenpatenschaft kann diese Arbeit regelmäßig unterstützt und ein sicherer Platz mitfinanziert werden.",
-        "descriptionEn": "Betesda Lahr supports people in need because of drug or alcohol addiction. Through supported housing, they receive personal and pastoral care, occupational support, and help on their way to a stable life with Jesus Christ. A bed sponsorship provides regular support and helps fund a safe place for someone in need."
+        "descriptionEn": "Betesda Lahr supports people in need because of drug or alcohol addiction. Through supported housing, they receive personal and pastoral care, occupational support, and help on their way to a stable life with Jesus Christ. A bed sponsorship provides regular support and helps fund a safe place for someone in need.",
+        "flyerDe": "",
+        "flyerEn": ""
       },
       {
         "id": "vision-fuer-asien",
@@ -24,7 +26,9 @@
         "logo": "images/support-work-2.jpg?v=1788271860",
         "logoBackground": "dark",
         "descriptionDe": "Vision für Asien ist ein internationales, überkonfessionelles Hilfs- und Missionswerk. Es bringt das Evangelium zu unerreichten Volksgruppen in Asien und hilft besonders Waisenkindern sowie Familien in Not durch Fürsorge, Bildung und praktische Unterstützung.",
-        "descriptionEn": "Vision for Asia is an international, interdenominational aid and mission organization. It shares the Gospel with unreached people groups in Asia and gives special support to orphans and families in need through care, education, and practical assistance."
+        "descriptionEn": "Vision for Asia is an international, interdenominational aid and mission organization. It shares the Gospel with unreached people groups in Asia and gives special support to orphans and families in need through care, education, and practical assistance.",
+        "flyerDe": "flyers/support-flyer-vision-fuer-asien-de.pdf?v=1788274365",
+        "flyerEn": "flyers/support-flyer-vision-fuer-asien-en.pdf?v=1788274365"
       },
       {
         "id": "vera-bike",
@@ -33,7 +37,9 @@
         "logo": "images/support-work-3.svg",
         "logoBackground": "light",
         "descriptionDe": "Inhaber Dima fand selbst bei Betesda Hilfe und wurde dort frei. Heute arbeiten bei VERA-BIKE auch ehemalige Rehabilitanten. Gemeinsam versorgen sie Bedürftige auf der Straße mit Essen und teilen die gute Botschaft von Jesus. Jeden Sonntag um 10:30 Uhr findet im Fahrradgeschäft ein Gottesdienst statt – jeder ist willkommen.",
-        "descriptionEn": "Owner Dima once found help and freedom at Betesda himself. Today, VERA-BIKE also employs former rehabilitation residents. Together they bring food to people in need on the streets and share the good news of Jesus. Every Sunday at 10:30 a.m., the bicycle shop hosts a church service where everyone is welcome."
+        "descriptionEn": "Owner Dima once found help and freedom at Betesda himself. Today, VERA-BIKE also employs former rehabilitation residents. Together they bring food to people in need on the streets and share the good news of Jesus. Every Sunday at 10:30 a.m., the bicycle shop hosts a church service where everyone is welcome.",
+        "flyerDe": "",
+        "flyerEn": ""
       }
     ],
     "authorPhoto": "images/autor.jpg?v=1788241701",
