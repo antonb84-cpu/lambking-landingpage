@@ -102,6 +102,14 @@
 /* ── 3D-Softcover-Buch im Hero (öffnet & blättert bei Hover) ── */
 .book3d-scene {
   perspective: 1400px;
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+.book3d-scene img {
+  -webkit-touch-callout: none;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 .book3d-float {
   animation: book3d-float 6s ease-in-out infinite;

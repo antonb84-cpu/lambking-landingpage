@@ -76,7 +76,8 @@
             "Liebevoll gestaltet",
             "Druck & Versand über Amazon"
           ],
-          "bookHint": "Mit der Maus drüberfahren – das Buch blättert sich durch · Klicken zum Ansehen"
+          "bookHint": "Mit der Maus drüberfahren – das Buch blättert sich selbstständig auf",
+          "mobileBookHint": "Antippen – das Buch blättert sich selbstständig auf"
         },
         "books": {
           "eyebrow": "Unsere Bücher",
@@ -249,7 +250,8 @@
             "Lovingly designed",
             "Printing & shipping via Amazon"
           ],
-          "bookHint": "Hover to flip through the pages · Click to look inside"
+          "bookHint": "Hover over the book – it opens and flips through automatically",
+          "mobileBookHint": "Tap the book – it opens and flips through automatically"
         },
         "books": {
           "eyebrow": "Our books",

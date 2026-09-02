@@ -1,10 +1,9 @@
 import { BookOpen, ShieldCheck, Smartphone, Sparkles } from 'lucide-react'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Reveal from '@/components/Reveal'
 import { BOOKS, isNew } from '@/data/books'
 import { useLang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
-import { openBookById } from '@/data/openBook'
 
 const TRUST_ICONS = [ShieldCheck, Sparkles, BookOpen]
 
@@ -27,6 +26,8 @@ const LEAF_STEP = 0.6
 
 function Book3D() {
   const lang = useLang()
+  const [isTouchOpen, setIsTouchOpen] = useState(false)
+  const lastPointerType = useRef('mouse')
   // Im Backend kann genau ein Buch pro Sprache für die Vorschau markiert
   // werden. Ohne Auswahl bleibt das bisherige Verhalten erhalten.
   const langBooks = BOOKS.filter((b) => b.lang === lang)
@@ -118,13 +119,35 @@ function Book3D() {
   return (
     <button
       type="button"
-      onClick={() => openBookById(featured.id)}
-      aria-label={`${featured.title} – ${textsFor(lang).books.lookInside}`}
+      onPointerDown={(event) => {
+        lastPointerType.current = event.pointerType
+      }}
+      onClick={(event) => {
+        // Ein echter Mausklick ist hier absichtlich ohne Navigation: Am
+        // Computer reicht Hover. Touch und Tastatur starten dagegen das
+        // vollständige automatische Durchblättern.
+        if (lastPointerType.current !== 'mouse' || event.detail === 0) {
+          setIsTouchOpen(true)
+          kickRef.current(true)
+        }
+      }}
+      onContextMenu={(event) => event.preventDefault()}
+      onDragStart={(event) => event.preventDefault()}
+      aria-label={`${featured.title} – ${textsFor(lang).hero.mobileBookHint}`}
+      aria-pressed={isTouchOpen}
+      data-touch-open={isTouchOpen ? 'true' : 'false'}
       className="book3d-scene relative mx-auto block w-60 cursor-pointer sm:w-72 lg:w-80"
-      onMouseEnter={() => kickRef.current(true)}
-      onMouseLeave={() => kickRef.current(false)}
+      onPointerEnter={(event) => {
+        if (event.pointerType === 'mouse') kickRef.current(true)
+      }}
+      onPointerLeave={(event) => {
+        if (event.pointerType === 'mouse') kickRef.current(false)
+      }}
       onFocus={() => kickRef.current(true)}
-      onBlur={() => kickRef.current(false)}
+      onBlur={() => {
+        setIsTouchOpen(false)
+        kickRef.current(false)
+      }}
     >
       <div className="book3d-float">
         <div className="book3d">
@@ -138,6 +161,7 @@ function Book3D() {
             className="book3d-page-base"
             loading="eager"
             fetchPriority="high"
+            draggable={false}
           />
           {/* Blätter: Umschlag zuerst, dann Seite für Seite */}
           {leaves.map((src, i) => (
@@ -154,6 +178,7 @@ function Book3D() {
                 alt={i === 0 ? featured.title : `Vorschauseite ${i} aus ${featured.title}`}
                 className="book3d-leaf-front"
                 loading="eager"
+                draggable={false}
               />
               <div className="book3d-leaf-back" />
             </div>
@@ -163,9 +188,7 @@ function Book3D() {
       </div>
       <span className="mt-12 block text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground">
         <span className="hidden sm:inline">{textsFor(lang).hero.bookHint}</span>
-        <span className="sm:hidden">
-          {lang === 'de' ? 'Antippen, um das Buch anzusehen' : 'Tap to look inside'}
-        </span>
+        <span className="sm:hidden">{textsFor(lang).hero.mobileBookHint}</span>
       </span>
     </button>
   )

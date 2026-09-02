@@ -70,10 +70,13 @@ test('Alle internen Ankerziele existieren als Sektion', () => {
   }
 })
 
-test('Hero-Buch ist ein <button>, kein Link', () => {
+test('Hero-Buch blättert am Smartphone ohne Bildmenü und ohne Weiterleitung', () => {
   const hero = readFileSync(join(SRC, 'sections/Hero.tsx'), 'utf-8')
-  assert(hero.includes('openBookById'), 'Buch-Klick öffnet nicht den Dialog')
   assert(!/<a[^>]*book3d/.test(hero), '3D-Buch ist noch ein Link')
+  assert(!hero.includes('openBookById'), 'Hero-Buch öffnet noch die Buchansicht')
+  assert(hero.includes('event.pointerType') && hero.includes("lastPointerType.current !== 'mouse'"), 'Touch-Aktivierung fehlt')
+  assert(hero.includes('onContextMenu') && hero.includes('draggable={false}'), 'Schutz vor dem mobilen Bildmenü fehlt')
+  assert(hero.includes('data-touch-open'), 'Prüfbarer Touch-Öffnungszustand fehlt')
 })
 
 // ── 2. Buchdaten ──────────────────────────────────────────────
