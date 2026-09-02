@@ -108,7 +108,7 @@ def render_books_ts(state: dict):
     out.append(f"  iosStoreUrl: {ts_str(s.get('iosStoreUrl', ''))},")
     out.append(f"  paypalUrl: {ts_str(s.get('paypalUrl', ''))},")
     out.append(f"  kofiUrl: {ts_str(s.get('kofiUrl', ''))},")
-    out.append(f"  contactEmail: {ts_str(s.get('contactEmail', 'hello@lambking.de'))},")
+    out.append(f"  contactEmail: {ts_str(s.get('contactEmail', 'hello@lambking.store'))},")
     out.append(f"  showRatings: {'true' if s.get('showRatings', True) else 'false'},")
     out.append(f"  frontendTexts: {json.dumps(s.get('frontendTexts', {}), ensure_ascii=False)},")
     organizations = s.get('supportedOrganizations', [])[:MAX_SUPPORTED_ORGANIZATIONS]

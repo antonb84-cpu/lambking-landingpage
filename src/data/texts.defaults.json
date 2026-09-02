@@ -25,7 +25,7 @@
         "Druck & Versand über Amazon"
       ],
       "bookHint": "Mit der Maus drüberfahren – das Buch blättert sich selbstständig auf",
-      "mobileBookHint": "Antippen – das Buch blättert sich selbstständig auf"
+      "mobileBookHint": "Antippen zum Öffnen oder Schließen"
     },
     "books": {
       "eyebrow": "Unsere Bücher",
@@ -199,7 +199,7 @@
         "Printing & shipping via Amazon"
       ],
       "bookHint": "Hover over the book – it opens and flips through automatically",
-      "mobileBookHint": "Tap the book – it opens and flips through automatically"
+      "mobileBookHint": "Tap the book to open or close it"
     },
     "books": {
       "eyebrow": "Our books",

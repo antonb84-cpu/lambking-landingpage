@@ -75,6 +75,7 @@ test('Hero-Buch blättert am Smartphone ohne Bildmenü und ohne Weiterleitung', 
   assert(!/<a[^>]*book3d/.test(hero), '3D-Buch ist noch ein Link')
   assert(!hero.includes('openBookById'), 'Hero-Buch öffnet noch die Buchansicht')
   assert(hero.includes('event.pointerType') && hero.includes("lastPointerType.current !== 'mouse'"), 'Touch-Aktivierung fehlt')
+  assert(hero.includes('const nextOpen = !open') && hero.includes('kickRef.current(nextOpen)'), 'Erneutes Antippen schließt das Hero-Buch nicht')
   assert(hero.includes('onContextMenu') && hero.includes('draggable={false}'), 'Schutz vor dem mobilen Bildmenü fehlt')
   assert(hero.includes('data-touch-open'), 'Prüfbarer Touch-Öffnungszustand fehlt')
 })
@@ -155,10 +156,18 @@ test('Datenschutzerklärung vorhanden und aktuell (GitHub Pages, Spracheinstellu
 })
 
 test('Kontakt, Amazon-Bewertung und App-Store-Einstellung sind konfigurierbar', () => {
-  assert(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(booksJson.site.contactEmail || ''), 'Kontakt-E-Mail fehlt/ungültig')
+  assert(booksJson.site.contactEmail === 'hello@lambking.store', 'Kontakt-E-Mail ist nicht hello@lambking.store')
   assert(typeof booksJson.site.showRatings === 'boolean', 'Schalter für Sternebewertung fehlt')
   assert(typeof booksJson.site.iosStoreUrl === 'string', 'App-Store-Link-Einstellung fehlt')
   assert(existsSync(join(ROOT, 'public/images/buttons/app-store.svg')), 'App-Store-Badge fehlt')
+})
+
+test('Schließen-Knopf der Buchvorschau ist auf Smartphones groß genug', () => {
+  const books = readFileSync(join(SRC, 'sections/Books.tsx'), 'utf-8')
+  const dialog = readFileSync(join(SRC, 'components/ui/dialog.tsx'), 'utf-8')
+  assert(books.includes('closeButtonClassName') && books.includes('size-12'), 'Große mobile Schließen-Fläche fehlt')
+  assert(books.includes('closeButtonIconClassName') && books.includes('size-7'), 'Großes mobiles Schließen-Symbol fehlt')
+  assert(dialog.includes('closeButtonClassName') && dialog.includes('closeButtonIconClassName'), 'Dialog unterstützt keine gezielte Schließen-Größe')
 })
 
 test('Unterstützte Werke sind erweiterbar und können zweisprachige Flyer anzeigen', () => {

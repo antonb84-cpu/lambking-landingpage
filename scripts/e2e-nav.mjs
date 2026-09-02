@@ -143,8 +143,19 @@ try {
       touchOpen: document.querySelector('.book3d-scene')?.dataset.touchOpen,
       allLeavesOpen: [...document.querySelectorAll('.book3d-leaf')].every(leaf => leaf.style.transform.includes('rotateY(-172deg)'))
     })`) || '{}')
-    const ok = after === before && result.contextMenuBlocked && state.touchOpen === 'true' && state.allLeavesOpen && !state.dialog
-    console.log(`${ok ? '✓' : '✗'} Smartphone-Tipp blättert Hero-Buch vollständig auf, ohne Bildmenü oder Dialog (Tabs ${before}→${after})`)
+    const opened = after === before && result.contextMenuBlocked && state.touchOpen === 'true' && state.allLeavesOpen && !state.dialog
+    await evalJs(`(() => {
+      const book = document.querySelector('.book3d-scene')
+      book.dispatchEvent(new PointerEvent('pointerdown', {bubbles:true, pointerType:'touch'}))
+      book.click()
+    })()`)
+    await new Promise((r) => setTimeout(r, 5000))
+    const closed = JSON.parse(await evalJs(`JSON.stringify({
+      touchOpen: document.querySelector('.book3d-scene')?.dataset.touchOpen,
+      allLeavesClosed: [...document.querySelectorAll('.book3d-leaf')].every(leaf => leaf.style.transform.includes('rotateY(0deg)'))
+    })`) || '{}')
+    const ok = opened && closed.touchOpen === 'false' && closed.allLeavesClosed
+    console.log(`${ok ? '✓' : '✗'} Smartphone-Tipp öffnet und schließt das Hero-Buch vollständig, ohne Bildmenü oder Dialog (Tabs ${before}→${after})`)
     if (!ok) fehler++
     // Für die folgenden Prüfungen auf einen garantiert sauberen Seitenzustand
     // zurückkehren. Das ist auch auf langsameren GitHub-Runnern stabiler als

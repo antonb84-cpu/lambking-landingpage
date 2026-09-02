@@ -285,7 +285,7 @@
             <label for="s_playStore">Google-Play-Link</label><input type="url" id="s_playStore" placeholder="https://play.google.com/store/apps/details?id=…">
             <label for="s_iosStore">App-Store-Link für iPhone/iPad</label><input type="url" id="s_iosStore" placeholder="https://apps.apple.com/…">
             <div class="grid2">
-              <div><label for="s_contactEmail">Kontakt-E-Mail für „Schreiben Sie uns“</label><input type="email" id="s_contactEmail" placeholder="hello@lambking.de"></div>
+              <div><label for="s_contactEmail">Kontakt-E-Mail für „Schreiben Sie uns“</label><input type="email" id="s_contactEmail" placeholder="hello@lambking.store"></div>
               <div>
                 <label>Sternebewertung</label>
                 <div class="checkline" style="margin-top:8px;"><input type="checkbox" id="s_showRatings"><label for="s_showRatings" style="margin:0; font-weight:500;">Amazon-Bewertungen anzeigen</label></div>
@@ -580,7 +580,7 @@ async function load(){
   $('s_appUrl').value = state.site.appUrl || '';
   $('s_playStore').value = state.site.playStoreUrl || '';
   $('s_iosStore').value = state.site.iosStoreUrl || '';
-  $('s_contactEmail').value = state.site.contactEmail || 'hello@lambking.de';
+  $('s_contactEmail').value = state.site.contactEmail || 'hello@lambking.store';
   $('s_showRatings').checked = state.site.showRatings !== false;
   $('s_author').value = state.site.authorName || '';
   $('s_brand').value = state.site.brand || '';

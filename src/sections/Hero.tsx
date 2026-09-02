@@ -125,10 +125,14 @@ function Book3D() {
       onClick={(event) => {
         // Ein echter Mausklick ist hier absichtlich ohne Navigation: Am
         // Computer reicht Hover. Touch und Tastatur starten dagegen das
-        // vollständige automatische Durchblättern.
+        // vollständige automatische Durchblättern und schließen es beim
+        // nächsten Antippen wieder.
         if (lastPointerType.current !== 'mouse' || event.detail === 0) {
-          setIsTouchOpen(true)
-          kickRef.current(true)
+          setIsTouchOpen((open) => {
+            const nextOpen = !open
+            kickRef.current(nextOpen)
+            return nextOpen
+          })
         }
       }}
       onContextMenu={(event) => event.preventDefault()}

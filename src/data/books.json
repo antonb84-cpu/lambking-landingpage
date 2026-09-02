@@ -5,7 +5,7 @@
     "playStoreUrl": "",
     "iosStoreUrl": "",
     "paypalUrl": "https://www.paypal.com/ncp/payment/DGMPDALZ9PUQS",
-    "contactEmail": "hello@lambking.de",
+    "contactEmail": "hello@lambking.store",
     "showRatings": true,
     "supportedOrganizations": [
       {
@@ -44,8 +44,8 @@
     ],
     "authorPhoto": "images/autor.jpg?v=1788241701",
     "authorName": "Anton Bernt",
-    "impressum": "Angaben gemäß § 5 DDG\r\n\r\nAnton Bernt\r\nLambKing Stories\r\nAllmendstr. 35\r\n75223 Niefern-Öschelbronn\r\nDeutschland\r\n\r\nKontakt\r\n\r\nE-Mail:\r\nhello@lambking.de",
-    "datenschutz": "1. Verantwortlicher\r\n\r\nAnton Bernt, LambKing Stories, Allmendstr. 35, 75223 Niefern-Öschelbronn, Deutschland\r\nE-Mail: hello@lambking.de\r\n\r\n2. Hosting über GitHub Pages\r\n\r\nDiese Website wird über GitHub Pages (GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, USA) bereitgestellt. Beim Aufruf der Seite verarbeitet GitHub technisch notwendige Verbindungsdaten (z. B. IP-Adresse, Datum und Uhrzeit des Zugriffs, aufgerufene Seite, Browsertyp) in Server-Logfiles. Diese Verarbeitung ist erforderlich, um die Website auszuliefern (Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO – berechtigtes Interesse am sicheren Betrieb dieser Website). Da GitHub seinen Sitz in den USA hat, kann eine Datenverarbeitung in den USA nicht ausgeschlossen werden. Details dazu finden Sie im GitHub Privacy Statement.\r\n\r\n3. Spracheinstellung (lokale Speicherung)\r\n\r\nDiese Website speichert Ihre gewählte Sprache (Deutsch/Englisch) ausschließlich lokal in Ihrem Browser (localStorage, Schlüssel „lambking-lang\"). Diese Information wird nicht an uns oder Dritte übertragen und nicht für Werbung oder Tracking verwendet. Sie können sie jederzeit über die Browser-Einstellungen löschen.\r\n\r\n4. Keine Cookies, kein Tracking\r\n\r\nDiese Website verwendet keine Cookies und keine Analyse- oder Marketing-Dienste. Schriftarten werden lokal von dieser Website geladen, nicht von externen Diensten.\r\n\r\n5. Externe Links\r\n\r\nDiese Website enthält Links zu externen Anbietern:\r\n- Amazon (Kauf der Bücher)\r\n- PayPal (freiwillige Unterstützung) – als reiner Link, ohne eingebettetes Zahlungsformular\r\n- Ko-fi (freiwillige Unterstützung) – als reiner Link, ohne JavaScript-Widget oder iFrame; erst wenn Sie den Ko-fi-Link anklicken, wird die Website von Ko-fi geöffnet, und ab diesem Zeitpunkt erfolgt die Datenverarbeitung nach den Datenschutzbestimmungen von Ko-fi\r\n- LambKing Web-App (ebenfalls über GitHub Pages)\r\n\r\nErst wenn Sie einen dieser Links anklicken, verlassen Sie diese Website. Ab diesem Zeitpunkt erfolgt die Datenverarbeitung nach den Datenschutzbestimmungen des jeweiligen Anbieters.\r\n\r\n6. Kontaktaufnahme per E-Mail\r\n\r\nBei Kontaktaufnahme per E-Mail werden die übermittelten Daten (E-Mail-Adresse, Inhalt der Nachricht) zur Bearbeitung der Anfrage verarbeitet (Art. 6 Abs. 1 lit. b und f DSGVO).\r\n\r\n7. Ihre Rechte\r\n\r\nSie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch. Zudem haben Sie das Recht, sich bei einer Datenschutz-Aufsichtsbehörde zu beschweren.\r\n\r\nStand: August 2026",
+    "impressum": "Angaben gemäß § 5 DDG\r\n\r\nAnton Bernt\r\nLambKing Stories\r\nAllmendstr. 35\r\n75223 Niefern-Öschelbronn\r\nDeutschland\r\n\r\nKontakt\r\n\r\nE-Mail:\r\nhello@lambking.store",
+    "datenschutz": "1. Verantwortlicher\r\n\r\nAnton Bernt, LambKing Stories, Allmendstr. 35, 75223 Niefern-Öschelbronn, Deutschland\r\nE-Mail: hello@lambking.store\r\n\r\n2. Hosting über GitHub Pages\r\n\r\nDiese Website wird über GitHub Pages (GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, USA) bereitgestellt. Beim Aufruf der Seite verarbeitet GitHub technisch notwendige Verbindungsdaten (z. B. IP-Adresse, Datum und Uhrzeit des Zugriffs, aufgerufene Seite, Browsertyp) in Server-Logfiles. Diese Verarbeitung ist erforderlich, um die Website auszuliefern (Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO – berechtigtes Interesse am sicheren Betrieb dieser Website). Da GitHub seinen Sitz in den USA hat, kann eine Datenverarbeitung in den USA nicht ausgeschlossen werden. Details dazu finden Sie im GitHub Privacy Statement.\r\n\r\n3. Spracheinstellung (lokale Speicherung)\r\n\r\nDiese Website speichert Ihre gewählte Sprache (Deutsch/Englisch) ausschließlich lokal in Ihrem Browser (localStorage, Schlüssel „lambking-lang\"). Diese Information wird nicht an uns oder Dritte übertragen und nicht für Werbung oder Tracking verwendet. Sie können sie jederzeit über die Browser-Einstellungen löschen.\r\n\r\n4. Keine Cookies, kein Tracking\r\n\r\nDiese Website verwendet keine Cookies und keine Analyse- oder Marketing-Dienste. Schriftarten werden lokal von dieser Website geladen, nicht von externen Diensten.\r\n\r\n5. Externe Links\r\n\r\nDiese Website enthält Links zu externen Anbietern:\r\n- Amazon (Kauf der Bücher)\r\n- PayPal (freiwillige Unterstützung) – als reiner Link, ohne eingebettetes Zahlungsformular\r\n- Ko-fi (freiwillige Unterstützung) – als reiner Link, ohne JavaScript-Widget oder iFrame; erst wenn Sie den Ko-fi-Link anklicken, wird die Website von Ko-fi geöffnet, und ab diesem Zeitpunkt erfolgt die Datenverarbeitung nach den Datenschutzbestimmungen von Ko-fi\r\n- LambKing Web-App (ebenfalls über GitHub Pages)\r\n\r\nErst wenn Sie einen dieser Links anklicken, verlassen Sie diese Website. Ab diesem Zeitpunkt erfolgt die Datenverarbeitung nach den Datenschutzbestimmungen des jeweiligen Anbieters.\r\n\r\n6. Kontaktaufnahme per E-Mail\r\n\r\nBei Kontaktaufnahme per E-Mail werden die übermittelten Daten (E-Mail-Adresse, Inhalt der Nachricht) zur Bearbeitung der Anfrage verarbeitet (Art. 6 Abs. 1 lit. b und f DSGVO).\r\n\r\n7. Ihre Rechte\r\n\r\nSie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch. Zudem haben Sie das Recht, sich bei einer Datenschutz-Aufsichtsbehörde zu beschweren.\r\n\r\nStand: August 2026",
     "authorPhotoShape": "rund",
     "authorPhotoSize": "mittel",
     "kofiUrl": "https://ko-fi.com/U6U21YO0Z5",
@@ -77,7 +77,7 @@
             "Druck & Versand über Amazon"
           ],
           "bookHint": "Mit der Maus drüberfahren – das Buch blättert sich selbstständig auf",
-          "mobileBookHint": "Antippen – das Buch blättert sich selbstständig auf"
+          "mobileBookHint": "Antippen zum Öffnen oder Schließen"
         },
         "books": {
           "eyebrow": "Unsere Bücher",
@@ -251,7 +251,7 @@
             "Printing & shipping via Amazon"
           ],
           "bookHint": "Hover over the book – it opens and flips through automatically",
-          "mobileBookHint": "Tap the book – it opens and flips through automatically"
+          "mobileBookHint": "Tap the book to open or close it"
         },
         "books": {
           "eyebrow": "Our books",

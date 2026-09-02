@@ -58,6 +58,8 @@ function BookDialog({
     <Dialog open={!!book} onOpenChange={(open) => !open && !zoomOpen && onClose()}>
       <DialogContent
         className="max-h-[92vh] w-[94vw] max-w-5xl overflow-y-auto rounded-md border-2 bg-background p-0"
+        closeButtonClassName="right-3 top-3 flex size-12 items-center justify-center rounded-full border border-primary/15 bg-white opacity-100 shadow-lg sm:right-4 sm:top-4 sm:size-10"
+        closeButtonIconClassName="size-7 sm:size-5"
         onEscapeKeyDown={(e) => zoomOpen && e.preventDefault()}
         onPointerDownOutside={(e) => zoomOpen && e.preventDefault()}
       >
