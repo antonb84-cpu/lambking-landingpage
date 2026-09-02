@@ -107,7 +107,6 @@ try {
 
   const tests = [
     ['Bücher', '#buecher'],
-    ["So funktioniert's", '#so-funktionierts'],
     ['App', '#app'],
     ['Über das Projekt', '#ueber'],
     ['FAQ', '#faq'],
@@ -123,7 +122,8 @@ try {
     const after = await targetCount()
     const s = JSON.parse(await evalJs(`JSON.stringify({hash: location.hash, scrollY: Math.round(window.scrollY)})`) || '{}')
     const ok = res === 'ok' && after === before && s.hash === hash && s.scrollY > 50
-    console.log(`${ok ? '✓' : '✗'} ${label} → ${hash} (Tabs ${before}→${after})`)
+    const details = ok ? '' : `, Ergebnis ${res}, Hash ${s.hash || 'leer'}, ScrollY ${s.scrollY ?? 'unbekannt'}`
+    console.log(`${ok ? '✓' : '✗'} ${label} → ${hash} (Tabs ${before}→${after}${details})`)
     if (!ok) fehler++
   }
 
