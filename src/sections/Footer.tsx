@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Mail } from 'lucide-react'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { SITE } from '@/data/books'
 import { useLang } from '@/data/lang'
@@ -34,6 +35,7 @@ function LegalText({ text }: { text: string }) {
 export default function Footer() {
   const t = textsFor(useLang())
   const [legal, setLegal] = useState<LegalKind | null>(null)
+  const [contactOpen, setContactOpen] = useState(false)
   const legalText = legal === 'impressum' ? SITE.impressum : SITE.datenschutz
 
   // Auch aus dem mobilen Menü heraus öffnen
@@ -45,7 +47,6 @@ export default function Footer() {
 
   const NAV = [
     { label: t.nav.books, href: '#buecher' },
-    { label: t.nav.how, href: '#so-funktionierts' },
     { label: t.nav.app, href: '#app' },
     { label: t.nav.about, href: '#ueber' },
     { label: t.nav.faq, href: '#faq' },
@@ -75,7 +76,17 @@ export default function Footer() {
         </div>
         <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-primary-foreground/15 pt-6 text-xs text-primary-foreground/60 sm:flex-row">
           <p>© {new Date().getFullYear()} LambKing Stories. {t.footer.rights}</p>
-          <div className="flex gap-5">
+          <div className="flex flex-wrap items-center justify-center gap-5">
+            {SITE.contactEmail && (
+              <button
+                type="button"
+                onClick={() => setContactOpen(true)}
+                className="inline-flex items-center gap-2 rounded-full border-2 border-primary-foreground/25 px-4 py-1.5 font-bold text-primary-foreground transition-colors hover:border-primary-foreground/50 hover:bg-primary-foreground/10"
+              >
+                <Mail className="h-3.5 w-3.5" aria-hidden />
+                {t.contact.write}
+              </button>
+            )}
             {/* Öffnen ein Fenster auf derselben Seite – kein neuer Tab */}
             <button type="button" onClick={() => setLegal('impressum')} className="hover:text-primary-foreground">
               {t.footer.impressum}
@@ -86,6 +97,24 @@ export default function Footer() {
           </div>
         </div>
       </div>
+
+      <Dialog open={contactOpen} onOpenChange={setContactOpen}>
+        <DialogContent className="w-[92vw] max-w-md rounded-2xl border-2 bg-background p-7 sm:p-8">
+          <DialogHeader className="text-left">
+            <DialogTitle className="font-display text-2xl font-semibold">{t.contact.title}</DialogTitle>
+            <DialogDescription className="pt-2 leading-relaxed">{t.contact.intro}</DialogDescription>
+          </DialogHeader>
+          <div className="rounded-xl border border-accent/30 bg-accent/10 p-5">
+            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t.contact.emailLabel}</p>
+            <a
+              href={`mailto:${SITE.contactEmail}`}
+              className="mt-2 block break-all font-semibold text-primary underline decoration-primary/35 underline-offset-4 hover:decoration-primary"
+            >
+              {SITE.contactEmail}
+            </a>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={!!legal} onOpenChange={(open) => !open && setLegal(null)}>
         <DialogContent className="max-h-[85vh] w-[92vw] max-w-2xl overflow-y-auto rounded-md border-2 bg-background">

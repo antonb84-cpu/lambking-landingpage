@@ -2,7 +2,6 @@ import Header from '@/sections/Header'
 import Hero from '@/sections/Hero'
 import Books from '@/sections/Books'
 import Trust from '@/sections/Trust'
-import HowItWorks from '@/sections/HowItWorks'
 import AppSection from '@/sections/AppSection'
 import Donate from '@/sections/Donate'
 import About from '@/sections/About'
@@ -25,7 +24,6 @@ export default function App() {
         <Hero />
         <Books />
         <Trust />
-        <HowItWorks />
         <AppSection />
         <Donate />
         <About />

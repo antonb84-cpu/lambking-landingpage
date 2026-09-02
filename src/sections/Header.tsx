@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { Mail, Menu, X } from 'lucide-react'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { SITE } from '@/data/books'
+import { Menu, X } from 'lucide-react'
+import PaypalButton from '@/components/PaypalButton'
 import { setLang, useLang, type Lang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
 import { openLegal } from '@/data/openLegal'
@@ -61,13 +60,11 @@ export default function Header() {
   const lang = useLang()
   const t = textsFor(lang)
   const [menuOpen, setMenuOpen] = useState(false)
-  const [contactOpen, setContactOpen] = useState(false)
   const menuBtnRef = useRef<HTMLButtonElement>(null)
   const menuRef = useRef<HTMLElement>(null)
 
   const NAV = [
     { label: t.nav.books, href: '#buecher' },
-    { label: t.nav.how, href: '#so-funktionierts' },
     { label: t.nav.app, href: '#app' },
     { label: t.nav.about, href: '#ueber' },
     { label: t.nav.faq, href: '#faq' },
@@ -98,26 +95,27 @@ export default function Header() {
             className="h-14 w-auto transition-transform hover:scale-[1.04] sm:h-16"
           />
         </a>
-        <nav className="hidden items-center gap-5 text-sm font-bold text-muted-foreground lg:flex" aria-label="Hauptnavigation">
-          {NAV.map((n) => (
-            <a key={n.href} href={n.href} className="transition-colors hover:text-foreground">
-              {n.label}
-            </a>
-          ))}
-        </nav>
-        <div className="flex items-center gap-2">
-          {SITE.contactEmail && (
-            <button
-              type="button"
-              onClick={() => setContactOpen(true)}
-              className="hidden h-10 items-center gap-2 rounded-full border-2 border-border bg-card px-3 text-xs font-bold text-primary transition-colors hover:border-primary/35 hover:bg-primary/5 xl:inline-flex"
-            >
-              <Mail className="h-4 w-4" aria-hidden />
-              {t.contact.write}
-            </button>
-          )}
+        {/* Desktop: Navigation, dann ca. 3 cm Abstand, dann DE/EN + PayPal */}
+        <div className="hidden items-center lg:flex">
+          <nav className="flex items-center gap-5 text-sm font-bold text-muted-foreground" aria-label="Hauptnavigation">
+            {NAV.map((n) => (
+              <a key={n.href} href={n.href} className="transition-colors hover:text-foreground">
+                {n.label}
+              </a>
+            ))}
+          </nav>
+          {/* ml-28 = 112px ≈ 3 cm Abstand hinter FAQ */}
+          <div className="ml-28 flex items-center gap-4">
+            <LangSwitch />
+            {/* PayPal erst ab xl – bei schmaleren Desktop-Fenstern bleibt genug Luft */}
+            <div className="hidden xl:block">
+              <PaypalButton />
+            </div>
+          </div>
+        </div>
+        {/* Mobil: Sprachschalter + Hamburger */}
+        <div className="flex items-center gap-2 lg:hidden">
           <LangSwitch />
-          {/* Hamburger – nur mobil sichtbar */}
           <button
             ref={menuBtnRef}
             type="button"
@@ -152,18 +150,6 @@ export default function Header() {
                 </a>
               </li>
             ))}
-            {SITE.contactEmail && (
-              <li>
-                <button
-                  type="button"
-                  onClick={() => { setMenuOpen(false); setContactOpen(true) }}
-                  className="flex items-center gap-2 rounded-lg px-3 py-3.5 text-base font-bold text-foreground transition-colors hover:bg-secondary"
-                >
-                  <Mail className="h-5 w-5 text-primary" aria-hidden />
-                  {t.contact.write}
-                </button>
-              </li>
-            )}
             {/* Rechtsseiten öffnen als Fenster (wie im Footer) */}
             <li>
               <button
@@ -186,24 +172,6 @@ export default function Header() {
           </ul>
         </nav>
       )}
-
-      <Dialog open={contactOpen} onOpenChange={setContactOpen}>
-        <DialogContent className="w-[92vw] max-w-md rounded-2xl border-2 bg-background p-7 sm:p-8">
-          <DialogHeader className="text-left">
-            <DialogTitle className="font-display text-2xl font-semibold">{t.contact.title}</DialogTitle>
-            <DialogDescription className="pt-2 leading-relaxed">{t.contact.intro}</DialogDescription>
-          </DialogHeader>
-          <div className="rounded-xl border border-accent/30 bg-accent/10 p-5">
-            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t.contact.emailLabel}</p>
-            <a
-              href={`mailto:${SITE.contactEmail}`}
-              className="mt-2 block break-all font-semibold text-primary underline decoration-primary/35 underline-offset-4 hover:decoration-primary"
-            >
-              {SITE.contactEmail}
-            </a>
-          </div>
-        </DialogContent>
-      </Dialog>
     </header>
   )
 }

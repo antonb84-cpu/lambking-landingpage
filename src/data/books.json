@@ -4,7 +4,7 @@
     "appUrl": "https://konstantinsteinmiller.github.io/little-bible-stories/#/app",
     "playStoreUrl": "",
     "iosStoreUrl": "",
-    "paypalUrl": "https://www.paypal.com/ncp/payment/DWHKRPTCU6N3W",
+    "paypalUrl": "https://www.paypal.com/ncp/payment/DGMPDALZ9PUQS",
     "contactEmail": "hello@lambking.de",
     "showRatings": true,
     "supportedOrganizations": [
@@ -66,9 +66,9 @@
           "emailLabel": "E-Mail-Adresse"
         },
         "hero": {
-          "title1": "Kleine Helden. Große Geschichten.",
+          "title1": "Kleine Helden. Starke Geschichten.",
           "title2": "Ein großer Gott.",
-          "subtitle": "Malbücher und Kinderbücher, die biblische Abenteuer lebendig machen und Kinderherzen für Jesus öffnen.",
+          "subtitle": "Malbücher und Kinderbücher, die biblische Geschichten lebendig werden lassen und Kinderherzen für Jesus begeistern.",
           "ctaBooks": "Bücher entdecken",
           "ctaApp": "Zur kostenlosen App",
           "trust": [
@@ -117,14 +117,18 @@
           ]
         },
         "supportedWorks": {
-          "title": "Aus Glauben handeln",
-          "firstBefore": "LambKing Stories ist für uns mehr als ein Buchprojekt. Wir möchten mit dem, was daraus entsteht, auch Menschen unterstützen, die Hilfe, Hoffnung und einen neuen Anfang brauchen.",
-          "firstStrong": "",
-          "firstAfter": "",
-          "second": "Deshalb fördern wir christliche Werke, die sich um Waisenkinder und Familien in Not kümmern, Menschen auf ihrem Weg aus der Abhängigkeit begleiten, Bedürftige versorgen und ihnen von der Liebe Jesu erzählen.",
-          "third": "Auf diese Weise möchten wir nicht nur Geschichten über den Glauben erzählen, sondern ganz praktisch dazu beitragen, dass Gottes Reich sichtbar wird.",
-          "current": "Aktuell unterstützen wir folgende Einrichtungen und Werke:",
-          "visit": "Mehr über diese Arbeit erfahren"
+          "title": "Gemeinsam Gottes Reich bauen",
+          "firstBefore": "LambKing Stories soll mehr sein als ein Buchprojekt. Wir möchten mit dem, was daraus entsteht, auch dazu beitragen, Gottes Reich zu bauen und die gute Botschaft von Jesus Christus weiterzugeben.",
+          "firstStrong": "Von allem, was LambKing einnimmt, möchten wir ein Zehntel für christliche Missions-, Evangelisations- und Hilfsarbeit weitergeben.",
+          "firstAfter": "Damit möchten wir Menschen unterstützen, die ihren Glauben ganz praktisch leben und Jesus zu anderen bringen.",
+          "second": "Wir unterstützen christliche Werke, die das Evangelium verkünden, Waisenkindern und Familien in Not helfen, Bedürftige versorgen und Menschen auf ihrem Weg aus Abhängigkeit und schwierigen Lebenssituationen begleiten.",
+          "third": "So möchten wir nicht nur durch unsere Bücher Samen des Glaubens säen, sondern auch ganz praktisch daran mitwirken, dass Menschen Jesus kennenlernen und Gottes Reich wächst.",
+          "current": "Wir unterstützen folgende christliche Werke und Einrichtungen:",
+          "visit": "Mehr über diese Arbeit erfahren",
+          "viewFlyer": "Flyer ansehen",
+          "flyerTitle": "Informationsflyer",
+          "flyerDescription": "Der Flyer kann hier direkt gelesen und vergrößert werden.",
+          "openFlyerNewTab": "Flyer in einem neuen Fenster öffnen"
         },
         "how": {
           "eyebrow": "So funktioniert's",
@@ -159,10 +163,10 @@
           "title": "Geschichten, die Glauben wachsen lassen",
           "role": "Autor und Gründer von LambKing Stories",
           "paragraphs": [
-            "Als Vater einer großen Familie und überzeugter Christ liegt es mir besonders am Herzen, Kindern die Liebe Jesu und die Botschaft des Evangeliums näherzubringen.",
-            "Mein Glaube und das Leben mit meinen Kindern inspirieren mich zu Geschichten, die biblische Werte verständlich und kindgerecht vermitteln. So entstehen mit viel Liebe zum Detail Bücher, die Freude bereiten, Hoffnung schenken und Kinder in ihrem Glauben stärken."
+            "LambKing Stories ist aus meinem Glauben und dem Alltag mit meinen Kindern entstanden. Ich möchte biblische Geschichten so erzählen, dass Kinder sie gerne entdecken und gut verstehen.",
+            "Dabei ist es mir wichtig, dass sie Jesus dadurch besser kennenlernen und erfahren, wie sehr Gott sie liebt."
           ],
-          "highlight": "Mit LambKing Stories möchte ich einen kleinen Beitrag dazu leisten, dass Kinder Jesus kennenlernen, im Glauben wachsen und Gottes Reich durch die nächste Generation sichtbar wird."
+          "highlight": "Mein Wunsch ist, dass jedes Buch einen kleinen Samen des Glaubens in ihr Herz legt – einen Samen, den Gott wachsen und Frucht bringen lassen kann."
         },
         "support": {
           "title": "LambKing Stories unterstützen",
@@ -201,6 +205,10 @@
             {
               "q": "Wie kann ich Kontakt aufnehmen?",
               "a": "Du erreichst mich per E-Mail – ich freue mich über Nachrichten, Feedback und Anregungen."
+            },
+            {
+              "q": "Wie komme ich in drei Schritten zum Buch?",
+              "a": "1. Inhalt ansehen: Jedes Buch lässt sich hier direkt durchblättern – mit echten Beispielseiten aus dem Inneren. 2. Lieblingsbuch wählen: Malbuch oder Bilderbuch? Wähle die Geschichte, die zu deinem Kind passt. 3. Bei Amazon bestellen: Ein Klick führt zur Amazon-Produktseite. Bestellung, Bezahlung, Versand und Rückgabe werden dort abgewickelt."
             }
           ],
           "webAppLink": "Web-App öffnen →"
@@ -231,9 +239,9 @@
           "emailLabel": "Email address"
         },
         "hero": {
-          "title1": "Little heroes. Big stories.",
-          "title2": "A great God.",
-          "subtitle": "Coloring books and children's books that bring biblical adventures to life and open children's hearts to Jesus.",
+          "title1": "Little Heroes. Powerful Stories.",
+          "title2": "One Great God.",
+          "subtitle": "Coloring books and children’s books that bring Bible stories to life and inspire children to know and love Jesus.",
           "ctaBooks": "Discover the books",
           "ctaApp": "Free app",
           "trust": [
@@ -282,14 +290,18 @@
           ]
         },
         "supportedWorks": {
-          "title": "Acting in faith",
-          "firstBefore": "LambKing Stories is more than a book project to us. Through what grows from it, we also want to support people who need help, hope, and a new beginning.",
-          "firstStrong": "",
-          "firstAfter": "",
-          "second": "That is why we support Christian ministries that care for orphans and families in need, accompany people on their journey out of addiction, provide practical help to those in need, and tell them about the love of Jesus.",
-          "third": "In this way, we want not only to tell stories about faith, but also to make a practical contribution to making God’s kingdom visible.",
-          "current": "We currently support the following ministries and organizations:",
-          "visit": "Learn more about this work"
+          "title": "Building God’s Kingdom Together",
+          "firstBefore": "LambKing Stories is meant to be more than a book project. We want what grows from it to help build God’s Kingdom and share the Good News of Jesus Christ.",
+          "firstStrong": "From everything LambKing receives, we want to give one tenth to Christian mission, evangelism, and relief work.",
+          "firstAfter": "In this way, we want to support people who live out their faith and bring the message of Jesus to others.",
+          "second": "We support Christian ministries that share the Gospel, care for orphans and families in need, provide practical help, and support people on their way out of addiction and difficult life situations.",
+          "third": "In this way, we hope not only to plant seeds of faith through our books, but also to help people come to know Jesus and see God’s Kingdom grow.",
+          "current": "We support the following ministries and organizations:",
+          "visit": "Learn more about this work",
+          "viewFlyer": "View flyer",
+          "flyerTitle": "Information flyer",
+          "flyerDescription": "The flyer can be read and enlarged directly here.",
+          "openFlyerNewTab": "Open flyer in a new window"
         },
         "how": {
           "eyebrow": "How it works",
@@ -324,10 +336,10 @@
           "title": "Stories that grow faith",
           "role": "Author and founder of LambKing Stories",
           "paragraphs": [
-            "As the father of a large family and a devoted Christian, it is especially close to my heart to bring the love of Jesus and the message of the Gospel closer to children.",
-            "My faith and my life with my children inspire me to write stories that convey biblical values in a way children can understand. The result is lovingly crafted books that bring joy, give hope, and strengthen children in their faith."
+            "LambKing Stories grew out of my faith and everyday life with my children. I want to tell Bible stories in a way that children enjoy discovering and can easily understand.",
+            "Most of all, I want these stories to help children get to know Jesus better and discover how deeply God loves them."
           ],
-          "highlight": "With LambKing Stories, I want to make a small contribution so that children get to know Jesus, grow in faith, and make God's kingdom visible through the next generation."
+          "highlight": "My hope is that every book plants a small seed of faith in their hearts — a seed that God can grow and bring to fruit."
         },
         "support": {
           "title": "Support LambKing Stories",
@@ -366,6 +378,10 @@
             {
               "q": "How can I get in touch?",
               "a": "You can reach me by email – I look forward to messages, feedback, and suggestions."
+            },
+            {
+              "q": "How do I get my book in three steps?",
+              "a": "1. Look inside: Every book can be browsed right here – with real sample pages from the inside. 2. Choose your favorite book: Coloring book or picture book? Pick the story that suits your child. 3. Order on Amazon: One click takes you to the Amazon product page. Ordering, payment, shipping, and returns are handled there."
             }
           ],
           "webAppLink": "Open the web app →"

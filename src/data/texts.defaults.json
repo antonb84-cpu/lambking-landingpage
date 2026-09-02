@@ -153,6 +153,10 @@
         {
           "q": "Wie kann ich Kontakt aufnehmen?",
           "a": "Du erreichst mich per E-Mail – ich freue mich über Nachrichten, Feedback und Anregungen."
+        },
+        {
+          "q": "Wie komme ich in drei Schritten zum Buch?",
+          "a": "1. Inhalt ansehen: Jedes Buch lässt sich hier direkt durchblättern – mit echten Beispielseiten aus dem Inneren. 2. Lieblingsbuch wählen: Malbuch oder Bilderbuch? Wähle die Geschichte, die zu deinem Kind passt. 3. Bei Amazon bestellen: Ein Klick führt zur Amazon-Produktseite. Bestellung, Bezahlung, Versand und Rückgabe werden dort abgewickelt."
         }
       ],
       "webAppLink": "Web-App öffnen →"
@@ -322,6 +326,10 @@
         {
           "q": "How can I get in touch?",
           "a": "You can reach me by email – I look forward to messages, feedback, and suggestions."
+        },
+        {
+          "q": "How do I get my book in three steps?",
+          "a": "1. Look inside: Every book can be browsed right here – with real sample pages from the inside. 2. Choose your favorite book: Coloring book or picture book? Pick the story that suits your child. 3. Order on Amazon: One click takes you to the Amazon product page. Ordering, payment, shipping, and returns are handled there."
         }
       ],
       "webAppLink": "Open the web app →"
