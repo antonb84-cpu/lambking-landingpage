@@ -8,7 +8,7 @@ export const SITE = {
   brand: "LambKing Stories",
   appUrl: "https://konstantinsteinmiller.github.io/little-bible-stories/#/app",
   // Google-Play-Link – im Admin eintragen, sobald die App im Store ist.
-  playStoreUrl: "",
+  playStoreUrl: "https://play.google.com/store/apps/details?id=com.stories.lambking",
   // App-Store-Link – der Badge bleibt grau, solange dieses Feld leer ist.
   iosStoreUrl: "",
   paypalUrl: "https://www.paypal.com/ncp/payment/DGMPDALZ9PUQS",
