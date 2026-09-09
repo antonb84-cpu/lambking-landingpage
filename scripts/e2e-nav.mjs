@@ -98,6 +98,16 @@ try {
   const evalJs = async (expr) =>
     (await send('Runtime.evaluate', { expression: expr, returnByValue: true, awaitPromise: true })).result?.value
 
+  const waitForPageState = async (expr, timeoutMs = 12000) => {
+    const deadline = Date.now() + timeoutMs
+    while (Date.now() < deadline) {
+      const value = await evalJs(expr)
+      if (value) return value
+      await new Promise((resolve) => setTimeout(resolve, 250))
+    }
+    return null
+  }
+
   const targetCount = async () =>
     (await (await fetch(`http://127.0.0.1:${CDP_PORT}/json`)).json()).filter((t) => t.type === 'page').length
 
@@ -136,24 +146,30 @@ try {
       const contextMenuBlocked = !book.dispatchEvent(new MouseEvent('contextmenu', {bubbles:true, cancelable:true}))
       return {contextMenuBlocked, touchOpen:book.dataset.touchOpen}
     })()`)
-    await new Promise((r) => setTimeout(r, 7000))
+    const stateJson = await waitForPageState(`(() => {
+      const state = {
+        dialog: !!document.querySelector('[role="dialog"]'),
+        touchOpen: document.querySelector('.book3d-scene')?.dataset.touchOpen,
+        allLeavesOpen: [...document.querySelectorAll('.book3d-leaf')].every(leaf => leaf.style.transform.includes('rotateY(-172deg)'))
+      }
+      return state.touchOpen === 'true' && state.allLeavesOpen ? JSON.stringify(state) : ''
+    })()`)
     const after = await targetCount()
-    const state = JSON.parse(await evalJs(`JSON.stringify({
-      dialog: !!document.querySelector('[role="dialog"]'),
-      touchOpen: document.querySelector('.book3d-scene')?.dataset.touchOpen,
-      allLeavesOpen: [...document.querySelectorAll('.book3d-leaf')].every(leaf => leaf.style.transform.includes('rotateY(-172deg)'))
-    })`) || '{}')
+    const state = JSON.parse(stateJson || '{}')
     const opened = after === before && result.contextMenuBlocked && state.touchOpen === 'true' && state.allLeavesOpen && !state.dialog
     await evalJs(`(() => {
       const book = document.querySelector('.book3d-scene')
       book.dispatchEvent(new PointerEvent('pointerdown', {bubbles:true, pointerType:'touch'}))
       book.click()
     })()`)
-    await new Promise((r) => setTimeout(r, 5000))
-    const closed = JSON.parse(await evalJs(`JSON.stringify({
-      touchOpen: document.querySelector('.book3d-scene')?.dataset.touchOpen,
-      allLeavesClosed: [...document.querySelectorAll('.book3d-leaf')].every(leaf => leaf.style.transform.includes('rotateY(0deg)'))
-    })`) || '{}')
+    const closedJson = await waitForPageState(`(() => {
+      const state = {
+        touchOpen: document.querySelector('.book3d-scene')?.dataset.touchOpen,
+        allLeavesClosed: [...document.querySelectorAll('.book3d-leaf')].every(leaf => leaf.style.transform.includes('rotateY(0deg)'))
+      }
+      return state.touchOpen === 'false' && state.allLeavesClosed ? JSON.stringify(state) : ''
+    })()`)
+    const closed = JSON.parse(closedJson || '{}')
     const ok = opened && closed.touchOpen === 'false' && closed.allLeavesClosed
     console.log(`${ok ? '✓' : '✗'} Smartphone-Tipp öffnet und schließt das Hero-Buch vollständig, ohne Bildmenü oder Dialog (Tabs ${before}→${after})`)
     if (!ok) fehler++
