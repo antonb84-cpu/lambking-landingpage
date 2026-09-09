@@ -119,6 +119,9 @@
   .text-language{min-width:0;}
   .text-language h4{margin:12px 0 4px; color:var(--blue); font-size:14px;}
   .text-language textarea{min-height:76px;}
+  .text-format-toolbar{display:flex; align-items:center; gap:10px; margin:12px 0 2px; padding:9px 10px; border:1px solid var(--line); border-radius:10px; background:#FCFAF5;}
+  .text-format-toolbar button{min-width:72px; padding:7px 12px;}
+  .text-format-toolbar small{color:var(--muted); line-height:1.35;}
   .settings-save{position:sticky; bottom:10px; z-index:4; display:flex; justify-content:flex-end; padding:10px; border:1px solid var(--line); border-radius:12px; background:rgba(255,255,255,.94); box-shadow:0 5px 20px rgba(27,58,92,.12);}
   .orphan-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); gap:12px; margin-top:14px;}
   .orphan-item{display:flex; min-width:0; flex-direction:column; gap:8px; padding:10px; border:1px solid var(--line); border-radius:12px; background:#fff;}
@@ -241,6 +244,10 @@
       </div>
 
       <label for="f_description">Beschreibung</label>
+      <div class="text-format-toolbar">
+        <button type="button" class="btn btn-ghost" onmousedown="event.preventDefault()" onclick="formatSelectedTextBold('f_description')"><b>B</b>&nbsp; Fett</button>
+        <small>Text in der Beschreibung markieren und auf „Fett“ klicken. Noch einmal klicken entfernt die Fettschrift.</small>
+      </div>
       <textarea id="f_description" class="draft" rows="8" placeholder="Worum geht es in dem Buch?"></textarea>
 
       <label for="f_highlights">Highlights (eine Zeile = ein Punkt, optional)</label>
@@ -408,6 +415,7 @@ let photoData = null;
 let currentLang = 'de';
 let currentOrphans = [];
 let supportOrganizationsDraft = [];
+let activeRichTextField = null;
 
 const $ = id => document.getElementById(id);
 
@@ -494,8 +502,40 @@ function renderFrontendTextEditors(useDefaults=false){
         return `<label for="${fieldId}">${esc(textFieldLabel(section, path))}</label>${control}`;
       }).join('')}</div>`;
     }).join('');
-    return `<details class="settings-panel" style="margin-top:10px;"><summary>${label}</summary><div class="settings-body text-language-grid">${languages}</div></details>`;
+    return `<details class="settings-panel" style="margin-top:10px;"><summary>${label}</summary><div class="settings-body"><div class="text-format-toolbar"><button type="button" class="btn btn-ghost" onmousedown="event.preventDefault()" onclick="formatSelectedTextBold()"><b>B</b>&nbsp; Fett</button><small>Text in einem mehrzeiligen Textfeld markieren und auf „Fett“ klicken. Die Markierung <code>**…**</code> wird auf der Landingpage fett dargestellt.</small></div><div class="text-language-grid">${languages}</div></div></details>`;
   }).join('');
+  document.querySelectorAll('[data-text-lang]').forEach(field => {
+    field.addEventListener('focus', () => { activeRichTextField = field.tagName === 'TEXTAREA' ? field : null; });
+    field.addEventListener('select', () => { activeRichTextField = field.tagName === 'TEXTAREA' ? field : null; });
+    field.addEventListener('keydown', event => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'b') {
+        event.preventDefault();
+        activeRichTextField = field;
+        formatSelectedTextBold();
+      }
+    });
+  });
+}
+
+function formatSelectedTextBold(fieldId=''){
+  const field = fieldId ? $(fieldId) : activeRichTextField;
+  if (!field || field.tagName !== 'TEXTAREA') {
+    toast('Bitte zuerst Text in einem mehrzeiligen Textfeld markieren.', true);
+    return;
+  }
+  const start = field.selectionStart ?? 0;
+  const end = field.selectionEnd ?? start;
+  if (start === end) {
+    field.focus();
+    toast('Bitte zuerst den Text markieren, der fett erscheinen soll.', true);
+    return;
+  }
+  const selected = field.value.slice(start, end);
+  const isBold = selected.startsWith('**') && selected.endsWith('**') && selected.length > 4;
+  const replacement = isBold ? selected.slice(2, -2) : `**${selected}**`;
+  field.setRangeText(replacement, start, end, 'select');
+  field.focus();
+  field.dispatchEvent(new Event('input', {bubbles:true}));
 }
 
 function setNestedText(target, path, value){

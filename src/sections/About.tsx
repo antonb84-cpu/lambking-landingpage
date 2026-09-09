@@ -1,4 +1,5 @@
 import Reveal from '@/components/Reveal'
+import RichText from '@/components/RichText'
 import { SITE } from '@/data/books'
 import { useLang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
@@ -40,9 +41,9 @@ export default function About() {
 
           <div className="mt-7 space-y-4 leading-relaxed text-muted-foreground">
             {t.about.paragraphs.map((p) => (
-              <p key={p.slice(0, 24)}>{p}</p>
+              <p key={p.slice(0, 24)}><RichText text={p} /></p>
             ))}
-            <p className="font-semibold text-foreground">{t.about.highlight}</p>
+            <p className="font-semibold text-foreground"><RichText text={t.about.highlight} /></p>
           </div>
         </Reveal>
       </div>

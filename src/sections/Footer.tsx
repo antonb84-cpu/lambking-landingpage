@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Mail } from 'lucide-react'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import RichText from '@/components/RichText'
 import { SITE } from '@/data/books'
 import { useLang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
@@ -63,7 +64,7 @@ export default function Footer() {
               className="mx-auto h-14 w-auto rounded-md bg-background px-3 py-2 shadow-md md:mx-0"
             />
             <p className="mt-3 max-w-xs text-sm text-primary-foreground/70">
-              {t.footer.tagline}
+              <RichText text={t.footer.tagline} />
             </p>
           </div>
           <nav className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm font-semibold text-primary-foreground/80" aria-label="Fußzeilen-Navigation">
@@ -102,7 +103,7 @@ export default function Footer() {
         <DialogContent className="w-[92vw] max-w-md rounded-2xl border-2 bg-background p-7 sm:p-8">
           <DialogHeader className="text-left">
             <DialogTitle className="font-display text-2xl font-semibold">{t.contact.title}</DialogTitle>
-            <DialogDescription className="pt-2 leading-relaxed">{t.contact.intro}</DialogDescription>
+            <DialogDescription className="pt-2 leading-relaxed"><RichText text={t.contact.intro} /></DialogDescription>
           </DialogHeader>
           <div className="rounded-xl border border-accent/30 bg-accent/10 p-5">
             <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t.contact.emailLabel}</p>

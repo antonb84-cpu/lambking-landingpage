@@ -1,6 +1,7 @@
 import { BookOpen, ShieldCheck, Smartphone, Sparkles } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import Reveal from '@/components/Reveal'
+import RichText from '@/components/RichText'
 import { BOOKS, isNew } from '@/data/books'
 import { useLang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
@@ -209,7 +210,7 @@ export default function Hero() {
             <span className="italic text-accent lg:block">{t.hero.title2}</span>
           </h1>
           <p className="mt-5 max-w-xl text-lg leading-relaxed text-muted-foreground">
-            {t.hero.subtitle}
+            <RichText text={t.hero.subtitle} />
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <a

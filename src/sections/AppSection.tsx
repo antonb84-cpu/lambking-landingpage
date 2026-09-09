@@ -1,5 +1,6 @@
 import { ExternalLink } from 'lucide-react'
 import Reveal from '@/components/Reveal'
+import RichText from '@/components/RichText'
 import { SITE } from '@/data/books'
 import { useLang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
@@ -45,7 +46,7 @@ export default function AppSection() {
             {t.app.title}
           </h2>
           <p className="mt-4 leading-relaxed text-muted-foreground">
-            {t.app.text}
+            <RichText text={t.app.text} />
           </p>
           <div className="mt-7 flex flex-col items-start gap-3">
             {/* Primär: die Web-App (echter externer Link aus den Einstellungen) */}

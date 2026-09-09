@@ -1,5 +1,6 @@
 import { HandHeart } from 'lucide-react'
 import Reveal from '@/components/Reveal'
+import RichText from '@/components/RichText'
 import KofiButton from '@/components/KofiButton'
 import PaypalButton from '@/components/PaypalButton'
 import { SITE } from '@/data/books'
@@ -26,7 +27,7 @@ export default function Donate() {
                     {t.support.title}
                   </h2>
                   <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-                    {t.support.text}
+                    <RichText text={t.support.text} />
                   </p>
                 </div>
               </div>

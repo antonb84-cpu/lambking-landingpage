@@ -1,5 +1,6 @@
 import { Eye, MousePointerClick, Truck } from 'lucide-react'
 import Reveal from '@/components/Reveal'
+import RichText from '@/components/RichText'
 import { useLang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
 
@@ -29,7 +30,7 @@ export default function HowItWorks() {
                     <Icon className="h-6 w-6" />
                   </div>
                   <h3 className="font-display text-lg font-semibold">{s.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{s.text}</p>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground"><RichText text={s.text} /></p>
                 </div>
               </Reveal>
             )

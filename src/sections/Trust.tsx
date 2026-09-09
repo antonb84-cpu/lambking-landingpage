@@ -1,5 +1,6 @@
 import { Frown, HeartHandshake, Smile } from 'lucide-react'
 import Reveal from '@/components/Reveal'
+import RichText from '@/components/RichText'
 import { useLang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
 
@@ -46,7 +47,7 @@ export default function Trust() {
                 />
               )}
               <h3 className="font-bold">{it.title}</h3>
-              <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{it.text}</p>
+              <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground"><RichText text={it.text} /></p>
             </Reveal>
           ))}
         </div>

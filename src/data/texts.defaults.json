@@ -8,15 +8,15 @@
       "faq": "FAQ"
     },
     "contact": {
-      "write": "Schreiben Sie uns",
-      "title": "Schreiben Sie uns",
-      "intro": "Haben Sie eine Frage zu unseren Büchern oder zur LambKing App? Schreiben Sie uns gerne eine E-Mail.",
+      "write": "Schreib uns",
+      "title": "Schreib uns",
+      "intro": "Du hast eine Frage zu unseren Büchern oder zur LambKing App? Dann schreib uns gerne eine E-Mail.",
       "emailLabel": "E-Mail-Adresse"
     },
     "hero": {
       "title1": "Kleine Helden. Große Geschichten.",
       "title2": "Ein großer Gott.",
-      "subtitle": "Malbücher und Kinderbücher, die biblische Abenteuer lebendig machen und Kinderherzen für Jesus öffnen.",
+      "subtitle": "Liebevoll gestaltete Mal- und Kinderbücher, die biblische Geschichten lebendig erzählen und Kinder im Glauben stärken.",
       "ctaBooks": "Bücher entdecken",
       "ctaApp": "Zur kostenlosen App",
       "trust": [
@@ -29,8 +29,8 @@
     },
     "books": {
       "eyebrow": "Unsere Bücher",
-      "title": "Aussuchen, reinschauen, bestellen.",
-      "subtitle": "Sorgfältig ausgewählt, biblisch fundiert erzählt. Klicke auf ein Buch, um den Inhalt anzusehen – zur Bestellung geht es über den Amazon-Link.",
+      "title": "Entdecken, reinschauen, bestellen.",
+      "subtitle": "Liebevoll gestaltet und biblisch fundiert erzählt. Schau direkt ins Buch und bestelle dein Lieblingsbuch anschließend bei Amazon.",
       "all": "Alle",
       "emptyComics": "Hier entstehen gerade biblische Comic-Abenteuer – schau bald wieder vorbei!",
       "emptyAll": "Hier entstehen gerade neue Bücher – schau bald wieder vorbei!",
@@ -48,16 +48,16 @@
       "buyAmazon": "Bei Amazon ansehen"
     },
     "trust": {
-      "title": "Vertrauen, das trägt.",
+      "title": "Darauf können Familien vertrauen.",
       "childrenIconLabel": "Vom traurigen zum fröhlichen Kinderherz",
       "items": [
         {
-          "title": "Biblisch fundiert & kindgerecht",
-          "text": "Alle Inhalte sind biblisch fundiert und altersgerecht aufbereitet."
+          "title": "Biblisch fundiert & altersgerecht",
+          "text": "Biblische Geschichten – verständlich und passend für das jeweilige Alter aufbereitet."
         },
         {
-          "title": "Kindgerecht & wertvoll",
-          "text": "Spannende Geschichten, die Werte vermitteln und die Beziehung zu Gott stärken."
+          "title": "Wertvoll & glaubensstärkend",
+          "text": "Geschichten, die Mut machen, christliche Werte vermitteln und die Beziehung zu Gott stärken."
         },
         {
           "title": "Werbefrei & sicher",
@@ -67,11 +67,11 @@
     },
     "supportedWorks": {
       "title": "Aus Glauben handeln",
-      "firstBefore": "LambKing Stories ist für uns mehr als ein Buchprojekt. Wir möchten mit dem, was daraus entsteht, auch Menschen unterstützen, die Hilfe, Hoffnung und einen neuen Anfang brauchen.",
-      "firstStrong": "",
+      "firstBefore": "LambKing Stories soll mehr sein als ein Buchprojekt. Deshalb unterstützen wir christliche Organisationen, die das Evangelium weitergeben und Menschen in schwierigen Lebenssituationen praktisch begleiten.",
+      "firstStrong": "Einen festen Teil unserer Einnahmen geben wir an christliche Missions-, Evangelisations- und Hilfsprojekte weiter.",
       "firstAfter": "",
-      "second": "Deshalb fördern wir christliche Werke, die sich um Waisenkinder und Familien in Not kümmern, Menschen auf ihrem Weg aus der Abhängigkeit begleiten, Bedürftige versorgen und ihnen von der Liebe Jesu erzählen.",
-      "third": "Auf diese Weise möchten wir nicht nur Geschichten über den Glauben erzählen, sondern ganz praktisch dazu beitragen, dass Gottes Reich sichtbar wird.",
+      "second": "So möchten wir nicht nur vom Glauben erzählen, sondern Hoffnung ganz konkret weitergeben.",
+      "third": "",
       "current": "Aktuell unterstützen wir folgende Einrichtungen und Werke:",
       "visit": "Mehr über diese Arbeit erfahren",
       "viewFlyer": "Flyer ansehen",
@@ -99,8 +99,8 @@
     },
     "app": {
       "eyebrow": "Die App",
-      "title": "Die Geschichten auch digital erleben",
-      "text": "In der kostenlosen LambKing App entdecken Kinder Geschichten, die Glauben stärken und Gottes gute Botschaft lebendig machen – liebevoll erzählt und kindgerecht gestaltet. Von dort geht es auch zurück zu den Büchern.",
+      "title": "Entdecke die LambKing App",
+      "text": "In der kostenlosen LambKing App entdecken Kinder biblische Geschichten auf lebendige und leicht verständliche Weise – liebevoll erzählt und werbefrei.",
       "ctaWebApp": "Web-App kostenlos öffnen",
       "playSoon": "Google-Play-Link folgt",
       "playAlt": "Jetzt bei Google Play",
@@ -109,17 +109,17 @@
     },
     "about": {
       "eyebrow": "Über das Projekt",
-      "title": "Geschichten, die Glauben wachsen lassen",
+      "title": "Geschichten, die den Glauben wachsen lassen",
       "role": "Autor und Gründer von LambKing Stories",
       "paragraphs": [
-        "Als Vater einer großen Familie und überzeugter Christ liegt es mir besonders am Herzen, Kindern die Liebe Jesu und die Botschaft des Evangeliums näherzubringen.",
-        "Mein Glaube und das Leben mit meinen Kindern inspirieren mich zu Geschichten, die biblische Werte verständlich und kindgerecht vermitteln. So entstehen mit viel Liebe zum Detail Bücher, die Freude bereiten, Hoffnung schenken und Kinder in ihrem Glauben stärken."
+        "LambKing Stories ist aus meinem Glauben und dem Alltag mit meinen Kindern entstanden. Ich möchte biblische Geschichten so erzählen, dass Kinder sie gerne entdecken und leicht verstehen.",
+        "Mir ist wichtig, dass Kinder durch diese Geschichten Jesus besser kennenlernen und erfahren, wie sehr Gott sie liebt."
       ],
-      "highlight": "Mit LambKing Stories möchte ich einen kleinen Beitrag dazu leisten, dass Kinder Jesus kennenlernen, im Glauben wachsen und Gottes Reich durch die nächste Generation sichtbar wird."
+      "highlight": "Mein Wunsch ist, dass jedes Buch einen kleinen Samen des Glaubens in Kinderherzen legt – einen Samen, den Gott wachsen und Frucht bringen lässt."
     },
     "support": {
       "title": "LambKing Stories unterstützen",
-      "text": "Wenn dir LambKing Stories gefällt und du die Entwicklung weiterer biblischer Geschichten und Bücher unterstützen möchtest, kannst du das Projekt freiwillig über PayPal oder Ko-fi unterstützen.",
+      "text": "Wenn dir LambKing Stories am Herzen liegt und du weitere biblische Bücher und Geschichten möglich machen möchtest, kannst du das Projekt freiwillig über PayPal oder Ko-fi fördern.",
       "paypalAlt": "Projekt mit PayPal unterstützen",
       "kofiAlt": "Support me on Ko-fi"
     },
@@ -128,36 +128,24 @@
       "title": "Gut zu wissen",
       "items": [
         {
-          "q": "Wo kann ich die Bücher kaufen?",
-          "a": "Über die jeweilige Buchseite gelangst du zur Amazon-Produktseite des Buches. Bestellung, Bezahlung und Versand erfolgen über Amazon."
-        },
-        {
-          "q": "Verkauft LambKing Stories die Bücher direkt über diese Website?",
-          "a": "Die Bücher werden auf dieser Website vorgestellt. Der eigentliche Bestell- und Bezahlvorgang erfolgt über die verlinkte Amazon-Produktseite."
+          "q": "Wie kann ich ein Buch bestellen?",
+          "a": "Wähle beim gewünschten Buch „Bei Amazon ansehen“. Kauf, Bezahlung, Versand und Rückgabe werden vollständig von Amazon abgewickelt."
         },
         {
           "q": "Für welches Alter sind die Bücher geeignet?",
           "a": "Die Altersempfehlung steht jeweils direkt beim Buch – klicke dazu einfach auf „Inhalt ansehen“."
         },
         {
-          "q": "Wie funktionieren Versand, Rückgabe und Widerruf?",
-          "a": "Es gelten die Bedingungen der Verkaufsplattform Amazon. Alle Details dazu findest du auf der jeweiligen Amazon-Produktseite."
-        },
-        {
           "q": "Gibt es die Geschichten auch digital?",
-          "a": "Ja! Neben der kostenlosen LambKing Web-App erscheint die App auch im Google Play Store. Die App-Store-Version ist vorbereitet."
+          "a": "Ja. Die kostenlose LambKing Web-App kann direkt im Browser genutzt werden. Die Android-App ist außerdem bei Google Play erhältlich. Eine Version für den App Store ist in Vorbereitung."
         },
         {
           "q": "Wie kann ich LambKing Stories unterstützen?",
-          "a": "Wenn dir das Projekt am Herzen liegt, kannst du es freiwillig über PayPal oder Ko-fi unterstützen. Jede Unterstützung hilft, neue Bücher zu ermöglichen."
+          "a": "Wenn dir das Projekt am Herzen liegt, kannst du es freiwillig über PayPal oder Ko-fi fördern. Jede Unterstützung hilft dabei, neue Bücher und Geschichten möglich zu machen."
         },
         {
           "q": "Wie kann ich Kontakt aufnehmen?",
           "a": "Du erreichst mich per E-Mail – ich freue mich über Nachrichten, Feedback und Anregungen."
-        },
-        {
-          "q": "Wie komme ich in drei Schritten zum Buch?",
-          "a": "1. Inhalt ansehen: Jedes Buch lässt sich hier direkt durchblättern – mit echten Beispielseiten aus dem Inneren. 2. Lieblingsbuch wählen: Malbuch oder Bilderbuch? Wähle die Geschichte, die zu deinem Kind passt. 3. Bei Amazon bestellen: Ein Klick führt zur Amazon-Produktseite. Bestellung, Bezahlung, Versand und Rückgabe werden dort abgewickelt."
         }
       ],
       "webAppLink": "Web-App öffnen →"
@@ -190,7 +178,7 @@
     "hero": {
       "title1": "Little heroes. Big stories.",
       "title2": "A great God.",
-      "subtitle": "Coloring books and children's books that bring biblical adventures to life and open children's hearts to Jesus.",
+      "subtitle": "Lovingly designed coloring books and children’s books that bring Bible stories to life and help children grow in faith.",
       "ctaBooks": "Discover the books",
       "ctaApp": "Free app",
       "trust": [
@@ -203,8 +191,8 @@
     },
     "books": {
       "eyebrow": "Our books",
-      "title": "Choose, look inside, order.",
-      "subtitle": "Carefully selected and faithfully told. Click a book to look inside – ordering takes place via the Amazon link.",
+      "title": "Discover, look inside, order.",
+      "subtitle": "Lovingly designed and faithfully told. Look inside each book and order your favorite from Amazon.",
       "all": "All",
       "emptyComics": "Bible comic adventures are in the making – check back soon!",
       "emptyAll": "Our English editions are on their way – check back soon!",
@@ -222,16 +210,16 @@
       "buyAmazon": "View on Amazon"
     },
     "trust": {
-      "title": "Trust that carries.",
+      "title": "What families can trust.",
       "childrenIconLabel": "From a sad to a joyful child’s heart",
       "items": [
         {
-          "title": "Rooted in Scripture & child-friendly",
-          "text": "All content is rooted in the Bible and prepared in an age-appropriate way."
+          "title": "Rooted in Scripture & age-appropriate",
+          "text": "Bible stories presented clearly and appropriately for each age group."
         },
         {
-          "title": "Child-friendly & meaningful",
-          "text": "Exciting stories that teach values and strengthen children's relationship with God."
+          "title": "Meaningful & faith-building",
+          "text": "Stories that encourage children, teach Christian values, and strengthen their relationship with God."
         },
         {
           "title": "Ad-free & safe",
@@ -240,12 +228,12 @@
       ]
     },
     "supportedWorks": {
-      "title": "Acting in faith",
-      "firstBefore": "LambKing Stories is more than a book project to us. Through what grows from it, we also want to support people who need help, hope, and a new beginning.",
-      "firstStrong": "",
+      "title": "Faith in Action",
+      "firstBefore": "LambKing Stories is meant to be more than a book project. That is why we support Christian organizations that share the Gospel and provide practical help to people facing difficult circumstances.",
+      "firstStrong": "We give a dedicated share of our income to Christian mission, evangelism, and relief projects.",
       "firstAfter": "",
-      "second": "That is why we support Christian ministries that care for orphans and families in need, accompany people on their journey out of addiction, provide practical help to those in need, and tell them about the love of Jesus.",
-      "third": "In this way, we want not only to tell stories about faith, but also to make a practical contribution to making God’s kingdom visible.",
+      "second": "In this way, we want not only to tell stories about faith, but also to share hope in practical ways.",
+      "third": "",
       "current": "We currently support the following ministries and organizations:",
       "visit": "Learn more about this work",
       "viewFlyer": "View flyer",
@@ -273,8 +261,8 @@
     },
     "app": {
       "eyebrow": "The app",
-      "title": "Experience the stories digitally",
-      "text": "In the free LambKing app, children discover stories that strengthen faith and bring God's good news to life – lovingly told and designed for kids. From there, it also leads back to the books.",
+      "title": "Discover the LambKing App",
+      "text": "In the free LambKing App, children discover Bible stories in a vivid and easy-to-understand way – lovingly told and ad-free.",
       "ctaWebApp": "Open the free web app",
       "playSoon": "Google Play link coming shortly",
       "playAlt": "Get it on Google Play",
@@ -283,17 +271,17 @@
     },
     "about": {
       "eyebrow": "About the project",
-      "title": "Stories that grow faith",
+      "title": "Stories that help faith grow",
       "role": "Author and founder of LambKing Stories",
       "paragraphs": [
-        "As the father of a large family and a devoted Christian, it is especially close to my heart to bring the love of Jesus and the message of the Gospel closer to children.",
-        "My faith and my life with my children inspire me to write stories that convey biblical values in a way children can understand. The result is lovingly crafted books that bring joy, give hope, and strengthen children in their faith."
+        "LambKing Stories grew out of my faith and everyday life with my children. I want to tell Bible stories in a way that children enjoy discovering and can easily understand.",
+        "It matters to me that these stories help children get to know Jesus better and discover how deeply God loves them."
       ],
-      "highlight": "With LambKing Stories, I want to make a small contribution so that children get to know Jesus, grow in faith, and make God's kingdom visible through the next generation."
+      "highlight": "My hope is that every book plants a small seed of faith in children’s hearts – a seed that God can help grow and bear fruit."
     },
     "support": {
       "title": "Support LambKing Stories",
-      "text": "If you enjoy LambKing Stories and would like to support the creation of more biblical stories and books, you can voluntarily support the project via PayPal or Ko-fi.",
+      "text": "If LambKing Stories is close to your heart and you would like to help make more Bible-based books and stories possible, you can support the project voluntarily through PayPal or Ko-fi.",
       "paypalAlt": "Support the project with PayPal",
       "kofiAlt": "Support me on Ko-fi"
     },
@@ -302,36 +290,24 @@
       "title": "Good to know",
       "items": [
         {
-          "q": "Where can I buy the books?",
-          "a": "Each book page links to its Amazon product page. Ordering, payment, and shipping are handled by Amazon."
-        },
-        {
-          "q": "Does LambKing Stories sell the books directly through this website?",
-          "a": "The books are presented on this website. The actual ordering and payment process takes place on the linked Amazon product page."
+          "q": "How can I order a book?",
+          "a": "Select “View on Amazon” for the book you want. Purchase, payment, shipping, and returns are handled entirely by Amazon."
         },
         {
           "q": "What age are the books suitable for?",
           "a": "The age recommendation is shown directly with each book – simply click “Look inside”."
         },
         {
-          "q": "How do shipping, returns, and cancellations work?",
-          "a": "The terms of the Amazon sales platform apply. You can find all details on the respective Amazon product page."
-        },
-        {
           "q": "Are the stories available digitally?",
-          "a": "Yes! Alongside the free LambKing web app, the app will also be available on Google Play. The App Store version is prepared."
+          "a": "Yes. The free LambKing web app can be used directly in your browser, and the Android app is available on Google Play. An App Store version is in preparation."
         },
         {
           "q": "How can I support LambKing Stories?",
-          "a": "If the project is close to your heart, you can voluntarily support it via PayPal or Ko-fi. Every bit of support helps make new books possible."
+          "a": "If the project is close to your heart, you can support it voluntarily through PayPal or Ko-fi. Every contribution helps make new books and stories possible."
         },
         {
           "q": "How can I get in touch?",
           "a": "You can reach me by email – I look forward to messages, feedback, and suggestions."
-        },
-        {
-          "q": "How do I get my book in three steps?",
-          "a": "1. Look inside: Every book can be browsed right here – with real sample pages from the inside. 2. Choose your favorite book: Coloring book or picture book? Pick the story that suits your child. 3. Order on Amazon: One click takes you to the Amazon product page. Ordering, payment, shipping, and returns are handled there."
         }
       ],
       "webAppLink": "Open the web app →"

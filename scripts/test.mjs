@@ -197,6 +197,19 @@ test('Alle Frontend-Texte sind zweisprachig und im Backend bearbeitbar', () => {
   assert(server.includes('frontendTexts'), 'Textänderungen werden nicht gespeichert/generiert')
 })
 
+test('Fettschrift ist im Backend auswählbar und wird sicher gerendert', () => {
+  const admin = readFileSync(join(ROOT, 'admin/index.html'), 'utf-8')
+  const richText = readFileSync(join(SRC, 'components/RichText.tsx'), 'utf-8')
+  assert(admin.includes('formatSelectedTextBold') && admin.includes('text-format-toolbar'), 'Fettschrift-Werkzeug fehlt im Backend')
+  assert(richText.includes("part.startsWith('**')") && richText.includes('<strong'), 'Fettschrift-Markierung wird nicht gerendert')
+  assert(!richText.includes('dangerouslySetInnerHTML'), 'Rich-Text darf kein frei ausführbares HTML verwenden')
+})
+
+test('Auf Smartphones stehen zwei Bücher nebeneinander', () => {
+  const books = readFileSync(join(SRC, 'sections/Books.tsx'), 'utf-8')
+  assert(books.includes('grid grid-cols-2'), 'Mobile Buchübersicht hat keine zwei Spalten')
+})
+
 test('Verwaiste Medien können sicher angesehen und gelöscht werden', () => {
   const admin = readFileSync(join(ROOT, 'admin/index.html'), 'utf-8')
   const server = readFileSync(join(ROOT, 'admin/admin_server.py'), 'utf-8')

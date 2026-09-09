@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { ExternalLink, FileText, Landmark } from 'lucide-react'
 import Reveal from '@/components/Reveal'
+import RichText from '@/components/RichText'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useLang } from '@/data/lang'
 import { SITE } from '@/data/books'
@@ -37,19 +38,17 @@ export default function SupportedWorks() {
           <h2 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">
             {t.title}
           </h2>
+          {t.firstBefore || t.firstStrong || t.firstAfter ? (
           <p className="mt-5 text-base leading-relaxed text-muted-foreground sm:text-lg">
-            {t.firstBefore}
+            <RichText text={t.firstBefore} />
             {t.firstStrong ? (
-              <strong className="font-bold text-foreground">{t.firstStrong}</strong>
+              <> {' '}<strong className="font-bold text-foreground"><RichText text={t.firstStrong} /></strong></>
             ) : null}
-            {t.firstAfter}
+            {t.firstAfter ? <> {' '}<RichText text={t.firstAfter} /></> : null}
           </p>
-          <p className="mt-3 text-base leading-relaxed text-muted-foreground sm:text-lg">
-            {t.second}
-          </p>
-          <p className="mt-3 text-base leading-relaxed text-muted-foreground sm:text-lg">
-            {t.third}
-          </p>
+          ) : null}
+          {t.second ? <p className="mt-3 text-base leading-relaxed text-muted-foreground sm:text-lg"><RichText text={t.second} /></p> : null}
+          {t.third ? <p className="mt-3 text-base leading-relaxed text-muted-foreground sm:text-lg"><RichText text={t.third} /></p> : null}
           {organizations.length > 0 ? (
             <p className="mt-7 font-bold text-foreground">{t.current}</p>
           ) : null}
@@ -91,7 +90,7 @@ export default function SupportedWorks() {
                       {organization.name}
                     </h3>
                     <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
-                      {description}
+                      <RichText text={description || ''} />
                     </p>
                     <div className="mt-5 flex flex-col items-center gap-3">
                       {flyer ? (

@@ -1,5 +1,6 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import Reveal from '@/components/Reveal'
+import RichText from '@/components/RichText'
 import { SITE } from '@/data/books'
 import { useLang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
@@ -24,9 +25,9 @@ export default function Faq() {
                   {f.q}
                 </AccordionTrigger>
                 <AccordionContent className="leading-relaxed text-muted-foreground">
-                  {f.a}
+                  <RichText text={f.a} />
                   {/* Frage „digital?" → Web-App-Link anhängen */}
-                  {i === 4 && SITE.appUrl.startsWith('https://') && (
+                  {i === 2 && SITE.appUrl.startsWith('https://') && (
                     <>
                       {' '}
                       <a
@@ -40,7 +41,7 @@ export default function Faq() {
                     </>
                   )}
                   {/* Kontaktfrage → E-Mail-Adresse als mailto-Link */}
-                  {i === 6 && SITE.contactEmail && (
+                  {i === 4 && SITE.contactEmail && (
                     <>
                       {' '}
                       <a

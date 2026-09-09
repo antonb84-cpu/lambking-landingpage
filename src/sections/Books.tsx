@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { ArrowLeft, ArrowRight, Eye, Palette, X, ZoomIn } from 'lucide-react'
 import Reveal from '@/components/Reveal'
+import RichText from '@/components/RichText'
 import AmazonRating from '@/components/AmazonRating'
 import { BOOKS, CATEGORIES, COMING_SOON, isNew, type Book, type Category } from '@/data/books'
 import { useLang } from '@/data/lang'
@@ -89,13 +90,13 @@ function BookDialog({
                 )}
               </DialogHeader>
               <DialogDescription className="mt-6 max-w-2xl whitespace-pre-line text-lg leading-loose text-muted-foreground">
-                {book.description}
+                <RichText text={book.description} />
               </DialogDescription>
               <ul className="mt-6 grid max-w-2xl gap-2.5 sm:grid-cols-2">
                 {book.highlights.map((h) => (
                   <li key={h} className="flex items-center gap-2.5 font-semibold">
                     <span className="h-2 w-2 rounded-full bg-accent" aria-hidden />
-                    {h}
+                    <RichText text={h} />
                   </li>
                 ))}
               </ul>
@@ -323,7 +324,7 @@ export default function Books() {
           <h2 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">
             {t.books.title}
           </h2>
-          <p className="mt-3 text-muted-foreground">{t.books.subtitle}</p>
+          <p className="mt-3 text-muted-foreground"><RichText text={t.books.subtitle} /></p>
         </Reveal>
 
         {/* Kategorien */}
@@ -361,18 +362,18 @@ export default function Books() {
         </Reveal>
 
         {visible.length > 0 ? (
-          <div className="mt-10 grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-7 lg:grid-cols-3">
             {visible.map((b, i) => (
               <Reveal key={b.id} delay={i * 100}>
                 <article className="group flex h-full flex-col overflow-hidden rounded-md border-2 border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/10">
                   <button
                     type="button"
                     onClick={() => openBook(b)}
-                    className="relative block bg-secondary/50 p-6 text-left"
+                    className="relative block bg-secondary/50 p-3 text-left sm:p-6"
                     aria-label={`${t.books.lookInside}: ${b.title}`}
                   >
                     {isNew(b) && (
-                      <span className="absolute left-4 top-4 z-10 rounded-full bg-accent px-3 py-1 text-xs font-bold text-accent-foreground shadow">
+                      <span className="absolute left-2 top-2 z-10 rounded-full bg-accent px-2 py-1 text-[10px] font-bold text-accent-foreground shadow sm:left-4 sm:top-4 sm:px-3 sm:text-xs">
                         {t.books.newBadge}
                       </span>
                     )}
@@ -387,7 +388,7 @@ export default function Books() {
                       {t.books.lookInside}
                     </span>
                   </button>
-                  <div className="flex flex-1 flex-col p-5">
+                  <div className="flex flex-1 flex-col p-3 sm:p-5">
                     <div className="mb-2 flex flex-wrap gap-1.5">
                       <Badge variant="secondary" className="gap-1 rounded-full">
                         <Palette className="h-3 w-3" aria-hidden />
@@ -395,14 +396,14 @@ export default function Books() {
                       </Badge>
                       {b.age && <Badge variant="secondary" className="rounded-full">{b.age}</Badge>}
                     </div>
-                    <h3 className="font-display text-xl font-semibold leading-snug">{b.title}</h3>
+                    <h3 className="font-display text-base font-semibold leading-snug sm:text-xl">{b.title}</h3>
                     {b.series && <p className="mt-1 text-xs font-semibold text-muted-foreground">{b.series}</p>}
                     <AmazonRating book={b} />
                     <div className="mt-4 flex flex-1 flex-col items-center">
                       <button
                         type="button"
                         onClick={() => openBook(b)}
-                        className="mb-3 flex aspect-[900/165] w-full max-w-[240px] items-center justify-center rounded-full border-2 border-primary/20 text-sm font-bold text-primary transition-colors hover:border-primary/50 hover:bg-primary/5"
+                        className="mb-3 flex min-h-10 w-full max-w-[240px] items-center justify-center rounded-full border-2 border-primary/20 px-2 py-2 text-xs font-bold text-primary transition-colors hover:border-primary/50 hover:bg-primary/5 sm:aspect-[900/165] sm:text-sm"
                       >
                         {t.books.lookInside}
                       </button>
