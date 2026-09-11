@@ -9,6 +9,7 @@ import { BOOKS, CATEGORIES, COMING_SOON, isNew, type Book, type Category } from 
 import { useLang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
 import { OPEN_BOOK_EVENT } from '@/data/openBook'
+import { trackAmazonClick } from '@/data/analytics'
 
 // Kategorie-Helfer (Labels/Typen kommen aus den Buchdaten, sprachabhängig)
 const catDefOf = (id: string) => CATEGORIES.find((c) => c.id === id)
@@ -31,6 +32,7 @@ function BuyButton({ book, size = 'md' }: { book: Book; size?: 'md' | 'lg' }) {
       href={book.amazon}
       target="_blank"
       rel="noopener noreferrer"
+      onClick={() => trackAmazonClick(book.id)}
       className={`mx-auto block w-full ${width} transition-transform hover:scale-[1.05]`}
       aria-label={`${book.title} – ${t.books.buyAmazon}`}
     >

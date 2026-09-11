@@ -22,6 +22,7 @@ import subprocess
 import sys
 import threading
 import urllib.request
+import urllib.error
 import webbrowser
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -35,6 +36,7 @@ FLYERS = ROOT / "public" / "flyers"
 DATA_JSON = ROOT / "src" / "data" / "books.json"
 BOOKS_TS = ROOT / "src" / "data" / "books.ts"
 TEXT_DEFAULTS_JSON = ROOT / "src" / "data" / "texts.defaults.json"
+ANALYTICS_LOCAL_JSON = ADMIN / "analytics.local.json"
 
 PORT = 8123
 MAX_IMAGE_BYTES = 15 * 1024 * 1024    # 15 MB für Cover/Fotos
@@ -44,6 +46,7 @@ MAX_SAMPLE_IMAGES = 10                 # einzelne Vorschauseiten/Screenshots
 MAX_FLYER_BYTES = 25 * 1024 * 1024    # 25 MB je Organisations-Flyer
 MAX_SUPPORTED_ORGANIZATIONS = 20       # ausreichend erweiterbar, trotzdem begrenzt
 MAX_SITE_UPLOAD_BYTES = 200 * 1024 * 1024
+MAX_ANALYTICS_CONFIG_BYTES = 8 * 1024
 
 PREVIEW_BUILD_LOCK = threading.Lock()
 
@@ -65,6 +68,27 @@ def load_state() -> dict:
 def save_state(state: dict):
     DATA_JSON.write_text(json.dumps(state, ensure_ascii=False, indent=2), encoding="utf-8")
     render_books_ts(state)
+
+
+def load_analytics_config() -> dict:
+    """Lädt nur lokale Zugangsdaten; das Token gelangt nie in die Seitendaten."""
+    if not ANALYTICS_LOCAL_JSON.is_file():
+        return {"url": "", "token": ""}
+    try:
+        value = json.loads(ANALYTICS_LOCAL_JSON.read_text(encoding="utf-8"))
+        return {
+            "url": str(value.get("url", "")).strip().rstrip("/"),
+            "token": str(value.get("token", "")).strip(),
+        }
+    except Exception:
+        return {"url": "", "token": ""}
+
+
+def save_analytics_config(url: str, token: str):
+    ANALYTICS_LOCAL_JSON.write_text(
+        json.dumps({"url": url.rstrip("/"), "token": token}, indent=2),
+        encoding="utf-8",
+    )
 
 
 def ts_str(value: str) -> str:
@@ -110,6 +134,8 @@ def render_books_ts(state: dict):
     out.append(f"  kofiUrl: {ts_str(s.get('kofiUrl', ''))},")
     out.append(f"  contactEmail: {ts_str(s.get('contactEmail', 'hello@lambking.store'))},")
     out.append(f"  showRatings: {'true' if s.get('showRatings', True) else 'false'},")
+    out.append("  // Öffentliche Adresse des anonymen Zähldienstes; niemals ein geheimes Token.")
+    out.append(f"  analyticsUrl: {ts_str(s.get('analyticsUrl', ''))},")
     out.append(f"  frontendTexts: {json.dumps(s.get('frontendTexts', {}), ensure_ascii=False)},")
     organizations = s.get('supportedOrganizations', [])[:MAX_SUPPORTED_ORGANIZATIONS]
     out.append(f"  supportedOrganizations: {json.dumps(organizations, ensure_ascii=False)},")
@@ -653,6 +679,11 @@ class Handler(BaseHTTPRequestHandler):
                 state["textDefaults"] = json.loads(TEXT_DEFAULTS_JSON.read_text(encoding="utf-8"))
             except Exception:
                 state["textDefaults"] = {"de": {}, "en": {}}
+            analytics_config = load_analytics_config()
+            state["analyticsConfig"] = {
+                "url": analytics_config.get("url", "") or state.get("site", {}).get("analyticsUrl", ""),
+                "hasToken": bool(analytics_config.get("token", "")),
+            }
             self.send_json(state)
         elif path == "/api/git-status":
             self.api_git_status()
@@ -660,6 +691,8 @@ class Handler(BaseHTTPRequestHandler):
             self.api_action_status()
         elif path == "/api/precheck":
             self.send_json({"ok": True, "checks": precheck(load_state())})
+        elif path == "/api/analytics":
+            self.api_analytics()
         elif path.startswith("/vorschau"):
             # Beim Öffnen/Neuladen der Vorschau immer frisch bauen. Dadurch
             # können gespeicherte Bücher nicht mehr in einem alten dist/ hängen.
@@ -728,6 +761,8 @@ class Handler(BaseHTTPRequestHandler):
                 self.api_move()
             elif path == "/api/site":
                 self.api_site()
+            elif path == "/api/analytics/config":
+                self.api_analytics_config()
             elif path == "/api/categories":
                 self.api_categories()
             elif path == "/api/orphans":
@@ -755,6 +790,65 @@ class Handler(BaseHTTPRequestHandler):
             return json.loads(raw.decode("utf-8"))
         except UnicodeDecodeError:
             return json.loads(raw.decode("latin-1"))
+
+    # ---------- Anonyme Statistik ----------
+    def api_analytics(self):
+        config = load_analytics_config()
+        url = config.get("url", "")
+        token = config.get("token", "")
+        if not url or not token:
+            self.send_json({
+                "ok": False,
+                "configured": False,
+                "error": "Der anonyme Zähldienst ist noch nicht eingerichtet.",
+            })
+            return
+        try:
+            request = urllib.request.Request(
+                f"{url}/stats",
+                headers={
+                    "Authorization": f"Bearer {token}",
+                    "Accept": "application/json",
+                    "User-Agent": "LambKing-Admin/1.0",
+                },
+            )
+            with urllib.request.urlopen(request, timeout=15) as response:
+                data = json.loads(response.read().decode("utf-8"))
+            if not isinstance(data, dict):
+                raise ValueError("INVALID_STATS")
+            self.send_json({"ok": True, "configured": True, **data})
+        except urllib.error.HTTPError as exc:
+            message = "Zugriff abgelehnt. Bitte das Statistik-Token prüfen." if exc.code in (401, 403) else "Der Zähldienst hat einen Fehler gemeldet."
+            self.send_json({"ok": False, "configured": True, "error": message})
+        except Exception:
+            self.send_json({"ok": False, "configured": True, "error": "Der Zähldienst ist gerade nicht erreichbar."})
+
+    def api_analytics_config(self):
+        data = self.read_json(MAX_ANALYTICS_CONFIG_BYTES)
+        state = load_state()
+        old = load_analytics_config()
+        url = str(data.get("url", "")).strip().rstrip("/")
+        token = str(data.get("token", "")).strip() or old.get("token", "")
+        if url and not (url.startswith("https://") or url.startswith("http://127.0.0.1:") or url.startswith("http://localhost:")):
+            self.send_json({"ok": False, "error": "Die Statistik-Adresse muss mit https:// beginnen."})
+            return
+        if url and not token:
+            self.send_json({"ok": False, "error": "Bitte das geheime Statistik-Token eingeben."})
+            return
+        if not url:
+            token = ""
+            if ANALYTICS_LOCAL_JSON.is_file():
+                ANALYTICS_LOCAL_JSON.unlink()
+        else:
+            save_analytics_config(url, token)
+        state["site"]["analyticsUrl"] = url
+        save_state(state)
+        self.send_json({
+            "ok": True,
+            "configured": bool(url and token),
+            "url": url,
+            "hasToken": bool(token),
+        })
 
     # ---------- Bücher ----------
     def api_amazon(self):

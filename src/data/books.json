@@ -7,6 +7,7 @@
     "paypalUrl": "https://www.paypal.com/ncp/payment/DGMPDALZ9PUQS",
     "contactEmail": "hello@lambking.store",
     "showRatings": true,
+    "analyticsUrl": "",
     "supportedOrganizations": [
       {
         "id": "betesda-lahr",

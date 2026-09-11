@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import Header from '@/sections/Header'
 import Hero from '@/sections/Hero'
 import Books from '@/sections/Books'
@@ -8,8 +9,13 @@ import About from '@/sections/About'
 import SupportedWorks from '@/sections/SupportedWorks'
 import Faq from '@/sections/Faq'
 import Footer from '@/sections/Footer'
+import { trackPageView } from '@/data/analytics'
 
 export default function App() {
+  useEffect(() => {
+    trackPageView()
+  }, [])
+
   return (
     <div className="min-h-screen">
       {/* Skip-Link für Tastaturnutzer */}

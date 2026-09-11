@@ -8,7 +8,9 @@
 |---|---|
 | `src/`, `index.html`, `public/` | Die Landingpage (React + Vite + Tailwind), Deutsch/Englisch umschaltbar |
 | `admin/` | Das lokale Verwaltungsprogramm (Python) – nur auf deinem PC |
+| `analytics-worker/` | Portabler, anonymer Zähldienst (Cloudflare Worker + eigene D1-Datenbank) |
 | `ADMIN-STARTEN.bat` | Doppelklick-Start des Admins (mit automatischem Start-Check) |
+| `ANALYTIK-EINRICHTEN.bat` | Einmalige Einrichtung des anonymen Zählers im eigenen Cloudflare-Konto |
 | `.github/workflows/deploy.yml` | GitHub Actions: baut & veröffentlicht die Live-Seite automatisch |
 | `WIEDERHERSTELLUNG.md` | Anleitung: Projekt auf einem neuen PC wieder aufsetzen |
 
@@ -24,6 +26,7 @@ Der Browser öffnet sich automatisch auf http://localhost:8123/
 - Autorenfoto ändern (Form & Größe wählbar)
 - PayPal-, Ko-fi-, Web-App- und Google-Play-Links pflegen
 - Impressum & Datenschutz bearbeiten
+- Seitenaufrufe (heute, diese Woche, gesamt) und Amazon-Klicks je Buch ansehen
 - GitHub-Sicherungsstatus sehen
 - veröffentlichen (mit automatischer Prüfung vorher)
 
@@ -45,6 +48,12 @@ npm run build      # baut dist/ (inkl. impressum.html, datenschutz.html, sitemap
 npm run check      # lint + test + build in einem
 ```
 
+## Anonyme Statistik einmalig einrichten
+
+Die Live-Seite ist statisch und kann Zahlen nicht selbst speichern. Doppelklicke deshalb einmal auf `ANALYTIK-EINRICHTEN.bat`. Nach der Cloudflare-Anmeldung werden Zähldienst, Datenbank, geheimes Admin-Token und die Verbindung zur Landingpage automatisch angelegt. Danach den Admin neu starten und die Landingpage einmal veröffentlichen.
+
+Das Token liegt ausschließlich in `admin/analytics.local.json` und wird durch `.gitignore` nie zu GitHub übertragen. Für eine private Sicherung oder einen PC-Wechsel muss diese Datei zusammen mit dem Projektordner sicher kopiert werden.
+
 ## Wichtige Daten
 
 - `src/data/books.json` – alle Bücher & Website-Einstellungen (wird vom Admin gepflegt)
@@ -55,7 +64,8 @@ npm run check      # lint + test + build in einem
 
 - Amazon ist der einzige Verkaufsweg der Bücher.
 - PayPal & Ko-fi sind freiwillige Unterstützung – kein Verkauf.
-- Kein TikTok Shop, kein Tracking, keine Cookies, keine Google-Fonts-Verbindung.
+- Kein TikTok Shop, keine Cookies, keine Besucher-Wiedererkennung und keine Google-Fonts-Verbindung.
+- Die optionale Statistik speichert ausschließlich tägliche Summen von Seitenaufrufen und Amazon-Klicks je interner Buch-ID; keine IP-Adresse, Gerätekennung oder einzelnen Besuchsverläufe.
 - Keine Passwörter/Tokens im Repository – die GitHub-Anmeldung läuft über die normale Git-Anmeldung des PCs.
 - Die Live-Seite läuft auf GitHub Pages – unabhängig davon, ob dein PC an ist.
 - Zusätzlich zum GitHub-Backup kannst du den kompletten Ordner `LambKing.de`

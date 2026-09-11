@@ -153,6 +153,9 @@ test('Datenschutzerklärung vorhanden und aktuell (GitHub Pages, Spracheinstellu
   assert(ds.includes('lambking-lang'), 'Sprach-speicherung fehlt')
   assert(!ds.includes('lambking-rating-'), 'Alte lokale Sternebewertung steht noch in der Datenschutzerklärung')
   assert(ds.includes('Ko-fi'), 'Ko-fi fehlt')
+  if (booksJson.site.analyticsUrl) {
+    assert(ds.includes('Anonyme Reichweitenmessung') && ds.includes('Cloudflare'), 'Aktiver Zähldienst fehlt in der Datenschutzerklärung')
+  }
 })
 
 test('Kontakt, Amazon-Bewertung und App-Store-Einstellung sind konfigurierbar', () => {
@@ -237,6 +240,34 @@ test('Keine Google-Fonts-Verbindung', () => {
 test('Ko-fi nur als reiner Link (kein Widget/SDK/iframe)', () => {
   assert(!/storage\.ko-fi\.com|kofi.*widget|<iframe[^>]*ko-fi/i.test(srcText), 'Ko-fi-Widget gefunden')
   assert(booksJson.site.kofiUrl?.startsWith('https://ko-fi.com/'), 'Ko-fi-Link fehlt/ungültig')
+})
+
+test('Anonyme Statistik speichert keine Besucherkennungen', () => {
+  const analytics = readFileSync(join(SRC, 'data/analytics.ts'), 'utf-8')
+  const app = readFileSync(join(SRC, 'App.tsx'), 'utf-8')
+  const books = readFileSync(join(SRC, 'sections/Books.tsx'), 'utf-8')
+  const worker = readFileSync(join(ROOT, 'analytics-worker/src/index.js'), 'utf-8')
+  const schema = readFileSync(join(ROOT, 'analytics-worker/schema.sql'), 'utf-8')
+  const adminServer = readFileSync(join(ROOT, 'admin/admin_server.py'), 'utf-8')
+  assert(app.includes('trackPageView()'), 'Seitenaufruf wird nicht gezählt')
+  assert(books.includes('trackAmazonClick(book.id)'), 'Amazon-Klick je Buch wird nicht gezählt')
+  assert(!/localStorage|sessionStorage|document\.cookie|fingerprint/i.test(analytics), 'Frontend-Zähler verwendet eine Wiedererkennungstechnik')
+  assert(!/user.agent|cf-connecting-ip|x-forwarded-for|referer|referrer/i.test(worker), 'Worker liest unnötige Besucherdaten')
+  assert(schema.includes('PRIMARY KEY (day, event_type, target_id)'), 'Datenbank speichert keine reinen Tagessummen')
+  assert(worker.includes('count = count + 1') && schema.includes("event_type IN ('pageview', 'amazon_click')"), 'Zählereignisse sind nicht eng begrenzt')
+  assert(adminServer.includes('ANALYTICS_LOCAL_JSON') && adminServer.includes('Authorization'), 'Geschützte Admin-Abfrage fehlt')
+  assert(!readFileSync(join(SRC, 'data/books.ts'), 'utf-8').includes('ADMIN_TOKEN'), 'Geheimes Statistik-Token steht in der Landingpage')
+})
+
+test('Statistikmodul ist vollständig portabel mit Einrichtung und deaktivierten Aufruflogs', () => {
+  assert(existsSync(join(ROOT, 'ANALYTIK-EINRICHTEN.bat')), 'Einrichtungsdatei fehlt')
+  assert(existsSync(join(ROOT, 'analytics-worker/wrangler.template.toml')), 'Portable Worker-Konfiguration fehlt')
+  assert(existsSync(join(ROOT, 'analytics-worker/setup.mjs')), 'Automatische Einrichtung fehlt')
+  const config = readFileSync(join(ROOT, 'analytics-worker/wrangler.template.toml'), 'utf-8')
+  assert(config.includes('[observability]') && config.includes('enabled = false') && config.includes('invocation_logs = false'), 'Cloudflare-Aufrufprotokolle sind nicht deaktiviert')
+  assert(config.includes('database_id = "__DATABASE_ID__"'), 'Datenbank ist unerlaubt an ein bestimmtes Konto gebunden')
+  const ignore = readFileSync(join(ROOT, '.gitignore'), 'utf-8')
+  assert(ignore.includes('admin/analytics.local.json'), 'Lokales Statistik-Token ist nicht von Git ausgeschlossen')
 })
 
 // ── 5. Struktur & Portabilität ────────────────────────────────

@@ -128,7 +128,17 @@
   .orphan-item img{width:100%; height:150px; border-radius:8px; background:#f5f1e8; object-fit:contain;}
   .orphan-item small{overflow-wrap:anywhere; color:var(--muted);}
   .orphan-actions{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-top:12px;}
+  .analytics-cards{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:16px 0;}
+  .analytics-card{border:1px solid var(--line); border-radius:12px; background:#FCFAF5; padding:16px; text-align:center;}
+  .analytics-card small{display:block; color:var(--muted); font-weight:600;}
+  .analytics-card strong{display:block; margin-top:5px; color:var(--blue); font-size:28px;}
+  .analytics-table-wrap{overflow-x:auto; margin-top:14px;}
+  .analytics-table{width:100%; border-collapse:collapse; font-size:14px;}
+  .analytics-table th,.analytics-table td{padding:10px 9px; border-bottom:1px solid var(--line); text-align:right;}
+  .analytics-table th:first-child,.analytics-table td:first-child{text-align:left; min-width:260px;}
+  .analytics-table th{color:var(--blue); font-size:12px; text-transform:uppercase; letter-spacing:.04em;}
   @media (max-width:760px){.text-language-grid{grid-template-columns:1fr;}.settings-save{position:static;}}
+  @media (max-width:560px){.analytics-cards{grid-template-columns:1fr;}.analytics-table th:first-child,.analytics-table td:first-child{min-width:180px;}}
   .ok-line{color:var(--green); font-weight:600; margin-top:10px; font-size:14px;}
   .err-line{color:var(--red); font-weight:600; margin-top:10px; font-size:14px;}
   #draftNote{background:#FBF3DC; border:1px solid #EBD9A8; border-radius:10px; padding:10px 14px; font-size:13px; margin-bottom:12px; display:flex; gap:10px; align-items:center;}
@@ -155,6 +165,38 @@
     <span class="spacer"></span>
     <a id="ghActions" href="#" target="_blank" class="hidden">Deployment ansehen →</a>
   </div>
+
+  <!-- ═══ ANONYME STATISTIK ═══ -->
+  <section>
+    <details id="analyticsPanel" open>
+      <summary>📊 Anonyme Seiten- und Amazon-Klickstatistik</summary>
+      <div class="analytics-cards">
+        <div class="analytics-card"><small>Heute</small><strong id="analyticsToday">–</strong><small>Seitenaufrufe</small></div>
+        <div class="analytics-card"><small>Diese Woche</small><strong id="analyticsWeek">–</strong><small>Seitenaufrufe</small></div>
+        <div class="analytics-card"><small>Gesamt</small><strong id="analyticsTotal">–</strong><small>Seitenaufrufe</small></div>
+      </div>
+      <div id="analyticsOut" class="status-panel">Statistik wird geladen …</div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
+        <button type="button" class="btn btn-blue" id="analyticsRefreshBtn" onclick="refreshAnalytics()">↻ Zahlen aktualisieren</button>
+      </div>
+      <details class="settings-panel" style="margin-top:16px;">
+        <summary>⚙️ Zähldienst einrichten oder umziehen</summary>
+        <div class="settings-body">
+          <p class="hint" style="margin-top:10px;">Beim ersten Mal im Projektordner <b>ANALYTIK-EINRICHTEN.bat</b> doppelklicken. Das Modul gehört zum Projekt und kann später auf ein anderes Cloudflare-Konto umgezogen werden.</p>
+          <label for="s_analyticsUrl">Öffentliche Adresse des Zähldienstes</label>
+          <input type="url" id="s_analyticsUrl" placeholder="https://lambking-analytics.…workers.dev">
+          <label for="s_analyticsToken">Geheimes Statistik-Token</label>
+          <input type="password" id="s_analyticsToken" autocomplete="new-password" placeholder="Leer lassen, um das gespeicherte Token beizubehalten">
+          <p class="hint" id="analyticsTokenState" style="margin-top:6px;">Noch kein Token lokal gespeichert.</p>
+          <div class="form-actions">
+            <button type="button" class="btn btn-blue" onclick="saveAnalyticsConfig()">💾 Zugang lokal speichern</button>
+            <button type="button" class="btn btn-ghost" onclick="clearAnalyticsConfig()">Zähldienst trennen</button>
+          </div>
+          <p class="hint" style="margin-top:12px;">Das Token wird ausschließlich in <code>admin/analytics.local.json</code> gespeichert und niemals zu GitHub veröffentlicht. Die öffentliche Landingpage kennt nur die Dienstadresse.</p>
+        </div>
+      </details>
+    </details>
+  </section>
 
   <!-- ═══ BUCHLISTE ═══ -->
   <section>
@@ -572,6 +614,64 @@ function toast(msg, isErr=false){
   setTimeout(() => t.className = '', 4000);
 }
 
+function formatCount(value){
+  return new Intl.NumberFormat('de-DE').format(Number(value || 0));
+}
+
+function renderAnalyticsTable(clicks){
+  const byBook = new Map((clicks || []).map(item => [item.bookId, item]));
+  const books = (state.books || []).filter(book => (book.amazon || '').startsWith('https://'));
+  const rows = books.map(book => {
+    const count = byBook.get(book.id) || {};
+    return `<tr><td>${esc(book.title)}<br><small>${book.lang === 'en' ? 'Englisch' : 'Deutsch'}</small></td><td>${formatCount(count.today)}</td><td>${formatCount(count.week)}</td><td><b>${formatCount(count.total)}</b></td></tr>`;
+  }).join('');
+  return `<div class="analytics-table-wrap"><table class="analytics-table"><thead><tr><th>Amazon-Knopf des Buches</th><th>Heute</th><th>Woche</th><th>Gesamt</th></tr></thead><tbody>${rows || '<tr><td colspan="4">Noch keine Bücher mit Amazon-Link vorhanden.</td></tr>'}</tbody></table></div>`;
+}
+
+async function refreshAnalytics(){
+  const btn = $('analyticsRefreshBtn');
+  btn.disabled = true;
+  try{
+    const d = await api('/api/analytics');
+    if (!d.ok){
+      $('analyticsToday').textContent = '–';
+      $('analyticsWeek').textContent = '–';
+      $('analyticsTotal').textContent = '–';
+      $('analyticsOut').innerHTML = `<b>${d.configured === false ? 'Noch nicht eingerichtet.' : 'Nicht erreichbar.'}</b> ${esc(d.error || '')}`;
+      return;
+    }
+    const pageviews = d.pageviews || {};
+    $('analyticsToday').textContent = formatCount(pageviews.today);
+    $('analyticsWeek').textContent = formatCount(pageviews.week);
+    $('analyticsTotal').textContent = formatCount(pageviews.total);
+    $('analyticsOut').innerHTML = `<b>Amazon-Klicks je Buch</b>${renderAnalyticsTable(d.amazonClicks)}` +
+      `<p class="hint" style="margin:12px 0 0;">Gezählt werden Aufrufe und Klicks, nicht unterschiedliche Personen. Neuladen, Bots oder wiederholte Klicks können die Zahlen erhöhen.</p>`;
+  } catch {
+    $('analyticsOut').textContent = 'Die Statistik konnte nicht geladen werden.';
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function saveAnalyticsConfig(){
+  const d = await api('/api/analytics/config', {method:'POST', body:JSON.stringify({
+    url: $('s_analyticsUrl').value,
+    token: $('s_analyticsToken').value,
+  })});
+  if (!d.ok){ toast(d.error || 'Statistik-Zugang konnte nicht gespeichert werden.', true); return; }
+  $('s_analyticsToken').value = '';
+  $('analyticsTokenState').textContent = d.hasToken ? '✓ Token ist sicher lokal gespeichert.' : 'Noch kein Token lokal gespeichert.';
+  toast('✓ Statistik-Zugang lokal gespeichert. Die Dienstadresse wird mit der Landingpage veröffentlicht.');
+  await load();
+}
+
+async function clearAnalyticsConfig(){
+  if (!confirm('Zähldienst wirklich von dieser Landingpage trennen? Bereits gespeicherte Zahlen in der externen Datenbank werden dadurch nicht gelöscht.')) return;
+  $('s_analyticsUrl').value = '';
+  $('s_analyticsToken').value = '';
+  await saveAnalyticsConfig();
+}
+
 async function api(path, opts){
   const r = await fetch(path, opts);
   const d = await r.json();
@@ -622,6 +722,9 @@ async function load(){
   $('s_iosStore').value = state.site.iosStoreUrl || '';
   $('s_contactEmail').value = state.site.contactEmail || 'hello@lambking.store';
   $('s_showRatings').checked = state.site.showRatings !== false;
+  $('s_analyticsUrl').value = state.analyticsConfig?.url || state.site.analyticsUrl || '';
+  $('s_analyticsToken').value = '';
+  $('analyticsTokenState').textContent = state.analyticsConfig?.hasToken ? '✓ Token ist sicher lokal gespeichert.' : 'Noch kein Token lokal gespeichert.';
   $('s_author').value = state.site.authorName || '';
   $('s_brand').value = state.site.brand || '';
   $('s_comingSoon').value = (state.comingSoon || []).join('\n');
@@ -646,6 +749,7 @@ async function load(){
     $('photoPreview').innerHTML = `<img src="/${state.site.authorPhoto}" style="max-height:120px; border-radius:${state.site.authorPhotoShape==='eckig'?'4px':'50%'}; border:1px solid var(--line);"><br><small>Aktuelles Foto</small>`;
   }
   refreshGhStatus();
+  refreshAnalytics();
 }
 
 /* ── Sprach-Umschalter für die Buchliste ── */

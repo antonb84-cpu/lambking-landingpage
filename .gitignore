@@ -1,5 +1,10 @@
 node_modules/
 .admin-instance.lock
+admin/analytics.local.json
+analytics-worker/.dev.vars
+analytics-worker/.wrangler/
+analytics-worker/.setup-secrets.json
+analytics-worker/wrangler.toml
 dist/
 __pycache__/
 *.pyc

@@ -3,6 +3,8 @@
 **Keine Angst:** Dein komplettes LambKing-Projekt (Bücher, Bilder, Texte, Einstellungen, Admin-Programm)
 liegt sicher auf GitHub. Wenn dein PC kaputt geht, bekommst du mit dieser Anleitung alles wieder.
 
+Das geheime Statistik-Token wird aus Sicherheitsgründen nicht auf GitHub gespeichert. Bewahre deshalb zusätzlich eine private Kopie der Datei `admin\analytics.local.json` auf deinem verschlüsselten Drive oder Datenträger auf. Ohne diese Datei bleibt die Landingpage funktionsfähig; nur die Statistik muss erneut verbunden werden.
+
 Du brauchst dafür keine Programmierkenntnisse – folge einfach den Schritten.
 
 ---
@@ -60,6 +62,8 @@ Doppelklick auf **ADMIN-STARTEN.bat** im Ordner `H:\LambKing.de`.
 - Der Start-Check prüft automatisch, ob alles da ist, und sagt dir auf Deutsch,
   falls etwas fehlt.
 - Danach öffnet sich der Browser mit dem LambKing Admin.
+
+Falls die Statistik auf diesem PC noch nicht verbunden ist, kopiere die gesicherte Datei `admin\analytics.local.json` zurück in den Ordner `admin`. Alternativ kannst du den Zähldienst mit `ANALYTIK-EINRICHTEN.bat` in einem eigenen Cloudflare-Konto neu einrichten.
 
 ## Schritt 6: Test-Veröffentlichung
 
