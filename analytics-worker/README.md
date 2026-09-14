@@ -9,7 +9,7 @@ Es speichert keine IP-Adresse, Cookies, LocalStorage-Kennung, Benutzer- oder Ger
 
 ## Einmalige Einrichtung
 
-Im Projekt-Hauptordner `ANALYTIK-EINRICHTEN.bat` doppelklicken. Das Skript:
+Im normalen Betrieb genügt im Projekt-Hauptordner `ADMIN-STARTEN.bat`. Diese Datei startet bei einer noch fehlenden Konfiguration automatisch die interne Wartung. Nur für eine manuelle Reparatur liegt in diesem Ordner `ZAeHLER-WARTUNG.bat`. Das Skript:
 
 1. installiert die benötigte Cloudflare-Verwaltung lokal in diesem Modul,
 2. öffnet die Cloudflare-Anmeldung,

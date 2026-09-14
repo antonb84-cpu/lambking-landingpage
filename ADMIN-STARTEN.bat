@@ -55,7 +55,7 @@ if not exist "admin\analytics.local.json" (
   echo   Der anonyme Seitenzaehler wird jetzt einmalig verbunden.
   echo   Im Browser ist nur die Anmeldung bei deinem Cloudflare-Konto noetig.
   echo.
-  call ANALYTIK-EINRICHTEN.bat --from-admin
+  call analytics-worker\ZAeHLER-WARTUNG.bat --from-admin
   if errorlevel 1 (
     echo.
     echo   Der Admin startet trotzdem. Die Zaehler-Einrichtung kann beim naechsten Start fortgesetzt werden.

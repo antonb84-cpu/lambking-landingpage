@@ -11,7 +11,6 @@
 | `runtime/` | Mitgelieferte portable Laufzeiten für Python, Node.js und Git (nicht auf GitHub gespeichert) |
 | `analytics-worker/` | Portabler, anonymer Zähldienst (Cloudflare Worker + eigene D1-Datenbank) |
 | `ADMIN-STARTEN.bat` | Doppelklick-Start des Admins (mit automatischem Start-Check) |
-| `ANALYTIK-EINRICHTEN.bat` | Reparatur-/Umzugsstart für den Zähler; beim normalen Admin-Start automatisch integriert |
 | `.github/workflows/deploy.yml` | GitHub Actions: baut & veröffentlicht die Live-Seite automatisch |
 | `WIEDERHERSTELLUNG.md` | Anleitung: Projekt auf einem neuen PC wieder aufsetzen |
 
@@ -54,7 +53,7 @@ npm run check      # lint + test + build in einem
 
 ## Anonyme Statistik
 
-Die Live-Seite ist statisch und kann Zahlen nicht selbst speichern. Beim ersten Start über `ADMIN-STARTEN.bat` werden Zähldienst, Datenbank, geheimes Admin-Token und die Verbindung zur Landingpage automatisch vorbereitet. Nur die Anmeldung beim eigenen Cloudflare-Konto muss einmal persönlich bestätigt werden. Danach ist der Zähler Bestandteil desselben Admin-Systems und erfordert keine weitere Installation. `ANALYTIK-EINRICHTEN.bat` bleibt lediglich für Reparatur oder Umzug erhalten.
+Die Live-Seite ist statisch und kann Zahlen nicht selbst speichern. Beim ersten Start über `ADMIN-STARTEN.bat` werden Zähldienst, Datenbank, geheimes Admin-Token und die Verbindung zur Landingpage automatisch vorbereitet. Nur die Anmeldung beim eigenen Cloudflare-Konto muss einmal persönlich bestätigt werden. Danach ist der Zähler Bestandteil desselben Admin-Systems und erfordert keine weitere Installation. Eine technische Wartungsdatei liegt ausschließlich im internen Ordner `analytics-worker`.
 
 Der Zähldienst läuft im Cloudflare-Free-Tarif. Er speichert nur Tagessummen für Seitenaufrufe und Amazon-Klicks je Buch und Sprach-Ausgabe. Die kostenlose Größenordnung (100.000 Worker-Aufrufe pro Tag, 100.000 geschriebene D1-Zeilen pro Tag und 5 GB D1-Speicher) liegt weit über dem Bedarf dieser Landingpage. Ohne eine bewusste Umstellung des Cloudflare-Kontos auf einen Bezahlplan entstehen keine nutzungsabhängigen Kosten.
 

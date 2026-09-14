@@ -1,18 +1,18 @@
 @echo off
 setlocal
-set "LAMBKING_ROOT=%~dp0"
+set "LAMBKING_ROOT=%~dp0..\"
 if exist "%LAMBKING_ROOT%runtime\node\node.exe" set "PATH=%LAMBKING_ROOT%runtime\node;%PATH%"
 if exist "%LAMBKING_ROOT%runtime\mingit\cmd\git.exe" set "PATH=%LAMBKING_ROOT%runtime\mingit\cmd;%LAMBKING_ROOT%runtime\mingit\bin;%PATH%"
 if exist "%LAMBKING_ROOT%runtime\python\python.exe" set "PATH=%LAMBKING_ROOT%runtime\python;%PATH%"
-cd /d "%~dp0analytics-worker"
-title LambKing Analytik einrichten
+cd /d "%~dp0"
+title LambKing Zaehler-Wartung
 echo ========================================================
-echo   LambKing: anonymen Seitenzaehler einmalig einrichten
+echo   LambKing: anonymen Seitenzaehler einrichten
 echo ========================================================
 echo.
 where node >nul 2>nul
 if errorlevel 1 (
-  echo FEHLER: Node.js fehlt. Bitte zuerst Node.js LTS installieren.
+  echo FEHLER: Die mitgelieferte Node.js-Laufzeit fehlt.
   pause
   exit /b 1
 )
