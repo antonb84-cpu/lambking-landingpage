@@ -91,6 +91,14 @@ test('Buchdaten: Pflichtfelder und gültige Links', () => {
     assert(['de', 'en'].includes(b.lang), `${b.id}: ungültige Sprache`)
     assert(catIds.includes(b.category), `${b.id}: ungültige Kategorie`)
     assert(!b.amazon || b.amazon.startsWith('https://'), `${b.id}: Amazon-Link ungültig`)
+    assert(Array.isArray(b.editions) && b.editions.length > 0, `${b.id}: keine Sprach-Ausgabe eingetragen`)
+    const editionLanguages = new Set()
+    for (const edition of b.editions) {
+      assert(/^[a-z]{2,3}(-[a-z]{2})?$/.test(edition.language), `${b.id}: ungültiger Sprachcode`)
+      assert(edition.amazon?.startsWith('https://'), `${b.id}/${edition.language}: Amazon-Link ungültig`)
+      assert(!editionLanguages.has(edition.language), `${b.id}: Sprache doppelt eingetragen`)
+      editionLanguages.add(edition.language)
+    }
     assert(!('tiktok' in b), `${b.id}: TikTok-Feld vorhanden`)
     assert(!('price' in b), `${b.id}: statischer Preis vorhanden`)
     assert(!('rating' in b), `${b.id}: statische Bewertung vorhanden`)
@@ -250,13 +258,29 @@ test('Anonyme Statistik speichert keine Besucherkennungen', () => {
   const schema = readFileSync(join(ROOT, 'analytics-worker/schema.sql'), 'utf-8')
   const adminServer = readFileSync(join(ROOT, 'admin/admin_server.py'), 'utf-8')
   assert(app.includes('trackPageView()'), 'Seitenaufruf wird nicht gezählt')
-  assert(books.includes('trackAmazonClick(book.id)'), 'Amazon-Klick je Buch wird nicht gezählt')
+  assert(books.includes('trackAmazonClick(`${book.id}:${edition.language}`)'), 'Amazon-Klick je Buch und Sprach-Ausgabe wird nicht gezählt')
   assert(!/localStorage|sessionStorage|document\.cookie|fingerprint/i.test(analytics), 'Frontend-Zähler verwendet eine Wiedererkennungstechnik')
   assert(!/user.agent|cf-connecting-ip|x-forwarded-for|referer|referrer/i.test(worker), 'Worker liest unnötige Besucherdaten')
   assert(schema.includes('PRIMARY KEY (day, event_type, target_id)'), 'Datenbank speichert keine reinen Tagessummen')
   assert(worker.includes('count = count + 1') && schema.includes("event_type IN ('pageview', 'amazon_click')"), 'Zählereignisse sind nicht eng begrenzt')
   assert(adminServer.includes('ANALYTICS_LOCAL_JSON') && adminServer.includes('Authorization'), 'Geschützte Admin-Abfrage fehlt')
   assert(!readFileSync(join(SRC, 'data/books.ts'), 'utf-8').includes('ADMIN_TOKEN'), 'Geheimes Statistik-Token steht in der Landingpage')
+})
+
+test('Sprach-Ausgaben öffnen erst ihre Infobox und verknüpfen dort Amazon', () => {
+  const books = readFileSync(join(SRC, 'sections/Books.tsx'), 'utf-8')
+  const admin = readFileSync(join(ROOT, 'admin/index.html'), 'utf-8')
+  const server = readFileSync(join(ROOT, 'admin/admin_server.py'), 'utf-8')
+  assert(books.includes('LanguageEditions') && books.includes('LANGUAGE_META'), 'Sprachflaggen fehlen auf der Landingpage')
+  assert(
+    books.includes('onClick={() => onSelect(edition.language)}')
+      && books.includes('onSelect={(language) => openBook(b, language)}')
+      && books.includes('type="button"'),
+    'Sprachflagge öffnet nicht zuerst die passende Buch-Infobox',
+  )
+  assert(books.includes('title: edition.title || book.title') && books.includes('description: edition.description || book.description'), 'Übersetzte Infobox-Inhalte werden nicht verwendet')
+  assert(admin.includes('addBookEdition') && admin.includes("fd.append('editions'"), 'Sprach-Ausgaben lassen sich im Backend nicht pflegen')
+  assert(server.includes('submitted_editions') && server.includes('book["editions"]'), 'Backend speichert Sprach-Ausgaben nicht')
 })
 
 test('Statistikmodul ist vollständig portabel mit Einrichtung und deaktivierten Aufruflogs', () => {
@@ -266,8 +290,16 @@ test('Statistikmodul ist vollständig portabel mit Einrichtung und deaktivierten
   const config = readFileSync(join(ROOT, 'analytics-worker/wrangler.template.toml'), 'utf-8')
   assert(config.includes('[observability]') && config.includes('enabled = false') && config.includes('invocation_logs = false'), 'Cloudflare-Aufrufprotokolle sind nicht deaktiviert')
   assert(config.includes('database_id = "__DATABASE_ID__"'), 'Datenbank ist unerlaubt an ein bestimmtes Konto gebunden')
+  const setup = readFileSync(join(ROOT, 'analytics-worker/setup.mjs'), 'utf-8')
+  assert(setup.includes("['login', '--device']"), 'Portable Cloudflare-Geräteanmeldung fehlt')
+  const adminStart = readFileSync(join(ROOT, 'ADMIN-STARTEN.bat'), 'utf-8')
+  const analyticsStart = readFileSync(join(ROOT, 'ANALYTIK-EINRICHTEN.bat'), 'utf-8')
+  assert(adminStart.includes('runtime\\python\\python.exe') && adminStart.includes('runtime\\node\\node.exe') && adminStart.includes('runtime\\git\\cmd\\git.exe'), 'Admin bevorzugt die mitgelieferten Programme nicht')
+  assert(adminStart.includes('analytics.local.json') && adminStart.includes('ANALYTIK-EINRICHTEN.bat --from-admin'), 'Zähler-Einrichtung ist nicht in den Admin-Start integriert')
+  assert(analyticsStart.includes('runtime\\node\\node.exe') && analyticsStart.includes('node_modules\\wrangler'), 'Zähler-Einrichtung verwendet die portable Laufzeit nicht')
   const ignore = readFileSync(join(ROOT, '.gitignore'), 'utf-8')
   assert(ignore.includes('admin/analytics.local.json'), 'Lokales Statistik-Token ist nicht von Git ausgeschlossen')
+  assert(ignore.includes('/runtime/'), 'Portable Programmlaufzeiten würden versehentlich zu GitHub übertragen')
 })
 
 // ── 5. Struktur & Portabilität ────────────────────────────────

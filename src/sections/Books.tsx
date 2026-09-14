@@ -10,6 +10,26 @@ import { useLang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
 import { OPEN_BOOK_EVENT } from '@/data/openBook'
 import { trackAmazonClick } from '@/data/analytics'
+import deFlag from 'flag-icons/flags/4x3/de.svg'
+import gbFlag from 'flag-icons/flags/4x3/gb.svg'
+import esFlag from 'flag-icons/flags/4x3/es.svg'
+import frFlag from 'flag-icons/flags/4x3/fr.svg'
+import itFlag from 'flag-icons/flags/4x3/it.svg'
+import ptFlag from 'flag-icons/flags/4x3/pt.svg'
+import ruFlag from 'flag-icons/flags/4x3/ru.svg'
+import jpFlag from 'flag-icons/flags/4x3/jp.svg'
+import cnFlag from 'flag-icons/flags/4x3/cn.svg'
+import krFlag from 'flag-icons/flags/4x3/kr.svg'
+import plFlag from 'flag-icons/flags/4x3/pl.svg'
+import nlFlag from 'flag-icons/flags/4x3/nl.svg'
+import trFlag from 'flag-icons/flags/4x3/tr.svg'
+import uaFlag from 'flag-icons/flags/4x3/ua.svg'
+import saFlag from 'flag-icons/flags/4x3/sa.svg'
+import inFlag from 'flag-icons/flags/4x3/in.svg'
+import seFlag from 'flag-icons/flags/4x3/se.svg'
+import dkFlag from 'flag-icons/flags/4x3/dk.svg'
+import noFlag from 'flag-icons/flags/4x3/no.svg'
+import fiFlag from 'flag-icons/flags/4x3/fi.svg'
 
 // Kategorie-Helfer (Labels/Typen kommen aus den Buchdaten, sprachabhängig)
 const catDefOf = (id: string) => CATEGORIES.find((c) => c.id === id)
@@ -22,17 +42,80 @@ const catLabelOf = (id: string, lang: 'de' | 'en'): string => {
   return c ? (lang === 'en' ? c.labelEn : c.labelDe) : id
 }
 
-function BuyButton({ book, size = 'md' }: { book: Book; size?: 'md' | 'lg' }) {
-  const t = textsFor(useLang())
+const LANGUAGE_META: Record<string, { flag: string; de: string; en: string }> = {
+  de: { flag: deFlag, de: 'Deutsch', en: 'German' }, en: { flag: gbFlag, de: 'Englisch', en: 'English' },
+  es: { flag: esFlag, de: 'Spanisch', en: 'Spanish' }, fr: { flag: frFlag, de: 'Französisch', en: 'French' },
+  it: { flag: itFlag, de: 'Italienisch', en: 'Italian' }, pt: { flag: ptFlag, de: 'Portugiesisch', en: 'Portuguese' },
+  ru: { flag: ruFlag, de: 'Russisch', en: 'Russian' }, ja: { flag: jpFlag, de: 'Japanisch', en: 'Japanese' },
+  zh: { flag: cnFlag, de: 'Chinesisch', en: 'Chinese' }, ko: { flag: krFlag, de: 'Koreanisch', en: 'Korean' },
+  pl: { flag: plFlag, de: 'Polnisch', en: 'Polish' }, nl: { flag: nlFlag, de: 'Niederländisch', en: 'Dutch' },
+  tr: { flag: trFlag, de: 'Türkisch', en: 'Turkish' }, uk: { flag: uaFlag, de: 'Ukrainisch', en: 'Ukrainian' },
+  ar: { flag: saFlag, de: 'Arabisch', en: 'Arabic' }, hi: { flag: inFlag, de: 'Hindi', en: 'Hindi' },
+  sv: { flag: seFlag, de: 'Schwedisch', en: 'Swedish' }, da: { flag: dkFlag, de: 'Dänisch', en: 'Danish' },
+  no: { flag: noFlag, de: 'Norwegisch', en: 'Norwegian' }, fi: { flag: fiFlag, de: 'Finnisch', en: 'Finnish' },
+}
+
+const editionsOf = (book: Book) => book.editions?.length
+  ? book.editions.filter((edition) => edition.amazon.startsWith('https://'))
+  : (book.amazon.startsWith('https://') ? [{ language: book.lang, amazon: book.amazon }] : [])
+
+function LanguageEditions({
+  book,
+  compact = false,
+  onSelect,
+}: {
+  book: Book
+  compact?: boolean
+  onSelect: (language: string) => void
+}) {
+  const lang = useLang()
+  const t = textsFor(lang)
+  const editions = editionsOf(book)
+  if (!editions.length) return null
+  return (
+    <div className={`${compact ? 'mt-2' : 'mt-5'} text-center`}>
+      <p className="mb-1.5 text-[11px] font-semibold text-muted-foreground sm:text-xs">{t.books.availableLanguages}</p>
+      <div className="flex flex-wrap justify-center gap-1.5">
+        {editions.map((edition) => {
+          const meta = LANGUAGE_META[edition.language]
+          const name = meta ? meta[lang] : edition.language.toUpperCase()
+          return (
+            <button
+              type="button"
+              key={edition.language}
+              onClick={() => onSelect(edition.language)}
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-primary/20 bg-white p-1.5 shadow-sm transition hover:scale-105 hover:border-primary/50 hover:bg-primary/5 hover:shadow"
+              title={`${name} – ${t.books.lookInside}`}
+              aria-label={`${book.title}, ${name} – ${t.books.lookInside}`}
+            >
+              {meta
+                ? <img src={meta.flag} alt="" className="h-full w-full rounded-full object-cover shadow-sm" aria-hidden />
+                : <span className="text-lg leading-none" aria-hidden>🌐</span>}
+            </button>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+function BuyButton({ book, size = 'md', preferredLanguage }: { book: Book; size?: 'md' | 'lg'; preferredLanguage?: string }) {
+  const lang = useLang()
+  const t = textsFor(lang)
   const width = size === 'lg' ? 'max-w-[305px]' : 'max-w-[240px]'
+  const editions = editionsOf(book)
+  const edition = editions.find((item) => item.language === preferredLanguage)
+    ?? editions.find((item) => item.language === lang)
+    ?? editions.find((item) => item.language === book.lang)
+    ?? editions[0]
   // Kein gültiger Amazon-Link → kein kaputter Button
-  if (!book.amazon.startsWith('https://')) return null
+  if (!edition) return null
   return (
     <a
-      href={book.amazon}
+      href={edition.amazon}
       target="_blank"
       rel="noopener noreferrer"
-      onClick={() => trackAmazonClick(book.id)}
+      onClick={() => trackAmazonClick(`${book.id}:${edition.language}`)}
       className={`mx-auto block w-full ${width} transition-transform hover:scale-[1.05]`}
       aria-label={`${book.title} – ${t.books.buyAmazon}`}
     >
@@ -47,16 +130,32 @@ function BookDialog({
   onZoom,
   zoom,
   onZoomClose,
+  editionLanguage,
+  onEditionChange,
 }: {
   book: Book | null
   onClose: () => void
   onZoom: (src: string) => void
   zoom: string | null
   onZoomClose: () => void
+  editionLanguage: string | null
+  onEditionChange: (language: string) => void
 }) {
   const t = textsFor(useLang())
   const lang = useLang()
   const zoomOpen = !!zoom
+  const edition = book ? editionsOf(book).find((item) => item.language === editionLanguage) : undefined
+  const displayBook = book && edition ? {
+    ...book,
+    title: edition.title || book.title,
+    series: edition.series || book.series,
+    age: edition.age || book.age,
+    detail: edition.detail || book.detail,
+    description: edition.description || book.description,
+    highlights: edition.highlights?.length ? edition.highlights : book.highlights,
+    amazon: edition.amazon,
+    editions: [edition],
+  } : book
   return (
     <Dialog open={!!book} onOpenChange={(open) => !open && !zoomOpen && onClose()}>
       <DialogContent
@@ -79,30 +178,31 @@ function BookDialog({
               <DialogHeader>
                 <div className="mb-3 flex flex-wrap gap-2">
                   <Badge variant="secondary" className="rounded-full">{typeLabelOf(book, lang)}</Badge>
-                  {book.age && <Badge variant="secondary" className="rounded-full">{book.age}</Badge>}
-                  {book.detail && <Badge variant="secondary" className="rounded-full">{book.detail}</Badge>}
+                  {displayBook?.age && <Badge variant="secondary" className="rounded-full">{displayBook.age}</Badge>}
+                  {displayBook?.detail && <Badge variant="secondary" className="rounded-full">{displayBook.detail}</Badge>}
                 </div>
                 <DialogTitle className="font-display text-3xl font-semibold leading-tight lg:text-4xl">
-                  {book.title}
+                  {displayBook?.title}
                 </DialogTitle>
-                {book.series && (
+                {displayBook?.series && (
                   <p className="pt-1 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                    {book.series}
+                    {displayBook.series}
                   </p>
                 )}
               </DialogHeader>
               <DialogDescription className="mt-6 max-w-2xl whitespace-pre-line text-lg leading-loose text-muted-foreground">
-                <RichText text={book.description} />
+                <RichText text={displayBook?.description || ''} />
               </DialogDescription>
               <ul className="mt-6 grid max-w-2xl gap-2.5 sm:grid-cols-2">
-                {book.highlights.map((h) => (
+                {(displayBook?.highlights || []).map((h) => (
                   <li key={h} className="flex items-center gap-2.5 font-semibold">
                     <span className="h-2 w-2 rounded-full bg-accent" aria-hidden />
                     <RichText text={h} />
                   </li>
                 ))}
               </ul>
-              <AmazonRating book={book} />
+              {displayBook && <AmazonRating book={displayBook} />}
+              <LanguageEditions book={book} onSelect={onEditionChange} />
               {book.samples.length > 0 && (
                 <>
                   <p className="mb-3 mt-9 text-xs font-bold uppercase tracking-widest text-muted-foreground">
@@ -133,7 +233,7 @@ function BookDialog({
               )}
               <div className="sticky bottom-0 z-10 -mx-8 mt-9 flex flex-wrap items-center justify-between gap-4 border-t-2 border-border bg-background/95 px-8 py-5 shadow-[0_-8px_20px_-16px_rgba(30,42,74,0.35)] backdrop-blur lg:-mx-12 lg:px-12">
                 <p className="font-semibold text-muted-foreground">{t.books.seePrice}</p>
-                <BuyButton book={book} size="lg" />
+                {displayBook && <BuyButton book={displayBook} size="lg" preferredLanguage={editionLanguage || undefined} />}
               </div>
             </div>
           </div>
@@ -274,6 +374,7 @@ export default function Books() {
     const params = new URLSearchParams(window.location.search)
     return BOOKS.find((b) => b.id === params.get('buch')) ?? null
   })
+  const [activeEdition, setActiveEdition] = useState<string | null>(null)
   const [cat, setCat] = useState<Category | 'alle'>('alle')
   const [zoom, setZoom] = useState<string | null>(() => {
     const params = new URLSearchParams(window.location.search)
@@ -282,13 +383,20 @@ export default function Books() {
     return found && z >= 1 && found.samples[z - 1] ? found.samples[z - 1] : null
   })
 
-  const openBook = (b: Book) => {
+  const openBook = (b: Book, editionLanguage?: string) => {
     setActive(b)
+    const editions = editionsOf(b)
+    setActiveEdition(editionLanguage
+      ?? editions.find((item) => item.language === lang)?.language
+      ?? editions.find((item) => item.language === b.lang)?.language
+      ?? editions[0]?.language
+      ?? null)
     setBookParam(b.id)
   }
 
   const closeBook = () => {
     setActive(null)
+    setActiveEdition(null)
     setZoom(null)
     setBookParam(null) // URL beim Schließen bereinigen
   }
@@ -400,6 +508,7 @@ export default function Books() {
                     </div>
                     <h3 className="font-display text-base font-semibold leading-snug sm:text-xl">{b.title}</h3>
                     {b.series && <p className="mt-1 text-xs font-semibold text-muted-foreground">{b.series}</p>}
+                    <LanguageEditions book={b} compact onSelect={(language) => openBook(b, language)} />
                     <AmazonRating book={b} />
                     <div className="mt-4 flex flex-1 flex-col items-center">
                       <button
@@ -448,6 +557,8 @@ export default function Books() {
         onZoom={setZoom}
         zoom={zoom}
         onZoomClose={() => setZoom(null)}
+        editionLanguage={activeEdition}
+        onEditionChange={setActiveEdition}
       />
     </section>
   )

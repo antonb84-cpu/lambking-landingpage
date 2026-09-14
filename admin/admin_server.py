@@ -183,6 +183,18 @@ def render_books_ts(state: dict):
         out.append("  },")
     out.append("]")
     out.append("")
+    out.append("export interface BookEdition {")
+    out.append("  /** ISO-639-1-Sprachcode der Ausgabe, z. B. de, en, es. */")
+    out.append("  language: string")
+    out.append("  amazon: string")
+    out.append("  title?: string")
+    out.append("  series?: string")
+    out.append("  age?: string")
+    out.append("  detail?: string")
+    out.append("  description?: string")
+    out.append("  highlights?: string[]")
+    out.append("}")
+    out.append("")
     out.append("export interface Book {")
     out.append("  id: string")
     out.append("  /** Sprache der Buchausgabe */")
@@ -197,6 +209,8 @@ def render_books_ts(state: dict):
     out.append("  highlights: string[]")
     out.append("  samples: string[]")
     out.append("  amazon: string")
+    out.append("  /** Verfügbare Sprach-Ausgaben mit jeweils eigenem Amazon-Link. */")
+    out.append("  editions: BookEdition[]")
     out.append("  /** Beim letzten Amazon-Import übernommene Kundenbewertung. */")
     out.append("  amazonRating?: number")
     out.append("  amazonRatingCount?: number")
@@ -240,6 +254,10 @@ def render_books_ts(state: dict):
         else:
             out.append("    samples: [],")
         out.append(f"    amazon: {ts_str(b.get('amazon', ''))},")
+        editions = b.get("editions", [])
+        if not editions and b.get("amazon"):
+            editions = [{"language": b.get("lang", "de"), "amazon": b["amazon"]}]
+        out.append(f"    editions: {json.dumps(editions, ensure_ascii=False)},")
         rating = b.get("amazonRating")
         if isinstance(rating, (int, float)) and not isinstance(rating, bool):
             out.append(f"    amazonRating: {float(rating):.1f},")
@@ -591,7 +609,10 @@ def precheck(state: dict) -> list:
     no_cover = [b["title"] for b in state["books"] if not (IMAGES / Path(b["cover"]).name).is_file()]
     checks.append(("rot" if no_cover else "gruen",
                    "Alle Cover vorhanden" if not no_cover else f"Cover fehlt: {', '.join(no_cover)}"))
-    no_amazon = [b["title"] for b in state["books"] if not b.get("amazon", "").startswith("https://")]
+    no_amazon = [b["title"] for b in state["books"] if not (
+        b.get("amazon", "").startswith("https://") or
+        any(e.get("amazon", "").startswith("https://") for e in b.get("editions", []))
+    )]
     checks.append(("rot" if no_amazon else "gruen",
                    "Alle Amazon-Links gültig" if not no_amazon else f"Amazon-Link fehlt: {', '.join(no_amazon)}"))
     git_ok, git_text = git_connection()
@@ -940,10 +961,56 @@ class Handler(BaseHTTPRequestHandler):
         book["age"] = fields.get("age", "").strip()
         book["detail"] = fields.get("detail", "").strip()
         book["description"] = fields.get("description", "").strip()
-        book["amazon"] = fields.get("amazon", "").strip()
-        if book["amazon"] and not book["amazon"].startswith("https://"):
-            self.send_json({"ok": False, "error": "Der Amazon-Link muss mit https:// beginnen."})
+        editions_raw = fields.get("editions", "").strip()
+        try:
+            submitted_editions = json.loads(editions_raw) if editions_raw else []
+        except json.JSONDecodeError:
+            self.send_json({"ok": False, "error": "Die Sprach-Ausgaben konnten nicht gelesen werden."})
             return
+        if not isinstance(submitted_editions, list):
+            self.send_json({"ok": False, "error": "Die Sprach-Ausgaben sind ungültig."})
+            return
+        editions = []
+        used_languages = set()
+        for edition in submitted_editions[:30]:
+            if not isinstance(edition, dict):
+                continue
+            language = str(edition.get("language", "")).strip().lower()
+            amazon = str(edition.get("amazon", "")).strip()
+            if not language and not amazon:
+                continue
+            if not re.fullmatch(r"[a-z]{2,3}(?:-[a-z]{2})?", language):
+                self.send_json({"ok": False, "error": f"Ungültiger Sprachcode: {language or '(leer)'}."})
+                return
+            if language in used_languages:
+                self.send_json({"ok": False, "error": f"Die Sprache {language.upper()} wurde doppelt eingetragen."})
+                return
+            if not amazon.startswith("https://"):
+                self.send_json({"ok": False, "error": f"Der Amazon-Link für {language.upper()} muss mit https:// beginnen."})
+                return
+            used_languages.add(language)
+            cleaned_edition = {"language": language, "amazon": amazon}
+            for key, limit in (("title", 300), ("series", 300), ("age", 100), ("detail", 150), ("description", 5000)):
+                value = str(edition.get(key, "")).strip()[:limit]
+                if value:
+                    cleaned_edition[key] = value
+            highlights = edition.get("highlights", [])
+            if isinstance(highlights, str):
+                highlights = highlights.splitlines()
+            if isinstance(highlights, list):
+                cleaned_highlights = [str(item).strip()[:300] for item in highlights[:20] if str(item).strip()]
+                if cleaned_highlights:
+                    cleaned_edition["highlights"] = cleaned_highlights
+            editions.append(cleaned_edition)
+        legacy_amazon = fields.get("amazon", "").strip()
+        if not editions and legacy_amazon:
+            if not legacy_amazon.startswith("https://"):
+                self.send_json({"ok": False, "error": "Der Amazon-Link muss mit https:// beginnen."})
+                return
+            editions = [{"language": book["lang"], "amazon": legacy_amazon}]
+        book["editions"] = editions
+        matching_edition = next((e for e in editions if e["language"] == book["lang"]), None)
+        book["amazon"] = (matching_edition or (editions[0] if editions else {"amazon": ""}))["amazon"]
         rating_raw = fields.get("amazonRating", "").strip()
         if rating_raw:
             try:

@@ -1,4 +1,5 @@
 node_modules/
+/runtime/
 .admin-instance.lock
 admin/analytics.local.json
 analytics-worker/.dev.vars

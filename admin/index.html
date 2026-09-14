@@ -66,6 +66,10 @@
   textarea{resize:vertical;}
   .grid2{display:grid; grid-template-columns:1fr 1fr; gap:0 16px;}
   @media (max-width:640px){.grid2{grid-template-columns:1fr;}}
+  .edition-list{display:grid; gap:9px; margin-top:8px;}
+  .edition-row{display:grid; grid-template-columns:minmax(150px,.65fr) minmax(260px,1.8fr) 42px; gap:8px; align-items:center;}
+  .edition-row .icon-btn{width:42px; height:42px;}
+  @media (max-width:640px){.edition-row{grid-template-columns:1fr 42px;}.edition-row input{grid-column:1/-1; grid-row:2;}.edition-row .icon-btn{grid-column:2; grid-row:1;}}
 
   .dropzone{border:2px dashed var(--gold); border-radius:12px; padding:22px; text-align:center; background:var(--cream); transition:background .15s;}
   .dropzone.over{background:var(--gold-light);}
@@ -295,8 +299,11 @@
       <label for="f_highlights">Highlights (eine Zeile = ein Punkt, optional)</label>
       <textarea id="f_highlights" class="draft" rows="3" placeholder="Große, klare Motive&#10;Biblisch fundiert&#10;Ideal für Familie & Kindergottesdienst"></textarea>
 
-      <label for="f_amazon">Amazon-Link</label>
-      <input type="url" id="f_amazon" class="draft" placeholder="https://www.amazon.de/dp/B0…">
+      <label>Sprach-Ausgaben und Amazon-Links</label>
+      <p class="hint" style="margin-bottom:6px;">Für jede verfügbare Buchsprache eine Zeile anlegen. Auf der Landingpage erscheint dafür eine anklickbare Flagge.</p>
+      <div id="f_editions" class="edition-list"></div>
+      <button type="button" class="btn btn-ghost" style="margin-top:10px;" onclick="addBookEdition()">＋ Sprache hinzufügen</button>
+      <input type="hidden" id="f_amazon" class="draft">
 
       <div class="checkline">
         <input type="checkbox" id="f_isNew" checked>
@@ -448,6 +455,7 @@ let amazonCover = '';
 let amazonSamples = [];
 let amazonRating = null;
 let amazonRatingCount = null;
+let bookEditions = [];
 let coverData = null;
 let sampleData = [];
 let existingSamples = [];
@@ -484,7 +492,7 @@ const TEXT_LABELS = {
   eyebrow:'Kleine Überschrift', all:'Filter „Alle“', emptyComics:'Hinweis bei leeren Comics', emptyAll:'Hinweis bei leerer Buchliste',
   comingSoonSuffix:'Zusatz „bald erhältlich“', newBadge:'Abzeichen „Neu“', lookInside:'Knopf „Inhalt ansehen“',
   seePrice:'Preishinweis', samplesHint:'Hinweis über den Beispielseiten', zoom:'Vergrößern-Knopf', backToBook:'Zurück-Knopf',
-  growing:'Hinweis vor kommenden Büchern', buyAmazon:'Amazon-Knopf', childrenIconLabel:'Bildbeschreibung des Kinder-Symbols',
+  growing:'Hinweis vor kommenden Büchern', buyAmazon:'Amazon-Knopf', availableLanguages:'Hinweis vor den Sprachflaggen', childrenIconLabel:'Bildbeschreibung des Kinder-Symbols',
   firstBefore:'Einleitender Absatz', firstStrong:'Fett hervorgehobener Text', firstAfter:'Text nach der Hervorhebung',
   second:'Zweiter Absatz', third:'Dritter Absatz', current:'Hinweis vor den Einrichtungen', visit:'Link zu einer Einrichtung',
   viewFlyer:'Knopf „Flyer ansehen“', flyerTitle:'Überschrift des Flyer-Fensters', flyerDescription:'Hinweis im Flyer-Fenster', openFlyerNewTab:'Link zum Öffnen des Flyers',
@@ -496,6 +504,71 @@ const TEXT_LABELS = {
 };
 
 function cloneJson(value){ return JSON.parse(JSON.stringify(value || {})); }
+
+const BOOK_LANGUAGES = [
+  ['de','🇩🇪 Deutsch'], ['en','🇬🇧 Englisch'], ['es','🇪🇸 Spanisch'], ['fr','🇫🇷 Französisch'],
+  ['it','🇮🇹 Italienisch'], ['pt','🇵🇹 Portugiesisch'], ['ru','🇷🇺 Russisch'], ['ja','🇯🇵 Japanisch'],
+  ['zh','🇨🇳 Chinesisch'], ['ko','🇰🇷 Koreanisch'], ['pl','🇵🇱 Polnisch'], ['nl','🇳🇱 Niederländisch'],
+  ['tr','🇹🇷 Türkisch'], ['uk','🇺🇦 Ukrainisch'], ['ar','🇸🇦 Arabisch'], ['hi','🇮🇳 Hindi'],
+  ['sv','🇸🇪 Schwedisch'], ['da','🇩🇰 Dänisch'], ['no','🇳🇴 Norwegisch'], ['fi','🇫🇮 Finnisch']
+];
+
+function renderBookEditions(){
+  const list = $('f_editions');
+  list.innerHTML = bookEditions.map((edition, index) => `
+    <div class="step" style="padding:12px; margin:0;">
+      <div class="edition-row">
+        <select aria-label="Sprache der Ausgabe ${index + 1}" onchange="setBookEditionField(${index},'language',this.value)">
+          ${BOOK_LANGUAGES.map(([code,label]) => `<option value="${code}" ${edition.language===code?'selected':''}>${label}</option>`).join('')}
+        </select>
+        <input type="url" value="${esc(edition.amazon || '')}" placeholder="Passender Amazon-Link: https://…" aria-label="Amazon-Link der Ausgabe ${index + 1}" oninput="setBookEditionField(${index},'amazon',this.value)">
+        <button type="button" class="icon-btn" title="Sprach-Ausgabe entfernen" onclick="removeBookEdition(${index})">🗑</button>
+      </div>
+      <details class="settings-panel" style="margin-top:9px;">
+        <summary>📝 Infobox in dieser Sprache</summary>
+        <div class="settings-body">
+          <p class="hint" style="margin:8px 0;">Diese Texte erscheinen, wenn ein Besucher die Flagge anklickt. Leere Felder übernehmen vorläufig den Haupttext des Buches.</p>
+          <label>Titel</label><input type="text" value="${esc(edition.title || '')}" placeholder="Übersetzter Buchtitel" oninput="setBookEditionField(${index},'title',this.value)">
+          <div class="grid2">
+            <div><label>Reihe / Band</label><input type="text" value="${esc(edition.series || '')}" oninput="setBookEditionField(${index},'series',this.value)"></div>
+            <div><label>Altersempfehlung</label><input type="text" value="${esc(edition.age || '')}" oninput="setBookEditionField(${index},'age',this.value)"></div>
+            <div><label>Umfang / Detail</label><input type="text" value="${esc(edition.detail || '')}" oninput="setBookEditionField(${index},'detail',this.value)"></div>
+          </div>
+          <label>Beschreibung</label><textarea rows="6" placeholder="Übersetzte Beschreibung" oninput="setBookEditionField(${index},'description',this.value)">${esc(edition.description || '')}</textarea>
+          <label>Highlights (eine Zeile = ein Punkt)</label><textarea rows="3" oninput="setBookEditionField(${index},'highlights',this.value.split('\n'))">${esc(Array.isArray(edition.highlights) ? edition.highlights.join('\n') : '')}</textarea>
+        </div>
+      </details>
+    </div>`).join('');
+}
+
+function setBookEditionField(index, key, value){
+  if (!bookEditions[index]) return;
+  bookEditions[index][key] = value;
+  saveDraft();
+}
+
+function addBookEdition(language = ''){
+  const used = new Set(bookEditions.map(item => item.language));
+  const nextLanguage = language || BOOK_LANGUAGES.find(([code]) => !used.has(code))?.[0] || 'de';
+  bookEditions.push({language: nextLanguage, amazon: ''});
+  renderBookEditions();
+}
+
+function removeBookEdition(index){
+  bookEditions.splice(index, 1);
+  renderBookEditions();
+  saveDraft();
+}
+
+function setEditionAmazon(language, amazon){
+  let edition = bookEditions.find(item => item.language === language);
+  if (!edition){
+    edition = {language, amazon: ''};
+    bookEditions.push(edition);
+  }
+  edition.amazon = amazon;
+  renderBookEditions();
+}
 
 function mergeTextValues(defaults, saved){
   if (saved === undefined || saved === null) return cloneJson(defaults);
@@ -620,10 +693,17 @@ function formatCount(value){
 
 function renderAnalyticsTable(clicks){
   const byBook = new Map((clicks || []).map(item => [item.bookId, item]));
-  const books = (state.books || []).filter(book => (book.amazon || '').startsWith('https://'));
-  const rows = books.map(book => {
-    const count = byBook.get(book.id) || {};
-    return `<tr><td>${esc(book.title)}<br><small>${book.lang === 'en' ? 'Englisch' : 'Deutsch'}</small></td><td>${formatCount(count.today)}</td><td>${formatCount(count.week)}</td><td><b>${formatCount(count.total)}</b></td></tr>`;
+  const languageLabels = new Map(BOOK_LANGUAGES);
+  const rows = (state.books || []).flatMap(book => {
+    const editions = Array.isArray(book.editions) && book.editions.length
+      ? book.editions
+      : ((book.amazon || '').startsWith('https://') ? [{language:book.lang || 'de', amazon:book.amazon}] : []);
+    return editions.filter(edition => (edition.amazon || '').startsWith('https://')).map(edition => {
+      const count = byBook.get(`${book.id}:${edition.language}`)
+        || (edition.language === (book.lang || 'de') ? byBook.get(book.id) : null)
+        || {};
+      return `<tr><td>${esc(book.title)}<br><small>${esc(languageLabels.get(edition.language) || edition.language.toUpperCase())}</small></td><td>${formatCount(count.today)}</td><td>${formatCount(count.week)}</td><td><b>${formatCount(count.total)}</b></td></tr>`;
+    });
   }).join('');
   return `<div class="analytics-table-wrap"><table class="analytics-table"><thead><tr><th>Amazon-Knopf des Buches</th><th>Heute</th><th>Woche</th><th>Gesamt</th></tr></thead><tbody>${rows || '<tr><td colspan="4">Noch keine Bücher mit Amazon-Link vorhanden.</td></tr>'}</tbody></table></div>`;
 }
@@ -820,11 +900,16 @@ function renderList(){
     const row = document.createElement('div');
     row.className = 'book-row';
     const isNew = b.releaseDate && (Date.now() - new Date(b.releaseDate+'T00:00:00').getTime()) < 30*24*3600*1000;
+    const editions = Array.isArray(b.editions) && b.editions.length ? b.editions : (b.amazon ? [{language:b.lang || 'de', amazon:b.amazon}] : []);
+    const editionBadges = editions.map(edition => {
+      const label = BOOK_LANGUAGES.find(([code]) => code === edition.language)?.[1] || `🌐 ${edition.language.toUpperCase()}`;
+      return `<span class="badge">${esc(label)}</span>`;
+    }).join('');
     row.innerHTML = `
       <img src="/${b.cover}" alt="" onerror="this.style.visibility='hidden'">
       <div class="info">
         <b>${esc(b.title)}</b>
-        <span><span class="badge">${catLabelDe(b.category)}</span>${isNew?'<span class="badge neu">NEU</span>':''}${b.showInHero?'<span class="badge">VORSCHAU OBEN</span>':''}${b.samples&&b.samples.length?(b.samples.length+' Vorschauseiten'):''}</span>
+        <span><span class="badge">${catLabelDe(b.category)}</span>${editionBadges}${isNew?'<span class="badge neu">NEU</span>':''}${b.showInHero?'<span class="badge">VORSCHAU OBEN</span>':''}${b.samples&&b.samples.length?(b.samples.length+' Vorschauseiten'):''}</span>
       </div>
       <div class="row-btns">
         <button class="icon-btn" title="Nach oben" ${i===0?'disabled':''} onclick="moveBook('${b.id}',-1)">▲</button>
@@ -990,6 +1075,7 @@ function saveDraft(){
   if (editId) return; // nur für neue Bücher
   const d = {};
   document.querySelectorAll('#formSection .draft').forEach(el => d[el.id] = el.value);
+  d.bookEditions = bookEditions;
   localStorage.setItem(DRAFT_KEY, JSON.stringify(d));
 }
 document.addEventListener('input', e => {
@@ -997,11 +1083,15 @@ document.addEventListener('input', e => {
 });
 function hasDraft(){
   const d = localStorage.getItem(DRAFT_KEY);
-  return d && Object.values(JSON.parse(d)).some(v => (v||'').trim());
+  return d && Object.values(JSON.parse(d)).some(v => Array.isArray(v) ? v.some(item => item.amazon) : String(v || '').trim());
 }
 function restoreDraft(){
   const d = JSON.parse(localStorage.getItem(DRAFT_KEY) || '{}');
-  Object.entries(d).forEach(([id, v]) => { if ($(id)) $(id).value = v; });
+  Object.entries(d).forEach(([id, v]) => { if (id !== 'bookEditions' && $(id)) $(id).value = v; });
+  if (Array.isArray(d.bookEditions)){
+    bookEditions = d.bookEditions;
+    renderBookEditions();
+  }
   $('draftNote').classList.add('hidden');
   toast('✓ Entwurf wiederhergestellt');
 }
@@ -1092,7 +1182,7 @@ function clearAllSamples(){
 /* ── Formular ── */
 function openForm(id){
   editId = id || null;
-  amazonCover = ''; amazonSamples = []; amazonRating = null; amazonRatingCount = null; coverData = null; sampleData = []; existingSamples = []; sampleItems = []; removeCover = false;
+  amazonCover = ''; amazonSamples = []; amazonRating = null; amazonRatingCount = null; bookEditions = []; coverData = null; sampleData = []; existingSamples = []; sampleItems = []; removeCover = false;
   $('coverPreview').innerHTML = ''; $('samplePreview').innerHTML = '';
   $('amazonImportStatus').textContent = '';
   $('amazonImportStatus').className = 'import-status';
@@ -1109,6 +1199,11 @@ function openForm(id){
   $('f_detail').value = b ? (b.detail||'') : '';
   $('f_description').value = b ? (b.description||'') : '';
   $('f_highlights').value = b ? (b.highlights||[]).join('\n') : '';
+  bookEditions = b && Array.isArray(b.editions) && b.editions.length
+    ? b.editions.map(item => ({...item, language:item.language || b.lang || currentLang, amazon:item.amazon || ''}))
+    : (b && b.amazon ? [{language:b.lang || currentLang, amazon:b.amazon}] : []);
+  if (!bookEditions.length) bookEditions = [{language:(b && b.lang) || currentLang, amazon:''}];
+  renderBookEditions();
   $('f_amazon').value = b ? (b.amazon||'') : '';
   $('f_isNew').checked = !b;
   $('f_isNew').dataset.release = b ? (b.releaseDate||'') : '';
@@ -1155,7 +1250,11 @@ async function fetchAmazon(){
     if (d.detail) $('f_detail').value = d.detail;
     if (d.series) $('f_series').value = d.series;
     if (d.category && [...$('f_category').options].some(o => o.value === d.category)) $('f_category').value = d.category;
-    if (d.amazon) $('f_amazon').value = d.amazon;
+    if (d.amazon){
+      const bookLanguage = editId ? (state.books.find(x => x.id === editId)?.lang || currentLang) : currentLang;
+      setEditionAmazon(bookLanguage, d.amazon);
+      $('f_amazon').value = d.amazon;
+    }
     amazonRating = Number.isFinite(Number(d.amazonRating)) ? Number(d.amazonRating) : null;
     amazonRatingCount = Number.isInteger(Number(d.amazonRatingCount)) ? Number(d.amazonRatingCount) : null;
     if (d.cover){
@@ -1258,7 +1357,16 @@ async function saveBook(){
     fd.append('detail', $('f_detail').value);
     fd.append('description', $('f_description').value);
     fd.append('highlights', $('f_highlights').value);
-    fd.append('amazon', $('f_amazon').value);
+    const editionsToSave = bookEditions
+      .map(item => ({
+        ...item,
+        language:(item.language || '').trim().toLowerCase(),
+        amazon:(item.amazon || '').trim(),
+        highlights:Array.isArray(item.highlights) ? item.highlights.map(value => value.trim()).filter(Boolean) : []
+      }))
+      .filter(item => item.amazon);
+    fd.append('editions', JSON.stringify(editionsToSave));
+    fd.append('amazon', editionsToSave[0]?.amazon || $('f_amazon').value);
     fd.append('amazonRating', amazonRating === null ? '' : String(amazonRating));
     fd.append('amazonRatingCount', amazonRatingCount === null ? '' : String(amazonRatingCount));
     fd.append('amazonCover', amazonCover);

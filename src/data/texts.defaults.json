@@ -45,7 +45,8 @@
       "nextPage": "Nächste Seite",
       "page": "Seite",
       "growing": "Die Serie wächst – bald erhältlich:",
-      "buyAmazon": "Bei Amazon ansehen"
+      "buyAmazon": "Bei Amazon ansehen",
+      "availableLanguages": "Erhältlich in"
     },
     "trust": {
       "title": "Darauf können Familien vertrauen.",
@@ -207,7 +208,8 @@
       "nextPage": "Next page",
       "page": "Page",
       "growing": "The series is growing – coming soon:",
-      "buyAmazon": "View on Amazon"
+      "buyAmazon": "View on Amazon",
+      "availableLanguages": "Available in"
     },
     "trust": {
       "title": "What families can trust.",

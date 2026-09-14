@@ -4,12 +4,20 @@ set "PYTHONUTF8=1"
 title LambKing Admin
 REM Alle Pfade werden aus dem Speicherort dieser Datei bestimmt (portabel).
 cd /d "%~dp0"
+set "LAMBKING_ROOT=%~dp0"
+
+REM Mitgelieferte Programme zuerst verwenden. Dadurch funktioniert der Ordner
+REM auch auf einem USB-Stick ohne installierte Python-, Node- oder Git-Version.
+if exist "%LAMBKING_ROOT%runtime\node\node.exe" set "PATH=%LAMBKING_ROOT%runtime\node;%PATH%"
+if exist "%LAMBKING_ROOT%runtime\git\cmd\git.exe" set "PATH=%LAMBKING_ROOT%runtime\git\cmd;%LAMBKING_ROOT%runtime\git\bin;%PATH%"
 
 REM Eine echte Python-Installation suchen. "where python" allein reicht nicht,
 REM weil Windows auch eine wirkungslose Microsoft-Store-Verknuepfung liefert.
 set "PYEXE="
 set "PYARGS="
-if exist "%LocalAppData%\Programs\Python\Launcher\py.exe" (
+if exist "%LAMBKING_ROOT%runtime\python\python.exe" (
+  set "PYEXE=%LAMBKING_ROOT%runtime\python\python.exe"
+) else if exist "%LocalAppData%\Programs\Python\Launcher\py.exe" (
   set "PYEXE=%LocalAppData%\Programs\Python\Launcher\py.exe"
   set "PYARGS=-3"
 )
@@ -39,6 +47,20 @@ if not defined PYEXE (
 
 "%PYEXE%" %PYARGS% admin\startcheck.py
 if errorlevel 1 exit /b 1
+
+REM Der anonyme Zaehldienst wird beim ersten Start als Bestandteil des Admins
+REM eingerichtet. Danach bleibt die Konfiguration im transportablen Ordner.
+if not exist "admin\analytics.local.json" (
+  echo.
+  echo   Der anonyme Seitenzaehler wird jetzt einmalig verbunden.
+  echo   Im Browser ist nur die Anmeldung bei deinem Cloudflare-Konto noetig.
+  echo.
+  call ANALYTIK-EINRICHTEN.bat --from-admin
+  if errorlevel 1 (
+    echo.
+    echo   Der Admin startet trotzdem. Die Zaehler-Einrichtung kann beim naechsten Start fortgesetzt werden.
+  )
+)
 
 echo.
 echo   LambKing Admin wird gestartet ...

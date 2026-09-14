@@ -1,24 +1,22 @@
 # Wiederherstellung – LambKing auf einem neuen PC
 
-**Keine Angst:** Dein komplettes LambKing-Projekt (Bücher, Bilder, Texte, Einstellungen, Admin-Programm)
-liegt sicher auf GitHub. Wenn dein PC kaputt geht, bekommst du mit dieser Anleitung alles wieder.
+**Keine Angst:** Die private portable LambKing-Kopie enthält Bücher, Bilder, Texte, Einstellungen, Admin-Programm sowie Python, Node.js und Git. Sie kann auf einem USB-Stick oder einem anderen Windows-PC direkt gestartet werden.
 
-Das geheime Statistik-Token wird aus Sicherheitsgründen nicht auf GitHub gespeichert. Bewahre deshalb zusätzlich eine private Kopie der Datei `admin\analytics.local.json` auf deinem verschlüsselten Drive oder Datenträger auf. Ohne diese Datei bleibt die Landingpage funktionsfähig; nur die Statistik muss erneut verbunden werden.
+Das geheime Statistik-Token wird aus Sicherheitsgründen nicht in den öffentlichen GitHub-Quellcode geschrieben. Die private portable Drive-/USB-Kopie enthält es nach der Einrichtung zusammen mit dem übrigen System. Bewahre diese Kopie deshalb nicht öffentlich auf.
 
-Du brauchst dafür keine Programmierkenntnisse – folge einfach den Schritten.
+Du brauchst dafür keine Programmierkenntnisse und musst auf dem Ziel-PC nichts installieren.
 
 ---
 
-## Schritt 1: Drei Programme installieren
+## Empfohlener Weg: portable Drive-/USB-Kopie
 
-Lade nacheinander herunter und installiere (immer mit den Standard-Einstellungen):
+1. Lade `LambKing.de-portable.zip` aus dem privaten Drive-Ordner herunter oder kopiere den vollständigen Ordner vom USB-Stick.
+2. Entpacke den Ordner an eine beliebige Stelle. Der Laufwerksbuchstabe darf sich ändern.
+3. Doppelklicke auf **ADMIN-STARTEN.bat**. Der Admin und der bereits verbundene Zähler starten als ein System.
 
-1. **Git** – https://git-scm.com/download/win
-2. **Node.js** – https://nodejs.org – die **LTS**-Version (großer grüner Knopf)
-3. **Python** – https://www.python.org/downloads/ – **Wichtig:** Im Installationsfenster
-   ganz unten den Haken bei **„Add python.exe to PATH"** setzen, dann auf „Install now".
+Python, Node.js, Git, die Git-Arbeitsdaten und alle benötigten Pakete befinden sich bereits im Ordner. Dadurch funktionieren auch Vorschau, PDF-Verarbeitung und Veröffentlichung ohne Programminstallation.
 
-## Schritt 2: Bei GitHub anmelden
+## Beim ersten Veröffentlichen auf einem neuen PC
 
 Damit dein PC mit deinem GitHub-Konto sprechen darf:
 
@@ -32,7 +30,7 @@ Damit dein PC mit deinem GitHub-Konto sprechen darf:
    Anmeldefenster von GitHub – dort einmal mit deinem Konto anmelden.
    Windows merkt sich das danach dauerhaft.
 
-## Schritt 3: Projekt herunterladen
+## Alternative für Entwickler: nur den Quellcode von GitHub herunterladen
 
 In der Eingabeaufforderung:
 
@@ -42,10 +40,9 @@ cd \
 git clone https://github.com/antonb84-cpu/lambking-landingpage.git LambKing.de
 ```
 
-(Du kannst statt `H:` auch jedes andere Laufwerk nehmen, z. B. `D:` –
-das Programm funktioniert überall.)
+(Du kannst statt `H:` auch jedes andere Laufwerk nehmen.) Ein reiner GitHub-Klon enthält aus Größen- und Sicherheitsgründen nicht die portablen Laufzeiten und nicht das geheime Statistik-Token. Für einen installationsfreien Wechsel deshalb immer die private Drive-/USB-Kopie verwenden.
 
-## Schritt 4: Bausteine installieren
+Für diese Entwickler-Variante müssen Python, Node.js und Git installiert sein. Danach:
 
 In der Eingabeaufforderung:
 
@@ -55,7 +52,7 @@ npm install
 pip install -r admin\requirements.txt
 ```
 
-## Schritt 5: Admin starten
+## Admin starten
 
 Doppelklick auf **ADMIN-STARTEN.bat** im Ordner `H:\LambKing.de`.
 
@@ -63,9 +60,9 @@ Doppelklick auf **ADMIN-STARTEN.bat** im Ordner `H:\LambKing.de`.
   falls etwas fehlt.
 - Danach öffnet sich der Browser mit dem LambKing Admin.
 
-Falls die Statistik auf diesem PC noch nicht verbunden ist, kopiere die gesicherte Datei `admin\analytics.local.json` zurück in den Ordner `admin`. Alternativ kannst du den Zähldienst mit `ANALYTIK-EINRICHTEN.bat` in einem eigenen Cloudflare-Konto neu einrichten.
+Beim ersten Start richtet `ADMIN-STARTEN.bat` die Statistik automatisch mit ein, falls noch keine Konfiguration vorhanden ist. In der vollständigen privaten Drive-/USB-Kopie ist sie bereits vorhanden; dort ist keine erneute Cloudflare-Anmeldung nötig. Nur bei einer ganz neuen Einrichtung oder einem absichtlichen Umzug des Zähldienstes muss die Cloudflare-Kontoanmeldung einmal persönlich bestätigt werden.
 
-## Schritt 6: Test-Veröffentlichung
+## Test-Veröffentlichung
 
 1. Im Admin unten auf **„✅ Alles prüfen"** klicken – alle Punkte sollten grün sein.
 2. Auf **„🚀 Jetzt veröffentlichen"** klicken.
@@ -80,4 +77,4 @@ Falls die Statistik auf diesem PC noch nicht verbunden ist, kopiere die gesicher
 
 - Die Meldungen im schwarzen Fenster sind bewusst in einfachem Deutsch geschrieben –
   lies sie in Ruhe, sie sagen dir, was fehlt.
-- Oder frag Kimi: „Hilf mir bei der LambKing-Wiederherstellung, Schritt X klappt nicht."
+- Erstelle bei einer Fehlermeldung einen Screenshot des vollständigen schwarzen Fensters; daraus lässt sich der betroffene Prüfschritt eindeutig erkennen.
