@@ -294,7 +294,7 @@ test('Statistikmodul ist vollständig portabel mit Einrichtung und deaktivierten
   assert(setup.includes("['login', '--device']"), 'Portable Cloudflare-Geräteanmeldung fehlt')
   const adminStart = readFileSync(join(ROOT, 'ADMIN-STARTEN.bat'), 'utf-8')
   const analyticsStart = readFileSync(join(ROOT, 'ANALYTIK-EINRICHTEN.bat'), 'utf-8')
-  assert(adminStart.includes('runtime\\python\\python.exe') && adminStart.includes('runtime\\node\\node.exe') && adminStart.includes('runtime\\git\\cmd\\git.exe'), 'Admin bevorzugt die mitgelieferten Programme nicht')
+  assert(adminStart.includes('runtime\\python\\python.exe') && adminStart.includes('runtime\\node\\node.exe') && adminStart.includes('runtime\\mingit\\cmd\\git.exe'), 'Admin bevorzugt die mitgelieferten Programme nicht')
   assert(adminStart.includes('analytics.local.json') && adminStart.includes('ANALYTIK-EINRICHTEN.bat --from-admin'), 'Zähler-Einrichtung ist nicht in den Admin-Start integriert')
   assert(analyticsStart.includes('runtime\\node\\node.exe') && analyticsStart.includes('node_modules\\wrangler'), 'Zähler-Einrichtung verwendet die portable Laufzeit nicht')
   const ignore = readFileSync(join(ROOT, '.gitignore'), 'utf-8')

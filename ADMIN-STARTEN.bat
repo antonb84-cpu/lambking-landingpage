@@ -9,7 +9,7 @@ set "LAMBKING_ROOT=%~dp0"
 REM Mitgelieferte Programme zuerst verwenden. Dadurch funktioniert der Ordner
 REM auch auf einem USB-Stick ohne installierte Python-, Node- oder Git-Version.
 if exist "%LAMBKING_ROOT%runtime\node\node.exe" set "PATH=%LAMBKING_ROOT%runtime\node;%PATH%"
-if exist "%LAMBKING_ROOT%runtime\git\cmd\git.exe" set "PATH=%LAMBKING_ROOT%runtime\git\cmd;%LAMBKING_ROOT%runtime\git\bin;%PATH%"
+if exist "%LAMBKING_ROOT%runtime\mingit\cmd\git.exe" set "PATH=%LAMBKING_ROOT%runtime\mingit\cmd;%LAMBKING_ROOT%runtime\mingit\bin;%PATH%"
 
 REM Eine echte Python-Installation suchen. "where python" allein reicht nicht,
 REM weil Windows auch eine wirkungslose Microsoft-Store-Verknuepfung liefert.

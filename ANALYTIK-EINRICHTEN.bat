@@ -2,7 +2,7 @@
 setlocal
 set "LAMBKING_ROOT=%~dp0"
 if exist "%LAMBKING_ROOT%runtime\node\node.exe" set "PATH=%LAMBKING_ROOT%runtime\node;%PATH%"
-if exist "%LAMBKING_ROOT%runtime\git\cmd\git.exe" set "PATH=%LAMBKING_ROOT%runtime\git\cmd;%LAMBKING_ROOT%runtime\git\bin;%PATH%"
+if exist "%LAMBKING_ROOT%runtime\mingit\cmd\git.exe" set "PATH=%LAMBKING_ROOT%runtime\mingit\cmd;%LAMBKING_ROOT%runtime\mingit\bin;%PATH%"
 if exist "%LAMBKING_ROOT%runtime\python\python.exe" set "PATH=%LAMBKING_ROOT%runtime\python;%PATH%"
 cd /d "%~dp0analytics-worker"
 title LambKing Analytik einrichten
