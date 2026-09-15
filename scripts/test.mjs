@@ -95,7 +95,7 @@ test('Buchdaten: Pflichtfelder und gültige Links', () => {
     const editionLanguages = new Set()
     for (const edition of b.editions) {
       assert(/^[a-z]{2,3}(-[a-z]{2})?$/.test(edition.language), `${b.id}: ungültiger Sprachcode`)
-      assert(edition.amazon?.startsWith('https://'), `${b.id}/${edition.language}: Amazon-Link ungültig`)
+      assert(!edition.amazon || edition.amazon.startsWith('https://'), `${b.id}/${edition.language}: Amazon-Link ungültig`)
       assert(!editionLanguages.has(edition.language), `${b.id}: Sprache doppelt eingetragen`)
       editionLanguages.add(edition.language)
     }

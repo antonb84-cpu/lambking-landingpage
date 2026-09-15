@@ -46,7 +46,8 @@
       "page": "Seite",
       "growing": "Die Serie wächst – bald erhältlich:",
       "buyAmazon": "Bei Amazon ansehen",
-      "availableLanguages": "Erhältlich in"
+      "availableLanguages": "Erhältlich in",
+      "amazonPending": "Diese Sprachausgabe wird derzeit von Amazon geprüft. Der Kaufbutton erscheint automatisch, sobald der Amazon-Link im Backend eingetragen ist."
     },
     "trust": {
       "title": "Darauf können Familien vertrauen.",
@@ -209,7 +210,8 @@
       "page": "Page",
       "growing": "The series is growing – coming soon:",
       "buyAmazon": "View on Amazon",
-      "availableLanguages": "Available in"
+      "availableLanguages": "Available in",
+      "amazonPending": "This language edition is currently under review by Amazon. The purchase button will appear as soon as its Amazon link is entered in the admin area."
     },
     "trust": {
       "title": "What families can trust.",

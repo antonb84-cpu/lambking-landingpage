@@ -985,7 +985,7 @@ class Handler(BaseHTTPRequestHandler):
             if language in used_languages:
                 self.send_json({"ok": False, "error": f"Die Sprache {language.upper()} wurde doppelt eingetragen."})
                 return
-            if not amazon.startswith("https://"):
+            if amazon and not amazon.startswith("https://"):
                 self.send_json({"ok": False, "error": f"Der Amazon-Link für {language.upper()} muss mit https:// beginnen."})
                 return
             used_languages.add(language)

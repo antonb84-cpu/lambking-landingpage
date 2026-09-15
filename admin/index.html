@@ -521,13 +521,13 @@ function renderBookEditions(){
         <select aria-label="Sprache der Ausgabe ${index + 1}" onchange="setBookEditionField(${index},'language',this.value)">
           ${BOOK_LANGUAGES.map(([code,label]) => `<option value="${code}" ${edition.language===code?'selected':''}>${label}</option>`).join('')}
         </select>
-        <input type="url" value="${esc(edition.amazon || '')}" placeholder="Passender Amazon-Link: https://…" aria-label="Amazon-Link der Ausgabe ${index + 1}" oninput="setBookEditionField(${index},'amazon',this.value)">
+        <input type="url" value="${esc(edition.amazon || '')}" placeholder="Amazon-Link – bei laufender Amazon-Prüfung leer lassen" aria-label="Amazon-Link der Ausgabe ${index + 1}" oninput="setBookEditionField(${index},'amazon',this.value)">
         <button type="button" class="icon-btn" title="Sprach-Ausgabe entfernen" onclick="removeBookEdition(${index})">🗑</button>
       </div>
       <details class="settings-panel" style="margin-top:9px;">
         <summary>📝 Infobox in dieser Sprache</summary>
         <div class="settings-body">
-          <p class="hint" style="margin:8px 0;">Diese Texte erscheinen, wenn ein Besucher die Flagge anklickt. Leere Felder übernehmen vorläufig den Haupttext des Buches.</p>
+          <p class="hint" style="margin:8px 0;">Diese Texte erscheinen, wenn ein Besucher die Flagge anklickt. Leere Textfelder übernehmen vorläufig den Haupttext des Buches. Solange Amazon eine Ausgabe noch prüft, darf ihr Amazon-Link leer bleiben.</p>
           <label>Titel</label><input type="text" value="${esc(edition.title || '')}" placeholder="Übersetzter Buchtitel" oninput="setBookEditionField(${index},'title',this.value)">
           <div class="grid2">
             <div><label>Reihe / Band</label><input type="text" value="${esc(edition.series || '')}" oninput="setBookEditionField(${index},'series',this.value)"></div>

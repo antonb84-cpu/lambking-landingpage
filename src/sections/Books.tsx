@@ -56,8 +56,23 @@ const LANGUAGE_META: Record<string, { flag: string; de: string; en: string }> = 
 }
 
 const editionsOf = (book: Book) => book.editions?.length
-  ? book.editions.filter((edition) => edition.amazon.startsWith('https://'))
+  ? book.editions.filter((edition) => edition.language)
   : (book.amazon.startsWith('https://') ? [{ language: book.lang, amazon: book.amazon }] : [])
+
+const localizedBook = (book: Book, language: string): Book => {
+  const edition = editionsOf(book).find((item) => item.language === language)
+  if (!edition) return book
+  return {
+    ...book,
+    title: edition.title || book.title,
+    series: edition.series || book.series,
+    age: edition.age || book.age,
+    detail: edition.detail || book.detail,
+    description: edition.description || book.description,
+    highlights: edition.highlights?.length ? edition.highlights : book.highlights,
+    amazon: edition.amazon,
+  }
+}
 
 function LanguageEditions({
   book,
@@ -103,11 +118,12 @@ function BuyButton({ book, size = 'md', preferredLanguage }: { book: Book; size?
   const lang = useLang()
   const t = textsFor(lang)
   const width = size === 'lg' ? 'max-w-[305px]' : 'max-w-[240px]'
-  const editions = editionsOf(book)
-  const edition = editions.find((item) => item.language === preferredLanguage)
-    ?? editions.find((item) => item.language === lang)
-    ?? editions.find((item) => item.language === book.lang)
-    ?? editions[0]
+  const editions = editionsOf(book).filter((item) => item.amazon.startsWith('https://'))
+  const edition = preferredLanguage
+    ? editions.find((item) => item.language === preferredLanguage)
+    : editions.find((item) => item.language === lang)
+      ?? editions.find((item) => item.language === book.lang)
+      ?? editions[0]
   // Kein gültiger Amazon-Link → kein kaputter Button
   if (!edition) return null
   return (
@@ -203,6 +219,11 @@ function BookDialog({
               </ul>
               {displayBook && <AmazonRating book={displayBook} />}
               <LanguageEditions book={book} onSelect={onEditionChange} />
+              {edition && !edition.amazon.startsWith('https://') && (
+                <p className="mx-auto mt-5 max-w-md rounded-xl border border-accent/35 bg-accent/10 px-4 py-3 text-center text-sm font-semibold text-foreground">
+                  {t.books.amazonPending}
+                </p>
+              )}
               {book.samples.length > 0 && (
                 <>
                   <p className="mb-3 mt-9 text-xs font-bold uppercase tracking-widest text-muted-foreground">
@@ -402,7 +423,7 @@ export default function Books() {
   }
 
   // Strikte Trennung: die englische Seite zeigt nur englische Bücher (und umgekehrt)
-  const books = BOOKS.filter((b) => b.lang === lang)
+  const books = BOOKS.filter((b) => b.lang === lang || editionsOf(b).some((edition) => edition.language === lang))
 
   // Klick auf das 3D-Buch im Hero öffnet den Dialog des gezeigten Buches
   useEffect(() => {
@@ -473,7 +494,9 @@ export default function Books() {
 
         {visible.length > 0 ? (
           <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-7 lg:grid-cols-3">
-            {visible.map((b, i) => (
+            {visible.map((b, i) => {
+              const cardBook = localizedBook(b, lang)
+              return (
               <Reveal key={b.id} delay={i * 100}>
                 <article className="group flex h-full flex-col overflow-hidden rounded-md border-2 border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/10">
                   <button
@@ -489,7 +512,7 @@ export default function Books() {
                     )}
                     <img
                       src={b.cover}
-                      alt={b.title}
+                      alt={cardBook.title}
                       loading="lazy"
                       className="mx-auto max-h-72 w-auto max-w-full rounded-md object-contain shadow-lg shadow-primary/15 transition-transform duration-500 group-hover:scale-[1.03]"
                     />
@@ -504,10 +527,10 @@ export default function Books() {
                         <Palette className="h-3 w-3" aria-hidden />
                         {typeLabel(b)}
                       </Badge>
-                      {b.age && <Badge variant="secondary" className="rounded-full">{b.age}</Badge>}
+                      {cardBook.age && <Badge variant="secondary" className="rounded-full">{cardBook.age}</Badge>}
                     </div>
-                    <h3 className="font-display text-base font-semibold leading-snug sm:text-xl">{b.title}</h3>
-                    {b.series && <p className="mt-1 text-xs font-semibold text-muted-foreground">{b.series}</p>}
+                    <h3 className="font-display text-base font-semibold leading-snug sm:text-xl">{cardBook.title}</h3>
+                    {cardBook.series && <p className="mt-1 text-xs font-semibold text-muted-foreground">{cardBook.series}</p>}
                     <LanguageEditions book={b} compact onSelect={(language) => openBook(b, language)} />
                     <AmazonRating book={b} />
                     <div className="mt-4 flex flex-1 flex-col items-center">
@@ -518,12 +541,13 @@ export default function Books() {
                       >
                         {t.books.lookInside}
                       </button>
-                      <BuyButton book={b} />
+                      <BuyButton book={cardBook} preferredLanguage={lang} />
                     </div>
                   </div>
                 </article>
               </Reveal>
-            ))}
+              )
+            })}
           </div>
         ) : (
           <Reveal className="mt-10">
