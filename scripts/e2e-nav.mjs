@@ -66,9 +66,10 @@ chrome.stderr.on('data', (d) => {
 
 let fehler = 0
 try {
-  // Warten, bis die CDP-Schnittstelle bereit ist (mit mehreren Versuchen)
+  // Langsamere GitHub-Runner brauchen nach dem Chrome-Start gelegentlich
+  // deutlich länger als lokale Rechner. Bis zu 30 Sekunden warten.
   let list = null
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < 60; i++) {
     try {
       list = await (await fetch(`http://127.0.0.1:${CDP_PORT}/json`)).json()
       break
