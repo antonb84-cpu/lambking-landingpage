@@ -7,6 +7,7 @@ analytics-worker/.wrangler/
 analytics-worker/.setup-secrets.json
 analytics-worker/wrangler.toml
 dist/
+/tmp/
 __pycache__/
 *.pyc
 *.pyo

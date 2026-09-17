@@ -348,6 +348,11 @@
                 <small>Besucher können auf der Landingpage nicht selbst bewerten.</small>
               </div>
             </div>
+            <div class="checkline" style="margin-top:16px;">
+              <input type="checkbox" id="s_creatorPartnerEnabled">
+              <label for="s_creatorPartnerEnabled" style="margin:0; font-weight:500;"><b>Creator-Bewerbungsseite anzeigen</b></label>
+            </div>
+            <small>Ausgeschaltet werden der Link, die Route und der Sitemap-Eintrag beim nächsten Aktualisieren der Vorschau bzw. Veröffentlichen entfernt.</small>
           </div>
         </details>
 
@@ -802,6 +807,7 @@ async function load(){
   $('s_iosStore').value = state.site.iosStoreUrl || '';
   $('s_contactEmail').value = state.site.contactEmail || 'hello@lambking.store';
   $('s_showRatings').checked = state.site.showRatings !== false;
+  $('s_creatorPartnerEnabled').checked = state.site.creatorPartnerEnabled !== false;
   $('s_analyticsUrl').value = state.analyticsConfig?.url || state.site.analyticsUrl || '';
   $('s_analyticsToken').value = '';
   $('analyticsTokenState').textContent = state.analyticsConfig?.hasToken ? '✓ Token ist sicher lokal gespeichert.' : 'Noch kein Token lokal gespeichert.';
@@ -1433,6 +1439,7 @@ async function saveSite(){
   fd.append('iosStoreUrl', $('s_iosStore').value);
   fd.append('contactEmail', $('s_contactEmail').value);
   fd.append('showRatings', $('s_showRatings').checked ? 'true' : 'false');
+  fd.append('creatorPartnerEnabled', $('s_creatorPartnerEnabled').checked ? 'true' : 'false');
   fd.append('frontendTexts', JSON.stringify(collectFrontendTexts()));
   fd.append('authorName', $('s_author').value);
   fd.append('brand', $('s_brand').value);

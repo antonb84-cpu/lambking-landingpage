@@ -1,6 +1,6 @@
 # LambKing Stories – Landingpage & Admin
 
-**Live-Seite:** https://antonb84-cpu.github.io/lambking-landingpage/
+**Live-Seite:** https://lambking.store/
 
 ## Was ist was?
 
@@ -28,6 +28,7 @@ Die private USB-/Drive-Ausgabe enthält Python, Node.js, Git sowie alle Pakete b
 - Cover sowie Buch-PDF oder einzelne Bilder/Screenshots hochladen → die Vorschauseiten werden automatisch vorbereitet
 - Autorenfoto ändern (Form & Größe wählbar)
 - PayPal-, Ko-fi-, Web-App- und Google-Play-Links pflegen
+- die Creator-Bewerbungsseite unter „Website-Einstellungen → Links, Kontakt und Bewertungen“ ein- oder ausschalten
 - Impressum & Datenschutz bearbeiten
 - Seitenaufrufe (heute, diese Woche, gesamt) und Amazon-Klicks je Buch ansehen
 - GitHub-Sicherungsstatus sehen
@@ -58,6 +59,17 @@ Die Live-Seite ist statisch und kann Zahlen nicht selbst speichern. Beim ersten 
 Der Zähldienst läuft im Cloudflare-Free-Tarif. Er speichert nur Tagessummen für Seitenaufrufe und Amazon-Klicks je Buch und Sprach-Ausgabe. Die kostenlose Größenordnung (100.000 Worker-Aufrufe pro Tag, 100.000 geschriebene D1-Zeilen pro Tag und 5 GB D1-Speicher) liegt weit über dem Bedarf dieser Landingpage. Ohne eine bewusste Umstellung des Cloudflare-Kontos auf einen Bezahlplan entstehen keine nutzungsabhängigen Kosten.
 
 Das Token liegt ausschließlich in `admin/analytics.local.json` und wird durch `.gitignore` nie zu GitHub übertragen. Die private portable Drive-/USB-Kopie enthält diese Datei, sobald der Zähler eingerichtet ist.
+
+## Creator-Partner-Bewerbungen
+
+Die zweisprachige Seite liegt unter `/creator-partner/`. Das Formular speichert und übermittelt
+keine Bewerbungsdaten über die Website. Nach erfolgreicher Prüfung der Pflichtfelder wird im
+E-Mail-Programm des Bewerbers eine vorbereitete Nachricht an `hello@lambking.store` geöffnet.
+Erst wenn der Bewerber diese Nachricht dort selbst absendet, werden die Angaben über die
+beteiligten E-Mail-Anbieter übertragen. Es gibt keinen Formulardienst, keine Bewerbungsdatenbank,
+keine Zugangsdaten im Frontend und keine zusätzliche Installation. Die Ein-/Aus-Einstellung wird in `src/data/books.json`
+gespeichert und reist mit dem vollständigen Projektordner auf USB-Stick oder Drive mit. Im
+ausgeschalteten Zustand werden Link, Creator-Route und Sitemap-Eintrag beim Build nicht erzeugt.
 
 ## Wichtige Daten
 

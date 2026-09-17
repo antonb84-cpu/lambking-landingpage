@@ -6,6 +6,7 @@ import { SITE } from '@/data/books'
 import { useLang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
 import { OPEN_LEGAL_EVENT, type LegalKind } from '@/data/openLegal'
+import { creatorPartnerHref, homeHref } from '@/data/routes'
 
 function LegalText({ text }: { text: string }) {
   // Leerzeile = neuer Absatz; eine Zeile, die wie eine Überschrift aussieht, wird fett
@@ -47,10 +48,13 @@ export default function Footer() {
   }, [])
 
   const NAV = [
-    { label: t.nav.books, href: '#buecher' },
-    { label: t.nav.app, href: '#app' },
-    { label: t.nav.about, href: '#ueber' },
-    { label: t.nav.faq, href: '#faq' },
+    { label: t.nav.books, href: homeHref('#buecher') },
+    { label: t.nav.app, href: homeHref('#app') },
+    { label: t.nav.about, href: homeHref('#ueber') },
+    { label: t.nav.faq, href: homeHref('#faq') },
+    ...(SITE.creatorPartnerEnabled
+      ? [{ label: t.creatorPartner.navLabel, href: creatorPartnerHref() }]
+      : []),
   ]
 
   return (
@@ -67,7 +71,7 @@ export default function Footer() {
               <RichText text={t.footer.tagline} />
             </p>
           </div>
-          <nav className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm font-semibold text-primary-foreground/80" aria-label="Fußzeilen-Navigation">
+          <nav className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm font-semibold text-primary-foreground/80" aria-label={t.a11y.footerNavigation}>
             {NAV.map((n) => (
               <a key={n.href} href={n.href} className="hover:text-primary-foreground">
                 {n.label}

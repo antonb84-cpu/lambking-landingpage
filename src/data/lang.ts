@@ -6,19 +6,39 @@
 // ─────────────────────────────────────────────────────────────
 
 import { useEffect, useState } from 'react'
+import { isCreatorPartnerPath } from './routes'
+import { SITE } from './books'
 
 export type Lang = 'de' | 'en'
 
-const META: Record<Lang, { title: string; description: string }> = {
-  de: {
-    title: 'LambKing Stories – Bibelgeschichten zum Ausmalen',
-    description:
-      'Biblisch fundierte Malbücher und Kinderbücher von LambKing Stories. Inhalt ansehen und direkt bei Amazon bestellen.',
+const META: Record<'home' | 'creatorPartner', Record<Lang, { title: string; description: string; canonical: string }>> = {
+  home: {
+    de: {
+      title: 'LambKing Stories – Bibelgeschichten zum Ausmalen',
+      description:
+        'Biblisch fundierte Malbücher und Kinderbücher von LambKing Stories. Inhalt ansehen und direkt bei Amazon bestellen.',
+      canonical: 'https://lambking.store/',
+    },
+    en: {
+      title: 'LambKing Stories – Bible Stories to Color',
+      description:
+        "Bible-based coloring books and children's books by LambKing Stories. Look inside and order via Amazon.",
+      canonical: 'https://lambking.store/',
+    },
   },
-  en: {
-    title: 'LambKing Stories – Bible Stories to Color',
-    description:
-      "Bible-based coloring books and children's books by LambKing Stories. Look inside and order via Amazon.",
+  creatorPartner: {
+    de: {
+      title: 'Creator-Partner werden | LambKing Stories',
+      description:
+        'Bewirb dich als Creator-Partner von LambKing Stories und empfehle biblische Kinderbücher authentisch an deine Community.',
+      canonical: 'https://lambking.store/creator-partner/',
+    },
+    en: {
+      title: 'Become a Creator Partner | LambKing Stories',
+      description:
+        'Apply to become a LambKing Stories Creator Partner and authentically share Bible-based children’s books with your community.',
+      canonical: 'https://lambking.store/creator-partner/',
+    },
   },
 }
 
@@ -32,11 +52,18 @@ function initialLang(): Lang {
 
 function applyDocumentMeta(l: Lang) {
   if (typeof document === 'undefined') return
+  const page = SITE.creatorPartnerEnabled && isCreatorPartnerPath() ? 'creatorPartner' : 'home'
+  const meta = META[page][l]
   document.documentElement.lang = l
-  document.title = META[l].title
-  document
-    .querySelector('meta[name="description"]')
-    ?.setAttribute('content', META[l].description)
+  document.title = meta.title
+  document.querySelector('meta[name="description"]')?.setAttribute('content', meta.description)
+  document.querySelector('link[rel="canonical"]')?.setAttribute('href', meta.canonical)
+  document.querySelector('meta[property="og:title"]')?.setAttribute('content', meta.title)
+  document.querySelector('meta[property="og:description"]')?.setAttribute('content', meta.description)
+  document.querySelector('meta[property="og:url"]')?.setAttribute('content', meta.canonical)
+  document.querySelector('meta[property="og:locale"]')?.setAttribute('content', l === 'de' ? 'de_DE' : 'en_US')
+  document.querySelector('meta[name="twitter:title"]')?.setAttribute('content', meta.title)
+  document.querySelector('meta[name="twitter:description"]')?.setAttribute('content', meta.description)
 }
 
 let current: Lang = initialLang()

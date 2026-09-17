@@ -27,6 +27,7 @@ const LEAF_STEP = 0.6
 
 function Book3D() {
   const lang = useLang()
+  const t = textsFor(lang)
   const [isTouchOpen, setIsTouchOpen] = useState(false)
   const lastPointerType = useRef('mouse')
   // Im Backend kann genau ein Buch pro Sprache für die Vorschau markiert
@@ -138,7 +139,7 @@ function Book3D() {
       }}
       onContextMenu={(event) => event.preventDefault()}
       onDragStart={(event) => event.preventDefault()}
-      aria-label={`${featured.title} – ${textsFor(lang).hero.mobileBookHint}`}
+      aria-label={`${featured.title} – ${t.hero.mobileBookHint}`}
       aria-pressed={isTouchOpen}
       data-touch-open={isTouchOpen ? 'true' : 'false'}
       className="book3d-scene relative mx-auto block w-60 cursor-pointer sm:w-72 lg:w-80"
@@ -162,7 +163,7 @@ function Book3D() {
           {/* Grundseite: letzte Vorschauseite, bleibt beim Blättern liegen */}
           <img
             src={basePage}
-            alt={`Seite aus ${featured.title}`}
+            alt={`${t.books.samplePage} – ${featured.title}`}
             className="book3d-page-base"
             loading="eager"
             fetchPriority="high"
@@ -180,7 +181,7 @@ function Book3D() {
             >
               <img
                 src={src}
-                alt={i === 0 ? featured.title : `Vorschauseite ${i} aus ${featured.title}`}
+                alt={i === 0 ? featured.title : `${t.books.samplePage} ${i} – ${featured.title}`}
                 className="book3d-leaf-front"
                 loading="eager"
                 draggable={false}
@@ -192,15 +193,16 @@ function Book3D() {
         </div>
       </div>
       <span className="mt-12 block text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-        <span className="hidden sm:inline">{textsFor(lang).hero.bookHint}</span>
-        <span className="sm:hidden">{textsFor(lang).hero.mobileBookHint}</span>
+        <span className="hidden sm:inline">{t.hero.bookHint}</span>
+        <span className="sm:hidden">{t.hero.mobileBookHint}</span>
       </span>
     </button>
   )
 }
 
 export default function Hero() {
-  const t = textsFor(useLang())
+  const lang = useLang()
+  const t = textsFor(lang)
   return (
     <section id="top" className="texture-paper overflow-hidden">
       <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 pb-16 pt-12 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:pb-24 lg:pt-16">

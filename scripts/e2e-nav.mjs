@@ -212,6 +212,51 @@ try {
     await new Promise((r) => setTimeout(r, 400))
   }
 
+  // Eigenständige Creator-&-Partner-Route: Inhalt, SEO, Sprachwechsel und Formularzustand
+  await send('Page.navigate', { url: `http://127.0.0.1:${HTTP_PORT}/creator-partner/` })
+  await new Promise((r) => setTimeout(r, 1600))
+  {
+    const s = JSON.parse(await evalJs(`JSON.stringify({
+      lang: document.documentElement.lang,
+      h1: document.querySelector('h1')?.textContent.trim(),
+      form: !!document.querySelector('form'),
+      canonical: document.querySelector('link[rel="canonical"]')?.href,
+      title: document.title
+    })`) || '{}')
+    const ok = s.lang === 'de'
+      && s.h1 === 'Werde Creator-Partner von LambKing Stories'
+      && s.form
+      && s.canonical === 'https://lambking.store/creator-partner/'
+      && s.title.includes('Creator-Partner')
+    console.log(`${ok ? '✓' : '✗'} Creator-Partner-Route: deutscher Inhalt, Formular und Canonical`)
+    if (!ok) fehler++
+  }
+
+  {
+    await evalJs(`[...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'EN')?.click()`)
+    await new Promise((r) => setTimeout(r, 900))
+    const s = JSON.parse(await evalJs(`JSON.stringify({
+      lang: document.documentElement.lang,
+      h1: document.querySelector('h1')?.textContent.trim(),
+      ariaLabels: [...document.querySelectorAll('[aria-label]')].map(el => el.getAttribute('aria-label'))
+    })`) || '{}')
+    const forbidden = ['Hauptnavigation', 'Mobile Navigation', 'Fußzeilen-Navigation', 'Menü öffnen', 'Menü schließen']
+    const ok = s.lang === 'en'
+      && s.h1 === 'Become a LambKing Stories Creator Partner'
+      && !s.ariaLabels.some((label) => forbidden.includes(label))
+    console.log(`${ok ? '✓' : '✗'} Creator-Partner-Route: englischer Inhalt ohne deutsche Navigations-ARIA-Texte`)
+    if (!ok) fehler++
+  }
+
+  {
+    await evalJs(`document.querySelector('form button[type="submit"]')?.click()`)
+    await new Promise((r) => setTimeout(r, 500))
+    const invalid = await evalJs(`!!document.querySelector('form :invalid')`)
+    const ok = invalid === true
+    console.log(`${ok ? '✓' : '✗'} Creator-Bewerbungsformular verhindert unvollständige Übermittlung`)
+    if (!ok) fehler++
+  }
+
   ws.close()
 } finally {
   chrome.kill()

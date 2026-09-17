@@ -239,7 +239,7 @@ function BookDialog({
                       >
                         <img
                           src={s}
-                          alt={`${book.title} – Vorschauseite ${index + 1}`}
+                          alt={`${book.title} – ${t.books.samplePage} ${index + 1}`}
                           className="w-full rounded-md"
                           loading="lazy"
                         />
@@ -268,7 +268,7 @@ function BookDialog({
           previousLabel={t.books.previousPage}
           nextLabel={t.books.nextPage}
           pageLabel={t.books.page}
-          imageAlt={book ? `${book.title} – vergrößerte Vorschauseite` : ''}
+          imageAlt={book ? `${book.title} – ${t.books.enlargedSamplePage}` : ''}
         />
       </DialogContent>
     </Dialog>

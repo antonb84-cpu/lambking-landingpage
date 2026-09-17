@@ -10,11 +10,22 @@ import SupportedWorks from '@/sections/SupportedWorks'
 import Faq from '@/sections/Faq'
 import Footer from '@/sections/Footer'
 import { trackPageView } from '@/data/analytics'
+import CreatorPartnerPage from '@/pages/CreatorPartnerPage'
+import { isCreatorPartnerPath } from '@/data/routes'
+import { useLang } from '@/data/lang'
+import { textsFor } from '@/data/texts'
+import { SITE } from '@/data/books'
 
 export default function App() {
+  const t = textsFor(useLang())
+
   useEffect(() => {
     trackPageView()
   }, [])
+
+  if (SITE.creatorPartnerEnabled && isCreatorPartnerPath()) {
+    return <CreatorPartnerPage />
+  }
 
   return (
     <div className="min-h-screen">
@@ -23,7 +34,7 @@ export default function App() {
         href="#buecher"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[80] focus:rounded-full focus:bg-primary focus:px-5 focus:py-2.5 focus:font-bold focus:text-primary-foreground"
       >
-        Zum Inhalt springen
+        {t.a11y.skipToContent}
       </a>
       <Header />
       <main id="inhalt">

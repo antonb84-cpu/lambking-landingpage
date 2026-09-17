@@ -6,6 +6,7 @@
     "iosStoreUrl": "",
     "paypalUrl": "https://www.paypal.com/ncp/payment/DGMPDALZ9PUQS",
     "contactEmail": "hello@lambking.store",
+    "creatorPartnerEnabled": true,
     "showRatings": true,
     "analyticsUrl": "https://lambking-anonymous-counter.lambking-anonymous-counter.workers.dev",
     "supportedOrganizations": [
@@ -46,11 +47,11 @@
     "authorPhoto": "images/autor.jpg?v=1788241701",
     "authorName": "Anton Bernt",
     "impressum": "Angaben gemäß § 5 DDG\r\n\r\nAnton Bernt\r\nLambKing Stories\r\nAllmendstr. 35\r\n75223 Niefern-Öschelbronn\r\nDeutschland\r\n\r\nKontakt\r\n\r\nE-Mail:\r\nhello@lambking.store",
-    "datenschutz": "1. Verantwortlicher\r\n\r\nAnton Bernt, LambKing Stories, Allmendstr. 35, 75223 Niefern-Öschelbronn, Deutschland\r\nE-Mail: hello@lambking.store\r\n\r\n2. Hosting über GitHub Pages\r\n\r\nDiese Website wird über GitHub Pages (GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, USA) bereitgestellt. Beim Aufruf der Seite verarbeitet GitHub technisch notwendige Verbindungsdaten (z. B. IP-Adresse, Datum und Uhrzeit des Zugriffs, aufgerufene Seite, Browsertyp) in Server-Logfiles. Diese Verarbeitung ist erforderlich, um die Website auszuliefern (Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO – berechtigtes Interesse am sicheren Betrieb dieser Website). Da GitHub seinen Sitz in den USA hat, kann eine Datenverarbeitung in den USA nicht ausgeschlossen werden. Details dazu finden Sie im GitHub Privacy Statement.\r\n\r\n3. Spracheinstellung (lokale Speicherung)\r\n\r\nDiese Website speichert Ihre gewählte Sprache (Deutsch/Englisch) ausschließlich lokal in Ihrem Browser (localStorage, Schlüssel „lambking-lang\"). Diese Information wird nicht an uns oder Dritte übertragen und nicht für Werbung oder Tracking verwendet. Sie können sie jederzeit über die Browser-Einstellungen löschen.\r\n\r\n4. Anonyme Reichweitenmessung und Amazon-Klickstatistik\n\nZur rein statistischen Auswertung erfassen wir die Anzahl der Aufrufe dieser Landingpage und die Anzahl der Klicks auf die Amazon-Schaltfläche des jeweiligen Buches. Unsere Anwendung speichert dabei ausschließlich zusammengefasste Zählerstände pro Kalendertag und Ereignis beziehungsweise interner Buch-ID. Wir setzen hierfür keine Cookies oder vergleichbaren Wiedererkennungstechniken ein, speichern keine Kennungen im Browser, erstellen keine Nutzerprofile und führen einzelne Aufrufe nicht zu einem Besucherverlauf zusammen.\n\nBei der Übermittlung an den von Cloudflare bereitgestellten Zähldienst wird die IP-Adresse technisch als Verbindungsdatum übertragen. Sie wird von unserer Zähleranwendung weder ausgelesen noch in der Zählerdatenbank gespeichert. Die automatischen Aufrufprotokolle des Workers sind deaktiviert. Anbieter der technischen Infrastruktur ist Cloudflare, Inc., 101 Townsend St, San Francisco, CA 94107, USA. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO; unser berechtigtes Interesse liegt in der anonymen Reichweiten- und Erfolgsmessung unserer Website.\n\n5. Keine Cookies und keine Wiedererkennung\n\nDiese Website verwendet keine Cookies und keine Analyse- oder Marketingtechnik zur Wiedererkennung von Besuchern. Schriftarten werden lokal von dieser Website geladen, nicht von externen Diensten.\n\n6. Externe Links\r\n\r\nDiese Website enthält Links zu externen Anbietern:\r\n- Amazon (Kauf der Bücher)\r\n- PayPal (freiwillige Unterstützung) – als reiner Link, ohne eingebettetes Zahlungsformular\r\n- Ko-fi (freiwillige Unterstützung) – als reiner Link, ohne JavaScript-Widget oder iFrame; erst wenn Sie den Ko-fi-Link anklicken, wird die Website von Ko-fi geöffnet, und ab diesem Zeitpunkt erfolgt die Datenverarbeitung nach den Datenschutzbestimmungen von Ko-fi\r\n- LambKing Web-App (ebenfalls über GitHub Pages)\r\n\r\nErst wenn Sie einen dieser Links anklicken, verlassen Sie diese Website. Ab diesem Zeitpunkt erfolgt die Datenverarbeitung nach den Datenschutzbestimmungen des jeweiligen Anbieters.\n\n7. Kontaktaufnahme per E-Mail\r\n\r\nBei Kontaktaufnahme per E-Mail werden die übermittelten Daten (E-Mail-Adresse, Inhalt der Nachricht) zur Bearbeitung der Anfrage verarbeitet (Art. 6 Abs. 1 lit. b und f DSGVO).\n\n8. Ihre Rechte\r\n\r\nSie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch. Zudem haben Sie das Recht, sich bei einer Datenschutz-Aufsichtsbehörde zu beschweren.\r\n\r\nStand: September 2026",
+    "datenschutz": "1. Verantwortlicher\r\n\r\nAnton Bernt, LambKing Stories, Allmendstr. 35, 75223 Niefern-Öschelbronn, Deutschland\r\nE-Mail: hello@lambking.store\r\n\r\n2. Hosting über GitHub Pages\r\n\r\nDiese Website wird über GitHub Pages (GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, USA) bereitgestellt. Beim Aufruf der Seite verarbeitet GitHub technisch notwendige Verbindungsdaten (z. B. IP-Adresse, Datum und Uhrzeit des Zugriffs, aufgerufene Seite, Browsertyp) in Server-Logfiles. Diese Verarbeitung ist erforderlich, um die Website auszuliefern (Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO – berechtigtes Interesse am sicheren Betrieb dieser Website). Da GitHub seinen Sitz in den USA hat, kann eine Datenverarbeitung in den USA nicht ausgeschlossen werden. Details dazu finden Sie im GitHub Privacy Statement.\r\n\r\n3. Spracheinstellung (lokale Speicherung)\r\n\r\nDiese Website speichert Ihre gewählte Sprache (Deutsch/Englisch) ausschließlich lokal in Ihrem Browser (localStorage, Schlüssel „lambking-lang\"). Diese Information wird nicht an uns oder Dritte übertragen und nicht für Werbung oder Tracking verwendet. Sie können sie jederzeit über die Browser-Einstellungen löschen.\r\n\r\n4. Anonyme Reichweitenmessung und Amazon-Klickstatistik\n\nZur rein statistischen Auswertung erfassen wir die Anzahl der Aufrufe dieser Landingpage und die Anzahl der Klicks auf die Amazon-Schaltfläche des jeweiligen Buches. Unsere Anwendung speichert dabei ausschließlich zusammengefasste Zählerstände pro Kalendertag und Ereignis beziehungsweise interner Buch-ID. Wir setzen hierfür keine Cookies oder vergleichbaren Wiedererkennungstechniken ein, speichern keine Kennungen im Browser, erstellen keine Nutzerprofile und führen einzelne Aufrufe nicht zu einem Besucherverlauf zusammen.\n\nBei der Übermittlung an den von Cloudflare bereitgestellten Zähldienst wird die IP-Adresse technisch als Verbindungsdatum übertragen. Sie wird von unserer Zähleranwendung weder ausgelesen noch in der Zählerdatenbank gespeichert. Die automatischen Aufrufprotokolle des Workers sind deaktiviert. Anbieter der technischen Infrastruktur ist Cloudflare, Inc., 101 Townsend St, San Francisco, CA 94107, USA. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO; unser berechtigtes Interesse liegt in der anonymen Reichweiten- und Erfolgsmessung unserer Website.\n\n5. Keine Cookies und keine Wiedererkennung\n\nDiese Website verwendet keine Cookies und keine Analyse- oder Marketingtechnik zur Wiedererkennung von Besuchern. Schriftarten werden lokal von dieser Website geladen, nicht von externen Diensten.\n\n6. Externe Links\r\n\r\nDiese Website enthält Links zu externen Anbietern:\r\n- Amazon (Kauf der Bücher)\r\n- PayPal (freiwillige Unterstützung) – als reiner Link, ohne eingebettetes Zahlungsformular\r\n- Ko-fi (freiwillige Unterstützung) – als reiner Link, ohne JavaScript-Widget oder iFrame; erst wenn Sie den Ko-fi-Link anklicken, wird die Website von Ko-fi geöffnet, und ab diesem Zeitpunkt erfolgt die Datenverarbeitung nach den Datenschutzbestimmungen von Ko-fi\r\n- LambKing Web-App (ebenfalls über GitHub Pages)\r\n\r\nErst wenn Sie einen dieser Links anklicken, verlassen Sie diese Website. Ab diesem Zeitpunkt erfolgt die Datenverarbeitung nach den Datenschutzbestimmungen des jeweiligen Anbieters.\n\n7. Kontaktaufnahme und Creator-Bewerbungen per E-Mail\n\nBei Kontaktaufnahme per E-Mail werden die übermittelten Daten (E-Mail-Adresse und Inhalt der Nachricht) ausschließlich zur Bearbeitung der Anfrage verarbeitet. Das Creator-Bewerbungsformular speichert und übermittelt selbst keine Angaben. Nach dem Ausfüllen wird lediglich im E-Mail-Programm des Bewerbers eine vorbereitete Nachricht an hello@lambking.store geöffnet. Erst wenn der Bewerber diese Nachricht dort absendet, werden die Angaben über die beteiligten E-Mail-Anbieter übertragen.\n\nCreator-Bewerbungen werden zur Prüfung einer möglichen Zusammenarbeit und zur Kontaktaufnahme verarbeitet. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO (vorvertragliche Maßnahmen auf Anfrage des Bewerbers) sowie, soweit erforderlich, Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an der Bearbeitung und Dokumentation geschäftlicher Anfragen). Nicht angenommene Bewerbungen werden grundsätzlich spätestens sechs Monate nach Abschluss des Bewerbungsverfahrens gelöscht, sofern keine gesetzlichen Pflichten oder die Geltendmachung, Ausübung oder Verteidigung von Rechtsansprüchen eine längere Aufbewahrung erfordern.\n\n8. Ihre Rechte\r\n\r\nSie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch. Zudem haben Sie das Recht, sich bei einer Datenschutz-Aufsichtsbehörde zu beschweren.\r\n\r\nStand: September 2026",
     "authorPhotoShape": "rund",
     "authorPhotoSize": "mittel",
     "kofiUrl": "https://ko-fi.com/U6U21YO0Z5",
-    "publicUrl": "https://antonb84-cpu.github.io/lambking-landingpage/",
+    "publicUrl": "https://lambking.store/",
     "frontendTexts": {
       "de": {
         "nav": {
@@ -390,66 +391,66 @@
   "books": [
     {
       "id": "bibelgeschichten-zum-ausmalen",
-    "samples": [
-      "images/bibelgeschichten-zum-ausmalen-seite-1.jpg",
-      "images/bibelgeschichten-zum-ausmalen-seite-2.jpg",
-      "images/bibelgeschichten-zum-ausmalen-seite-3.jpg",
-      "images/bibelgeschichten-zum-ausmalen-seite-4.jpg",
-      "images/bibelgeschichten-zum-ausmalen-seite-5.jpg",
-      "images/bibelgeschichten-zum-ausmalen-seite-6.jpg",
-      "images/bibelgeschichten-zum-ausmalen-seite-7.jpg",
-      "images/bibelgeschichten-zum-ausmalen-seite-8.jpg",
-      "images/bibelgeschichten-zum-ausmalen-seite-9.jpg",
-      "images/bibelgeschichten-zum-ausmalen-seite-10.jpg"
-    ],
-    "highlights": [
-      "30 große Ausmalbilder",
-      "6 Spiel- und Rätselseiten",
-      "Großformat: 21,6 × 27,9 cm (ungefähr DIN A4)"
+      "samples": [
+        "images/bibelgeschichten-zum-ausmalen-seite-1.jpg",
+        "images/bibelgeschichten-zum-ausmalen-seite-2.jpg",
+        "images/bibelgeschichten-zum-ausmalen-seite-3.jpg",
+        "images/bibelgeschichten-zum-ausmalen-seite-4.jpg",
+        "images/bibelgeschichten-zum-ausmalen-seite-5.jpg",
+        "images/bibelgeschichten-zum-ausmalen-seite-6.jpg",
+        "images/bibelgeschichten-zum-ausmalen-seite-7.jpg",
+        "images/bibelgeschichten-zum-ausmalen-seite-8.jpg",
+        "images/bibelgeschichten-zum-ausmalen-seite-9.jpg",
+        "images/bibelgeschichten-zum-ausmalen-seite-10.jpg"
+      ],
+      "highlights": [
+        "30 große Ausmalbilder",
+        "6 Spiel- und Rätselseiten",
+        "Großformat: 21,6 × 27,9 cm (ungefähr DIN A4)"
       ],
       "lang": "de",
       "title": "Bibelgeschichten zum Ausmalen: Band 1 - Die Schöpfung - Gott macht die Welt",
-    "series": "Bibelgeschichten zum Ausmalen · Band 1",
+      "series": "Bibelgeschichten zum Ausmalen · Band 1",
       "category": "malbuecher",
       "age": "Ab 6 Jahren",
-    "detail": "70 Seiten · Großformat",
-    "description": "Die Schöpfung – Gott macht die Welt ist Band 1 der Reihe Bibelgeschichten zum Ausmalen.\r\n\r\nDas biblische Mal- und Rätselbuch erzählt die Schöpfungsgeschichte nach 1. Mose Schritt für Schritt.\r\n\r\n30 große Ausmalbilder und 6 abwechslungsreiche Spiel- und Rätselseiten laden Kinder ab 6 Jahren zum Malen, Entdecken und Vertiefen ein.\r\n\r\nDas großzügige Format von 21,6 × 27,9 cm ist ungefähr so groß wie DIN A4 und bietet viel Platz für kleine Künstler.\r\n\r\nIdeal für zu Hause, Kindergottesdienst, Sonntagsschule und christliche Gemeinden.",
+      "detail": "70 Seiten · Großformat",
+      "description": "Die Schöpfung – Gott macht die Welt ist Band 1 der Reihe Bibelgeschichten zum Ausmalen.\r\n\r\nDas biblische Mal- und Rätselbuch erzählt die Schöpfungsgeschichte nach 1. Mose Schritt für Schritt.\r\n\r\n30 große Ausmalbilder und 6 abwechslungsreiche Spiel- und Rätselseiten laden Kinder ab 6 Jahren zum Malen, Entdecken und Vertiefen ein.\r\n\r\nDas großzügige Format von 21,6 × 27,9 cm ist ungefähr so groß wie DIN A4 und bietet viel Platz für kleine Künstler.\r\n\r\nIdeal für zu Hause, Kindergottesdienst, Sonntagsschule und christliche Gemeinden.",
       "amazon": "https://www.amazon.de/dp/B0HFWX8DH5",
       "releaseDate": "2026-09-01",
       "cover": "images/cover-bibelgeschichten-zum-ausmalen.jpg",
       "editions": [
-      {
-        "language": "de",
-        "amazon": "https://www.amazon.de/dp/B0HFWX8DH5"
-      },
-      {
-        "language": "en",
-        "amazon": "",
-        "title": "Bible Stories to Color: Volume 1 - The Creation - God Makes the World",
-        "series": "Bible Stories to Color · Volume 1",
-        "age": "Ages 6+",
-        "detail": "70 pages · large format",
-        "description": "The Creation – God Makes the World is Volume 1 of the Bible Stories to Color series.\n\nThis Bible-based coloring and activity book guides children step by step through the Creation story in Genesis.\n\n30 large coloring pictures and 6 varied game and puzzle pages invite children ages 6 and up to color, discover, and deepen their understanding.\n\nThe generous 8.5 × 11 inch format is close to A4 size and gives young artists plenty of room.\n\nIdeal for families, children’s church, Sunday school, and Christian communities.",
-        "highlights": [
-          "30 large coloring pictures",
-          "6 game and puzzle pages",
-          "Large 8.5 × 11 in format (close to A4)"
-        ]
-      },
-      {
-        "language": "es",
-        "amazon": "https://www.amazon.es/dp/B0HJW5H7DN",
-        "title": "Historias bíblicas para colorear: Tomo 1 - La Creación - Dios crea el mundo",
-        "series": "Historias bíblicas para colorear · Tomo 1",
-        "age": "A partir de 6 años",
-        "detail": "70 páginas · formato grande",
-        "description": "La Creación – Dios crea el mundo es el tomo 1 de la serie Historias bíblicas para colorear.\n\nEste libro bíblico para colorear y realizar actividades guía a los niños paso a paso por la historia de la Creación en Génesis.\n\n30 grandes dibujos para colorear y 6 variadas páginas de juegos y pasatiempos invitan a niños a partir de 6 años a pintar, descubrir y profundizar lo aprendido.\n\nEl amplio formato de 21,6 × 27,9 cm es parecido al tamaño A4 y ofrece mucho espacio para los pequeños artistas.\n\nIdeal para familias, escuela dominical, iglesia infantil y comunidades cristianas.",
-        "highlights": [
-          "30 grandes dibujos para colorear",
-          "6 páginas de juegos y pasatiempos",
-          "Formato grande: 21,6 × 27,9 cm (similar a A4)"
-        ]
-      }
+        {
+          "language": "de",
+          "amazon": "https://www.amazon.de/dp/B0HFWX8DH5"
+        },
+        {
+          "language": "en",
+          "amazon": "",
+          "title": "Bible Stories to Color: Volume 1 - The Creation - God Makes the World",
+          "series": "Bible Stories to Color · Volume 1",
+          "age": "Ages 6+",
+          "detail": "70 pages · large format",
+          "description": "The Creation – God Makes the World is Volume 1 of the Bible Stories to Color series.\n\nThis Bible-based coloring and activity book guides children step by step through the Creation story in Genesis.\n\n30 large coloring pictures and 6 varied game and puzzle pages invite children ages 6 and up to color, discover, and deepen their understanding.\n\nThe generous 8.5 × 11 inch format is close to A4 size and gives young artists plenty of room.\n\nIdeal for families, children’s church, Sunday school, and Christian communities.",
+          "highlights": [
+            "30 large coloring pictures",
+            "6 game and puzzle pages",
+            "Large 8.5 × 11 in format (close to A4)"
+          ]
+        },
+        {
+          "language": "es",
+          "amazon": "https://www.amazon.es/dp/B0HJW5H7DN",
+          "title": "Historias bíblicas para colorear: Tomo 1 - La Creación - Dios crea el mundo",
+          "series": "Historias bíblicas para colorear · Tomo 1",
+          "age": "A partir de 6 años",
+          "detail": "70 páginas · formato grande",
+          "description": "La Creación – Dios crea el mundo es el tomo 1 de la serie Historias bíblicas para colorear.\n\nEste libro bíblico para colorear y realizar actividades guía a los niños paso a paso por la historia de la Creación en Génesis.\n\n30 grandes dibujos para colorear y 6 variadas páginas de juegos y pasatiempos invitan a niños a partir de 6 años a pintar, descubrir y profundizar lo aprendido.\n\nEl amplio formato de 21,6 × 27,9 cm es parecido al tamaño A4 y ofrece mucho espacio para los pequeños artistas.\n\nIdeal para familias, escuela dominical, iglesia infantil y comunidades cristianas.",
+          "highlights": [
+            "30 grandes dibujos para colorear",
+            "6 páginas de juegos y pasatiempos",
+            "Formato grande: 21,6 × 27,9 cm (similar a A4)"
+          ]
+        }
       ]
     },
     {

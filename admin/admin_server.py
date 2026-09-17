@@ -133,6 +133,7 @@ def render_books_ts(state: dict):
     out.append(f"  paypalUrl: {ts_str(s.get('paypalUrl', ''))},")
     out.append(f"  kofiUrl: {ts_str(s.get('kofiUrl', ''))},")
     out.append(f"  contactEmail: {ts_str(s.get('contactEmail', 'hello@lambking.store'))},")
+    out.append(f"  creatorPartnerEnabled: {'true' if s.get('creatorPartnerEnabled', True) else 'false'},")
     out.append(f"  showRatings: {'true' if s.get('showRatings', True) else 'false'},")
     out.append("  // Öffentliche Adresse des anonymen Zähldienstes; niemals ein geheimes Token.")
     out.append(f"  analyticsUrl: {ts_str(s.get('analyticsUrl', ''))},")
@@ -718,8 +719,10 @@ class Handler(BaseHTTPRequestHandler):
             # Beim Öffnen/Neuladen der Vorschau immer frisch bauen. Dadurch
             # können gespeicherte Bücher nicht mehr in einem alten dist/ hängen.
             rel = path[len("/vorschau"):].lstrip("/") or "index.html"
+            if rel.endswith("/"):
+                rel += "index.html"
             dist = ROOT / "dist"
-            if rel == "index.html":
+            if rel in ("index.html", "creator-partner/index.html"):
                 try:
                     ok, log = build_site()
                 except Exception:
@@ -1338,6 +1341,8 @@ class Handler(BaseHTTPRequestHandler):
                 state["site"][key] = val
         if "showRatings" in fields:
             state["site"]["showRatings"] = fields["showRatings"].strip().lower() in ("1", "true", "yes", "on")
+        if "creatorPartnerEnabled" in fields:
+            state["site"]["creatorPartnerEnabled"] = fields["creatorPartnerEnabled"].strip().lower() in ("1", "true", "yes", "on")
         if "frontendTexts" in fields:
             try:
                 submitted_texts = json.loads(fields["frontendTexts"])
@@ -1667,16 +1672,25 @@ class Handler(BaseHTTPRequestHandler):
             self.send_json({"ok": False, "stage": "git", "error": "Der lokale Änderungsstand konnte nicht gelesen werden. Es wurde nichts übertragen.", "checks": checks})
             return
         if not status.stdout.strip():
-            self.send_json({"ok": True, "already": True, "checks": checks,
-                            "message": "Keine neuen lokalen Änderungen. Du musst den Knopf nicht noch einmal drücken."})
-            return
-        msg = f"LambKing Inhalte aktualisiert ({datetime.datetime.now().strftime('%d.%m.%Y %H:%M')})"
-        commit = git("-c", "user.name=Anton Bernt", "-c", "user.email=antonb84@gmail.com",
-                     "commit", "-qm", msg)
-        if commit.returncode != 0:
-            self.send_json({"ok": False, "stage": "git", "error": "Veröffentlichung abgebrochen: Commit fehlgeschlagen.",
-                            "log": commit.stderr[-2000:], "checks": checks})
-            return
+            # Ein vorheriger Push kann fehlgeschlagen sein, obwohl der Commit
+            # bereits lokal erstellt wurde. In diesem Fall den wartenden Commit
+            # erneut senden, statt fälschlich „keine Änderungen“ zu melden.
+            ahead_proc = git("rev-list", "--count", "origin/main..HEAD")
+            if ahead_proc.returncode != 0:
+                self.send_json({"ok": False, "stage": "git", "error": "Der lokale Veröffentlichungsstand konnte nicht geprüft werden.", "checks": checks})
+                return
+            if ahead_proc.stdout.strip() in ("", "0"):
+                self.send_json({"ok": True, "already": True, "checks": checks,
+                                "message": "Keine neuen lokalen Änderungen. Die Live-Seite ist bereits auf dem aktuellen Stand."})
+                return
+        else:
+            msg = f"LambKing Inhalte aktualisiert ({datetime.datetime.now().strftime('%d.%m.%Y %H:%M')})"
+            commit = git("-c", "user.name=Anton Bernt", "-c", "user.email=antonb84@gmail.com",
+                         "commit", "-qm", msg)
+            if commit.returncode != 0:
+                self.send_json({"ok": False, "stage": "git", "error": "Veröffentlichung abgebrochen: Commit fehlgeschlagen.",
+                                "log": commit.stderr[-2000:], "checks": checks})
+                return
 
         # 5. Push – ohne --force, mit Erfolgskontrolle
         push = git("push", "origin", "main", timeout=180)

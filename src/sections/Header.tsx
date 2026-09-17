@@ -4,6 +4,8 @@ import PaypalButton from '@/components/PaypalButton'
 import { setLang, useLang, type Lang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
 import { openLegal } from '@/data/openLegal'
+import { creatorPartnerHref, homeHref } from '@/data/routes'
+import { SITE } from '@/data/books'
 import type { ReactNode } from 'react'
 
 function FlagDE() {
@@ -30,6 +32,7 @@ function FlagGB() {
 
 function LangSwitch() {
   const lang = useLang()
+  const t = textsFor(lang)
   const btn = (l: Lang, flag: ReactNode, label: string) => (
     <button
       type="button"
@@ -48,7 +51,7 @@ function LangSwitch() {
     <div
       className="flex items-center gap-0.5 rounded-full border-2 border-border bg-card p-0.5"
       role="group"
-      aria-label="Sprache wählen / Choose language"
+      aria-label={t.a11y.languageChooser}
     >
       {btn('de', <FlagDE />, 'DE')}
       {btn('en', <FlagGB />, 'EN')}
@@ -64,10 +67,10 @@ export default function Header() {
   const menuRef = useRef<HTMLElement>(null)
 
   const NAV = [
-    { label: t.nav.books, href: '#buecher' },
-    { label: t.nav.app, href: '#app' },
-    { label: t.nav.about, href: '#ueber' },
-    { label: t.nav.faq, href: '#faq' },
+    { label: t.nav.books, href: homeHref('#buecher') },
+    { label: t.nav.app, href: homeHref('#app') },
+    { label: t.nav.about, href: homeHref('#ueber') },
+    { label: t.nav.faq, href: homeHref('#faq') },
   ]
 
   // Escape schließt das Menü, Fokus geht zurück auf den Button
@@ -88,7 +91,7 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/90 backdrop-blur-md">
       <div className="mx-auto flex h-24 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6">
-        <a href="#top" className="flex items-center" aria-label="LambKing Stories – Startseite">
+        <a href={homeHref()} className="flex items-center" aria-label={t.a11y.brandHome}>
           <img
             src="images/lambking-logo.png"
             alt="LambKing Stories"
@@ -97,7 +100,7 @@ export default function Header() {
         </a>
         {/* Desktop: Navigation, dann ca. 3 cm Abstand, dann DE/EN + PayPal */}
         <div className="hidden items-center lg:flex">
-          <nav className="flex items-center gap-5 text-sm font-bold text-muted-foreground" aria-label="Hauptnavigation">
+          <nav className="flex items-center gap-5 text-sm font-bold text-muted-foreground" aria-label={t.a11y.mainNavigation}>
             {NAV.map((n) => (
               <a key={n.href} href={n.href} className="transition-colors hover:text-foreground">
                 {n.label}
@@ -122,7 +125,7 @@ export default function Header() {
             onClick={() => setMenuOpen((o) => !o)}
             aria-expanded={menuOpen}
             aria-controls="mobile-menu"
-            aria-label={menuOpen ? 'Menü schließen' : 'Menü öffnen'}
+            aria-label={menuOpen ? t.a11y.closeMenu : t.a11y.openMenu}
             className="inline-flex h-11 w-11 items-center justify-center rounded-full border-2 border-border bg-card text-foreground lg:hidden"
           >
             {menuOpen ? <X className="h-5 w-5" aria-hidden /> : <Menu className="h-5 w-5" aria-hidden />}
@@ -135,7 +138,7 @@ export default function Header() {
         <nav
           id="mobile-menu"
           ref={menuRef}
-          aria-label="Mobile Navigation"
+          aria-label={t.a11y.mobileNavigation}
           className="border-t border-border bg-background px-4 py-3 lg:hidden"
         >
           <ul className="flex flex-col">
@@ -150,6 +153,17 @@ export default function Header() {
                 </a>
               </li>
             ))}
+            {SITE.creatorPartnerEnabled ? (
+              <li>
+                <a
+                  href={creatorPartnerHref()}
+                  onClick={() => setMenuOpen(false)}
+                  className="block rounded-lg px-3 py-3.5 text-base font-bold text-foreground transition-colors hover:bg-secondary"
+                >
+                  {t.creatorPartner.navLabel}
+                </a>
+              </li>
+            ) : null}
             {/* Rechtsseiten öffnen als Fenster (wie im Footer) */}
             <li>
               <button

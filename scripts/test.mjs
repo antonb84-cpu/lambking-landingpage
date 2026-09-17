@@ -329,6 +329,58 @@ test('Ungültige Buch-ID verursacht keinen Absturz (Guard vorhanden)', () => {
   assert(/if \(found\)/.test(books), 'Deep-Link-Guard fehlt')
 })
 
+test('Creator-Partner-Seite ist zweisprachig und verwendet die korrekte Vergütungsbasis', () => {
+  const texts = JSON.parse(readFileSync(join(SRC, 'data/texts.defaults.json'), 'utf-8'))
+  const page = readFileSync(join(SRC, 'pages/CreatorPartnerPage.tsx'), 'utf-8')
+  const de = texts.de.creatorPartner
+  const en = texts.en.creatorPartner
+  assert(de.heroTitle === 'Werde Creator-Partner von LambKing Stories', 'Deutscher Seitentitel fehlt')
+  assert(en.heroTitle === 'Become a LambKing Stories Creator Partner', 'Englischer Seitentitel fehlt')
+  assert(de.compensationRate.includes('10 %') && de.compensationRate.includes('KDP-Tantieme'), 'Deutsche Vergütungsformulierung ist unvollständig')
+  assert(!de.compensationRate.toLowerCase().includes('verkaufspreis'), 'Vergütung wird fälschlich auf den Verkaufspreis bezogen')
+  assert(en.compensationRate.includes('10%') && en.compensationRate.includes('KDP royalty'), 'Englische Vergütungsformulierung ist unvollständig')
+  const mail = readFileSync(join(SRC, 'data/creatorApplication.ts'), 'utf-8')
+  assert(page.includes('creatorApplicationMailto') && page.includes('window.location.href = emailUrl'), 'Direkte E-Mail-Übergabe fehlt')
+  assert(!mail.includes('fetch(') && !srcText.includes('VITE_CREATOR_APPLICATION_ENDPOINT'), 'Creator-Formular überträgt Daten über einen Webdienst')
+  assert(page.includes('form.checkValidity()') && page.includes('form.reportValidity()'), 'Formularvalidierung fehlt')
+  assert(booksJson.site.datenschutz.includes('Creator-Bewerbungsformular speichert und übermittelt selbst keine Angaben'), 'Datenschutzhinweis zur E-Mail-Bewerbung fehlt')
+})
+
+test('Creator-Partner-Route erhält eigene SEO-Daten ohne alte GitHub-Canonical', () => {
+  const lang = readFileSync(join(SRC, 'data/lang.ts'), 'utf-8')
+  const postbuild = readFileSync(join(ROOT, 'scripts/postbuild.mjs'), 'utf-8')
+  assert(lang.includes("canonical: 'https://lambking.store/creator-partner/'"), 'Dynamische Canonical-URL der Creator-Seite fehlt')
+  assert(postbuild.includes("join(DIST, 'creator-partner')") && postbuild.includes("writeFileSync(join(creatorDir, 'index.html')"), 'Statische Creator-Partner-Route wird nicht erzeugt')
+  assert(postbuild.includes('<base href="../" />'), 'Asset-Basis der Unterseite fehlt')
+  assert(!indexHtml.includes('antonb84-cpu.github.io/lambking-landingpage'), 'Alte GitHub-Pages-Canonical steht noch in index.html')
+  assert(booksJson.site.publicUrl === 'https://lambking.store/', 'Öffentliche Projekt-URL zeigt nicht auf lambking.store')
+})
+
+test('Creator-Bewerbungsseite ist im portablen Backend vollständig schaltbar', () => {
+  const admin = readFileSync(join(ROOT, 'admin/index.html'), 'utf-8')
+  const server = readFileSync(join(ROOT, 'admin/admin_server.py'), 'utf-8')
+  const app = readFileSync(join(SRC, 'App.tsx'), 'utf-8')
+  const header = readFileSync(join(SRC, 'sections/Header.tsx'), 'utf-8')
+  const footer = readFileSync(join(SRC, 'sections/Footer.tsx'), 'utf-8')
+  const lang = readFileSync(join(SRC, 'data/lang.ts'), 'utf-8')
+  const generated = readFileSync(join(SRC, 'data/books.ts'), 'utf-8')
+  const postbuild = readFileSync(join(ROOT, 'scripts/postbuild.mjs'), 'utf-8')
+
+  assert(typeof booksJson.site.creatorPartnerEnabled === 'boolean', 'Portable Creator-Einstellung fehlt in books.json')
+  assert(admin.includes('id="s_creatorPartnerEnabled"'), 'Creator-Schalter fehlt im Backend')
+  assert(admin.includes("fd.append('creatorPartnerEnabled'"), 'Creator-Schalter wird vom Backend nicht gesendet')
+  assert(server.includes("s.get('creatorPartnerEnabled', True)"), 'Creator-Einstellung wird nicht in books.ts erzeugt')
+  assert(server.includes('state["site"]["creatorPartnerEnabled"]'), 'Creator-Einstellung wird nicht dauerhaft gespeichert')
+  assert(server.includes('if rel.endswith("/")') && server.includes('"creator-partner/index.html"'), 'Creator-Unterseite ist in der lokalen Vorschau nicht erreichbar')
+  assert(server.includes('origin/main..HEAD') && server.includes('Ein vorheriger Push kann fehlgeschlagen sein'), 'Fehlgeschlagene GitHub-Übertragungen können nicht erneut gesendet werden')
+  assert(generated.includes('creatorPartnerEnabled: true'), 'Aktivierte Creator-Einstellung fehlt in den generierten Frontend-Daten')
+  assert(app.includes('SITE.creatorPartnerEnabled && isCreatorPartnerPath()'), 'Creator-Route wird im Frontend nicht abgeschaltet')
+  assert(header.includes('SITE.creatorPartnerEnabled') && footer.includes('SITE.creatorPartnerEnabled'), 'Creator-Navigation wird nicht vollständig abgeschaltet')
+  assert(lang.includes('SITE.creatorPartnerEnabled && isCreatorPartnerPath()'), 'SEO-Metadaten beachten den Creator-Schalter nicht')
+  assert(postbuild.includes("...(creatorPartnerEnabled ? ['creator-partner/'] : [])"), 'Sitemap beachtet den Creator-Schalter nicht')
+  assert(postbuild.includes('if (creatorPartnerEnabled) {'), 'Produktionsroute wird trotz ausgeschalteter Funktion erzeugt')
+})
+
 // ── Ergebnis ──────────────────────────────────────────────────
 console.log()
 console.log(`  ${passed} bestanden, ${failed} fehlgeschlagen`)
