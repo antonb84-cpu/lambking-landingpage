@@ -28,15 +28,15 @@ const META: Record<'home' | 'creatorPartner', Record<Lang, { title: string; desc
   },
   creatorPartner: {
     de: {
-      title: 'Creator-Partner werden | LambKing Stories',
+      title: 'Creator- oder Influencer-Partner werden | LambKing Stories',
       description:
-        'Bewirb dich als Creator-Partner von LambKing Stories und empfehle biblische Kinderbücher authentisch an deine Community.',
+        'Bewirb dich als Creator- oder Influencer-Partner von LambKing Stories und empfehle biblische Kinderbücher authentisch an deine Community.',
       canonical: 'https://lambking.store/creator-partner/',
     },
     en: {
-      title: 'Become a Creator Partner | LambKing Stories',
+      title: 'Become a Creator or Influencer Partner | LambKing Stories',
       description:
-        'Apply to become a LambKing Stories Creator Partner and authentically share Bible-based children’s books with your community.',
+        'Apply to become a LambKing Stories Creator or Influencer Partner and authentically share Bible-based children’s books with your community.',
       canonical: 'https://lambking.store/creator-partner/',
     },
   },

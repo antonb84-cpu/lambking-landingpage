@@ -26,19 +26,19 @@
       "enlargedSamplePage": "vergrößerte Vorschauseite"
     },
     "creatorPartner": {
-      "navLabel": "Creator & Partner",
-      "heroTitle": "Werde Creator-Partner von LambKing Stories",
+      "navLabel": "Creator & Influencer",
+      "heroTitle": "Werde Creator- oder Influencer-Partner von LambKing Stories",
       "heroText": "Du erreichst Familien, Kinder oder christliche Communities und möchtest Bücher empfehlen, die biblische Geschichten liebevoll und verständlich erzählen? Dann lass uns gemeinsam Glauben, Freude und wertvolle Inhalte weitergeben.",
       "applyNow": "Jetzt bewerben",
-      "audienceTitle": "Für wen das Programm gedacht ist",
-      "audienceIntro": "Entscheidend ist nicht allein die Größe deiner Community, sondern ob deine Inhalte und Werte zu LambKing Stories passen.",
-      "audienceItems": [
-        { "title": "Eltern- und Familien-Creator", "text": "Für authentische Inhalte rund um Familienleben, Kinder und gemeinsame Glaubensmomente." },
-        { "title": "Christliche Creator", "text": "Für Communities, in denen Glaube, Ermutigung und die gute Botschaft von Jesus im Mittelpunkt stehen." },
-        { "title": "Bookstagram, BookTok & Kinderbuch-Accounts", "text": "Für ehrliche Buchempfehlungen, Einblicke und kreative Vorstellungen unserer Geschichten." },
-        { "title": "Bildungs-Communities", "text": "Für Lehrer, Gemeinden sowie Homeschooling- und Bildungs-Communities, die nach wertvollen Materialien suchen." }
-      ],
-      "microCreatorNote": "Mikro-Creator sind ausdrücklich willkommen.",
+      "audienceTitle": "Gemeinsam die gute Botschaft weitertragen",
+      "audienceIntro": "Du stellst die Bücher von LambKing Stories und lambking.store in deiner Community vor – ehrlich, persönlich und auf deine eigene Art.",
+      "audiencePurposeTitle": "Darum geht es",
+      "audiencePurposeText": "Mit deiner Empfehlung machst du biblische Geschichten bekannter und hilfst mit, Kindern Gottes Wort und die gute Botschaft von Jesus näherzubringen.",
+      "audienceBenefitTitle": "Deine Provision",
+      "audienceBenefitText": "Für bestätigte Verkäufe über deinen persönlichen Affiliate-/Tracking-Link erhältst du 10 % der tatsächlich bei LambKing eingegangenen KDP-Tantieme.",
+      "audienceWhoTitle": "Wer kann mitmachen?",
+      "audienceWhoText": "Creator, Influencer und Social-Media-Nutzer aus allen Themenbereichen – unabhängig von ihrer Reichweite. Ein christlicher Account ist keine Voraussetzung. Wichtig ist, dass du LambKing Stories ehrlich und respektvoll vorstellst.",
+      "microCreatorNote": "Auch kleine Accounts und Neueinsteiger sind willkommen.",
       "howTitle": "So funktioniert die Zusammenarbeit",
       "howIntro": "Ein klarer Ablauf – von der Bewerbung bis zur transparenten Abrechnung.",
       "howSteps": [
@@ -56,7 +56,7 @@
         "Die Abrechnung erfolgt anhand der verfügbaren Amazon-/KDP-Daten.",
         "Eine eigene Teilnahme am Amazon-Partnerprogramm ist unabhängig davon möglich und kann zusätzliche Einnahmen ermöglichen, ist aber keine Voraussetzung."
       ],
-      "benefitsTitle": "Deine Vorteile als Creator-Partner",
+      "benefitsTitle": "Deine Vorteile als Creator- oder Influencer-Partner",
       "benefits": [
         "Persönlicher Tracking-Link",
         "Transparente Abrechnung",
@@ -64,7 +64,7 @@
         "Keine Mindestreichweite als starre Voraussetzung",
         "Früher Zugang zu Neuerscheinungen und Kampagnen, sofern angeboten"
       ],
-      "formTitle": "Bewirb dich als Creator-Partner",
+      "formTitle": "Bewirb dich als Creator- oder Influencer-Partner",
       "formIntro": "Beim Absenden öffnet sich dein E-Mail-Programm mit einer vorbereiteten Nachricht an LambKing Stories. Die Website speichert oder übermittelt deine Angaben nicht.",
       "fields": {
         "fullName": "Vor- und Nachname",
@@ -97,8 +97,8 @@
       "emailReadyTitle": "Deine E-Mail ist vorbereitet.",
       "emailReadyText": "Bitte prüfe die Nachricht in deinem E-Mail-Programm und sende sie dort ab. Falls sich das Programm nicht geöffnet hat, nutze den folgenden Link.",
       "emailApplication": "Bewerbung per E-Mail senden",
-      "emailSubject": "Creator-Partner-Bewerbung",
-      "faqTitle": "Häufige Fragen zum Creator-Programm",
+      "emailSubject": "Creator-/Influencer-Partner-Bewerbung",
+      "faqTitle": "Häufige Fragen zum Creator- und Influencer-Programm",
       "faqItems": [
         { "q": "Brauche ich eine bestimmte Reichweite?", "a": "Nein. Es gibt keine starre Mindestreichweite. Wichtiger sind eine passende Community, authentische Inhalte und ein glaubwürdiger Bezug zu den Themen von LambKing Stories." },
         { "q": "Wie funktioniert die Vergütung?", "a": "Du erhältst 10 % der tatsächlich bei LambKing eingegangenen KDP-Tantieme für bestätigte Verkäufe über deinen persönlichen Link. Die Abrechnung erfolgt anhand der verfügbaren Amazon-/KDP-Daten." },
@@ -291,19 +291,19 @@
       "enlargedSamplePage": "enlarged preview page"
     },
     "creatorPartner": {
-      "navLabel": "Creator & Partners",
-      "heroTitle": "Become a LambKing Stories Creator Partner",
+      "navLabel": "Creators & Influencers",
+      "heroTitle": "Become a LambKing Stories Creator or Influencer Partner",
       "heroText": "Do you reach families, children, or Christian communities and want to recommend books that tell Bible stories with warmth and clarity? Let’s share faith, joy, and meaningful content together.",
       "applyNow": "Apply now",
-      "audienceTitle": "Who the program is for",
-      "audienceIntro": "What matters is not only the size of your community, but whether your content and values are a good fit for LambKing Stories.",
-      "audienceItems": [
-        { "title": "Parenting and family creators", "text": "For authentic content about family life, children, and shared moments of faith." },
-        { "title": "Christian creators", "text": "For communities centered on faith, encouragement, and the good news of Jesus." },
-        { "title": "Bookstagram, BookTok & children’s book accounts", "text": "For honest recommendations, inside looks, and creative presentations of our stories." },
-        { "title": "Education communities", "text": "For teachers, churches, homeschooling families, and learning communities looking for meaningful resources." }
-      ],
-      "microCreatorNote": "Micro-creators are expressly welcome.",
+      "audienceTitle": "Carry the Good News forward together",
+      "audienceIntro": "You introduce LambKing Stories books and lambking.store to your community – honestly, personally, and in your own way.",
+      "audiencePurposeTitle": "What it is about",
+      "audiencePurposeText": "Your recommendation helps more people discover Bible stories and brings God’s Word and the Good News of Jesus closer to children.",
+      "audienceBenefitTitle": "Your commission",
+      "audienceBenefitText": "For confirmed sales through your personal affiliate/tracking link, you receive 10% of the KDP royalty actually received by LambKing.",
+      "audienceWhoTitle": "Who can join?",
+      "audienceWhoText": "Creators, influencers, and social media users from every field – regardless of audience size. A Christian account is not required. What matters is that you introduce LambKing Stories honestly and respectfully.",
+      "microCreatorNote": "Small accounts and newcomers are welcome too.",
       "howTitle": "How the partnership works",
       "howIntro": "A clear process – from your application to transparent reporting.",
       "howSteps": [
@@ -321,7 +321,7 @@
         "Reporting is based on the Amazon/KDP data available to LambKing.",
         "Participation in the Amazon Associates program is separate and may provide additional income, but it is not required."
       ],
-      "benefitsTitle": "Benefits for Creator Partners",
+      "benefitsTitle": "Benefits for Creator and Influencer Partners",
       "benefits": [
         "Personal tracking link",
         "Transparent reporting",
@@ -329,7 +329,7 @@
         "No fixed minimum audience requirement",
         "Early access to new releases and campaigns, when offered"
       ],
-      "formTitle": "Apply to become a Creator Partner",
+      "formTitle": "Apply to become a Creator or Influencer Partner",
       "formIntro": "Submitting opens your email program with a prepared message to LambKing Stories. This website does not store or transmit your information.",
       "fields": {
         "fullName": "First and last name",
@@ -362,8 +362,8 @@
       "emailReadyTitle": "Your email is ready.",
       "emailReadyText": "Please review the message in your email program and send it there. If the program did not open, use the following link.",
       "emailApplication": "Send application by email",
-      "emailSubject": "Creator Partner application",
-      "faqTitle": "Creator Program FAQs",
+      "emailSubject": "Creator or Influencer Partner application",
+      "faqTitle": "Creator and Influencer Program FAQs",
       "faqItems": [
         { "q": "Do I need a certain audience size?", "a": "No. There is no fixed minimum audience size. A relevant community, authentic content, and a credible connection to LambKing Stories matter more." },
         { "q": "How does compensation work?", "a": "You receive 10% of the KDP royalty actually received by LambKing for confirmed sales through your personal link. Reporting is based on the available Amazon/KDP data." },

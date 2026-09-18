@@ -71,6 +71,9 @@ export default function Header() {
     { label: t.nav.app, href: homeHref('#app') },
     { label: t.nav.about, href: homeHref('#ueber') },
     { label: t.nav.faq, href: homeHref('#faq') },
+    ...(SITE.creatorPartnerEnabled
+      ? [{ label: t.creatorPartner.navLabel, href: creatorPartnerHref() }]
+      : []),
   ]
 
   // Escape schließt das Menü, Fokus geht zurück auf den Button
@@ -153,17 +156,6 @@ export default function Header() {
                 </a>
               </li>
             ))}
-            {SITE.creatorPartnerEnabled ? (
-              <li>
-                <a
-                  href={creatorPartnerHref()}
-                  onClick={() => setMenuOpen(false)}
-                  className="block rounded-lg px-3 py-3.5 text-base font-bold text-foreground transition-colors hover:bg-secondary"
-                >
-                  {t.creatorPartner.navLabel}
-                </a>
-              </li>
-            ) : null}
             {/* Rechtsseiten öffnen als Fenster (wie im Footer) */}
             <li>
               <button

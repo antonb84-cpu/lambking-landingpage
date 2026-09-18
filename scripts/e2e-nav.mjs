@@ -224,10 +224,10 @@ try {
       title: document.title
     })`) || '{}')
     const ok = s.lang === 'de'
-      && s.h1 === 'Werde Creator-Partner von LambKing Stories'
+      && s.h1 === 'Werde Creator- oder Influencer-Partner von LambKing Stories'
       && s.form
       && s.canonical === 'https://lambking.store/creator-partner/'
-      && s.title.includes('Creator-Partner')
+      && s.title.includes('Creator- oder Influencer-Partner')
     console.log(`${ok ? '✓' : '✗'} Creator-Partner-Route: deutscher Inhalt, Formular und Canonical`)
     if (!ok) fehler++
   }
@@ -242,7 +242,7 @@ try {
     })`) || '{}')
     const forbidden = ['Hauptnavigation', 'Mobile Navigation', 'Fußzeilen-Navigation', 'Menü öffnen', 'Menü schließen']
     const ok = s.lang === 'en'
-      && s.h1 === 'Become a LambKing Stories Creator Partner'
+      && s.h1 === 'Become a LambKing Stories Creator or Influencer Partner'
       && !s.ariaLabels.some((label) => forbidden.includes(label))
     console.log(`${ok ? '✓' : '✗'} Creator-Partner-Route: englischer Inhalt ohne deutsche Navigations-ARIA-Texte`)
     if (!ok) fehler++

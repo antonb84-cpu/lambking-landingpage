@@ -28,7 +28,7 @@ Die private USB-/Drive-Ausgabe enthält Python, Node.js, Git sowie alle Pakete b
 - Cover sowie Buch-PDF oder einzelne Bilder/Screenshots hochladen → die Vorschauseiten werden automatisch vorbereitet
 - Autorenfoto ändern (Form & Größe wählbar)
 - PayPal-, Ko-fi-, Web-App- und Google-Play-Links pflegen
-- die Creator-Bewerbungsseite unter „Website-Einstellungen → Links, Kontakt und Bewertungen“ ein- oder ausschalten
+- die Creator-/Influencer-Bewerbungsseite unter „Website-Einstellungen → Links, Kontakt und Bewertungen“ ein- oder ausschalten
 - Impressum & Datenschutz bearbeiten
 - Seitenaufrufe (heute, diese Woche, gesamt) und Amazon-Klicks je Buch ansehen
 - GitHub-Sicherungsstatus sehen
@@ -60,7 +60,7 @@ Der Zähldienst läuft im Cloudflare-Free-Tarif. Er speichert nur Tagessummen f�
 
 Das Token liegt ausschließlich in `admin/analytics.local.json` und wird durch `.gitignore` nie zu GitHub übertragen. Die private portable Drive-/USB-Kopie enthält diese Datei, sobald der Zähler eingerichtet ist.
 
-## Creator-Partner-Bewerbungen
+## Creator-/Influencer-Partner-Bewerbungen
 
 Die zweisprachige Seite liegt unter `/creator-partner/`. Das Formular speichert und übermittelt
 keine Bewerbungsdaten über die Website. Nach erfolgreicher Prüfung der Pflichtfelder wird im
@@ -69,7 +69,7 @@ Erst wenn der Bewerber diese Nachricht dort selbst absendet, werden die Angaben 
 beteiligten E-Mail-Anbieter übertragen. Es gibt keinen Formulardienst, keine Bewerbungsdatenbank,
 keine Zugangsdaten im Frontend und keine zusätzliche Installation. Die Ein-/Aus-Einstellung wird in `src/data/books.json`
 gespeichert und reist mit dem vollständigen Projektordner auf USB-Stick oder Drive mit. Im
-ausgeschalteten Zustand werden Link, Creator-Route und Sitemap-Eintrag beim Build nicht erzeugt.
+ausgeschalteten Zustand werden Link, Bewerbungsroute und Sitemap-Eintrag beim Build nicht erzeugt.
 
 ## Wichtige Daten
 

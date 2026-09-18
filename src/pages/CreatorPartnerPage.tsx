@@ -4,9 +4,7 @@ import {
   BookOpenText,
   Check,
   CircleDollarSign,
-  GraduationCap,
   Handshake,
-  HeartHandshake,
   Link2,
   Mail,
   Megaphone,
@@ -27,7 +25,6 @@ import {
   type CreatorApplicationPayload,
 } from '@/data/creatorApplication'
 
-const audienceIcons = [UsersRound, HeartHandshake, BookOpenText, GraduationCap]
 const processIcons = [Send, Link2, Megaphone, CircleDollarSign]
 
 type SubmitState = 'idle' | 'invalid' | 'email-ready'
@@ -159,31 +156,49 @@ export default function CreatorPartnerPage() {
           </div>
         </section>
 
-        <section className="bg-background py-20 lg:py-28">
+        <section className="bg-background py-16 lg:py-20">
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
-            <Reveal className="mx-auto max-w-3xl text-center">
+            <Reveal className="max-w-3xl">
               <h2 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">{cp.audienceTitle}</h2>
-              <p className="mt-4 text-lg leading-relaxed text-muted-foreground">{cp.audienceIntro}</p>
+              <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">{cp.audienceIntro}</p>
             </Reveal>
-            <div className="mt-12 grid gap-5 md:grid-cols-2">
-              {cp.audienceItems.map((item, index) => {
-                const Icon = audienceIcons[index]
-                return (
-                  <Reveal key={item.title} delay={index * 70}>
-                    <article className="flex h-full gap-5 rounded-2xl border-2 border-border bg-card p-6 shadow-sm sm:p-7">
-                      <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-secondary text-primary">
-                        <Icon className="h-6 w-6" aria-hidden />
-                      </span>
-                      <div>
-                        <h3 className="font-display text-xl font-semibold">{item.title}</h3>
-                        <p className="mt-2 leading-relaxed text-muted-foreground">{item.text}</p>
-                      </div>
-                    </article>
-                  </Reveal>
-                )
-              })}
+
+            <div className="mt-10 grid border-y border-border lg:grid-cols-2">
+              <Reveal className="py-8 lg:pr-12">
+                <article className="flex items-start gap-5">
+                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-accent/15 text-accent">
+                    <BookOpenText className="h-6 w-6" aria-hidden />
+                  </span>
+                  <div>
+                    <h3 className="font-display text-2xl font-semibold text-foreground">{cp.audiencePurposeTitle}</h3>
+                    <p className="mt-3 leading-relaxed text-muted-foreground sm:text-lg">{cp.audiencePurposeText}</p>
+                  </div>
+                </article>
+              </Reveal>
+              <Reveal delay={90} className="border-t border-border py-8 lg:border-l lg:border-t-0 lg:pl-12">
+                <article className="flex items-start gap-5">
+                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-accent/15 text-accent">
+                    <CircleDollarSign className="h-6 w-6" aria-hidden />
+                  </span>
+                  <div>
+                    <h3 className="font-display text-2xl font-semibold text-foreground">{cp.audienceBenefitTitle}</h3>
+                    <p className="mt-3 leading-relaxed text-muted-foreground sm:text-lg">{cp.audienceBenefitText}</p>
+                  </div>
+                </article>
+              </Reveal>
             </div>
-            <p className="mt-8 text-center font-bold text-primary">{cp.microCreatorNote}</p>
+
+            <Reveal delay={150} className="mt-8">
+              <div className="flex flex-col gap-5 rounded-[1.75rem] bg-primary px-6 py-7 text-primary-foreground shadow-xl shadow-primary/10 sm:flex-row sm:items-center sm:px-8">
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground">
+                  <UsersRound className="h-6 w-6" aria-hidden />
+                </span>
+                <div>
+                  <h3 className="font-display text-2xl font-semibold">{cp.audienceWhoTitle}</h3>
+                  <p className="mt-2 max-w-4xl leading-relaxed text-primary-foreground/80 sm:text-lg">{cp.audienceWhoText}</p>
+                </div>
+              </div>
+            </Reveal>
           </div>
         </section>
 

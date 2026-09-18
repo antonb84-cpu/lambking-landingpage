@@ -7,6 +7,7 @@ import AppSection from '@/sections/AppSection'
 import Donate from '@/sections/Donate'
 import About from '@/sections/About'
 import SupportedWorks from '@/sections/SupportedWorks'
+import CreatorPartnerTeaser from '@/sections/CreatorPartnerTeaser'
 import Faq from '@/sections/Faq'
 import Footer from '@/sections/Footer'
 import { trackPageView } from '@/data/analytics'
@@ -45,6 +46,7 @@ export default function App() {
         <Donate />
         <About />
         <SupportedWorks />
+        {SITE.creatorPartnerEnabled ? <CreatorPartnerTeaser /> : null}
         <Faq />
       </main>
       <Footer />

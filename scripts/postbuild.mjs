@@ -47,8 +47,8 @@ if (!html.includes('application/ld+json')) {
 
 // ── Eigenständige Creator-&-Partner-Route mit eigenen SEO-Daten ──
 if (creatorPartnerEnabled) {
-  const creatorTitle = 'Creator-Partner werden | LambKing Stories'
-  const creatorDescription = 'Bewirb dich als Creator-Partner von LambKing Stories und empfehle biblische Kinderbücher authentisch an deine Community.'
+  const creatorTitle = 'Creator- oder Influencer-Partner werden | LambKing Stories'
+  const creatorDescription = 'Bewirb dich als Creator- oder Influencer-Partner von LambKing Stories und empfehle biblische Kinderbücher authentisch an deine Community.'
   const creatorCanonical = `${BASE}/creator-partner/`
   const creatorJsonLd = {
     '@context': 'https://schema.org',
