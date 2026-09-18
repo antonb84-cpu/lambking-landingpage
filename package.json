@@ -11,7 +11,8 @@
     "lint": "eslint .",
     "test": "node scripts/test.mjs",
     "test:e2e": "node scripts/e2e-nav.mjs",
-    "check": "npm run lint && npm run test && npm run build",
+    "test:network": "node scripts/check-network-clean.mjs",
+    "check": "npm run lint && npm run test && npm run build && npm run test:network",
     "preview": "vite preview"
   },
   "dependencies": {
