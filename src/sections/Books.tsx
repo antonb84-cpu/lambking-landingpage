@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { ArrowLeft, ArrowRight, BookOpen, CheckCircle2, Eye, HelpCircle, Palette, Ruler, ShieldCheck, X, ZoomIn } from 'lucide-react'
+import { ArrowLeft, ArrowRight, BookOpen, CheckCircle2, Eye, HelpCircle, Languages, Palette, Ruler, ShieldCheck, X, ZoomIn } from 'lucide-react'
 import Reveal from '@/components/Reveal'
 import RichText from '@/components/RichText'
 import AmazonRating from '@/components/AmazonRating'
@@ -78,7 +78,7 @@ const isColoringBook = (book: Book) => book.category === 'malbuecher'
 
 function ColoringBookFacts({ compact = false }: { compact?: boolean }) {
   const t = textsFor(useLang())
-  const icons = [BookOpen, Ruler, ShieldCheck, HelpCircle]
+  const icons = [BookOpen, Ruler, ShieldCheck, HelpCircle, Languages]
   return (
     <div className={compact
       ? 'mt-5 rounded-2xl border border-accent/30 bg-accent/[0.07] p-4'
