@@ -234,7 +234,7 @@ test('Alle Malbücher zeigen einheitlich Umfang, Format, Alter und Rätselseiten
   for (const lang of ['de', 'en']) {
     const texts = defaults[lang].books
     assert(texts.coloringFactsTitle, `${lang}: Überschrift zu den Malbuch-Eigenschaften fehlt`)
-    assert(Array.isArray(texts.coloringFacts) && texts.coloringFacts.length === 5, `${lang}: Es müssen genau fünf Malbuch-Eigenschaften vorhanden sein`)
+    assert(Array.isArray(texts.coloringFacts) && texts.coloringFacts.length === 4, `${lang}: Es müssen genau vier Malbuch-Eigenschaften vorhanden sein`)
     assert(texts.coloringCardSummary, `${lang}: Malbuch-Kurzinfo fehlt`)
   }
   assert(booksSection.includes('ColoringBookFacts') && booksSection.includes('coloringCardSummary'), 'Malbuch-Eigenschaften werden auf der Landingpage nicht klar angezeigt')

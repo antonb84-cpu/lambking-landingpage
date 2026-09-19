@@ -78,7 +78,7 @@ const isColoringBook = (book: Book) => book.category === 'malbuecher'
 
 function ColoringBookFacts({ compact = false }: { compact?: boolean }) {
   const t = textsFor(useLang())
-  const icons = [BookOpen, Ruler, ShieldCheck, CheckCircle2, HelpCircle]
+  const icons = [BookOpen, Ruler, ShieldCheck, HelpCircle]
   return (
     <div className={compact
       ? 'mt-5 rounded-2xl border border-accent/30 bg-accent/[0.07] p-4'
