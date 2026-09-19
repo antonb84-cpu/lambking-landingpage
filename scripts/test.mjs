@@ -221,6 +221,26 @@ test('Auf Smartphones stehen zwei Bücher nebeneinander', () => {
   assert(books.includes('grid grid-cols-2'), 'Mobile Buchübersicht hat keine zwei Spalten')
 })
 
+test('Alle Malbücher zeigen einheitlich Umfang, Format, Alter und Rätselseiten', () => {
+  const defaults = JSON.parse(readFileSync(join(SRC, 'data/texts.defaults.json'), 'utf-8'))
+  const booksSection = readFileSync(join(SRC, 'sections/Books.tsx'), 'utf-8')
+  const admin = readFileSync(join(ROOT, 'admin/index.html'), 'utf-8')
+  const coloringBooks = booksJson.books.filter((book) => book.category === 'malbuecher')
+  assert(coloringBooks.length > 0, 'Keine Malbücher zum Prüfen gefunden')
+  for (const book of coloringBooks) {
+    assert(book.age === 'Ab 6 Jahren', `${book.title}: Altersangabe ist nicht einheitlich`)
+    assert(book.detail.includes('70 Seiten'), `${book.title}: Seitenzahl ist nicht einheitlich`)
+  }
+  for (const lang of ['de', 'en']) {
+    const texts = defaults[lang].books
+    assert(texts.coloringFactsTitle, `${lang}: Überschrift zu den Malbuch-Eigenschaften fehlt`)
+    assert(Array.isArray(texts.coloringFacts) && texts.coloringFacts.length === 5, `${lang}: Es müssen genau fünf Malbuch-Eigenschaften vorhanden sein`)
+    assert(texts.coloringCardSummary, `${lang}: Malbuch-Kurzinfo fehlt`)
+  }
+  assert(booksSection.includes('ColoringBookFacts') && booksSection.includes('coloringCardSummary'), 'Malbuch-Eigenschaften werden auf der Landingpage nicht klar angezeigt')
+  assert(admin.includes("coloringFactsTitle:") && admin.includes("coloringCardSummary:"), 'Malbuch-Texte sind im Backend nicht verständlich beschriftet')
+})
+
 test('Verwaiste Medien können sicher angesehen und gelöscht werden', () => {
   const admin = readFileSync(join(ROOT, 'admin/index.html'), 'utf-8')
   const server = readFileSync(join(ROOT, 'admin/admin_server.py'), 'utf-8')

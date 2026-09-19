@@ -148,6 +148,17 @@
       "growing": "Die Serie wächst – bald erhältlich:",
       "buyAmazon": "Bei Amazon ansehen",
       "availableLanguages": "Erhältlich in",
+      "coloringFactsTitle": "Das steckt in jedem LambKing-Malbuch",
+      "coloringFacts": [
+        "70 Seiten",
+        "Große Seiten – ungefähr DIN A4",
+        "Bibeltreu erzählt",
+        "Für Kinder ab 6 Jahren",
+        "5 Seiten mit Spielen, Fragen und Rätseln"
+      ],
+      "coloringAge": "Ab 6 Jahren",
+      "coloringFormat": "70 Seiten · ungefähr DIN A4",
+      "coloringCardSummary": "Bibeltreu · 5 Seiten Spiele, Fragen & Rätsel",
       "amazonPending": "Diese Sprachausgabe wird derzeit von Amazon geprüft. Der Kaufbutton erscheint automatisch, sobald der Amazon-Link im Backend eingetragen ist."
     },
     "trust": {
@@ -413,6 +424,17 @@
       "growing": "The series is growing – coming soon:",
       "buyAmazon": "View on Amazon",
       "availableLanguages": "Available in",
+      "coloringFactsTitle": "Every LambKing coloring book includes",
+      "coloringFacts": [
+        "70 pages",
+        "Large pages – approximately A4",
+        "Faithful to Scripture",
+        "For children ages 6 and up",
+        "5 pages of games, questions, and puzzles"
+      ],
+      "coloringAge": "Ages 6+",
+      "coloringFormat": "70 pages · approximately A4",
+      "coloringCardSummary": "Faithful to Scripture · 5 pages of games, questions & puzzles",
       "amazonPending": "This language edition is currently under review by Amazon. The purchase button will appear as soon as its Amazon link is entered in the admin area."
     },
     "trust": {

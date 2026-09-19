@@ -32,14 +32,20 @@ export default function SupportedWorks() {
   )
 
   return (
-    <section id="unterstuetzte-werke" className="border-y border-accent/20 bg-accent/[0.045] py-16 lg:py-20">
+    <section id="unterstuetzte-werke" className="scroll-mt-40 border-y border-accent/20 bg-accent/[0.045] py-16 lg:scroll-mt-32 lg:py-20">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <Reveal className="mx-auto max-w-3xl text-center">
+        <Reveal className="grid gap-5 lg:grid-cols-[0.72fr_1.28fr] lg:items-start lg:gap-14">
+          <div>
           <h2 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">
             {t.title}
           </h2>
+          {organizations.length > 0 ? (
+            <p className="mt-5 font-bold text-foreground">{t.current}</p>
+          ) : null}
+          </div>
+          <div>
           {t.firstBefore || t.firstStrong || t.firstAfter ? (
-          <p className="mt-5 text-base leading-relaxed text-muted-foreground sm:text-lg">
+          <p className="text-base leading-relaxed text-muted-foreground sm:text-lg">
             <RichText text={t.firstBefore} />
             {t.firstStrong ? (
               <> {' '}<strong className="font-bold text-foreground"><RichText text={t.firstStrong} /></strong></>
@@ -49,9 +55,7 @@ export default function SupportedWorks() {
           ) : null}
           {t.second ? <p className="mt-3 text-base leading-relaxed text-muted-foreground sm:text-lg"><RichText text={t.second} /></p> : null}
           {t.third ? <p className="mt-3 text-base leading-relaxed text-muted-foreground sm:text-lg"><RichText text={t.third} /></p> : null}
-          {organizations.length > 0 ? (
-            <p className="mt-7 font-bold text-foreground">{t.current}</p>
-          ) : null}
+          </div>
         </Reveal>
 
         {organizations.length > 0 ? (
@@ -66,9 +70,9 @@ export default function SupportedWorks() {
                 : organization.flyerDe || organization.flyerEn
               return (
                 <Reveal key={organization.id || `${organization.name}-${index}`} delay={index * 100}>
-                  <article className="flex h-full flex-col rounded-2xl border border-accent/25 bg-background p-6 text-center shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md">
+                  <article className="flex h-full flex-col rounded-2xl border border-accent/25 bg-background p-5 text-left shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md sm:p-6">
                     <div
-                      className={`mx-auto flex h-24 w-full items-center justify-center rounded-xl px-5 ${
+                      className={`flex h-20 w-full items-center justify-start rounded-xl px-5 ${
                         organization.logoBackground === 'dark' ? 'bg-primary' : 'bg-card'
                       }`}
                     >
@@ -76,7 +80,7 @@ export default function SupportedWorks() {
                         <img
                           src={organization.logo}
                           alt={`Logo ${organization.name}`}
-                          className="max-h-16 max-w-[12rem] object-contain"
+                          className="max-h-14 max-w-[11rem] object-contain"
                           loading="lazy"
                         />
                       ) : (
@@ -89,10 +93,10 @@ export default function SupportedWorks() {
                     <h3 className="mt-5 font-display text-xl font-semibold text-foreground">
                       {organization.name}
                     </h3>
-                    <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
+                    <p className="mt-2 line-clamp-6 flex-1 text-sm leading-relaxed text-muted-foreground">
                       <RichText text={description || ''} />
                     </p>
-                    <div className="mt-5 flex flex-col items-center gap-3">
+                    <div className="mt-5 flex flex-wrap items-center gap-3">
                       {flyer ? (
                         <button
                           type="button"

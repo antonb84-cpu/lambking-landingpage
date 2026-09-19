@@ -205,16 +205,16 @@ export default function Hero() {
   const t = textsFor(lang)
   return (
     <section id="top" className="texture-paper overflow-hidden">
-      <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 pb-16 pt-12 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:pb-24 lg:pt-16">
+      <div className="mx-auto grid max-w-6xl items-center gap-7 px-4 pb-12 pt-9 sm:gap-10 sm:px-6 sm:pb-16 sm:pt-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-12 lg:pb-24 lg:pt-16">
         <Reveal>
           <h1 className="font-display text-4xl font-semibold leading-[1.16] tracking-tight sm:text-5xl">
             <span className="lg:block">{t.hero.title1}</span>{' '}
             <span className="italic text-accent lg:block">{t.hero.title2}</span>
           </h1>
-          <p className="mt-5 max-w-xl text-lg leading-relaxed text-muted-foreground">
+          <p className="mt-4 max-w-xl text-base leading-relaxed text-muted-foreground sm:mt-5 sm:text-lg">
             <RichText text={t.hero.subtitle} />
           </p>
-          <div className="mt-8 flex flex-wrap items-center gap-3">
+          <div className="mt-6 flex flex-wrap items-center gap-3 sm:mt-8">
             <a
               href="#buecher"
               className="inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3.5 font-bold text-primary-foreground shadow-lg shadow-primary/25 transition-transform hover:scale-[1.03]"
@@ -230,11 +230,11 @@ export default function Hero() {
               {t.hero.ctaApp}
             </a>
           </div>
-          <div className="mt-10 flex flex-wrap gap-x-8 gap-y-3">
+          <div className="mt-7 grid gap-2 border-t border-border/80 pt-5 sm:mt-9 sm:flex sm:flex-wrap sm:gap-x-8 sm:gap-y-3 sm:border-0 sm:pt-0">
             {t.hero.trust.map((label, i) => {
               const Icon = TRUST_ICONS[i]
               return (
-                <div key={label} className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
+                <div key={label} className="flex items-center gap-2 text-xs font-semibold text-muted-foreground sm:text-sm">
                   <Icon className="h-4 w-4 text-accent" aria-hidden />
                   {label}
                 </div>
@@ -243,7 +243,7 @@ export default function Hero() {
           </div>
         </Reveal>
 
-        <Reveal delay={150} className="py-6">
+        <Reveal delay={100} className="pb-2 pt-0 sm:py-4 lg:py-6">
           <Book3D />
         </Reveal>
       </div>

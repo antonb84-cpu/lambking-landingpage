@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { ArrowLeft, ArrowRight, Eye, Palette, X, ZoomIn } from 'lucide-react'
+import { ArrowLeft, ArrowRight, BookOpen, CheckCircle2, Eye, HelpCircle, Palette, Ruler, ShieldCheck, X, ZoomIn } from 'lucide-react'
 import Reveal from '@/components/Reveal'
 import RichText from '@/components/RichText'
 import AmazonRating from '@/components/AmazonRating'
@@ -74,6 +74,36 @@ const localizedBook = (book: Book, language: string): Book => {
   }
 }
 
+const isColoringBook = (book: Book) => book.category === 'malbuecher'
+
+function ColoringBookFacts({ compact = false }: { compact?: boolean }) {
+  const t = textsFor(useLang())
+  const icons = [BookOpen, Ruler, ShieldCheck, CheckCircle2, HelpCircle]
+  return (
+    <div className={compact
+      ? 'mt-5 rounded-2xl border border-accent/30 bg-accent/[0.07] p-4'
+      : 'rounded-2xl border border-accent/30 bg-gradient-to-r from-accent/[0.09] via-card to-accent/[0.06] px-5 py-5 shadow-sm sm:px-7'}
+    >
+      <p className={`font-display font-semibold text-foreground ${compact ? 'text-lg' : 'text-center text-xl sm:text-2xl'}`}>
+        {t.books.coloringFactsTitle}
+      </p>
+      <ul className={`mt-4 grid gap-3 ${compact ? 'sm:grid-cols-2' : 'sm:grid-cols-2 lg:grid-cols-5'}`}>
+        {t.books.coloringFacts.map((fact, index) => {
+          const Icon = icons[index] ?? CheckCircle2
+          return (
+            <li key={fact} className="flex items-center gap-2.5 text-sm font-bold leading-snug text-foreground">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
+                <Icon className="h-4.5 w-4.5" strokeWidth={2} aria-hidden />
+              </span>
+              <RichText text={fact} />
+            </li>
+          )
+        })}
+      </ul>
+    </div>
+  )
+}
+
 function LanguageEditions({
   book,
   compact = false,
@@ -88,9 +118,9 @@ function LanguageEditions({
   const editions = editionsOf(book)
   if (!editions.length) return null
   return (
-    <div className={`${compact ? 'mt-2' : 'mt-5'} text-center`}>
-      <p className="mb-1.5 text-[11px] font-semibold text-muted-foreground sm:text-xs">{t.books.availableLanguages}</p>
-      <div className="flex flex-wrap justify-center gap-1.5">
+    <div className={`${compact ? 'mt-2.5' : 'mt-5'} text-center`}>
+      <p className={`mb-1.5 font-semibold text-muted-foreground ${compact ? 'text-[10px] sm:text-xs' : 'text-xs'}`}>{t.books.availableLanguages}</p>
+      <div className="flex flex-wrap justify-center gap-1">
         {editions.map((edition) => {
           const meta = LANGUAGE_META[edition.language]
           const name = meta ? meta[lang] : edition.language.toUpperCase()
@@ -99,7 +129,7 @@ function LanguageEditions({
               type="button"
               key={edition.language}
               onClick={() => onSelect(edition.language)}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-primary/20 bg-white p-1.5 shadow-sm transition hover:scale-105 hover:border-primary/50 hover:bg-primary/5 hover:shadow"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-primary/20 bg-white p-2 shadow-sm transition hover:scale-105 hover:border-primary/50 hover:bg-primary/5 hover:shadow"
               title={`${name} – ${t.books.lookInside}`}
               aria-label={`${book.title}, ${name} – ${t.books.lookInside}`}
             >
@@ -194,8 +224,17 @@ function BookDialog({
               <DialogHeader>
                 <div className="mb-3 flex flex-wrap gap-2">
                   <Badge variant="secondary" className="rounded-full">{typeLabelOf(book, lang)}</Badge>
-                  {displayBook?.age && <Badge variant="secondary" className="rounded-full">{displayBook.age}</Badge>}
-                  {displayBook?.detail && <Badge variant="secondary" className="rounded-full">{displayBook.detail}</Badge>}
+                  {isColoringBook(book) ? (
+                    <>
+                      <Badge variant="secondary" className="rounded-full">{t.books.coloringAge}</Badge>
+                      <Badge variant="secondary" className="rounded-full">{t.books.coloringFormat}</Badge>
+                    </>
+                  ) : (
+                    <>
+                      {displayBook?.age && <Badge variant="secondary" className="rounded-full">{displayBook.age}</Badge>}
+                      {displayBook?.detail && <Badge variant="secondary" className="rounded-full">{displayBook.detail}</Badge>}
+                    </>
+                  )}
                 </div>
                 <DialogTitle className="font-display text-3xl font-semibold leading-tight lg:text-4xl">
                   {displayBook?.title}
@@ -206,6 +245,7 @@ function BookDialog({
                   </p>
                 )}
               </DialogHeader>
+              {isColoringBook(book) ? <ColoringBookFacts compact /> : null}
               <DialogDescription className="mt-6 max-w-2xl whitespace-pre-line text-lg leading-loose text-muted-foreground">
                 <RichText text={displayBook?.description || ''} />
               </DialogDescription>
@@ -448,7 +488,7 @@ export default function Books() {
     id === 'alle' ? t.books.emptyAll : t.books.emptyComics
 
   return (
-    <section id="buecher" className="scroll-mt-28 py-16 lg:py-24">
+    <section id="buecher" className="scroll-mt-28 py-14 lg:py-24">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <Reveal className="mx-auto max-w-2xl text-center">
           <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-accent">{t.books.eyebrow}</p>
@@ -492,17 +532,23 @@ export default function Books() {
           })}
         </Reveal>
 
+        {(cat === 'alle' || cat === 'malbuecher') && books.some(isColoringBook) ? (
+          <Reveal delay={130} className="mt-7">
+            <ColoringBookFacts />
+          </Reveal>
+        ) : null}
+
         {visible.length > 0 ? (
-          <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-7 lg:grid-cols-3">
+          <div className="mt-9 grid grid-cols-2 gap-2.5 sm:gap-6 lg:grid-cols-3">
             {visible.map((b, i) => {
               const cardBook = localizedBook(b, lang)
               return (
               <Reveal key={b.id} delay={i * 100}>
-                <article className="group flex h-full flex-col overflow-hidden rounded-md border-2 border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/10">
+                <article className="book-card group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-[0_10px_32px_-26px_rgba(21,49,103,0.8)] transition-all duration-200 hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_18px_38px_-24px_rgba(21,49,103,0.45)]">
                   <button
                     type="button"
                     onClick={() => openBook(b)}
-                    className="relative block bg-secondary/50 p-3 text-left sm:p-6"
+                    className="relative flex aspect-[4/5] items-center justify-center bg-secondary/45 p-2.5 text-left sm:p-5"
                     aria-label={`${t.books.lookInside}: ${b.title}`}
                   >
                     {isNew(b) && (
@@ -514,34 +560,39 @@ export default function Books() {
                       src={b.cover}
                       alt={cardBook.title}
                       loading="lazy"
-                      className="mx-auto max-h-72 w-auto max-w-full rounded-md object-contain shadow-lg shadow-primary/15 transition-transform duration-500 group-hover:scale-[1.03]"
+                      className="max-h-full w-auto max-w-full rounded-md object-contain shadow-lg shadow-primary/15 transition-transform duration-300 group-hover:scale-[1.02]"
                     />
                     <span className="absolute bottom-4 right-4 inline-flex items-center gap-1.5 rounded-full bg-foreground/85 px-3 py-1.5 text-xs font-bold text-background opacity-0 backdrop-blur transition-opacity group-hover:opacity-100">
                       <Eye className="h-3.5 w-3.5" aria-hidden />
                       {t.books.lookInside}
                     </span>
                   </button>
-                  <div className="flex flex-1 flex-col p-3 sm:p-5">
-                    <div className="mb-2 flex flex-wrap gap-1.5">
+                  <div className="flex flex-1 flex-col p-2.5 sm:p-5">
+                    <div className="mb-2 hidden flex-wrap gap-1.5 sm:flex">
                       <Badge variant="secondary" className="gap-1 rounded-full">
                         <Palette className="h-3 w-3" aria-hidden />
                         {typeLabel(b)}
                       </Badge>
-                      {cardBook.age && <Badge variant="secondary" className="rounded-full">{cardBook.age}</Badge>}
+                      {isColoringBook(b)
+                        ? <Badge variant="secondary" className="rounded-full">{t.books.coloringAge}</Badge>
+                        : cardBook.age && <Badge variant="secondary" className="rounded-full">{cardBook.age}</Badge>}
                     </div>
-                    <h3 className="font-display text-base font-semibold leading-snug sm:text-xl">{cardBook.title}</h3>
-                    {cardBook.series && <p className="mt-1 text-xs font-semibold text-muted-foreground">{cardBook.series}</p>}
+                    <h3 className="book-card-title font-display text-sm font-semibold leading-snug sm:text-xl">{cardBook.title}</h3>
+                    {isColoringBook(b) ? (
+                      <p className="mt-2 text-[10px] font-bold leading-snug text-primary sm:text-xs">
+                        {t.books.coloringCardSummary}
+                      </p>
+                    ) : null}
                     <LanguageEditions book={b} compact onSelect={(language) => openBook(b, language)} />
-                    <AmazonRating book={b} />
-                    <div className="mt-4 flex flex-1 flex-col items-center">
+                    <div className="hidden sm:block"><AmazonRating book={b} /></div>
+                    <div className="mt-3 flex flex-1 flex-col items-center justify-end sm:mt-4">
                       <button
                         type="button"
                         onClick={() => openBook(b)}
-                        className="mb-3 flex min-h-10 w-full max-w-[240px] items-center justify-center rounded-full border-2 border-primary/20 px-2 py-2 text-xs font-bold text-primary transition-colors hover:border-primary/50 hover:bg-primary/5 sm:aspect-[900/165] sm:text-sm"
+                        className="flex min-h-11 w-full max-w-[240px] items-center justify-center rounded-full bg-primary px-2 py-2 text-xs font-bold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 sm:aspect-[900/165] sm:text-sm"
                       >
                         {t.books.lookInside}
                       </button>
-                      <BuyButton book={cardBook} preferredLanguage={lang} />
                     </div>
                   </div>
                 </article>

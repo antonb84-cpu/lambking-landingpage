@@ -22,28 +22,34 @@ export default function About() {
   const size = SIZES[SITE.authorPhotoSize] ?? SIZES.klein
 
   return (
-    <section id="ueber" className="scroll-mt-28 border-y border-border bg-card/60 py-16 lg:py-20">
-      <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
-        <Reveal>
-          <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-accent">{t.about.eyebrow}</p>
-          <h2 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">
-            {t.about.title}
-          </h2>
-
-          <img
-            src={SITE.authorPhoto}
-            alt={SITE.authorName}
-            className={`mx-auto mt-8 border-2 border-accent/40 object-cover shadow-sm ${shape} ${size}`}
-            loading="lazy"
-          />
-          <p className="mt-3 text-sm font-bold">{SITE.authorName}</p>
-          <p className="text-xs font-semibold text-muted-foreground">{t.about.role}</p>
-
-          <div className="mt-7 space-y-4 leading-relaxed text-muted-foreground">
+    <section id="ueber" className="scroll-mt-28 border-y border-border bg-card/70 py-16 lg:py-24">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <Reveal className="grid items-center gap-9 md:grid-cols-[260px_1fr] lg:gap-14">
+          <div className="text-center md:text-left">
+            <div className="mx-auto w-fit rounded-[2rem] border border-accent/25 bg-background p-4 shadow-[0_18px_45px_-30px_rgba(21,49,103,0.45)] md:mx-0">
+              <img
+                src={SITE.authorPhoto}
+                alt={SITE.authorName}
+                className={`border-2 border-accent/35 object-cover ${shape} ${size}`}
+                loading="lazy"
+              />
+            </div>
+            <p className="mt-4 font-display text-xl font-semibold">{SITE.authorName}</p>
+            <p className="mt-1 text-sm font-semibold leading-snug text-muted-foreground">{t.about.role}</p>
+          </div>
+          <div>
+            <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-accent">{t.about.eyebrow}</p>
+            <h2 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">
+              {t.about.title}
+            </h2>
+            <div className="mt-6 max-w-3xl space-y-4 leading-relaxed text-muted-foreground">
             {t.about.paragraphs.map((p) => (
               <p key={p.slice(0, 24)}><RichText text={p} /></p>
             ))}
-            <p className="font-semibold text-foreground"><RichText text={t.about.highlight} /></p>
+              <blockquote className="border-l-4 border-accent bg-background px-5 py-4 font-display text-lg font-semibold leading-relaxed text-foreground shadow-sm">
+                <RichText text={t.about.highlight} />
+              </blockquote>
+            </div>
           </div>
         </Reveal>
       </div>
