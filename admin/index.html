@@ -544,6 +544,10 @@ function renderBookEditions(){
           </div>
           <label>Beschreibung</label><textarea rows="6" placeholder="Übersetzte Beschreibung" oninput="setBookEditionField(${index},'description',this.value)">${esc(edition.description || '')}</textarea>
           <label>Highlights (eine Zeile = ein Punkt)</label><textarea rows="3" oninput="setBookEditionField(${index},'highlights',this.value.split('\n'))">${esc(Array.isArray(edition.highlights) ? edition.highlights.join('\n') : '')}</textarea>
+          <label>Cover dieser Sprach-Ausgabe</label>
+          <input type="text" value="${esc(edition.cover || '')}" placeholder="images/cover-mein-buch-es.jpg" oninput="setBookEditionField(${index},'cover',this.value)">
+          <label class="checkline"><input type="checkbox" ${edition.coverSpread?'checked':''} onchange="setBookEditionField(${index},'coverSpread',this.checked)"> Vollständiger KDP-Umschlag (Vorderseite ist rechts)</label>
+          ${edition.cover ? `<div class="cover-preview"><img src="/${esc(edition.cover)}" alt="Cover-Vorschau ${index + 1}" style="${edition.coverSpread ? 'width:200%;max-width:none;transform:translateX(-50%);' : ''}"></div>` : ''}
         </div>
       </details>
     </div>`).join('');
@@ -1373,7 +1377,7 @@ async function saveBook(){
         amazon:(item.amazon || '').trim(),
         highlights:Array.isArray(item.highlights) ? item.highlights.map(value => value.trim()).filter(Boolean) : []
       }))
-      .filter(item => item.amazon);
+      .filter(item => item.language && (item.amazon || item.title || item.cover));
     fd.append('editions', JSON.stringify(editionsToSave));
     fd.append('amazon', editionsToSave[0]?.amazon || $('f_amazon').value);
     fd.append('amazonRating', amazonRating === null ? '' : String(amazonRating));

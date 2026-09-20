@@ -194,6 +194,10 @@ def render_books_ts(state: dict):
     out.append("  detail?: string")
     out.append("  description?: string")
     out.append("  highlights?: string[]")
+    out.append("  /** Optionales Cover nur für diese Sprach-Ausgabe. */")
+    out.append("  cover?: string")
+    out.append("  /** true, wenn die Datei ein kompletter KDP-Umschlag ist; die Vorderseite liegt rechts. */")
+    out.append("  coverSpread?: boolean")
     out.append("}")
     out.append("")
     out.append("export interface Book {")
@@ -206,6 +210,7 @@ def render_books_ts(state: dict):
     out.append("  age: string")
     out.append("  detail: string")
     out.append("  cover: string")
+    out.append("  coverSpread?: boolean")
     out.append("  description: string")
     out.append("  highlights: string[]")
     out.append("  samples: string[]")
@@ -1004,6 +1009,14 @@ class Handler(BaseHTTPRequestHandler):
                 cleaned_highlights = [str(item).strip()[:300] for item in highlights[:20] if str(item).strip()]
                 if cleaned_highlights:
                     cleaned_edition["highlights"] = cleaned_highlights
+            cover = str(edition.get("cover", "")).strip().replace("\\", "/")
+            if cover:
+                if not re.fullmatch(r"images/[A-Za-z0-9._/-]+", cover) or ".." in cover:
+                    self.send_json({"ok": False, "error": f"Der Coverpfad für {language.upper()} ist ungültig."})
+                    return
+                cleaned_edition["cover"] = cover
+                if edition.get("coverSpread"):
+                    cleaned_edition["coverSpread"] = True
             editions.append(cleaned_edition)
         legacy_amazon = fields.get("amazon", "").strip()
         if not editions and legacy_amazon:

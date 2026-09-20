@@ -71,7 +71,35 @@ const localizedBook = (book: Book, language: string): Book => {
     description: edition.description || book.description,
     highlights: edition.highlights?.length ? edition.highlights : book.highlights,
     amazon: edition.amazon,
+    cover: edition.cover || book.cover,
+    coverSpread: edition.cover ? Boolean(edition.coverSpread) : book.coverSpread,
   }
+}
+
+function BookCover({ book, variant }: { book: Book; variant: 'card' | 'dialog' }) {
+  const shared = variant === 'card'
+    ? 'max-h-full w-auto max-w-full rounded-md shadow-lg shadow-primary/15 transition-transform duration-300 group-hover:scale-[1.02]'
+    : 'mx-auto w-full max-w-[320px] rounded-md shadow-2xl shadow-primary/25 lg:sticky lg:top-10'
+
+  if (!book.coverSpread) {
+    return <img src={book.cover} alt={book.title} loading={variant === 'card' ? 'lazy' : undefined} className={shared} />
+  }
+
+  return (
+    <div
+      className={`${shared} relative aspect-[8.5/11] overflow-hidden ${variant === 'card' ? 'h-full' : ''}`}
+      role="img"
+      aria-label={book.title}
+    >
+      <img
+        src={book.cover}
+        alt=""
+        aria-hidden
+        loading={variant === 'card' ? 'lazy' : undefined}
+        className="absolute right-0 top-0 h-full w-auto max-w-none"
+      />
+    </div>
+  )
 }
 
 const isColoringBook = (book: Book) => book.category === 'malbuecher'
@@ -191,17 +219,7 @@ function BookDialog({
   const lang = useLang()
   const zoomOpen = !!zoom
   const edition = book ? editionsOf(book).find((item) => item.language === editionLanguage) : undefined
-  const displayBook = book && edition ? {
-    ...book,
-    title: edition.title || book.title,
-    series: edition.series || book.series,
-    age: edition.age || book.age,
-    detail: edition.detail || book.detail,
-    description: edition.description || book.description,
-    highlights: edition.highlights?.length ? edition.highlights : book.highlights,
-    amazon: edition.amazon,
-    editions: [edition],
-  } : book
+  const displayBook = book && edition ? localizedBook(book, edition.language) : book
   return (
     <Dialog open={!!book} onOpenChange={(open) => !open && !zoomOpen && onClose()}>
       <DialogContent
@@ -214,11 +232,7 @@ function BookDialog({
         {book && (
           <div className="grid lg:grid-cols-[380px_1fr]">
             <div className="bg-secondary/60 p-8 lg:p-10">
-              <img
-                src={book.cover}
-                alt={book.title}
-                className="mx-auto w-full max-w-[320px] rounded-md shadow-2xl shadow-primary/25 lg:sticky lg:top-10"
-              />
+              {displayBook && <BookCover book={displayBook} variant="dialog" />}
             </div>
             <div className="p-8 lg:p-12">
               <DialogHeader>
@@ -556,12 +570,7 @@ export default function Books() {
                         {t.books.newBadge}
                       </span>
                     )}
-                    <img
-                      src={b.cover}
-                      alt={cardBook.title}
-                      loading="lazy"
-                      className="max-h-full w-auto max-w-full rounded-md object-contain shadow-lg shadow-primary/15 transition-transform duration-300 group-hover:scale-[1.02]"
-                    />
+                    <BookCover book={cardBook} variant="card" />
                     <span className="absolute bottom-4 right-4 inline-flex items-center gap-1.5 rounded-full bg-foreground/85 px-3 py-1.5 text-xs font-bold text-background opacity-0 backdrop-blur transition-opacity group-hover:opacity-100">
                       <Eye className="h-3.5 w-3.5" aria-hidden />
                       {t.books.lookInside}

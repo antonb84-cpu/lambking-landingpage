@@ -421,11 +421,15 @@
       "editions": [
         {
           "language": "de",
-          "amazon": "https://www.amazon.de/dp/B0HFWX8DH5"
+          "amazon": "https://www.amazon.de/dp/B0HFWX8DH5",
+          "cover": "images/cover-band01-de-spread.png",
+          "coverSpread": true
         },
         {
           "language": "en",
           "amazon": "",
+          "cover": "images/cover-band01-en-spread.png",
+          "coverSpread": true,
           "title": "Bible Stories to Color: Volume 1 - The Creation - God Makes the World",
           "series": "Bible Stories to Color · Volume 1",
           "age": "Ages 6+",
@@ -440,6 +444,8 @@
         {
           "language": "es",
           "amazon": "https://www.amazon.es/dp/B0HJW5H7DN",
+          "cover": "images/cover-band01-es-spread.png",
+          "coverSpread": true,
           "title": "Historias bíblicas para colorear: Tomo 1 - La Creación - Dios crea el mundo",
           "series": "Historias bíblicas para colorear · Tomo 1",
           "age": "A partir de 6 años",
@@ -576,11 +582,15 @@
       "editions": [
         {
           "language": "de",
-          "amazon": "https://www.amazon.de/dp/B0HH6ND5MC"
+          "amazon": "https://www.amazon.de/dp/B0HH6ND5MC",
+          "cover": "images/cover-band09-de-spread.jpg",
+          "coverSpread": true
         },
         {
           "language": "en",
           "amazon": "https://www.amazon.com/dp/B0HK8R5V3S",
+          "cover": "images/cover-band09-en-spread.jpg",
+          "coverSpread": true,
           "title": "Bible Stories to Color: Volume 9 EN - The Christmas Story - Jesus Is Born",
           "series": "Bible Stories to Color · Volume 9",
           "age": "Ages 6+",
@@ -595,6 +605,8 @@
         {
           "language": "es",
           "amazon": "https://www.amazon.es/dp/B0HK6WFQFR",
+          "cover": "images/cover-band09-es-spread.jpg",
+          "coverSpread": true,
           "title": "Historias bíblicas para colorear: Tomo 9 ES - La historia de Navidad - Jesús ha nacido",
           "series": "Historias bíblicas para colorear · Tomo 9",
           "age": "A partir de 6 años",

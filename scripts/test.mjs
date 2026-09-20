@@ -122,6 +122,28 @@ test('Buchdaten: Cover und Beispielseiten existieren als Datei', () => {
   }
 })
 
+test('Mehrsprachige Bücher besitzen ein eigenes, korrekt verknüpftes Cover je Sprache', () => {
+  const booksView = readFileSync(join(SRC, 'sections/Books.tsx'), 'utf-8')
+  const admin = readFileSync(join(ROOT, 'admin/index.html'), 'utf-8')
+  const server = readFileSync(join(ROOT, 'admin/admin_server.py'), 'utf-8')
+  assert(booksView.includes('cover: edition.cover || book.cover'), 'Sprachcover werden im Frontend nicht übernommen')
+  assert(booksView.includes('<BookCover book={displayBook}'), 'Buchdialog verwendet nicht das gewählte Sprachcover')
+  assert(admin.includes('Cover dieser Sprach-Ausgabe') && admin.includes("'coverSpread'"), 'Sprachcover sind im Backend nicht bearbeitbar')
+  assert(server.includes('cleaned_edition["cover"]') && server.includes('cleaned_edition["coverSpread"]'), 'Server bewahrt Sprachcover beim Speichern nicht auf')
+
+  for (const book of booksJson.books) {
+    const editions = book.editions || []
+    if (editions.length <= 1) continue
+    const covers = []
+    for (const edition of editions) {
+      assert(edition.cover, `${book.id}/${edition.language}: eigenes Sprachcover fehlt`)
+      assert(existsSync(join(ROOT, 'public', edition.cover)), `${book.id}/${edition.language}: Sprachcover-Datei fehlt (${edition.cover})`)
+      covers.push(edition.cover)
+    }
+    assert(new Set(covers).size === covers.length, `${book.id}: mehrere Sprachen verwenden dasselbe Cover`)
+  }
+})
+
 test('Vorschauseiten lassen sich ordnen und ein Hero-Buch auswählen', () => {
   const admin = readFileSync(join(ROOT, 'admin/index.html'), 'utf-8')
   const server = readFileSync(join(ROOT, 'admin/admin_server.py'), 'utf-8')
