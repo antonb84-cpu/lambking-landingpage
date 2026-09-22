@@ -299,10 +299,10 @@ test('Alle Malbücher zeigen einheitlich Umfang, Format, Alter und Rätselseiten
     const texts = defaults[lang].books
     assert(texts.coloringFactsTitle, `${lang}: Überschrift zu den Malbuch-Eigenschaften fehlt`)
     assert(Array.isArray(texts.coloringFacts) && texts.coloringFacts.length === 5, `${lang}: Es müssen genau fünf Malbuch-Eigenschaften vorhanden sein`)
-    assert(texts.coloringCardSummary, `${lang}: Malbuch-Kurzinfo fehlt`)
+    assert(texts.coloringFacts[0] === (lang === 'de' ? 'Jedes Malbuch hat 70 Seiten' : 'Every coloring book has 70 pages'), `${lang}: Seitenzahl-Aussage fehlt`)
   }
-  assert(booksSection.includes('ColoringBookFacts') && booksSection.includes('coloringCardSummary'), 'Malbuch-Eigenschaften werden auf der Landingpage nicht klar angezeigt')
-  assert(admin.includes("coloringFactsTitle:") && admin.includes("coloringCardSummary:"), 'Malbuch-Texte sind im Backend nicht verständlich beschriftet')
+  assert(booksSection.includes('ColoringBookFacts') && !booksSection.includes('coloringCardSummary'), 'Malbuch-Kurzinfo steht noch wiederholt auf den Kacheln')
+  assert(admin.includes("coloringFactsTitle:") && !admin.includes("coloringCardSummary:"), 'Überflüssige Malbuch-Kurzinfo steht noch im Backend')
 })
 
 test('Verwaiste Medien können sicher angesehen und gelöscht werden', () => {

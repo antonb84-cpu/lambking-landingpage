@@ -621,11 +621,6 @@ export default function Books() {
                         : cardBook.age && <Badge variant="secondary" className="rounded-full">{cardBook.age}</Badge>}
                     </div>
                     <h3 className="book-card-title font-display text-sm font-semibold leading-snug sm:text-xl">{cardBook.title}</h3>
-                    {isColoringBook(b) ? (
-                      <p className="mt-2 text-[10px] font-bold leading-snug text-primary sm:text-xs">
-                        {t.books.coloringCardSummary}
-                      </p>
-                    ) : null}
                     <LanguageEditions book={b} compact onSelect={(language) => openBook(b, language)} />
                     <div className="hidden sm:block"><AmazonRating book={b} /></div>
                     <div className="mt-3 flex flex-1 flex-col items-center justify-end sm:mt-4">
