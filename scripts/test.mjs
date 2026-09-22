@@ -144,6 +144,33 @@ test('Mehrsprachige Bücher besitzen ein eigenes, korrekt verknüpftes Cover je 
   }
 })
 
+test('David und Weihnachten verwenden sprachrichtige Cover und PDF-Vorschauseiten', () => {
+  const booksView = readFileSync(join(SRC, 'sections/Books.tsx'), 'utf-8')
+  const admin = readFileSync(join(ROOT, 'admin/index.html'), 'utf-8')
+  const server = readFileSync(join(ROOT, 'admin/admin_server.py'), 'utf-8')
+  assert(booksView.includes('samples: edition.samples?.length ? edition.samples : book.samples'), 'Sprachspezifische Vorschauseiten werden nicht verwendet')
+  assert(booksView.includes('sources={displayBook?.samples ?? []}'), 'Vergrößerte Vorschau verwendet nicht die Sprach-Ausgabe')
+  assert(booksView.includes("flag-icons/flags/4x3/ro.svg"), 'Rumänische Flagge fehlt')
+  assert(admin.includes('Vorschauseiten dieser Sprache') && admin.includes("['ro','🇷🇴 Rumänisch']"), 'Sprach-Vorschauseiten oder Rumänisch fehlen im Backend')
+  assert(server.includes('cleaned_edition["samples"]'), 'Backend verwirft Sprach-Vorschauseiten beim Speichern')
+  for (const [id, languages] of [
+    ['david', ['de', 'en', 'es', 'ro']],
+    ['bibelgeschichten-zum-ausmalen-3', ['de', 'en', 'es']],
+  ]) {
+    const book = booksJson.books.find((item) => item.id === id)
+    assert(book, `${id}: Buch fehlt`)
+    assert(languages.every((language) => book.editions.some((edition) => edition.language === language)), `${id}: Sprach-Ausgabe fehlt`)
+    for (const edition of book.editions) {
+      assert(edition.cover && existsSync(join(ROOT, 'public', edition.cover)), `${id}/${edition.language}: Cover fehlt`)
+      assert(edition.samples?.length === 6, `${id}/${edition.language}: es müssen sechs Vorschauseiten vorhanden sein`)
+      for (const path of edition.samples) {
+        assert(path.includes(`-${edition.language}-preview-`), `${id}/${edition.language}: Vorschauseite in falscher Sprache (${path})`)
+        assert(existsSync(join(ROOT, 'public', path)), `${id}/${edition.language}: Vorschauseite fehlt (${path})`)
+      }
+    }
+  }
+})
+
 test('Vorschauseiten lassen sich ordnen und ein Hero-Buch auswählen', () => {
   const admin = readFileSync(join(ROOT, 'admin/index.html'), 'utf-8')
   const server = readFileSync(join(ROOT, 'admin/admin_server.py'), 'utf-8')
@@ -186,6 +213,21 @@ test('Datenschutzerklärung vorhanden und aktuell (GitHub Pages, Spracheinstellu
   if (booksJson.site.analyticsUrl) {
     assert(ds.includes('Anonyme Reichweitenmessung') && ds.includes('Cloudflare'), 'Aktiver Zähldienst fehlt in der Datenschutzerklärung')
   }
+})
+
+test('App-Datenschutz ist enthalten und unter der Store-URL erreichbar', () => {
+  const ds = booksJson.site.datenschutz || ''
+  const legalGenerator = readFileSync(join(ROOT, 'scripts/gen-legal.mjs'), 'utf-8')
+  const postbuild = readFileSync(join(ROOT, 'scripts/postbuild.mjs'), 'utf-8')
+  const previewServer = readFileSync(join(ROOT, 'admin/admin_server.py'), 'utf-8')
+  assert(ds.includes('Nutzung der App „LambKing Stories“'), 'App-Abschnitt fehlt')
+  assert(ds.includes('Render Services') && ds.includes('MongoDB Atlas'), 'App-Hosting fehlt')
+  const appSection = ds.split('8. Nutzung der App „LambKing Stories“')[1]?.split('9. Ihre Rechte')[0] || ''
+  assert(!appSection.includes('Kennung') && !appSection.includes('13 Monaten'), 'Die entfernte Gerätekennung wird noch im App-Abschnitt beschrieben')
+  assert(ds.includes('9. Ihre Rechte'), 'Rechte-Abschnitt wurde nicht korrekt verschoben')
+  assert(legalGenerator.includes("join(privacyDir, 'index.html')"), 'Die Route /datenschutz/ wird nicht erzeugt')
+  assert(postbuild.includes("'datenschutz/'"), 'Die Store-URL fehlt in der Sitemap')
+  assert(previewServer.includes('"datenschutz/index.html"'), 'Die lokale Vorschau aktualisiert die Datenschutzroute nicht')
 })
 
 test('Kontakt, Amazon-Bewertung und App-Store-Einstellung sind konfigurierbar', () => {

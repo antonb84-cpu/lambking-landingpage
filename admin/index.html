@@ -514,7 +514,7 @@ const TEXT_LABELS = {
 function cloneJson(value){ return JSON.parse(JSON.stringify(value || {})); }
 
 const BOOK_LANGUAGES = [
-  ['de','🇩🇪 Deutsch'], ['en','🇬🇧 Englisch'], ['es','🇪🇸 Spanisch'], ['fr','🇫🇷 Französisch'],
+  ['de','🇩🇪 Deutsch'], ['en','🇬🇧 Englisch'], ['es','🇪🇸 Spanisch'], ['ro','🇷🇴 Rumänisch'], ['fr','🇫🇷 Französisch'],
   ['it','🇮🇹 Italienisch'], ['pt','🇵🇹 Portugiesisch'], ['ru','🇷🇺 Russisch'], ['ja','🇯🇵 Japanisch'],
   ['zh','🇨🇳 Chinesisch'], ['ko','🇰🇷 Koreanisch'], ['pl','🇵🇱 Polnisch'], ['nl','🇳🇱 Niederländisch'],
   ['tr','🇹🇷 Türkisch'], ['uk','🇺🇦 Ukrainisch'], ['ar','🇸🇦 Arabisch'], ['hi','🇮🇳 Hindi'],
@@ -544,6 +544,7 @@ function renderBookEditions(){
           </div>
           <label>Beschreibung</label><textarea rows="6" placeholder="Übersetzte Beschreibung" oninput="setBookEditionField(${index},'description',this.value)">${esc(edition.description || '')}</textarea>
           <label>Highlights (eine Zeile = ein Punkt)</label><textarea rows="3" oninput="setBookEditionField(${index},'highlights',this.value.split('\n'))">${esc(Array.isArray(edition.highlights) ? edition.highlights.join('\n') : '')}</textarea>
+          <label>Vorschauseiten dieser Sprache (eine Bilddatei pro Zeile, in Lesereihenfolge)</label><textarea rows="5" placeholder="images/mein-buch-${edition.language || 'de'}-preview-1.jpg" oninput="setBookEditionField(${index},'samples',this.value.split('\n'))">${esc(Array.isArray(edition.samples) ? edition.samples.join('\n') : '')}</textarea>
           <label>Cover dieser Sprach-Ausgabe</label>
           <input type="text" value="${esc(edition.cover || '')}" placeholder="images/cover-mein-buch-es.jpg" oninput="setBookEditionField(${index},'cover',this.value)">
           <label class="checkline"><input type="checkbox" ${edition.coverSpread?'checked':''} onchange="setBookEditionField(${index},'coverSpread',this.checked)"> Vollständiger KDP-Umschlag (Vorderseite ist rechts)</label>

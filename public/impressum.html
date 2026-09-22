@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Impressum – LambKing Stories</title>
 <meta name="description" content="Impressum von LambKing Stories.">
+
 <link rel="icon" type="image/png" href="images/app-logo.png">
 <style>
   @font-face { font-family: 'Fraunces'; font-weight: 400 700; font-display: swap;
@@ -14,12 +15,13 @@
   body { font-family: 'Quicksand', 'Segoe UI', system-ui, sans-serif; background: #FBF7EF;
     color: #1B2A4A; margin: 0; }
   header { background: #1F3461; padding: 18px 24px; display: flex; align-items: center; gap: 14px; }
-  header img { height: 44px; }
+  header img { height: 44px; filter: brightness(0) invert(1); }
   header a { color: #fff; text-decoration: none; font-weight: 700; margin-left: auto; }
   main { max-width: 720px; margin: 0 auto; padding: 40px 20px 80px; }
-  h1 { font-family: 'Fraunces', Georgia, serif; font-size: 34px; margin: 0 0 24px; }
+  h1 { font-family: 'Fraunces', Georgia, serif; font-size: clamp(26px, 7vw, 34px); overflow-wrap: anywhere; margin: 0 0 24px; }
   h2 { font-family: 'Fraunces', Georgia, serif; font-size: 20px; margin: 28px 0 6px; }
   p { line-height: 1.7; color: #45506B; margin: 0 0 14px; }
+  @media (max-width: 400px) { header { padding: 14px 16px; gap: 8px; } header img { max-width: 100px; height: auto; } header a { font-size: 14px; } }
 </style>
 </head>
 <body>

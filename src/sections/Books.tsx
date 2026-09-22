@@ -13,6 +13,7 @@ import { trackAmazonClick } from '@/data/analytics'
 import deFlag from 'flag-icons/flags/4x3/de.svg'
 import gbFlag from 'flag-icons/flags/4x3/gb.svg'
 import esFlag from 'flag-icons/flags/4x3/es.svg'
+import roFlag from 'flag-icons/flags/4x3/ro.svg'
 import frFlag from 'flag-icons/flags/4x3/fr.svg'
 import itFlag from 'flag-icons/flags/4x3/it.svg'
 import ptFlag from 'flag-icons/flags/4x3/pt.svg'
@@ -44,7 +45,7 @@ const catLabelOf = (id: string, lang: 'de' | 'en'): string => {
 
 const LANGUAGE_META: Record<string, { flag: string; de: string; en: string }> = {
   de: { flag: deFlag, de: 'Deutsch', en: 'German' }, en: { flag: gbFlag, de: 'Englisch', en: 'English' },
-  es: { flag: esFlag, de: 'Spanisch', en: 'Spanish' }, fr: { flag: frFlag, de: 'Französisch', en: 'French' },
+  es: { flag: esFlag, de: 'Spanisch', en: 'Spanish' }, ro: { flag: roFlag, de: 'Rumänisch', en: 'Romanian' }, fr: { flag: frFlag, de: 'Französisch', en: 'French' },
   it: { flag: itFlag, de: 'Italienisch', en: 'Italian' }, pt: { flag: ptFlag, de: 'Portugiesisch', en: 'Portuguese' },
   ru: { flag: ruFlag, de: 'Russisch', en: 'Russian' }, ja: { flag: jpFlag, de: 'Japanisch', en: 'Japanese' },
   zh: { flag: cnFlag, de: 'Chinesisch', en: 'Chinese' }, ko: { flag: krFlag, de: 'Koreanisch', en: 'Korean' },
@@ -53,6 +54,35 @@ const LANGUAGE_META: Record<string, { flag: string; de: string; en: string }> = 
   ar: { flag: saFlag, de: 'Arabisch', en: 'Arabic' }, hi: { flag: inFlag, de: 'Hindi', en: 'Hindi' },
   sv: { flag: seFlag, de: 'Schwedisch', en: 'Swedish' }, da: { flag: dkFlag, de: 'Dänisch', en: 'Danish' },
   no: { flag: noFlag, de: 'Norwegisch', en: 'Norwegian' }, fi: { flag: fiFlag, de: 'Finnisch', en: 'Finnish' },
+}
+
+type BooksCopy = ReturnType<typeof textsFor>['books']
+const editionCopyOverrides: Record<string, Partial<BooksCopy>> = {
+  es: {
+    seePrice: 'Consultar el precio actual en Amazon', samplesHint: 'Mira el interior – haz clic para ampliar',
+    samplePage: 'Página de muestra', enlargedSamplePage: 'página de muestra ampliada', zoom: 'Ampliar',
+    backToBook: 'Volver al libro', previousPage: 'Página anterior', nextPage: 'Página siguiente', page: 'Página',
+    buyAmazon: 'Ver en Amazon', availableLanguages: 'Disponible en',
+    coloringFactsTitle: 'Qué contiene cada libro para colorear de LambKing',
+    coloringFacts: ['70 páginas', 'Páginas grandes – aproximadamente DIN A4', 'Fiel a la Biblia', 'Además, 5 páginas con juegos, preguntas y pasatiempos', 'Disponible en varios idiomas'],
+    coloringAge: 'A partir de 6 años', coloringFormat: '70 páginas · aprox. DIN A4',
+    amazonPending: 'Aún no hay un enlace de Amazon para esta edición. El botón de compra aparecerá cuando se añada en la administración.',
+  },
+  ro: {
+    seePrice: 'Vezi prețul actual pe Amazon', samplesHint: 'Răsfoiește cartea – apasă pentru a mări',
+    samplePage: 'Pagină de prezentare', enlargedSamplePage: 'pagină de prezentare mărită', zoom: 'Mărește',
+    backToBook: 'Înapoi la carte', previousPage: 'Pagina anterioară', nextPage: 'Pagina următoare', page: 'Pagina',
+    buyAmazon: 'Vezi pe Amazon', availableLanguages: 'Disponibilă în',
+    coloringFactsTitle: 'Ce conține fiecare carte de colorat LambKing',
+    coloringFacts: ['70 de pagini', 'Pagini mari – aproximativ DIN A4', 'Fidelă Bibliei', 'În plus, 5 pagini cu jocuri, întrebări și puzzle-uri', 'Disponibilă în mai multe limbi'],
+    coloringAge: 'De la 6 ani', coloringFormat: '70 de pagini · aprox. DIN A4',
+    amazonPending: 'Nu există încă un link Amazon pentru această ediție. Butonul de cumpărare va apărea după adăugarea linkului în administrare.',
+  },
+}
+
+const booksCopyForEdition = (siteLanguage: 'de' | 'en', editionLanguage: string | null): BooksCopy => {
+  if (editionLanguage === 'de' || editionLanguage === 'en') return textsFor(editionLanguage).books
+  return { ...textsFor(siteLanguage).books, ...(editionLanguage ? editionCopyOverrides[editionLanguage] : {}) }
 }
 
 const editionsOf = (book: Book) => book.editions?.length
@@ -70,6 +100,7 @@ const localizedBook = (book: Book, language: string): Book => {
     detail: edition.detail || book.detail,
     description: edition.description || book.description,
     highlights: edition.highlights?.length ? edition.highlights : book.highlights,
+    samples: edition.samples?.length ? edition.samples : book.samples,
     amazon: edition.amazon,
     cover: edition.cover || book.cover,
     coverSpread: edition.cover ? Boolean(edition.coverSpread) : book.coverSpread,
@@ -104,8 +135,9 @@ function BookCover({ book, variant }: { book: Book; variant: 'card' | 'dialog' }
 
 const isColoringBook = (book: Book) => book.category === 'malbuecher'
 
-function ColoringBookFacts({ compact = false }: { compact?: boolean }) {
-  const t = textsFor(useLang())
+function ColoringBookFacts({ compact = false, copy }: { compact?: boolean; copy?: BooksCopy }) {
+  const siteCopy = textsFor(useLang()).books
+  const labels = copy ?? siteCopy
   const icons = [BookOpen, Ruler, ShieldCheck, HelpCircle, Languages]
   return (
     <div className={compact
@@ -113,10 +145,10 @@ function ColoringBookFacts({ compact = false }: { compact?: boolean }) {
       : 'rounded-2xl border border-accent/30 bg-gradient-to-r from-accent/[0.09] via-card to-accent/[0.06] px-5 py-5 shadow-sm sm:px-7'}
     >
       <p className={`font-display font-semibold text-foreground ${compact ? 'text-lg' : 'text-center text-xl sm:text-2xl'}`}>
-        {t.books.coloringFactsTitle}
+        {labels.coloringFactsTitle}
       </p>
       <ul className={`mt-4 grid gap-3 ${compact ? 'sm:grid-cols-2' : 'sm:grid-cols-2 lg:grid-cols-5'}`}>
-        {t.books.coloringFacts.map((fact, index) => {
+        {labels.coloringFacts.map((fact, index) => {
           const Icon = icons[index] ?? CheckCircle2
           return (
             <li key={fact} className="flex items-center gap-2.5 text-sm font-bold leading-snug text-foreground">
@@ -135,10 +167,12 @@ function ColoringBookFacts({ compact = false }: { compact?: boolean }) {
 function LanguageEditions({
   book,
   compact = false,
+  label,
   onSelect,
 }: {
   book: Book
   compact?: boolean
+  label?: string
   onSelect: (language: string) => void
 }) {
   const lang = useLang()
@@ -147,7 +181,7 @@ function LanguageEditions({
   if (!editions.length) return null
   return (
     <div className={`${compact ? 'mt-2.5' : 'mt-5'} text-center`}>
-      <p className={`mb-1.5 font-semibold text-muted-foreground ${compact ? 'text-[10px] sm:text-xs' : 'text-xs'}`}>{t.books.availableLanguages}</p>
+      <p className={`mb-1.5 font-semibold text-muted-foreground ${compact ? 'text-[10px] sm:text-xs' : 'text-xs'}`}>{label ?? t.books.availableLanguages}</p>
       <div className="flex flex-wrap justify-center gap-1">
         {editions.map((edition) => {
           const meta = LANGUAGE_META[edition.language]
@@ -172,7 +206,7 @@ function LanguageEditions({
   )
 }
 
-function BuyButton({ book, size = 'md', preferredLanguage }: { book: Book; size?: 'md' | 'lg'; preferredLanguage?: string }) {
+function BuyButton({ book, size = 'md', preferredLanguage, label }: { book: Book; size?: 'md' | 'lg'; preferredLanguage?: string; label?: string }) {
   const lang = useLang()
   const t = textsFor(lang)
   const width = size === 'lg' ? 'max-w-[305px]' : 'max-w-[240px]'
@@ -191,9 +225,9 @@ function BuyButton({ book, size = 'md', preferredLanguage }: { book: Book; size?
       rel="noopener noreferrer"
       onClick={() => trackAmazonClick(`${book.id}:${edition.language}`)}
       className={`mx-auto block w-full ${width} transition-transform hover:scale-[1.05]`}
-      aria-label={`${book.title} – ${t.books.buyAmazon}`}
+      aria-label={`${book.title} – ${label ?? t.books.buyAmazon}`}
     >
-      <img src="images/buttons/amazon.png" alt={t.books.buyAmazon} className="h-auto w-full" />
+      <img src="images/buttons/amazon.png" alt={label ?? t.books.buyAmazon} className="h-auto w-full" />
     </a>
   )
 }
@@ -215,11 +249,11 @@ function BookDialog({
   editionLanguage: string | null
   onEditionChange: (language: string) => void
 }) {
-  const t = textsFor(useLang())
   const lang = useLang()
   const zoomOpen = !!zoom
   const edition = book ? editionsOf(book).find((item) => item.language === editionLanguage) : undefined
   const displayBook = book && edition ? localizedBook(book, edition.language) : book
+  const dialogCopy = booksCopyForEdition(lang, editionLanguage)
   return (
     <Dialog open={!!book} onOpenChange={(open) => !open && !zoomOpen && onClose()}>
       <DialogContent
@@ -230,18 +264,18 @@ function BookDialog({
         onPointerDownOutside={(e) => zoomOpen && e.preventDefault()}
       >
         {book && (
-          <div className="grid lg:grid-cols-[380px_1fr]">
+          <div className="grid lg:grid-cols-[380px_1fr]" lang={editionLanguage ?? lang}>
             <div className="bg-secondary/60 p-8 lg:p-10">
               {displayBook && <BookCover book={displayBook} variant="dialog" />}
             </div>
             <div className="p-8 lg:p-12">
               <DialogHeader>
                 <div className="mb-3 flex flex-wrap gap-2">
-                  <Badge variant="secondary" className="rounded-full">{typeLabelOf(book, lang)}</Badge>
+                  <Badge variant="secondary" className="rounded-full">{editionLanguage === 'es' && isColoringBook(book) ? 'Libro para colorear' : editionLanguage === 'ro' && isColoringBook(book) ? 'Carte de colorat' : typeLabelOf(book, editionLanguage === 'en' ? 'en' : 'de')}</Badge>
                   {isColoringBook(book) ? (
                     <>
-                      <Badge variant="secondary" className="rounded-full">{t.books.coloringAge}</Badge>
-                      <Badge variant="secondary" className="rounded-full">{t.books.coloringFormat}</Badge>
+                      <Badge variant="secondary" className="rounded-full">{dialogCopy.coloringAge}</Badge>
+                      <Badge variant="secondary" className="rounded-full">{dialogCopy.coloringFormat}</Badge>
                     </>
                   ) : (
                     <>
@@ -259,7 +293,7 @@ function BookDialog({
                   </p>
                 )}
               </DialogHeader>
-              {isColoringBook(book) ? <ColoringBookFacts compact /> : null}
+              {isColoringBook(book) ? <ColoringBookFacts compact copy={dialogCopy} /> : null}
               <DialogDescription className="mt-6 max-w-2xl whitespace-pre-line text-lg leading-loose text-muted-foreground">
                 <RichText text={displayBook?.description || ''} />
               </DialogDescription>
@@ -272,19 +306,19 @@ function BookDialog({
                 ))}
               </ul>
               {displayBook && <AmazonRating book={displayBook} />}
-              <LanguageEditions book={book} onSelect={onEditionChange} />
+              <LanguageEditions book={book} label={dialogCopy.availableLanguages} onSelect={onEditionChange} />
               {edition && !edition.amazon.startsWith('https://') && (
                 <p className="mx-auto mt-5 max-w-md rounded-xl border border-accent/35 bg-accent/10 px-4 py-3 text-center text-sm font-semibold text-foreground">
-                  {t.books.amazonPending}
+                  {dialogCopy.amazonPending}
                 </p>
               )}
-              {book.samples.length > 0 && (
+              {displayBook && displayBook.samples.length > 0 && (
                 <>
                   <p className="mb-3 mt-9 text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                    {t.books.samplesHint}
+                    {dialogCopy.samplesHint}
                   </p>
                   <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-                    {book.samples.map((s, index) => (
+                    {displayBook.samples.map((s, index) => (
                       <button
                         key={s}
                         type="button"
@@ -293,13 +327,13 @@ function BookDialog({
                       >
                         <img
                           src={s}
-                          alt={`${book.title} – ${t.books.samplePage} ${index + 1}`}
+                          alt={`${displayBook.title} – ${dialogCopy.samplePage} ${index + 1}`}
                           className="w-full rounded-md"
                           loading="lazy"
                         />
                         <span className="absolute bottom-2 right-2 flex items-center gap-1 rounded-full bg-foreground/80 px-2.5 py-1 text-xs font-bold text-background opacity-0 transition-opacity group-hover:opacity-100">
                           <ZoomIn className="h-3.5 w-3.5" aria-hidden />
-                          {t.books.zoom}
+                          {dialogCopy.zoom}
                         </span>
                       </button>
                     ))}
@@ -307,22 +341,22 @@ function BookDialog({
                 </>
               )}
               <div className="sticky bottom-0 z-10 -mx-8 mt-9 flex flex-wrap items-center justify-between gap-4 border-t-2 border-border bg-background/95 px-8 py-5 shadow-[0_-8px_20px_-16px_rgba(30,42,74,0.35)] backdrop-blur lg:-mx-12 lg:px-12">
-                <p className="font-semibold text-muted-foreground">{t.books.seePrice}</p>
-                {displayBook && <BuyButton book={displayBook} size="lg" preferredLanguage={editionLanguage || undefined} />}
+                <p className="font-semibold text-muted-foreground">{dialogCopy.seePrice}</p>
+                {displayBook && <BuyButton book={displayBook} size="lg" preferredLanguage={editionLanguage || undefined} label={dialogCopy.buyAmazon} />}
               </div>
             </div>
           </div>
         )}
         <Lightbox
           src={zoom}
-          sources={book?.samples ?? []}
+          sources={displayBook?.samples ?? []}
           onClose={onZoomClose}
           onNavigate={onZoom}
-          label={t.books.backToBook}
-          previousLabel={t.books.previousPage}
-          nextLabel={t.books.nextPage}
-          pageLabel={t.books.page}
-          imageAlt={book ? `${book.title} – ${t.books.enlargedSamplePage}` : ''}
+          label={dialogCopy.backToBook}
+          previousLabel={dialogCopy.previousPage}
+          nextLabel={dialogCopy.nextPage}
+          pageLabel={dialogCopy.page}
+          imageAlt={displayBook ? `${displayBook.title} – ${dialogCopy.enlargedSamplePage}` : ''}
         />
       </DialogContent>
     </Dialog>

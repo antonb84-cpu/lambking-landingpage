@@ -78,7 +78,7 @@ if (creatorPartnerEnabled) {
 writeFileSync(join(DIST, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${BASE}/sitemap.xml\n`, 'utf-8')
 
 const today = new Date().toISOString().slice(0, 10)
-const urls = ['', ...(creatorPartnerEnabled ? ['creator-partner/'] : []), 'impressum.html', 'datenschutz.html']
+const urls = ['', ...(creatorPartnerEnabled ? ['creator-partner/'] : []), 'impressum.html', 'datenschutz/']
   .map((p) => `  <url><loc>${BASE}/${p}</loc><lastmod>${today}</lastmod></url>`)
   .join('\n')
 writeFileSync(

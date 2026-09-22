@@ -198,6 +198,8 @@ def render_books_ts(state: dict):
     out.append("  cover?: string")
     out.append("  /** true, wenn die Datei ein kompletter KDP-Umschlag ist; die Vorderseite liegt rechts. */")
     out.append("  coverSpread?: boolean")
+    out.append("  /** Vorschauseiten dieser Ausgabe in festgelegter Reihenfolge. */")
+    out.append("  samples?: string[]")
     out.append("}")
     out.append("")
     out.append("export interface Book {")
@@ -727,7 +729,7 @@ class Handler(BaseHTTPRequestHandler):
             if rel.endswith("/"):
                 rel += "index.html"
             dist = ROOT / "dist"
-            if rel in ("index.html", "creator-partner/index.html"):
+            if rel in ("index.html", "creator-partner/index.html", "datenschutz/index.html"):
                 try:
                     ok, log = build_site()
                 except Exception:
@@ -1009,6 +1011,16 @@ class Handler(BaseHTTPRequestHandler):
                 cleaned_highlights = [str(item).strip()[:300] for item in highlights[:20] if str(item).strip()]
                 if cleaned_highlights:
                     cleaned_edition["highlights"] = cleaned_highlights
+            samples = edition.get("samples", [])
+            if isinstance(samples, str):
+                samples = samples.splitlines()
+            if isinstance(samples, list):
+                cleaned_samples = [str(item).strip().replace("\\", "/") for item in samples[:10] if str(item).strip()]
+                if any(not re.fullmatch(r"images/[A-Za-z0-9._/-]+", item) or ".." in item for item in cleaned_samples):
+                    self.send_json({"ok": False, "error": f"Ein Vorschauseitenpfad für {language.upper()} ist ungültig."})
+                    return
+                if cleaned_samples:
+                    cleaned_edition["samples"] = cleaned_samples
             cover = str(edition.get("cover", "")).strip().replace("\\", "/")
             if cover:
                 if not re.fullmatch(r"images/[A-Za-z0-9._/-]+", cover) or ".." in cover:
@@ -1298,10 +1310,14 @@ class Handler(BaseHTTPRequestHandler):
             used.add(Path(b.get("cover", "")).name)
             for s in b.get("samples", []):
                 used.add(Path(s).name)
+            for edition in b.get("editions", []):
+                used.add(Path(edition.get("cover", "")).name)
+                for s in edition.get("samples", []):
+                    used.add(Path(s).name)
         orphans = []
         for f in IMAGES.iterdir():
             n = f.name
-            is_managed_book_media = n.startswith("cover-") or "-seite-" in n or n.startswith("sample-amazon-")
+            is_managed_book_media = n.startswith("cover-") or "-seite-" in n or "-preview-" in n or n.startswith("sample-amazon-")
             if f.is_file() and is_managed_book_media and n not in used and not n.startswith("cover-amazon-"):
                 orphans.append(n)
         return sorted(orphans)
