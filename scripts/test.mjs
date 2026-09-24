@@ -288,6 +288,8 @@ test('Unterstützte Werke sind erweiterbar und können zweisprachige Flyer anzei
   assert(admin.includes('addSupportOrganization') && admin.includes('supportFlyer_de_') && admin.includes('supportFlyer_en_'), 'Organisationen oder Flyer sind im Backend nicht erweiterbar')
   assert(section.includes('supportedOrganizations'), 'Unterstützungssektion ist nicht mit den Einstellungen verbunden')
   assert(section.includes('items-center justify-center rounded-xl'), 'Logos sind nicht mittig ausgerichtet')
+  assert(!section.includes('line-clamp-6'), 'Beschreibung der unterstützten Werke wird abgeschnitten')
+  assert(section.includes('aria-haspopup="dialog"') && section.includes('text-center text-base font-bold'), 'Flyer ist kein zentrierter, fetter Textlink')
   assert(section.includes('viewFlyer') && section.includes('<iframe'), 'Flyer können auf der Landingpage nicht angesehen werden')
   assert(server.includes('MAX_SUPPORTED_ORGANIZATIONS') && server.includes('supportFlyer_'), 'Flyer werden serverseitig nicht sicher verarbeitet')
   assert(generatedBooks.includes('supportedOrganizations:'), 'Automatisch erzeugte Seitendaten verlieren die unterstützten Werke')

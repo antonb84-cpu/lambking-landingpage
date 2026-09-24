@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ExternalLink, FileText, Landmark } from 'lucide-react'
+import { ExternalLink, Landmark } from 'lucide-react'
 import Reveal from '@/components/Reveal'
 import RichText from '@/components/RichText'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -33,7 +33,7 @@ export default function SupportedWorks() {
 
   return (
     <section id="unterstuetzte-werke" className="scroll-mt-40 border-y border-accent/20 bg-accent/[0.045] py-16 lg:scroll-mt-32 lg:py-20">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <Reveal className="grid gap-5 lg:grid-cols-[0.72fr_1.28fr] lg:items-start lg:gap-14">
           <div>
           <h2 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">
@@ -59,7 +59,7 @@ export default function SupportedWorks() {
         </Reveal>
 
         {organizations.length > 0 ? (
-          <div className="mt-8 grid gap-5 md:grid-cols-3">
+          <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {organizations.map((organization, index) => {
               const description =
                 lang === 'en'
@@ -93,20 +93,27 @@ export default function SupportedWorks() {
                     <h3 className="mt-5 font-display text-xl font-semibold text-foreground">
                       {organization.name}
                     </h3>
-                    <p className="mt-2 line-clamp-6 flex-1 text-sm leading-relaxed text-muted-foreground">
+                    <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
                       <RichText text={description || ''} />
                     </p>
-                    <div className="mt-5 flex flex-wrap items-center gap-3">
+                    <div className="mt-5 flex min-h-11 items-center justify-center">
                       {flyer ? (
-                        <button
-                          type="button"
-                          onClick={() => setActiveFlyer({ src: flyer, organization: organization.name })}
-                          className="inline-flex min-h-11 items-center gap-2 rounded-full border-2 border-primary/20 px-5 py-2 text-sm font-bold text-primary transition-colors hover:border-primary/50 hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        <a
+                          href={flyer}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-haspopup="dialog"
+                          onClick={(event) => {
+                            event.preventDefault()
+                            setActiveFlyer({ src: flyer, organization: organization.name })
+                          }}
+                          className="inline-flex min-h-11 items-center justify-center px-2 text-center text-base font-bold text-primary underline-offset-4 hover:underline focus-visible:rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                         >
-                          <FileText className="h-4 w-4" aria-hidden />
                           {t.viewFlyer}
-                        </button>
+                        </a>
                       ) : null}
+                    </div>
+                    <div className="mt-3 flex items-center">
                       <a
                         href={organization.url}
                         target="_blank"
