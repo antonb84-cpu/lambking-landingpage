@@ -163,6 +163,12 @@ try {
       && discountState.email.startsWith('mailto:hello@lambking.store?subject=')
     console.log(`${ok ? '✓' : '✗'} Mengenrabatt: vier Rabattstufen und E-Mail-Kontakt im Buchfenster`)
     if (!ok) fehler++
+    await evalJs(`Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: async (text) => { window.__copiedEmail = text } } })`)
+    await evalJs(`[...document.querySelectorAll('button')].find(b => b.textContent.includes('E-Mail-Adresse kopieren'))?.click()`)
+    const copied = await waitForPageState(`document.querySelector('[role="status"]')?.textContent.includes('E-Mail-Adresse kopiert') && window.__copiedEmail === 'hello@lambking.store'`)
+    const copyOk = copied === true
+    console.log(`${copyOk ? '✓' : '✗'} Mengenrabatt: E-Mail-Adresse wird kopiert und sichtbar bestätigt`)
+    if (!copyOk) fehler++
     await evalJs(`[...document.querySelectorAll('[role="dialog"]')].at(-1)?.querySelector('[data-slot="dialog-close"]')?.click()`)
     await waitForPageState(`document.querySelectorAll('[role="dialog"]').length === 1`)
     await send('Page.navigate', { url: `http://127.0.0.1:${HTTP_PORT}/` })

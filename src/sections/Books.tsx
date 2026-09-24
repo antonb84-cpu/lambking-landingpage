@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { ArrowLeft, ArrowRight, BookOpen, CheckCircle2, Eye, HelpCircle, Languages, Mail, PackageCheck, Palette, Ruler, ShieldCheck, X, ZoomIn } from 'lucide-react'
+import { ArrowLeft, ArrowRight, BookOpen, CheckCircle2, Copy, Eye, HelpCircle, Languages, Mail, PackageCheck, Palette, Ruler, ShieldCheck, X, ZoomIn } from 'lucide-react'
 import Reveal from '@/components/Reveal'
 import RichText from '@/components/RichText'
 import AmazonRating from '@/components/AmazonRating'
@@ -250,11 +250,38 @@ function BulkDiscountDialog({
 }) {
   const lang = useLang()
   const copy = textsFor(lang).books
+  const [copyState, setCopyState] = useState<'idle' | 'copying' | 'copied' | 'error'>('idle')
   const subject = `${copy.bulkDiscountEmailSubject}: ${bookTitle}`
   const emailHref = `mailto:${SITE.contactEmail}?subject=${encodeURIComponent(subject)}`
 
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen) setCopyState('idle')
+    onOpenChange(nextOpen)
+  }
+
+  const copyEmailAddress = async () => {
+    setCopyState('copying')
+    const textarea = document.createElement('textarea')
+    textarea.value = SITE.contactEmail
+    textarea.setAttribute('readonly', '')
+    textarea.style.position = 'fixed'
+    textarea.style.opacity = '0'
+    document.body.appendChild(textarea)
+    textarea.select()
+    let copied = document.execCommand('copy')
+    textarea.remove()
+
+    if (!copied && navigator.clipboard?.writeText) {
+      copied = await Promise.race([
+        navigator.clipboard.writeText(SITE.contactEmail).then(() => true).catch(() => false),
+        new Promise<boolean>((resolve) => window.setTimeout(() => resolve(false), 800)),
+      ])
+    }
+    setCopyState(copied ? 'copied' : 'error')
+  }
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="w-[92vw] max-w-lg rounded-2xl border-2 bg-background p-6 sm:p-8">
         <DialogHeader className="pr-8 text-left">
           <div className="mb-2 flex h-11 w-11 items-center justify-center rounded-full bg-accent/15 text-primary">
@@ -290,14 +317,29 @@ function BulkDiscountDialog({
         </div>
 
         <p className="mt-5 text-sm leading-relaxed text-muted-foreground">{copy.bulkDiscountContact}</p>
-        <a
-          href={emailHref}
+        <button
+          type="button"
+          onClick={copyEmailAddress}
           className="mt-5 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-center text-sm font-bold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/60"
         >
-          <Mail className="h-5 w-5" aria-hidden />
+          {copyState === 'copied'
+            ? <CheckCircle2 className="h-5 w-5" aria-hidden />
+            : <Copy className="h-5 w-5" aria-hidden />}
           {copy.bulkDiscountContactButton}
+        </button>
+        <div className="mt-3 text-center text-sm font-semibold" aria-live="polite" role="status">
+          {copyState === 'copying' && <p className="text-muted-foreground">{copy.bulkDiscountCopying}</p>}
+          {copyState === 'copied' && <p className="text-emerald-700">✓ {copy.bulkDiscountCopied}: {SITE.contactEmail}</p>}
+          {copyState === 'error' && <p className="text-destructive">{copy.bulkDiscountCopyError}</p>}
+          {copyState === 'idle' && <p className="select-all text-muted-foreground">{SITE.contactEmail}</p>}
+        </div>
+        <a
+          href={emailHref}
+          className="mx-auto mt-3 inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-bold text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/60"
+        >
+          <Mail className="h-4 w-4" aria-hidden />
+          {copy.bulkDiscountOpenMail}
         </a>
-        <p className="mt-3 text-center text-sm font-semibold text-muted-foreground">{SITE.contactEmail}</p>
       </DialogContent>
     </Dialog>
   )

@@ -312,14 +312,17 @@ test('Buchfenster bietet einen barrierearmen Mengenrabatt mit E-Mail-Kontakt an'
   for (const lang of ['de', 'en']) {
     const texts = defaults[lang].books
     assert(texts.bulkDiscountButton && texts.bulkDiscountTitle, `${lang}: Mengenrabatt-Texte fehlen`)
-    assert(texts.bulkDiscountContactButton && texts.bulkDiscountEmailSubject, `${lang}: Mengenrabatt-Kontakttexte fehlen`)
+    assert(texts.bulkDiscountContactButton && texts.bulkDiscountCopying && texts.bulkDiscountCopied && texts.bulkDiscountOpenMail, `${lang}: Mengenrabatt-Kontakttexte fehlen`)
   }
   for (const value of ['quantity: 10, discount: 15', 'quantity: 25, discount: 25', 'quantity: 50, discount: 35', 'quantity: 100, discount: 40']) {
     assert(books.includes(value), `Rabattstaffel fehlt: ${value}`)
   }
   assert(books.includes('<table') && books.includes('scope="col"'), 'Barrierearme Rabatttabelle fehlt')
-  assert(books.includes('mailto:${SITE.contactEmail}') && books.includes('bulkDiscountEmailSubject'), 'E-Mail-Kontakt zum Mengenrabatt fehlt')
-  assert(admin.includes('bulkDiscountButton:') && admin.includes('bulkDiscountEmailSubject:'), 'Mengenrabatt-Texte sind im Backend nicht beschriftet')
+  assert(books.includes('navigator.clipboard?.writeText') && books.includes("document.execCommand('copy')"), 'Zuverlässiges Kopieren der E-Mail-Adresse fehlt')
+  assert(books.includes('Promise.race') && books.includes('bulkDiscountCopying'), 'Zeitbegrenzung oder sofortige Kopier-Rückmeldung fehlt')
+  assert(books.includes('mailto:${SITE.contactEmail}') && books.includes('bulkDiscountEmailSubject'), 'Optionaler Link zum E-Mail-Programm fehlt')
+  assert(books.includes('aria-live="polite"') && books.includes('bulkDiscountCopied'), 'Sichtbare und barrierearme Kopierbestätigung fehlt')
+  assert(admin.includes('bulkDiscountButton:') && admin.includes('bulkDiscountEmailSubject:') && admin.includes('bulkDiscountCopied:'), 'Mengenrabatt-Texte sind im Backend nicht beschriftet')
 })
 
 test('Verwaiste Medien können sicher angesehen und gelöscht werden', () => {
