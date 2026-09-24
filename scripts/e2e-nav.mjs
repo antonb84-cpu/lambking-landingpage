@@ -145,6 +145,26 @@ try {
     await new Promise((r) => setTimeout(r, 1400))
     await evalJs(`document.querySelector('#buecher article button[aria-label^="Inhalt ansehen:"]')?.click()`)
     await waitForPageState(`document.querySelectorAll('[role="dialog"]').length === 1`)
+    const galleryStart = await evalJs(`document.querySelector('[role="dialog"]')?.textContent.includes('Cover · 1/')`)
+    await evalJs(`document.querySelector('[role="dialog"] button[aria-label="Nächstes Bild"]')?.click()`)
+    const lifestyleShown = await waitForPageState(`document.querySelector('[role="dialog"] img[alt*="Buch in der Hand"]') !== null`)
+    await evalJs(`document.querySelector('[role="dialog"] button[aria-label="Nächstes Bild"]')?.click()`)
+    const sampleShown = await waitForPageState(`document.querySelector('[role="dialog"] img[alt*="Vorschauseite 1"]') !== null`)
+    const galleryOk = galleryStart && lifestyleShown && sampleShown
+    console.log(`${galleryOk ? '✓' : '✗'} Buchgalerie: Cover → Buchfoto → echte Vorschauseite`)
+    if (!galleryOk) fehler++
+    await send('Emulation.setDeviceMetricsOverride', { width: 820, height: 900, deviceScaleFactor: 1, mobile: false })
+    const buttonLayoutJson = await evalJs(`(() => {
+      const dialog = document.querySelector('[role="dialog"]')
+      const amazon = dialog?.querySelector('a[href*="amazon."]')?.getBoundingClientRect()
+      const discount = [...dialog.querySelectorAll('button')].find(b => b.textContent.includes('Mengenrabatt ab 10 Stück'))?.getBoundingClientRect()
+      return JSON.stringify({amazon:{x:amazon?.x,width:amazon?.width}, discount:{x:discount?.x,width:discount?.width}})
+    })()`)
+    await send('Emulation.clearDeviceMetricsOverride')
+    const buttonLayout = JSON.parse(buttonLayoutJson || '{}')
+    const aligned = Math.abs(buttonLayout.amazon?.x - buttonLayout.discount?.x) < 2 && Math.abs(buttonLayout.amazon?.width - buttonLayout.discount?.width) < 2
+    console.log(`${aligned ? '✓' : '✗'} Mittlere Breite: Mengenrabatt direkt unter Amazon und gleich breit`)
+    if (!aligned) fehler++
     await evalJs(`[...document.querySelectorAll('button')].find(b => b.textContent.includes('Mengenrabatt ab 10 Stück'))?.click()`)
     const discountStateJson = await waitForPageState(`(() => {
       const dialogs = [...document.querySelectorAll('[role="dialog"]')]

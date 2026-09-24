@@ -32,6 +32,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent        # Projektordner
 ADMIN = Path(__file__).resolve().parent              # admin/
 IMAGES = ROOT / "public" / "images"
+VIDEOS = ROOT / "public" / "videos"
 FLYERS = ROOT / "public" / "flyers"
 DATA_JSON = ROOT / "src" / "data" / "books.json"
 BOOKS_TS = ROOT / "src" / "data" / "books.ts"
@@ -40,6 +41,7 @@ ANALYTICS_LOCAL_JSON = ADMIN / "analytics.local.json"
 
 PORT = 8123
 MAX_IMAGE_BYTES = 15 * 1024 * 1024    # 15 MB für Cover/Fotos
+MAX_VIDEO_BYTES = 30 * 1024 * 1024    # kurze, portable MP4-Vorschau
 MAX_PDF_BYTES = 60 * 1024 * 1024      # 60 MB für Buch-PDFs
 MAX_IMAGE_PIXELS = 40_000_000         # Schutz vor riesigen Bildern
 MAX_SAMPLE_IMAGES = 10                 # einzelne Vorschauseiten/Screenshots
@@ -194,6 +196,8 @@ def render_books_ts(state: dict):
     out.append("  detail?: string")
     out.append("  description?: string")
     out.append("  highlights?: string[]")
+    out.append("  lifestyleImages?: string[]")
+    out.append("  previewVideo?: string")
     out.append("  /** Optionales Cover nur für diese Sprach-Ausgabe. */")
     out.append("  cover?: string")
     out.append("  /** true, wenn die Datei ein kompletter KDP-Umschlag ist; die Vorderseite liegt rechts. */")
@@ -215,6 +219,8 @@ def render_books_ts(state: dict):
     out.append("  coverSpread?: boolean")
     out.append("  description: string")
     out.append("  highlights: string[]")
+    out.append("  lifestyleImages?: string[]")
+    out.append("  previewVideo?: string")
     out.append("  samples: string[]")
     out.append("  amazon: string")
     out.append("  /** Verfügbare Sprach-Ausgaben mit jeweils eigenem Amazon-Link. */")
@@ -250,12 +256,18 @@ def render_books_ts(state: dict):
         out.append(f"    age: {ts_str(b.get('age', ''))},")
         out.append(f"    detail: {ts_str(b.get('detail', ''))},")
         out.append(f"    cover: '{b['cover']}',")
+        if b.get("coverSpread"):
+            out.append("    coverSpread: true,")
         out.append(f"    description: {ts_str(b.get('description', ''))},")
         hl = b.get("highlights", [])
         if hl:
             out.append("    highlights: [" + ", ".join(ts_str(h) for h in hl) + "],")
         else:
             out.append("    highlights: [],")
+        if b.get("lifestyleImages"):
+            out.append("    lifestyleImages: " + json.dumps(b["lifestyleImages"], ensure_ascii=False) + ",")
+        if b.get("previewVideo"):
+            out.append(f"    previewVideo: {ts_str(b['previewVideo'])},")
         samples = b.get("samples", [])
         if samples:
             out.append("    samples: [" + "".join(f"\n      '{x}'," for x in samples) + "\n    ],")
@@ -381,6 +393,32 @@ def clean_amazon_text(value: str, multiline: bool = False) -> str:
     return re.sub(r"\s+([.,;:!?])", r"\1", result)
 
 
+def split_amazon_description(value: str) -> tuple[str, list[str]]:
+    """Trennt eine Produktbeschreibung vorsichtig in Handlung und Buchangaben.
+
+    Amazon-Texte sind uneinheitlich. Deshalb wird ein zweifelhafter Text nicht
+    als erfundene Inhaltsangabe umgedeutet; im Admin ist Nachprüfung nötig.
+    """
+    sentences = re.split(r"(?<=[.!?])\s+(?=[A-ZÄÖÜ0-9])|\n+", value)
+    fact_re = re.compile(
+        r"\b(?:\d+\s*(?:seiten|pages|páginas|pagini|ausmalbilder|bilder|illustrations?)|"
+        r"din\s*a4|format|großformat|spiele|games|juegos|fragen|questions|rätsel|puzzles|"
+        r"geeignet|ideal für|ages?\s*\d|ab\s*\d+\s*jahren|bibelstelle|bible passage)\b",
+        re.I,
+    )
+    story, facts = [], []
+    for sentence in sentences:
+        sentence = sentence.strip(" \t\r\n•-–")
+        if not sentence:
+            continue
+        if fact_re.search(sentence):
+            if len(sentence) <= 220 and sentence not in facts:
+                facts.append(sentence)
+        else:
+            story.append(sentence)
+    return " ".join(story[:5]).strip(), facts[:5]
+
+
 def first_match(source: str, patterns: list[str], flags=re.S) -> str:
     for pattern in patterns:
         match = re.search(pattern, source, flags)
@@ -410,7 +448,12 @@ def parse_amazon(html: str) -> dict:
     if description:
         description = re.sub(r"\s*Mehr lesen\s*$", "", clean_amazon_text(description, multiline=True))
         if description:
-            d["description"] = description
+            story, facts = split_amazon_description(description)
+            if story:
+                d["description"] = story
+            if facts:
+                d["bookFacts"] = facts
+            d["amazonDescription"] = description
 
     age = first_match(html, [
         r'book_details-customer_recommended_age[\s\S]{0,1200}?rpi-attribute-value[^>]*>[\s\S]*?<span[^>]*>(.*?)</span>',
@@ -483,6 +526,10 @@ def parse_amazon(html: str) -> dict:
         d["category"] = "komics"
     else:
         d["category"] = "geschichten"
+    if d["category"] == "malbuecher" and d.get("bookFacts"):
+        # Diese Angaben zeigt die Landingpage bereits einmal über der Buchliste.
+        generic = re.compile(r"\b(?:70\s*(?:seiten|pages|páginas|pagini)|5\s*(?:seiten|pages|páginas|pagini)|din\s*a4|format|großformat)\b", re.I)
+        d["bookFacts"] = [fact for fact in d["bookFacts"] if not generic.search(fact)]
     return d
 
 
@@ -920,7 +967,7 @@ class Handler(BaseHTTPRequestHandler):
         if samples:
             info["samples"] = samples
 
-        imported = [key for key in ("title", "description", "age", "detail", "series", "category", "cover", "samples", "amazonRating", "amazonRatingCount") if info.get(key) is not None]
+        imported = [key for key in ("title", "description", "bookFacts", "age", "detail", "series", "category", "cover", "samples", "amazonRating", "amazonRatingCount") if info.get(key) is not None]
         info["imported"] = imported
         info["missing"] = [key for key in ("title", "description", "cover") if not info.get(key)]
         info["ok"] = True
@@ -932,7 +979,7 @@ class Handler(BaseHTTPRequestHandler):
         if not m:
             self.send_json({"ok": False, "error": "Ungültige Anfrage."}, 400)
             return
-        fields, files = parse_multipart(self.read_body(MAX_PDF_BYTES + MAX_IMAGE_BYTES + 2 * 1024 * 1024),
+        fields, files = parse_multipart(self.read_body(MAX_SITE_UPLOAD_BYTES),
                                         m.group(1).strip('"'))
 
         state = load_state()
@@ -1029,6 +1076,21 @@ class Handler(BaseHTTPRequestHandler):
                 cleaned_edition["cover"] = cover
                 if edition.get("coverSpread"):
                     cleaned_edition["coverSpread"] = True
+            for media_key in ("lifestyleImages",):
+                media = edition.get(media_key, [])
+                if isinstance(media, list):
+                    clean_media = [str(item).strip().replace("\\", "/") for item in media[:3] if str(item).strip()]
+                    if any(not re.fullmatch(r"images/[A-Za-z0-9._/-]+", item) or ".." in item for item in clean_media):
+                        self.send_json({"ok": False, "error": f"Ein Buchfotopfad für {language.upper()} ist ungültig."})
+                        return
+                    if clean_media:
+                        cleaned_edition[media_key] = clean_media
+            video_path = str(edition.get("previewVideo", "")).strip().replace("\\", "/")
+            if video_path:
+                if not re.fullmatch(r"videos/[A-Za-z0-9._/-]+\.mp4", video_path) or ".." in video_path:
+                    self.send_json({"ok": False, "error": f"Der Videopfad für {language.upper()} ist ungültig."})
+                    return
+                cleaned_edition["previewVideo"] = video_path
             editions.append(cleaned_edition)
         legacy_amazon = fields.get("amazon", "").strip()
         if not editions and legacy_amazon:
@@ -1085,6 +1147,7 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_json({"ok": False, "error": "Das Cover konnte nicht gelesen werden – bitte ein gültiges Bild (JPG/PNG) hochladen."})
                 return
             book["cover"] = f"images/cover-{book_id}.jpg"
+            book.pop("coverSpread", None)
         elif fields.get("amazonCover", "").strip():
             src = IMAGES / Path(fields["amazonCover"].strip()).name
             if src.is_file():
@@ -1093,9 +1156,47 @@ class Handler(BaseHTTPRequestHandler):
                     dest.write_bytes(src.read_bytes())
                     src.unlink()
                 book["cover"] = f"images/cover-{book_id}.jpg"
+                book.pop("coverSpread", None)
         elif fields.get("removeCover") == "1":
             book["cover"] = ""
+            book.pop("coverSpread", None)
         book.setdefault("cover", "")
+
+        # Lifestyle-Fotos und optionales Durchblätter-Video gehören zum Buch.
+        # Ohne neue Auswahl bleiben die vorhandenen Medien erhalten.
+        lifestyle_files = sorted((name, file_data) for name, file_data in files.items() if name.startswith("lifestyle_"))
+        if len(lifestyle_files) > 3:
+            self.send_json({"ok": False, "error": "Bitte höchstens drei Buchfotos auswählen."})
+            return
+        if lifestyle_files:
+            lifestyle_dir = IMAGES / "lifestyle"
+            lifestyle_dir.mkdir(parents=True, exist_ok=True)
+            new_photos = []
+            try:
+                for index, (_, (filename, data)) in enumerate(lifestyle_files, 1):
+                    if len(data) > MAX_IMAGE_BYTES:
+                        raise ValueError("Bild zu groß")
+                    dest = lifestyle_dir / f"{book_id}-{index}.jpg"
+                    save_image(data, dest, width=1400)
+                    new_photos.append(f"images/lifestyle/{dest.name}")
+            except Exception:
+                self.send_json({"ok": False, "error": "Ein Buchfoto konnte nicht gelesen werden. Bitte JPG oder PNG bis 15 MB verwenden."})
+                return
+            book["lifestyleImages"] = new_photos
+        elif fields.get("removeLifestyle") == "1":
+            book.pop("lifestyleImages", None)
+
+        if "previewVideo" in files:
+            filename, data = files["previewVideo"]
+            if not filename.lower().endswith(".mp4") or len(data) > MAX_VIDEO_BYTES or len(data) < 12 or data[4:8] != b"ftyp":
+                self.send_json({"ok": False, "error": "Bitte ein gültiges MP4-Video bis 30 MB hochladen."})
+                return
+            VIDEOS.mkdir(parents=True, exist_ok=True)
+            dest = VIDEOS / f"preview-{book_id}.mp4"
+            dest.write_bytes(data)
+            book["previewVideo"] = f"videos/{dest.name}"
+        elif fields.get("removeVideo") == "1":
+            book.pop("previewVideo", None)
 
         # PDF oder einzelne Bilder/Screenshots → Vorschauseiten
         sample_files = sorted(

@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { ArrowLeft, ArrowRight, BookOpen, CheckCircle2, Copy, Eye, HelpCircle, Languages, Mail, PackageCheck, Palette, Ruler, ShieldCheck, X, ZoomIn } from 'lucide-react'
+import { ArrowLeft, ArrowRight, BookOpen, CheckCircle2, Copy, Eye, HelpCircle, Languages, Mail, PackageCheck, Palette, Play, Ruler, ShieldCheck, X } from 'lucide-react'
 import Reveal from '@/components/Reveal'
 import RichText from '@/components/RichText'
 import AmazonRating from '@/components/AmazonRating'
@@ -63,8 +63,11 @@ const editionCopyOverrides: Record<string, Partial<BooksCopy>> = {
     samplePage: 'Página de muestra', enlargedSamplePage: 'página de muestra ampliada', zoom: 'Ampliar',
     backToBook: 'Volver al libro', previousPage: 'Página anterior', nextPage: 'Página siguiente', page: 'Página',
     buyAmazon: 'Ver en Amazon', availableLanguages: 'Disponible en',
+    bookInfoTitle: 'Datos del libro', mediaGallery: 'Galería del libro', mediaCover: 'Portada',
+    mediaLifestyle: 'Libro en las manos (imagen ilustrativa)', mediaVideo: 'Reproducir vídeo del libro',
+    mediaSwipeHint: 'Desliza o usa las flechas', previousImage: 'Imagen anterior', nextImage: 'Imagen siguiente',
     coloringFactsTitle: 'Qué contiene cada libro para colorear de LambKing',
-    coloringFacts: ['70 páginas', 'Páginas grandes – aproximadamente DIN A4', 'Fiel a la Biblia', 'Además, 5 páginas con juegos, preguntas y pasatiempos', 'Disponible en varios idiomas'],
+    coloringFacts: ['70 páginas', 'Tamaño aprox. DIN A4', 'Fiel a la Biblia', 'Además, 5 páginas con juegos, preguntas y pasatiempos', 'Disponible en varios idiomas'],
     coloringAge: 'A partir de 6 años', coloringFormat: '70 páginas · aprox. DIN A4',
     amazonPending: 'Aún no hay un enlace de Amazon para esta edición. El botón de compra aparecerá cuando se añada en la administración.',
   },
@@ -73,8 +76,11 @@ const editionCopyOverrides: Record<string, Partial<BooksCopy>> = {
     samplePage: 'Pagină de prezentare', enlargedSamplePage: 'pagină de prezentare mărită', zoom: 'Mărește',
     backToBook: 'Înapoi la carte', previousPage: 'Pagina anterioară', nextPage: 'Pagina următoare', page: 'Pagina',
     buyAmazon: 'Vezi pe Amazon', availableLanguages: 'Disponibilă în',
+    bookInfoTitle: 'Pe scurt despre carte', mediaGallery: 'Galeria cărții', mediaCover: 'Copertă',
+    mediaLifestyle: 'Cartea în mâini (imagine ilustrativă)', mediaVideo: 'Redă videoclipul cărții',
+    mediaSwipeHint: 'Glisează sau folosește săgețile', previousImage: 'Imaginea precedentă', nextImage: 'Imaginea următoare',
     coloringFactsTitle: 'Ce conține fiecare carte de colorat LambKing',
-    coloringFacts: ['70 de pagini', 'Pagini mari – aproximativ DIN A4', 'Fidelă Bibliei', 'În plus, 5 pagini cu jocuri, întrebări și puzzle-uri', 'Disponibilă în mai multe limbi'],
+    coloringFacts: ['70 de pagini', 'Mărime aprox. DIN A4', 'Fidelă Bibliei', 'În plus, 5 pagini cu jocuri, întrebări și puzzle-uri', 'Disponibilă în mai multe limbi'],
     coloringAge: 'De la 6 ani', coloringFormat: '70 de pagini · aprox. DIN A4',
     amazonPending: 'Nu există încă un link Amazon pentru această ediție. Butonul de cumpărare va apărea după adăugarea linkului în administrare.',
   },
@@ -104,6 +110,8 @@ const localizedBook = (book: Book, language: string): Book => {
     amazon: edition.amazon,
     cover: edition.cover || book.cover,
     coverSpread: edition.cover ? Boolean(edition.coverSpread) : book.coverSpread,
+    lifestyleImages: edition.lifestyleImages ?? (edition.language === book.lang ? book.lifestyleImages : []),
+    previewVideo: edition.previewVideo ?? (edition.language === book.lang ? book.previewVideo : undefined),
   }
 }
 
@@ -133,6 +141,53 @@ function BookCover({ book, variant }: { book: Book; variant: 'card' | 'dialog' }
   )
 }
 
+function BookMediaGallery({ book, onZoom, copy }: { book: Book; onZoom: (src: string) => void; copy: BooksCopy }) {
+  const [index, setIndex] = useState(0)
+  const touchStart = useRef<{ x: number; y: number } | null>(null)
+  const slides = [
+    { kind: 'cover' as const, src: book.cover, label: copy.mediaCover },
+    ...(book.lifestyleImages ?? []).map((src) => ({ kind: 'lifestyle' as const, src, label: copy.mediaLifestyle })),
+    ...book.samples.map((src, sampleIndex) => ({ kind: 'sample' as const, src, label: `${copy.samplePage} ${sampleIndex + 1}` })),
+    ...(book.previewVideo ? [{ kind: 'video' as const, src: book.previewVideo, label: copy.mediaVideo }] : []),
+  ]
+  const current = slides[Math.min(index, slides.length - 1)]
+  const move = (direction: -1 | 1) => setIndex((value) => (value + direction + slides.length) % slides.length)
+
+  return (
+    <div className="min-w-0 bg-secondary/60 px-5 pb-5 pt-8 lg:sticky lg:top-0 lg:self-start lg:px-7 lg:pt-10" aria-label={`${book.title} – ${copy.mediaGallery}`}>
+      <div
+        className="relative flex min-h-[260px] items-center justify-center sm:min-h-[390px]"
+        onTouchStart={(event) => { touchStart.current = event.touches[0] ? { x: event.touches[0].clientX, y: event.touches[0].clientY } : null }}
+        onTouchEnd={(event) => {
+          if (!touchStart.current || !event.changedTouches[0]) return
+          const deltaX = event.changedTouches[0].clientX - touchStart.current.x
+          const deltaY = event.changedTouches[0].clientY - touchStart.current.y
+          if (Math.abs(deltaX) > 45 && Math.abs(deltaX) > Math.abs(deltaY)) move(deltaX < 0 ? 1 : -1)
+          touchStart.current = null
+        }}
+      >
+        {current.kind === 'cover' && <BookCover book={book} variant="dialog" />}
+        {current.kind === 'lifestyle' && <img src={current.src} alt={`${book.title} – ${current.label}`} className="max-h-[440px] w-auto max-w-full rounded-md object-contain shadow-xl" loading="lazy" />}
+        {current.kind === 'sample' && (
+          <button type="button" onClick={() => onZoom(current.src)} className="max-w-[320px] focus-visible:rounded-md focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/60" aria-label={`${current.label} – ${copy.zoom}`}>
+            <img src={current.src} alt={`${book.title} – ${current.label}`} className="max-h-[440px] w-auto rounded-md bg-white object-contain shadow-xl" loading="lazy" />
+          </button>
+        )}
+        {current.kind === 'video' && <video key={current.src} controls playsInline preload="none" poster={book.lifestyleImages?.[0] ?? (book.coverSpread ? undefined : book.cover)} className="max-h-[440px] w-full rounded-md bg-black" aria-label={`${book.title} – ${copy.mediaVideo}`}><source src={current.src} />{copy.mediaVideo}</video>}
+      </div>
+      {slides.length > 1 && (
+        <div className="mt-4 flex items-center justify-center gap-3">
+          <button type="button" onClick={() => move(-1)} aria-label={copy.previousImage} className="flex size-11 shrink-0 items-center justify-center rounded-full border border-primary/20 bg-white text-primary focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/60"><ArrowLeft className="size-5" aria-hidden /></button>
+          <span className="min-w-0 text-center text-xs font-semibold text-muted-foreground" aria-live="polite">{current.label} · {index + 1}/{slides.length}</span>
+          <button type="button" onClick={() => move(1)} aria-label={copy.nextImage} className="flex size-11 shrink-0 items-center justify-center rounded-full border border-primary/20 bg-white text-primary focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/60"><ArrowRight className="size-5" aria-hidden /></button>
+        </div>
+      )}
+      {slides.length > 1 && <p className="mt-2 text-center text-xs text-muted-foreground">{copy.mediaSwipeHint}</p>}
+      {book.previewVideo && current.kind !== 'video' && <button type="button" onClick={() => setIndex(slides.length - 1)} className="mx-auto mt-3 flex min-h-11 items-center gap-2 rounded-full px-3 text-sm font-semibold text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/60"><Play className="size-4" aria-hidden />{copy.mediaVideo}</button>}
+    </div>
+  )
+}
+
 const isColoringBook = (book: Book) => book.category === 'malbuecher'
 
 const BULK_DISCOUNT_TIERS = [
@@ -142,20 +197,16 @@ const BULK_DISCOUNT_TIERS = [
   { quantity: 100, discount: 40 },
 ] as const
 
-function ColoringBookFacts({ compact = false, copy }: { compact?: boolean; copy?: BooksCopy }) {
+function ColoringBookFacts() {
   const siteCopy = textsFor(useLang()).books
-  const labels = copy ?? siteCopy
   const icons = [BookOpen, Ruler, ShieldCheck, HelpCircle, Languages]
   return (
-    <div className={compact
-      ? 'mt-5 rounded-2xl border border-accent/30 bg-accent/[0.07] p-4'
-      : 'rounded-2xl border border-accent/30 bg-gradient-to-r from-accent/[0.09] via-card to-accent/[0.06] px-5 py-5 shadow-sm sm:px-7'}
-    >
-      <p className={`font-display font-semibold text-foreground ${compact ? 'text-lg' : 'text-center text-xl sm:text-2xl'}`}>
-        {labels.coloringFactsTitle}
+    <div className="rounded-2xl border border-accent/30 bg-gradient-to-r from-accent/[0.09] via-card to-accent/[0.06] px-5 py-5 shadow-sm sm:px-7">
+      <p className="text-center font-display text-xl font-semibold text-foreground sm:text-2xl">
+        {siteCopy.coloringFactsTitle}
       </p>
-      <ul className={`mt-4 grid gap-3 ${compact ? 'sm:grid-cols-2' : 'sm:grid-cols-2 lg:grid-cols-5'}`}>
-        {labels.coloringFacts.map((fact, index) => {
+      <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        {siteCopy.coloringFacts.map((fact, index) => {
           const Icon = icons[index] ?? CheckCircle2
           return (
             <li key={fact} className="flex items-center gap-2.5 text-sm font-bold leading-snug text-foreground">
@@ -381,18 +432,13 @@ function BookDialog({
       >
         {book && (
           <div className="grid lg:grid-cols-[380px_1fr]" lang={editionLanguage ?? lang}>
-            <div className="bg-secondary/60 p-8 lg:p-10">
-              {displayBook && <BookCover book={displayBook} variant="dialog" />}
-            </div>
+            {displayBook && <BookMediaGallery key={`${book.id}:${editionLanguage ?? lang}`} book={displayBook} onZoom={onZoom} copy={dialogCopy} />}
             <div className="p-8 lg:p-12">
               <DialogHeader>
                 <div className="mb-3 flex flex-wrap gap-2">
                   <Badge variant="secondary" className="rounded-full">{editionLanguage === 'es' && isColoringBook(book) ? 'Libro para colorear' : editionLanguage === 'ro' && isColoringBook(book) ? 'Carte de colorat' : typeLabelOf(book, editionLanguage === 'en' ? 'en' : 'de')}</Badge>
                   {isColoringBook(book) ? (
-                    <>
-                      <Badge variant="secondary" className="rounded-full">{dialogCopy.coloringAge}</Badge>
-                      <Badge variant="secondary" className="rounded-full">{dialogCopy.coloringFormat}</Badge>
-                    </>
+                    <Badge variant="secondary" className="rounded-full">{dialogCopy.coloringAge}</Badge>
                   ) : (
                     <>
                       {displayBook?.age && <Badge variant="secondary" className="rounded-full">{displayBook.age}</Badge>}
@@ -409,11 +455,11 @@ function BookDialog({
                   </p>
                 )}
               </DialogHeader>
-              {isColoringBook(book) ? <ColoringBookFacts compact copy={dialogCopy} /> : null}
               <DialogDescription className="mt-6 max-w-2xl whitespace-pre-line text-lg leading-loose text-muted-foreground">
                 <RichText text={displayBook?.description || ''} />
               </DialogDescription>
-              <ul className="mt-6 grid max-w-2xl gap-2.5 sm:grid-cols-2">
+              {(displayBook?.highlights?.length ?? 0) > 0 && <p className="mt-6 font-display text-lg font-semibold text-foreground">{dialogCopy.bookInfoTitle}</p>}
+              <ul className="mt-2 grid max-w-2xl gap-2.5 sm:grid-cols-2">
                 {(displayBook?.highlights || []).map((h) => (
                   <li key={h} className="flex items-center gap-2.5 font-semibold">
                     <span className="h-2 w-2 rounded-full bg-accent" aria-hidden />
@@ -428,42 +474,14 @@ function BookDialog({
                   {dialogCopy.amazonPending}
                 </p>
               )}
-              {displayBook && displayBook.samples.length > 0 && (
-                <>
-                  <p className="mb-3 mt-9 text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                    {dialogCopy.samplesHint}
-                  </p>
-                  <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-                    {displayBook.samples.map((s, index) => (
-                      <button
-                        key={s}
-                        type="button"
-                        onClick={() => onZoom(s)}
-                        className="group relative block rounded-md border border-border bg-white shadow-sm transition-shadow hover:shadow-lg"
-                      >
-                        <img
-                          src={s}
-                          alt={`${displayBook.title} – ${dialogCopy.samplePage} ${index + 1}`}
-                          className="w-full rounded-md"
-                          loading="lazy"
-                        />
-                        <span className="absolute bottom-2 right-2 flex items-center gap-1 rounded-full bg-foreground/80 px-2.5 py-1 text-xs font-bold text-background opacity-0 transition-opacity group-hover:opacity-100">
-                          <ZoomIn className="h-3.5 w-3.5" aria-hidden />
-                          {dialogCopy.zoom}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                </>
-              )}
               <div className="sticky bottom-0 z-10 -mx-8 mt-9 border-t-2 border-border bg-background/95 px-8 py-5 shadow-[0_-8px_20px_-16px_rgba(30,42,74,0.35)] backdrop-blur lg:-mx-12 lg:px-12">
                 <p className="mb-3 text-center font-semibold text-muted-foreground sm:text-left">{dialogCopy.seePrice}</p>
-                <div className="mx-auto grid w-full max-w-[640px] gap-3 sm:grid-cols-2">
+                <div className="mx-auto flex w-full flex-col items-center gap-3">
                   {displayBook && <BuyButton book={displayBook} size="lg" preferredLanguage={editionLanguage || undefined} label={dialogCopy.buyAmazon} />}
                   <button
                     type="button"
                     onClick={() => setBulkDiscountOpen(true)}
-                    className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full border-2 border-accent bg-accent/10 px-5 py-3 text-center text-sm font-bold text-primary shadow-sm transition-colors hover:bg-accent/20 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/60"
+                    className="inline-flex min-h-12 aspect-[900/165] w-full max-w-[305px] items-center justify-center gap-2 rounded-full border-2 border-accent bg-accent/10 px-5 py-3 text-center text-sm font-bold text-primary shadow-sm transition-colors hover:bg-accent/20 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/60"
                   >
                     <PackageCheck className="h-5 w-5" aria-hidden />
                     {siteCopy.bulkDiscountButton}
@@ -615,7 +633,15 @@ export default function Books() {
     const params = new URLSearchParams(window.location.search)
     return BOOKS.find((b) => b.id === params.get('buch')) ?? null
   })
-  const [activeEdition, setActiveEdition] = useState<string | null>(null)
+  const [activeEdition, setActiveEdition] = useState<string | null>(() => {
+    const found = BOOKS.find((b) => b.id === new URLSearchParams(window.location.search).get('buch'))
+    if (!found) return null
+    const editions = editionsOf(found)
+    return editions.find((item) => item.language === lang)?.language
+      ?? editions.find((item) => item.language === found.lang)?.language
+      ?? editions[0]?.language
+      ?? null
+  })
   const [cat, setCat] = useState<Category | 'alle'>('alle')
   const [zoom, setZoom] = useState<string | null>(() => {
     const params = new URLSearchParams(window.location.search)

@@ -127,7 +127,7 @@ test('Mehrsprachige Bücher besitzen ein eigenes, korrekt verknüpftes Cover je 
   const admin = readFileSync(join(ROOT, 'admin/index.html'), 'utf-8')
   const server = readFileSync(join(ROOT, 'admin/admin_server.py'), 'utf-8')
   assert(booksView.includes('cover: edition.cover || book.cover'), 'Sprachcover werden im Frontend nicht übernommen')
-  assert(booksView.includes('<BookCover book={displayBook}'), 'Buchdialog verwendet nicht das gewählte Sprachcover')
+  assert(booksView.includes('<BookMediaGallery key=') && booksView.includes('book={displayBook}') && booksView.includes('<BookCover book={book}'), 'Buchgalerie verwendet nicht das gewählte Sprachcover')
   assert(admin.includes('Cover dieser Sprach-Ausgabe') && admin.includes("'coverSpread'"), 'Sprachcover sind im Backend nicht bearbeitbar')
   assert(server.includes('cleaned_edition["cover"]') && server.includes('cleaned_edition["coverSpread"]'), 'Server bewahrt Sprachcover beim Speichern nicht auf')
 
@@ -141,6 +141,18 @@ test('Mehrsprachige Bücher besitzen ein eigenes, korrekt verknüpftes Cover je 
       covers.push(edition.cover)
     }
     assert(new Set(covers).size === covers.length, `${book.id}: mehrere Sprachen verwenden dasselbe Cover`)
+  }
+})
+
+test('Buchgalerie und kurze Inhaltsangaben sind pro Buch gepflegt', () => {
+  const booksView = readFileSync(join(SRC, 'sections/Books.tsx'), 'utf-8')
+  assert(booksView.includes('BookMediaGallery') && booksView.includes('onTouchEnd'), 'Wischbare Buchgalerie fehlt')
+  for (const book of booksJson.books) {
+    assert(book.description?.length > 50, `${book.id}: kurze Inhaltsangabe fehlt`)
+    assert(!/70 Seiten|70 pages|70 páginas|DIN A4|21,6 × 27,9/.test(book.description), `${book.id}: allgemeine Buchfakten stehen in der Geschichte`)
+    assert(book.lifestyleImages?.length, `${book.id}: Buchfoto fehlt`)
+    for (const image of book.lifestyleImages) assert(existsSync(join(ROOT, 'public', image)), `${book.id}: Buchfoto fehlt (${image})`)
+    if (book.previewVideo) assert(existsSync(join(ROOT, 'public', book.previewVideo)), `${book.id}: Vorschauvideo fehlt`)
   }
 })
 
@@ -292,7 +304,8 @@ test('Alle Malbücher zeigen einheitlich Umfang, Format, Alter und Rätselseiten
   const coloringBooks = booksJson.books.filter((book) => book.category === 'malbuecher')
   assert(coloringBooks.length > 0, 'Keine Malbücher zum Prüfen gefunden')
   for (const book of coloringBooks) {
-    assert(book.age === 'Ab 6 Jahren', `${book.title}: Altersangabe ist nicht einheitlich`)
+    const coverAge = ['bibelgeschichten-zum-ausmalen-4', 'bibelgeschichten-zum-ausmalen-5', 'bibelgeschichten-zum-ausmalen-2'].includes(book.id) ? 'Ab 5 Jahren' : 'Ab 6 Jahren'
+    assert(book.age === coverAge, `${book.title}: Altersangabe passt nicht zum aktuellen Cover`)
     assert(book.detail.includes('70 Seiten'), `${book.title}: Seitenzahl ist nicht einheitlich`)
   }
   for (const lang of ['de', 'en']) {
@@ -302,6 +315,7 @@ test('Alle Malbücher zeigen einheitlich Umfang, Format, Alter und Rätselseiten
     assert(texts.coloringFacts[0] === (lang === 'de' ? 'Jedes Malbuch hat 70 Seiten' : 'Every coloring book has 70 pages'), `${lang}: Seitenzahl-Aussage fehlt`)
   }
   assert(booksSection.includes('ColoringBookFacts') && !booksSection.includes('coloringCardSummary'), 'Malbuch-Kurzinfo steht noch wiederholt auf den Kacheln')
+  assert(!booksSection.includes('<ColoringBookFacts compact'), 'Malbuch-Faktenkasten wird im Buchfenster wiederholt')
   assert(admin.includes("coloringFactsTitle:") && !admin.includes("coloringCardSummary:"), 'Überflüssige Malbuch-Kurzinfo steht noch im Backend')
 })
 

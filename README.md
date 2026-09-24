@@ -24,8 +24,9 @@ Die private USB-/Drive-Ausgabe enthält Python, Node.js, Git sowie alle Pakete b
 **Im Admin kannst du:**
 - Bücher hinzufügen / bearbeiten / löschen (deutsch & englisch getrennt)
 - pro Buch beliebig viele Sprach-Ausgaben mit sichtbarer Flagge und eigenem Amazon-Link verwalten (u. a. Deutsch, Englisch, Spanisch, Französisch, Italienisch, Portugiesisch, Russisch und Japanisch)
-- Amazon-Link einfügen → Titel, Beschreibung, Cover kommen automatisch
+- Amazon-Link einfügen → Titel, eine vorläufig getrennte Geschichtsbeschreibung, Buchangaben und Cover kommen automatisch; Geschichte und Angaben vor dem Speichern prüfen
 - Cover sowie Buch-PDF oder einzelne Bilder/Screenshots hochladen → die Vorschauseiten werden automatisch vorbereitet
+- bis zu drei Buchfotos und optional ein kurzes MP4-Durchblätter-Video (max. 30 MB) je Buch hochladen; beides bleibt im Projektordner und funktioniert auch von USB/Drive
 - Autorenfoto ändern (Form & Größe wählbar)
 - PayPal-, Ko-fi-, Web-App- und Google-Play-Links pflegen
 - die Creator-/Influencer-Bewerbungsseite unter „Website-Einstellungen → Links, Kontakt und Bewertungen“ ein- oder ausschalten

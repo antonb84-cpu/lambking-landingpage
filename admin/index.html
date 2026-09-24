@@ -289,15 +289,25 @@
         </div>
       </div>
 
-      <label for="f_description">Beschreibung</label>
+      <label for="f_description">Die Geschichte – kurze Inhaltsbeschreibung</label>
       <div class="text-format-toolbar">
         <button type="button" class="btn btn-ghost" onmousedown="event.preventDefault()" onclick="formatSelectedTextBold('f_description')"><b>B</b>&nbsp; Fett</button>
         <small>Text in der Beschreibung markieren und auf „Fett“ klicken. Noch einmal klicken entfernt die Fettschrift.</small>
       </div>
-      <textarea id="f_description" class="draft" rows="8" placeholder="Worum geht es in dem Buch?"></textarea>
+      <textarea id="f_description" class="draft" rows="6" placeholder="Was geschieht in dieser Geschichte? Bitte keine Seitenzahl oder Formatangaben hier wiederholen."></textarea>
 
-      <label for="f_highlights">Highlights (eine Zeile = ein Punkt, optional)</label>
-      <textarea id="f_highlights" class="draft" rows="3" placeholder="Große, klare Motive&#10;Biblisch fundiert&#10;Ideal für Familie & Kindergottesdienst"></textarea>
+      <label for="f_highlights">Kurz zum Buch (eine Zeile = ein Punkt)</label>
+      <textarea id="f_highlights" class="draft" rows="3" placeholder="Bibelstelle: 1. Mose 1–2&#10;30 Ausmalbilder"></textarea>
+      <p class="hint">Gemeinsame Malbuch-Fakten wie 70 Seiten und ca. DIN A4 Größe stehen bereits oberhalb aller Bücher und müssen hier nicht wiederholt werden. Nach einem Amazon-Import bitte Geschichte und Buchangaben prüfen.</p>
+
+      <label for="f_lifestyle">Buchfotos für die Galerie (optional, bis zu 3 JPG/PNG)</label>
+      <input type="file" id="f_lifestyle" accept="image/jpeg,image/png" multiple>
+      <p class="hint" id="lifestyleStatus"></p>
+      <div class="checkline"><input type="checkbox" id="f_removeLifestyle"><label for="f_removeLifestyle" style="margin:0; font-weight:500;">Vorhandene Buchfotos entfernen</label></div>
+      <label for="f_previewVideo">Kurzes Durchblätter-Video (optional, MP4 bis 30 MB)</label>
+      <input type="file" id="f_previewVideo" accept="video/mp4">
+      <p class="hint" id="videoStatus"></p>
+      <div class="checkline"><input type="checkbox" id="f_removeVideo"><label for="f_removeVideo" style="margin:0; font-weight:500;">Vorhandenes Video entfernen</label></div>
 
       <label>Sprach-Ausgaben und Amazon-Links</label>
       <p class="hint" style="margin-bottom:6px;">Für jede verfügbare Buchsprache eine Zeile anlegen. Auf der Landingpage erscheint dafür eine anklickbare Flagge.</p>
@@ -550,8 +560,8 @@ function renderBookEditions(){
             <div><label>Altersempfehlung</label><input type="text" value="${esc(edition.age || '')}" oninput="setBookEditionField(${index},'age',this.value)"></div>
             <div><label>Umfang / Detail</label><input type="text" value="${esc(edition.detail || '')}" oninput="setBookEditionField(${index},'detail',this.value)"></div>
           </div>
-          <label>Beschreibung</label><textarea rows="6" placeholder="Übersetzte Beschreibung" oninput="setBookEditionField(${index},'description',this.value)">${esc(edition.description || '')}</textarea>
-          <label>Highlights (eine Zeile = ein Punkt)</label><textarea rows="3" oninput="setBookEditionField(${index},'highlights',this.value.split('\n'))">${esc(Array.isArray(edition.highlights) ? edition.highlights.join('\n') : '')}</textarea>
+          <label>Geschichte in dieser Sprache</label><textarea rows="6" placeholder="Kurze Beschreibung der Handlung" oninput="setBookEditionField(${index},'description',this.value)">${esc(edition.description || '')}</textarea>
+          <label>Kurz zum Buch (eine Zeile = ein Punkt)</label><textarea rows="3" oninput="setBookEditionField(${index},'highlights',this.value.split('\n'))">${esc(Array.isArray(edition.highlights) ? edition.highlights.join('\n') : '')}</textarea>
           <label>Vorschauseiten dieser Sprache (eine Bilddatei pro Zeile, in Lesereihenfolge)</label><textarea rows="5" placeholder="images/mein-buch-${edition.language || 'de'}-preview-1.jpg" oninput="setBookEditionField(${index},'samples',this.value.split('\n'))">${esc(Array.isArray(edition.samples) ? edition.samples.join('\n') : '')}</textarea>
           <label>Cover dieser Sprach-Ausgabe</label>
           <input type="text" value="${esc(edition.cover || '')}" placeholder="images/cover-mein-buch-es.jpg" oninput="setBookEditionField(${index},'cover',this.value)">
@@ -1221,6 +1231,12 @@ function openForm(id){
   $('f_detail').value = b ? (b.detail||'') : '';
   $('f_description').value = b ? (b.description||'') : '';
   $('f_highlights').value = b ? (b.highlights||[]).join('\n') : '';
+  $('f_lifestyle').value = '';
+  $('f_previewVideo').value = '';
+  $('f_removeLifestyle').checked = false;
+  $('f_removeVideo').checked = false;
+  $('lifestyleStatus').textContent = b && b.lifestyleImages?.length ? `${b.lifestyleImages.length} Buchfoto(s) vorhanden. Neue Auswahl ersetzt die bisherigen Bilder.` : 'Noch keine Buchfotos vorhanden.';
+  $('videoStatus').textContent = b && b.previewVideo ? 'Ein Video ist vorhanden. Eine neue Datei ersetzt es.' : 'Noch kein Video vorhanden.';
   bookEditions = b && Array.isArray(b.editions) && b.editions.length
     ? b.editions.map(item => ({...item, language:item.language || b.lang || currentLang, amazon:item.amazon || ''}))
     : (b && b.amazon ? [{language:b.lang || currentLang, amazon:b.amazon}] : []);
@@ -1268,6 +1284,7 @@ async function fetchAmazon(){
     }
     if (d.title) $('f_title').value = d.title;
     if (d.description) $('f_description').value = d.description;
+    if (Array.isArray(d.bookFacts) && d.bookFacts.length) $('f_highlights').value = d.bookFacts.join('\n');
     if (d.age) $('f_age').value = d.age;
     if (d.detail) $('f_detail').value = d.detail;
     if (d.series) $('f_series').value = d.series;
@@ -1294,10 +1311,10 @@ async function fetchAmazon(){
       $('sampleFile').value = '';
       renderAmazonSamples();
     }
-    const labels = {title:'Titel', description:'Beschreibung', age:'Alter', detail:'Umfang', series:'Reihe', category:'Kategorie', cover:'Cover', samples:'Produktbilder', amazonRating:'Amazon-Bewertung', amazonRatingCount:'Bewertungsanzahl'};
+    const labels = {title:'Titel', description:'Geschichte', bookFacts:'Buchangaben', age:'Alter', detail:'Umfang', series:'Reihe', category:'Kategorie', cover:'Cover', samples:'Produktbilder', amazonRating:'Amazon-Bewertung', amazonRatingCount:'Bewertungsanzahl'};
     const imported = (d.imported || []).map(key => labels[key] || key);
     const missing = (d.missing || []).map(key => labels[key] || key);
-    $('amazonImportStatus').textContent = 'Übernommen: ' + imported.join(', ') + (missing.length ? '. Nicht gefunden: ' + missing.join(', ') + '.' : '.');
+    $('amazonImportStatus').textContent = 'Übernommen: ' + imported.join(', ') + (missing.length ? '. Nicht gefunden: ' + missing.join(', ') + '.' : '.') + ' Bitte Geschichte und Buchangaben vor dem Speichern prüfen.';
     $('amazonImportStatus').className = 'import-status ' + (missing.length ? 'warn' : 'ok');
     saveDraft();
     toast('✓ Amazon-Daten übernommen – bitte unten prüfen.');
@@ -1379,6 +1396,10 @@ async function saveBook(){
     fd.append('detail', $('f_detail').value);
     fd.append('description', $('f_description').value);
     fd.append('highlights', $('f_highlights').value);
+    if ($('f_removeLifestyle').checked) fd.append('removeLifestyle', '1');
+    if ($('f_removeVideo').checked) fd.append('removeVideo', '1');
+    [...$('f_lifestyle').files].slice(0, 3).forEach((file, index) => fd.append(`lifestyle_${index}`, file));
+    if ($('f_previewVideo').files[0]) fd.append('previewVideo', $('f_previewVideo').files[0]);
     const editionsToSave = bookEditions
       .map(item => ({
         ...item,

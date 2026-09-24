@@ -433,8 +433,7 @@
       ],
       "highlights": [
         "30 große Ausmalbilder",
-        "5 Seiten mit Spielen, Fragen und Rätseln",
-        "Großformat: 21,6 × 27,9 cm (ungefähr DIN A4)"
+        "Bibelstelle: 1. Mose 1–2"
       ],
       "lang": "de",
       "title": "Bibelgeschichten zum Ausmalen: Band 1 - Die Schöpfung - Gott macht die Welt",
@@ -442,10 +441,12 @@
       "category": "malbuecher",
       "age": "Ab 6 Jahren",
       "detail": "70 Seiten · Großformat",
-      "description": "Die Schöpfung – Gott macht die Welt ist Band 1 der Reihe Bibelgeschichten zum Ausmalen.\r\n\r\nDas bibeltreue Mal- und Rätselbuch erzählt die Schöpfungsgeschichte nach 1. Mose Schritt für Schritt.\r\n\r\nGroße Ausmalbilder und 5 Seiten mit Spielen, Fragen und Rätseln laden Kinder ab 6 Jahren zum Malen, Entdecken und Vertiefen ein.\r\n\r\nDas Buch umfasst 70 Seiten. Das großzügige Format von 21,6 × 27,9 cm ist ungefähr so groß wie DIN A4 und bietet viel Platz für kleine Künstler.\r\n\r\nIdeal für zu Hause, Kindergottesdienst, Sonntagsschule und christliche Gemeinden.",
+      "description": "Am Anfang erschafft Gott Himmel und Erde. Licht und Dunkelheit, Meer und Land, Pflanzen und Tiere entstehen. Schließlich erschafft Gott die Menschen und gibt ihnen einen Platz in seiner guten Schöpfung.",
+      "lifestyleImages": ["images/lifestyle/schoepfung-de.png"],
       "amazon": "https://www.amazon.de/dp/B0HFWX8DH5",
       "releaseDate": "2026-09-01",
-      "cover": "images/cover-bibelgeschichten-zum-ausmalen.jpg",
+      "cover": "images/cover-band01-de-spread.png",
+      "coverSpread": true,
       "editions": [
         {
           "language": "de",
@@ -462,11 +463,10 @@
           "series": "Bible Stories to Color · Volume 1",
           "age": "Ages 6+",
           "detail": "70 pages · large format",
-          "description": "The Creation – God Makes the World is Volume 1 of the Bible Stories to Color series.\n\nThis Scripture-faithful coloring and activity book guides children step by step through the Creation story in Genesis.\n\nLarge coloring pictures and 5 pages of games, questions, and puzzles invite children ages 6 and up to color, discover, and deepen their understanding.\n\nThe book contains 70 pages. Its generous 8.5 × 11 inch format is close to A4 size and gives young artists plenty of room.\n\nIdeal for families, children’s church, Sunday school, and Christian communities.",
+          "description": "In the beginning, God creates heaven and earth. Light and darkness, sea and land, plants and animals come into being. Finally, God creates people and gives them a place in his good creation.",
           "highlights": [
             "30 large coloring pictures",
-            "5 pages of games, questions, and puzzles",
-            "Large 8.5 × 11 in format (close to A4)"
+            "Bible passage: Genesis 1–2"
           ]
         },
         {
@@ -478,11 +478,10 @@
           "series": "Historias bíblicas para colorear · Tomo 1",
           "age": "A partir de 6 años",
           "detail": "70 páginas · formato grande",
-          "description": "La Creación – Dios crea el mundo es el tomo 1 de la serie Historias bíblicas para colorear.\n\nEste libro fiel a la Biblia guía a los niños paso a paso por la historia de la Creación en Génesis.\n\nGrandes dibujos para colorear y 5 páginas de juegos, preguntas y pasatiempos invitan a niños a partir de 6 años a pintar, descubrir y profundizar lo aprendido.\n\nEl libro contiene 70 páginas. Su amplio formato de 21,6 × 27,9 cm es parecido al tamaño A4 y ofrece mucho espacio para los pequeños artistas.\n\nIdeal para familias, escuela dominical, iglesia infantil y comunidades cristianas.",
+          "description": "Al principio, Dios crea el cielo y la tierra. Aparecen la luz y la oscuridad, el mar y la tierra firme, las plantas y los animales. Por último, Dios crea a las personas y les da un lugar en su buena creación.",
           "highlights": [
             "30 grandes dibujos para colorear",
-            "5 páginas de juegos, preguntas y pasatiempos",
-            "Formato grande: 21,6 × 27,9 cm (similar a A4)"
+            "Pasaje bíblico: Génesis 1–2"
           ]
         }
       ]
@@ -498,7 +497,7 @@
         "images/bibelgeschichten-zum-ausmalen-4-seite-6.jpg"
       ],
       "highlights": [
-        "Noah und die Arche zum Ausmalen",
+        "Arche, Flut und Regenbogen",
         "Bibelstelle: 1. Mose 6–9",
         "Klare Linien für kleine Hände"
       ],
@@ -506,9 +505,10 @@
       "title": "Noah und die Arche – Gott rettet Noah und die Tiere",
       "series": "Bibelgeschichten zum Ausmalen · Band 2",
       "category": "malbuecher",
-      "age": "Ab 6 Jahren",
+      "age": "Ab 5 Jahren",
       "detail": "70 Seiten · Großformat",
-      "description": "Noah und die Arche – Gott rettet Noah und die Tiere ist Band 2 der Reihe Bibelgeschichten zum Ausmalen.\r\n\r\nDieses bibeltreue Malbuch nimmt Kinder ab 6 Jahren mit in die bekannte Geschichte von Noah: von Gottes Auftrag und dem Bau der Arche über die Tiere und die große Flut bis zum Regenbogen als Zeichen von Gottes Versprechen.\r\n\r\nGroße Ausmalbilder und 5 Seiten mit Spielen, Fragen und Rätseln helfen Kindern dabei, Vertrauen, Gehorsam und Gottes Treue zu entdecken. Das Buch umfasst 70 Seiten im Großformat – ungefähr DIN A4.\r\n\r\nIdeal für zu Hause, den Kindergottesdienst, die Sonntagsschule und christliche Gemeinden.\r\n\r\nBibelstelle: 1. Mose 6–9",
+      "description": "Gott gibt Noah einen ungewöhnlichen Auftrag: Er soll eine Arche bauen und seine Familie und die Tiere hineinbringen. Als die Flut kommt, sind sie darin sicher. Nach der Flut zeigt Gott mit dem Regenbogen, dass er sein Versprechen nicht vergisst.",
+      "lifestyleImages": ["images/lifestyle/noah-de.png"],
       "amazon": "https://www.amazon.de/dp/B0HH8GRWZS",
       "releaseDate": "2026-09-01",
       "cover": "images/cover-bibelgeschichten-zum-ausmalen-4.jpg",
@@ -538,9 +538,10 @@
       "title": "Abraham vertraut Gott – Gott führt Abraham ins verheißene Land",
       "series": "Bibelgeschichten zum Ausmalen · Band 3",
       "category": "malbuecher",
-      "age": "Ab 6 Jahren",
+      "age": "Ab 5 Jahren",
       "detail": "70 Seiten · Großformat",
-      "description": "Abraham vertraut Gott – Gott führt Abraham ins verheißene Land ist Band 3 der Reihe Bibelgeschichten zum Ausmalen.\r\n\r\nDieses bibeltreue Malbuch nimmt Kinder ab 6 Jahren mit auf Abrahams Weg: von Gottes Ruf und dem Aufbruch in ein unbekanntes Land über die Trennung von Lot bis zu Gottes Versprechen unter dem Sternenhimmel.\r\n\r\nGroße Ausmalbilder und 5 Seiten mit Spielen, Fragen und Rätseln helfen Kindern dabei, Vertrauen, Geduld und Glaube zu entdecken. Das Buch umfasst 70 Seiten im Großformat – ungefähr DIN A4.\r\n\r\nIdeal für zu Hause, den Kindergottesdienst, die Sonntagsschule und christliche Gemeinden.\r\n\r\nBibelstelle: 1. Mose 12–18",
+      "description": "Gott ruft Abraham auf, seine Heimat zu verlassen und in ein unbekanntes Land zu ziehen. Abraham vertraut ihm und macht sich auf den Weg. Unter dem Sternenhimmel verspricht Gott ihm eine große Familie und zeigt: Er begleitet Abraham auch dann, wenn der Weg noch ungewiss ist.",
+      "lifestyleImages": ["images/lifestyle/abraham-de.png"],
       "amazon": "https://www.amazon.de/dp/B0HH6HXFC9",
       "releaseDate": "2026-09-01",
       "cover": "images/cover-bibelgeschichten-zum-ausmalen-5.jpg",
@@ -558,12 +559,13 @@
       "category": "malbuecher",
       "age": "Ab 6 Jahren",
       "detail": "70 Seiten · Großformat",
-      "cover": "images/cover-david.jpg",
-      "description": "David hütet die Schafe seines Vaters, wird von Samuel gesalbt und stellt sich schließlich Goliath. Dieses bibeltreue Malbuch erzählt die Geschichte Schritt für Schritt mit großen Ausmalbildern. Zusätzlich gibt es 5 Seiten mit Spielen, Fragen und Rätseln. Das Buch umfasst 70 Seiten im Großformat (21,6 × 27,9 cm, ungefähr DIN A4).",
+      "cover": "images/cover-david-de-spread.jpg",
+      "coverSpread": true,
+      "description": "David hütet die Schafe seines Vaters, als Samuel ihn zum künftigen König salbt. Später fordert der riesige Goliath das Volk Israel heraus. David vertraut auf Gott, tritt ihm mit einer Schleuder entgegen und besiegt ihn.",
+      "lifestyleImages": ["images/lifestyle/david-de.png"],
       "highlights": [
         "30 große Ausmalbilder",
-        "Zusätzlich 5 Seiten mit Spielen, Fragen und Rätseln",
-        "Großformat: 21,6 × 27,9 cm (ungefähr DIN A4)"
+        "Bibelstelle: 1. Samuel 16–17"
       ],
       "samples": [
         "images/david-de-preview-1.jpg",
@@ -593,8 +595,8 @@
           "series": "Bible Stories to Color · Volume 6",
           "age": "Ages 6+",
           "detail": "70 pages · large format",
-          "description": "David tends his father's sheep, is anointed by Samuel, and eventually faces Goliath. This Scripture-faithful coloring book tells the story step by step through large pictures to color. It also includes 5 pages of games, questions, and puzzles. The book has 70 pages in a generous 8.5 × 11 inch format, close to A4.",
-          "highlights": ["30 large coloring pictures", "5 additional pages of games, questions, and puzzles", "Large 8.5 × 11 in format (close to A4)"],
+          "description": "David tends his father's sheep when Samuel anoints him as the future king. Later, the giant Goliath challenges Israel. Trusting God, David faces him with a sling and defeats him.",
+          "highlights": ["30 large coloring pictures", "Bible passage: 1 Samuel 16–17"],
           "samples": ["images/david-en-preview-1.jpg", "images/david-en-preview-2.jpg", "images/david-en-preview-3.jpg", "images/david-en-preview-4.jpg", "images/david-en-preview-5.jpg", "images/david-en-preview-6.jpg"]
         },
         {
@@ -606,8 +608,8 @@
           "series": "Historias bíblicas para colorear · Tomo 6",
           "age": "A partir de 6 años",
           "detail": "70 páginas · formato grande",
-          "description": "David cuida las ovejas de su padre, Samuel lo unge y, finalmente, se enfrenta a Goliat. Este libro para colorear, fiel a la Biblia, cuenta la historia paso a paso con grandes ilustraciones. Incluye además 5 páginas de juegos, preguntas y pasatiempos. Tiene 70 páginas en formato grande (21,6 × 27,9 cm, similar al tamaño A4).",
-          "highlights": ["30 grandes ilustraciones para colorear", "5 páginas adicionales de juegos, preguntas y pasatiempos", "Formato grande: 21,6 × 27,9 cm (similar a A4)"],
+          "description": "David cuida las ovejas de su padre cuando Samuel lo unge como futuro rey. Más tarde, el gigante Goliat desafía a Israel. David confía en Dios, se enfrenta a él con una honda y lo vence.",
+          "highlights": ["30 grandes ilustraciones para colorear", "Pasaje bíblico: 1 Samuel 16–17"],
           "samples": ["images/david-es-preview-1.jpg", "images/david-es-preview-2.jpg", "images/david-es-preview-3.jpg", "images/david-es-preview-4.jpg", "images/david-es-preview-5.jpg", "images/david-es-preview-6.jpg"]
         },
         {
@@ -619,8 +621,8 @@
           "series": "Povești biblice de colorat · Volumul 6",
           "age": "De la 6 ani",
           "detail": "70 de pagini · format mare",
-          "description": "David are grijă de oile tatălui său, este uns de Samuel și, în cele din urmă, îl înfruntă pe Goliat. Această carte de colorat, fidelă Bibliei, spune povestea pas cu pas prin ilustrații mari. Include și 5 pagini cu jocuri, întrebări și puzzle-uri. Cartea are 70 de pagini în format mare (21,6 × 27,9 cm, aproximativ A4).",
-          "highlights": ["30 de ilustrații mari de colorat", "Încă 5 pagini cu jocuri, întrebări și puzzle-uri", "Format mare: 21,6 × 27,9 cm (aproximativ A4)"],
+          "description": "David păzește oile tatălui său când Samuel îl unge ca viitor rege. Mai târziu, uriașul Goliat provoacă poporul Israel. David se încrede în Dumnezeu, îl înfruntă cu o praștie și îl învinge.",
+          "highlights": ["30 de ilustrații mari de colorat", "Pasaj biblic: 1 Samuel 16–17"],
           "samples": ["images/david-ro-preview-1.jpg", "images/david-ro-preview-2.jpg", "images/david-ro-preview-3.jpg", "images/david-ro-preview-4.jpg", "images/david-ro-preview-5.jpg", "images/david-ro-preview-6.jpg"]
         }
       ]
@@ -646,10 +648,12 @@
       "category": "malbuecher",
       "age": "Ab 6 Jahren",
       "detail": "70 Seiten",
-      "description": "Die Weihnachtsgeschichte – Jesus ist geboren ist Band 9 der Reihe Bibelgeschichten zum Ausmalen.\r\n\r\nDieses bibeltreue, festliche Malbuch nimmt Kinder ab 6 Jahren mit nach Bethlehem: Maria und Josef machen sich auf den Weg, Jesus wird geboren, die Hirten hören die frohe Botschaft und die Weisen aus dem Osten folgen dem Stern.\r\n\r\nLiebevoll gestaltete Ausmalbilder und 5 Seiten mit Spielen, Fragen und Rätseln erzählen und vertiefen die biblische Weihnachtsgeschichte. Das Buch umfasst 70 Seiten im Großformat – ungefähr DIN A4.\r\n\r\nEine schöne Beschäftigung für die Advents- und Weihnachtszeit – zu Hause, in der Familie, im Kindergottesdienst, in der Sonntagsschule und in christlichen Gemeinden.\r\n\r\nBibelstellen: Lukas 1–2; Matthäus 2",
+      "description": "Maria und Josef reisen nach Bethlehem. Dort wird Jesus geboren und in eine Krippe gelegt. Hirten hören die frohe Botschaft von einem Engel und machen sich auf den Weg zu ihm. Auch Weise aus dem Osten folgen dem Stern, um das Kind zu finden.",
+      "lifestyleImages": ["images/lifestyle/weihnachten-de.png"],
       "amazon": "https://www.amazon.de/dp/B0HH6ND5MC",
       "releaseDate": "2026-09-01",
-      "cover": "images/cover-bibelgeschichten-zum-ausmalen-3.jpg",
+      "cover": "images/cover-band09-de-spread.jpg",
+      "coverSpread": true,
       "editions": [
         {
           "language": "de",
@@ -668,7 +672,7 @@
           "series": "Bible Stories to Color · Volume 9",
           "age": "Ages 6+",
           "detail": "70 pages · large format",
-          "description": "The Christmas Story – Jesus Is Born is Volume 9 of the Bible Stories to Color series.\n\nThis Scripture-faithful festive coloring book takes children ages 6 and up to Bethlehem: Mary and Joseph set out on their journey, Jesus is born, the shepherds hear the good news, and the wise men from the East follow the star.\n\nLovingly designed coloring pages and 5 pages of games, questions, and puzzles tell and reinforce the biblical Christmas story. The book contains 70 pages in a large format close to A4.\n\nIdeal for Advent and Christmas – at home, in children’s church, Sunday school, and Christian communities.\n\nBible passages: Luke 1–2; Matthew 2",
+          "description": "Mary and Joseph travel to Bethlehem. There Jesus is born and laid in a manger. Shepherds hear the good news from an angel and go to see him. Wise men from the East also follow the star to find the child.",
           "highlights": [
             "The Christmas story to color",
             "Bible passages: Luke 1–2; Matthew 2",
@@ -685,7 +689,7 @@
           "series": "Historias bíblicas para colorear · Tomo 9",
           "age": "A partir de 6 años",
           "detail": "70 páginas · formato grande",
-          "description": "La historia de Navidad – Jesús ha nacido es el tomo 9 de la serie Historias bíblicas para colorear.\n\nEste festivo libro fiel a la Biblia lleva a los niños a partir de 6 años hasta Belén: María y José emprenden el viaje, nace Jesús, los pastores reciben la buena noticia y los sabios de Oriente siguen la estrella.\n\nLas ilustraciones para colorear y 5 páginas de juegos, preguntas y pasatiempos cuentan y profundizan la historia bíblica de Navidad. El libro contiene 70 páginas en un formato grande parecido al tamaño A4.\n\nIdeal para Adviento y Navidad – en casa, en la iglesia infantil, en la escuela dominical y en comunidades cristianas.\n\nPasajes bíblicos: Lucas 1–2; Mateo 2",
+          "description": "María y José viajan a Belén. Allí nace Jesús y lo acuestan en un pesebre. Un ángel anuncia la buena noticia a los pastores, que van a verlo. Unos sabios de Oriente también siguen la estrella para encontrar al niño.",
           "highlights": [
             "La historia de Navidad para colorear",
             "Pasajes bíblicos: Lucas 1–2; Mateo 2",
@@ -713,9 +717,10 @@
       "title": "Ostern – Jesus lebt!",
       "series": "Bibelgeschichten zum Ausmalen · Band 10",
       "category": "malbuecher",
-      "age": "Ab 6 Jahren",
+      "age": "Ab 5 Jahren",
       "detail": "70 Seiten · Großformat",
-      "description": "Das Grab ist leer – Jesus lebt! Das größte Wunder zum Ausmalen.\r\n\r\nJesus zieht auf einem Esel in Jerusalem ein, und die Menschen jubeln ihm mit Palmzweigen zu. Er feiert ein letztes Fest mit seinen Freunden. Dann wird Jesus vor Pilatus angeklagt, stirbt am Kreuz und wird in ein Grab gelegt. Doch am Sonntagmorgen geschieht das Wunder von Ostern: Ein mächtiger Engel erscheint, das Grab ist leer und Jesus begegnet seinen Freunden wieder. Schließlich kehrt Jesus in den Himmel zurück.\r\n\r\nDieses bibeltreue Malbuch erzählt die Ostergeschichte nach Lukas 19–24 und Johannes 13 und 20 in großen Ausmalbildern. 5 Seiten mit Spielen, Fragen und Rätseln vertiefen die Geschichte. Das Buch umfasst 70 Seiten im Großformat – ungefähr DIN A4.\r\n\r\nGut geeignet für Kinder ab 6 Jahren, den Kindergottesdienst, die Sonntagsschule und christliche Familien sowie als Geschenk im Osternest, zur Taufe oder zur Erstkommunion.",
+      "description": "Jesus zieht in Jerusalem ein und feiert mit seinen Freunden das letzte Abendmahl. Dann wird er gefangen genommen und stirbt am Kreuz. Doch am dritten Tag ist das Grab leer: Jesus lebt und begegnet seinen Freunden wieder.",
+      "lifestyleImages": ["images/lifestyle/ostern-de.png"],
       "amazon": "https://www.amazon.de/dp/B0HH8W2RSD",
       "releaseDate": "2026-09-01",
       "cover": "images/cover-bibelgeschichten-zum-ausmalen-2.jpg",
@@ -734,7 +739,8 @@
       "age": "6–12 Jahre",
       "detail": "29 Seiten · auch als eBook",
       "cover": "images/cover-zachaeus.jpg",
-      "description": "Zachäus hat viel Geld, ist aber einsam – bis Jesus in die Stadt kommt und ihn beim Namen ruft. Diese liebevoll illustrierte Geschichte nach Lukas 19,1–10 zeigt Kindern auf farbenfrohe Weise: Bei Jesus sind Vergebung, Frieden und ein neuer Anfang möglich.",
+      "description": "Zachäus möchte Jesus sehen, doch die Menschenmenge versperrt ihm die Sicht. Deshalb klettert er auf einen Baum. Jesus bleibt stehen, ruft Zachäus beim Namen und besucht ihn zu Hause. Diese Begegnung verändert sein Leben.",
+      "lifestyleImages": ["images/lifestyle/zachaeus-de.png"],
       "highlights": [
         "Farbenfroh illustriert",
         "Bibeltreu & leicht verständlich",
@@ -779,7 +785,8 @@
       "category": "geschichten",
       "age": "6–12 years",
       "detail": "Kindle eBook",
-      "description": "Zacchaeus is wealthy, but deep down he is lonely. As Jericho’s chief tax collector, he is avoided by the people around him. Then Jesus comes to town, sees Zacchaeus in the tree, calls him by name, and visits his home. That encounter changes Zacchaeus forever. This lovingly illustrated children’s book retells the story from Luke 19:1–10 faithfully and in clear, age-appropriate language. It is a story about forgiveness, change, and the love of Jesus.",
+      "description": "Zacchaeus wants to see Jesus, but the crowd blocks his view. So he climbs a tree. Jesus stops, calls Zacchaeus by name and visits him at home. The encounter changes his life.",
+      "lifestyleImages": ["images/lifestyle/zachaeus-en.png"],
       "amazon": "https://www.amazon.com/dp/B0G4XFDCXQ",
       "releaseDate": "2025-12-03",
       "cover": "images/cover-the-man-in-the-tree.jpg",
