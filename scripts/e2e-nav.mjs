@@ -149,9 +149,11 @@ try {
     await evalJs(`document.querySelector('[role="dialog"] button[aria-label="Nächstes Bild"]')?.click()`)
     const lifestyleShown = await waitForPageState(`document.querySelector('[role="dialog"] img[alt*="Buch in der Hand"]') !== null`)
     await evalJs(`document.querySelector('[role="dialog"] button[aria-label="Nächstes Bild"]')?.click()`)
+    const openBookShown = await waitForPageState(`document.querySelector('[role="dialog"] img[src*="schoepfung-de-offen.png"]') !== null`)
+    await evalJs(`document.querySelector('[role="dialog"] button[aria-label="Nächstes Bild"]')?.click()`)
     const sampleShown = await waitForPageState(`document.querySelector('[role="dialog"] img[alt*="Vorschauseite 1"]') !== null`)
-    const galleryOk = galleryStart && lifestyleShown && sampleShown
-    console.log(`${galleryOk ? '✓' : '✗'} Buchgalerie: Cover → Buchfoto → echte Vorschauseite`)
+    const galleryOk = galleryStart && lifestyleShown && openBookShown && sampleShown
+    console.log(`${galleryOk ? '✓' : '✗'} Buchgalerie: Cover → Buchfoto → aufgeschlagenes Buch → echte Vorschauseite`)
     if (!galleryOk) fehler++
     await send('Emulation.setDeviceMetricsOverride', { width: 820, height: 900, deviceScaleFactor: 1, mobile: false })
     const buttonLayoutJson = await evalJs(`(() => {
@@ -196,7 +198,21 @@ try {
   }
 
   {
+    await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: true })
     const before = await targetCount()
+    const media = JSON.parse(await evalJs(`JSON.stringify({
+      cover: document.querySelector('.book3d-leaf-front')?.getAttribute('src'),
+      coverCropped: document.querySelector('.book3d-leaf-front')?.classList.contains('book3d-leaf-front--spread'),
+      coverPosition: getComputedStyle(document.querySelector('.book3d-leaf-front')).objectPosition,
+      backs: [...document.querySelectorAll('.book3d-leaf-back')].map(img => ({ src: img.getAttribute('src'), loaded: img.complete && img.naturalWidth > 0 }))
+    })`) || '{}')
+    const realPages = media.cover?.includes('cover-band01-de-spread')
+      && media.coverCropped
+      && media.coverPosition.startsWith('100%')
+      && media.backs?.length > 0
+      && media.backs.every(page => page.loaded && page.src?.includes('seite-'))
+    console.log(`${realPages ? '✓' : '✗'} Hero-Buch: vollständige Cover-Vorderseite und echte bedruckte Rückseiten`)
+    if (!realPages) fehler++
     const result = await evalJs(`(() => {
       const book = document.querySelector('.book3d-scene')
       book.dispatchEvent(new PointerEvent('pointerdown', {bubbles:true, pointerType:'touch'}))
@@ -214,7 +230,12 @@ try {
     })()`)
     const after = await targetCount()
     const state = JSON.parse(stateJson || '{}')
+    const openBounds = JSON.parse(await evalJs(`(() => {
+      const pages = [...document.querySelectorAll('.book3d-leaf, .book3d-page-base')]
+      return JSON.stringify({ left: Math.min(...pages.map(page => page.getBoundingClientRect().left)), right: Math.max(...pages.map(page => page.getBoundingClientRect().right)), width: innerWidth })
+    })()`) || '{}')
     const opened = after === before && result.contextMenuBlocked && state.touchOpen === 'true' && state.allLeavesOpen && !state.dialog
+      && openBounds.left >= -2 && openBounds.right <= openBounds.width + 2
     await evalJs(`(() => {
       const book = document.querySelector('.book3d-scene')
       book.dispatchEvent(new PointerEvent('pointerdown', {bubbles:true, pointerType:'touch'}))
@@ -231,6 +252,7 @@ try {
     const ok = opened && closed.touchOpen === 'false' && closed.allLeavesClosed
     console.log(`${ok ? '✓' : '✗'} Smartphone-Tipp öffnet und schließt das Hero-Buch vollständig, ohne Bildmenü oder Dialog (Tabs ${before}→${after})`)
     if (!ok) fehler++
+    await send('Emulation.clearDeviceMetricsOverride')
     // Für die folgenden Prüfungen auf einen garantiert sauberen Seitenzustand
     // zurückkehren. Das ist auch auf langsameren GitHub-Runnern stabiler als
     // auf das Ende einer Dialog-Schließanimation zu warten.

@@ -137,6 +137,13 @@
 .book3d:hover {
   transform: rotateY(-18deg) rotateX(3deg);
 }
+@media (max-width: 639px) {
+  /* Das aufgeklappte Buch ist zwei Seiten breit: auf kleinen Displays
+     kleiner und mittig zeigen, ohne die linke Seite abzuschneiden. */
+  .book3d-scene[data-touch-open="true"] .book3d {
+    transform: translateX(35%) scale(0.73) rotateY(-18deg) rotateX(3deg);
+  }
+}
 /* unterste Seite (bleibt liegen) – muss UNTER allen Blättern liegen */
 .book3d-page-base {
   display: block;
@@ -167,12 +174,19 @@
   border-radius: 3px 8px 8px 3px;
   background: #fff;
 }
+.book3d-leaf-front--spread {
+  /* Druckbogen: rechts liegt die komplette Vorderseite des Buchs. */
+  object-position: right center;
+}
 .book3d-leaf-back {
   position: absolute;
   inset: 0;
   transform: rotateY(180deg);
   backface-visibility: hidden;
-  background: linear-gradient(120deg, #f8f1de, #fffaf0);
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #fff;
   border-radius: 8px 3px 3px 8px;
   box-shadow: inset 0 0 40px rgba(30, 42, 74, 0.08);
 }

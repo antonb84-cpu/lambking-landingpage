@@ -80,6 +80,14 @@ test('Hero-Buch blättert am Smartphone ohne Bildmenü und ohne Weiterleitung', 
   assert(hero.includes('data-touch-open'), 'Prüfbarer Touch-Öffnungszustand fehlt')
 })
 
+test('Hero-Buch zeigt den vollständigen Vorderdeckel und bedruckte Blattrückseiten', () => {
+  const hero = readFileSync(join(SRC, 'sections/Hero.tsx'), 'utf-8')
+  const css = readFileSync(join(SRC, 'index.css'), 'utf-8')
+  assert(hero.includes('featured.coverSpread') && css.includes('object-position: right center'), 'Druckbogen-Cover wird nicht auf die Vorderseite ausgerichtet')
+  assert(hero.includes('src={leaf.back}') && hero.includes('pairedPages'), 'Rückseiten zeigen keine echten Vorschauseiten')
+  assert(!hero.includes('<div className="book3d-leaf-back" />'), 'Leere Blattrückseiten sind noch vorhanden')
+})
+
 // ── 2. Buchdaten ──────────────────────────────────────────────
 const booksJson = JSON.parse(readFileSync(join(SRC, 'data/books.json'), 'utf-8'))
 
@@ -151,7 +159,15 @@ test('Buchgalerie und kurze Inhaltsangaben sind pro Buch gepflegt', () => {
     assert(book.description?.length > 50, `${book.id}: kurze Inhaltsangabe fehlt`)
     assert(!/70 Seiten|70 pages|70 páginas|DIN A4|21,6 × 27,9/.test(book.description), `${book.id}: allgemeine Buchfakten stehen in der Geschichte`)
     assert(book.lifestyleImages?.length, `${book.id}: Buchfoto fehlt`)
-    for (const image of book.lifestyleImages) assert(existsSync(join(ROOT, 'public', image)), `${book.id}: Buchfoto fehlt (${image})`)
+    for (const image of book.lifestyleImages) {
+      const path = join(ROOT, 'public', image)
+      assert(existsSync(path), `${book.id}: Buchfoto fehlt (${image})`)
+      if (image.endsWith('.png')) {
+        const bytes = readFileSync(path)
+        assert(bytes.subarray(1, 4).toString('ascii') === 'PNG', `${book.id}: beschädigtes PNG (${image})`)
+        assert(bytes.readUInt32BE(20) >= bytes.readUInt32BE(16), `${book.id}: Breitbild-Buchfoto (${image})`)
+      }
+    }
     if (book.previewVideo) assert(existsSync(join(ROOT, 'public', book.previewVideo)), `${book.id}: Vorschauvideo fehlt`)
   }
 })

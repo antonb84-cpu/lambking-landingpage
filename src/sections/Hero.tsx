@@ -35,11 +35,15 @@ function Book3D() {
   const langBooks = BOOKS.filter((b) => b.lang === lang)
   const pool = langBooks.length > 0 ? langBooks : BOOKS
   const featured = pool.find((book) => book.showInHero) ?? pool.find(isNew) ?? pool[0]
+  // Ein Blatt hat zwei bedruckte Seiten. Paarweise verteilen, damit beim
+  // Umblättern links und rechts echte Buchseiten statt leerer Flächen stehen.
   const previewPages = featured.samples.slice(0, 10)
-  // Umschlag + alle Vorschauseiten außer der letzten als Blätter;
-  // die letzte Seite bleibt als Grundseite liegen
-  const leaves = [featured.cover, ...previewPages.slice(0, -1)]
-  const basePage = previewPages[previewPages.length - 1] ?? featured.cover
+  const pairedPages = previewPages.slice(0, previewPages.length - (previewPages.length % 2))
+  const leaves = [{ front: featured.cover, back: pairedPages[0] ?? featured.cover, isCover: true }]
+  for (let i = 1; i < pairedPages.length - 1; i += 2) {
+    leaves.push({ front: pairedPages[i], back: pairedPages[i + 1], isCover: false })
+  }
+  const basePage = pairedPages[pairedPages.length - 1] ?? featured.cover
   const count = leaves.length
 
   const leafEls = useRef<(HTMLDivElement | null)[]>([])
@@ -142,7 +146,7 @@ function Book3D() {
       aria-label={`${featured.title} – ${t.hero.mobileBookHint}`}
       aria-pressed={isTouchOpen}
       data-touch-open={isTouchOpen ? 'true' : 'false'}
-      className="book3d-scene relative mx-auto block w-60 cursor-pointer sm:w-72 lg:w-80"
+      className="book3d-scene relative mx-auto block w-[min(62vw,15rem)] cursor-pointer sm:w-72"
       onPointerEnter={(event) => {
         if (event.pointerType === 'mouse') kickRef.current(true)
       }}
@@ -169,10 +173,10 @@ function Book3D() {
             fetchPriority="high"
             draggable={false}
           />
-          {/* Blätter: Umschlag zuerst, dann Seite für Seite */}
-          {leaves.map((src, i) => (
+          {/* Blätter: Umschlag zuerst, danach echte Vorder- und Rückseiten */}
+          {leaves.map((leaf, i) => (
             <div
-              key={src + i}
+              key={leaf.front + i}
               ref={(el) => {
                 leafEls.current[i] = el
               }}
@@ -180,13 +184,19 @@ function Book3D() {
               style={{ transform: `translateZ(${BASE_Z + (count - i) * LEAF_STEP}px)` }}
             >
               <img
-                src={src}
+                src={leaf.front}
                 alt={i === 0 ? featured.title : `${t.books.samplePage} ${i} – ${featured.title}`}
-                className="book3d-leaf-front"
+                className={`book3d-leaf-front${leaf.isCover && featured.coverSpread ? ' book3d-leaf-front--spread' : ''}`}
                 loading="eager"
                 draggable={false}
               />
-              <div className="book3d-leaf-back" />
+              <img
+                src={leaf.back}
+                alt={`${t.books.samplePage} ${i * 2 + 1} – ${featured.title}`}
+                className="book3d-leaf-back"
+                loading="eager"
+                draggable={false}
+              />
             </div>
           ))}
           <div className="book3d-shadow" />

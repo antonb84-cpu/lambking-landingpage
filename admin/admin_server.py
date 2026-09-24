@@ -1173,12 +1173,19 @@ class Handler(BaseHTTPRequestHandler):
             lifestyle_dir.mkdir(parents=True, exist_ok=True)
             new_photos = []
             try:
+                from PIL import Image as PILImage
                 for index, (_, (filename, data)) in enumerate(lifestyle_files, 1):
                     if len(data) > MAX_IMAGE_BYTES:
                         raise ValueError("Bild zu groß")
+                    with PILImage.open(io.BytesIO(data)) as photo:
+                        if photo.width > photo.height:
+                            raise ValueError("Buchfoto muss im Hochformat sein. Bitte kein Breitbild hochladen.")
                     dest = lifestyle_dir / f"{book_id}-{index}.jpg"
                     save_image(data, dest, width=1400)
                     new_photos.append(f"images/lifestyle/{dest.name}")
+            except ValueError as exc:
+                self.send_json({"ok": False, "error": str(exc)})
+                return
             except Exception:
                 self.send_json({"ok": False, "error": "Ein Buchfoto konnte nicht gelesen werden. Bitte JPG oder PNG bis 15 MB verwenden."})
                 return

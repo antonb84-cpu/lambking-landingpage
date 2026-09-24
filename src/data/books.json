@@ -442,7 +442,7 @@
       "age": "Ab 6 Jahren",
       "detail": "70 Seiten · Großformat",
       "description": "Am Anfang erschafft Gott Himmel und Erde. Licht und Dunkelheit, Meer und Land, Pflanzen und Tiere entstehen. Schließlich erschafft Gott die Menschen und gibt ihnen einen Platz in seiner guten Schöpfung.",
-      "lifestyleImages": ["images/lifestyle/schoepfung-de.png"],
+      "lifestyleImages": ["images/lifestyle/schoepfung-de-hochformat.png", "images/lifestyle/schoepfung-de-offen.png"],
       "amazon": "https://www.amazon.de/dp/B0HFWX8DH5",
       "releaseDate": "2026-09-01",
       "cover": "images/cover-band01-de-spread.png",
