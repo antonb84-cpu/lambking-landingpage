@@ -72,7 +72,7 @@ export default function SupportedWorks() {
                 <Reveal key={organization.id || `${organization.name}-${index}`} delay={index * 100}>
                   <article className="flex h-full flex-col rounded-2xl border border-accent/25 bg-background p-5 text-left shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md sm:p-6">
                     <div
-                      className={`flex h-20 w-full items-center justify-start rounded-xl px-5 ${
+                      className={`flex h-20 w-full items-center justify-center rounded-xl px-5 ${
                         organization.logoBackground === 'dark' ? 'bg-primary' : 'bg-card'
                       }`}
                     >

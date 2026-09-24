@@ -35,15 +35,15 @@ function Book3D() {
   const langBooks = BOOKS.filter((b) => b.lang === lang)
   const pool = langBooks.length > 0 ? langBooks : BOOKS
   const featured = pool.find((book) => book.showInHero) ?? pool.find(isNew) ?? pool[0]
-  // Ein Blatt hat zwei bedruckte Seiten. Paarweise verteilen, damit beim
-  // Umblättern links und rechts echte Buchseiten statt leerer Flächen stehen.
-  const previewPages = featured.samples.slice(0, 10)
-  const pairedPages = previewPages.slice(0, previewPages.length - (previewPages.length % 2))
-  const leaves = [{ front: featured.cover, back: pairedPages[0] ?? featured.cover, isCover: true }]
-  for (let i = 1; i < pairedPages.length - 1; i += 2) {
-    leaves.push({ front: pairedPages[i], back: pairedPages[i + 1], isCover: false })
-  }
-  const basePage = pairedPages[pairedPages.length - 1] ?? featured.cover
+  // Im gedruckten Malbuch liegt das Ausmalmotiv rechts; die linke Seite
+  // der Doppelseite bleibt frei. Die Vorderseiten stammen aus den echten
+  // Buchvorschauen, die Rückseiten werden als leeres Papier dargestellt.
+  const previewPages = featured.samples.slice(0, 5)
+  const leaves = [
+    { front: featured.cover, isCover: true },
+    ...previewPages.slice(0, -1).map((front) => ({ front, isCover: false })),
+  ]
+  const basePage = previewPages[previewPages.length - 1] ?? featured.cover
   const count = leaves.length
 
   const leafEls = useRef<(HTMLDivElement | null)[]>([])
@@ -173,7 +173,7 @@ function Book3D() {
             fetchPriority="high"
             draggable={false}
           />
-          {/* Blätter: Umschlag zuerst, danach echte Vorder- und Rückseiten */}
+          {/* Umschlag und echte rechte Buchseiten; links bleibt Papier frei */}
           {leaves.map((leaf, i) => (
             <div
               key={leaf.front + i}
@@ -190,13 +190,7 @@ function Book3D() {
                 loading="eager"
                 draggable={false}
               />
-              <img
-                src={leaf.back}
-                alt={`${t.books.samplePage} ${i * 2 + 1} – ${featured.title}`}
-                className="book3d-leaf-back"
-                loading="eager"
-                draggable={false}
-              />
+              <div className="book3d-leaf-back" aria-hidden="true" />
             </div>
           ))}
           <div className="book3d-shadow" />

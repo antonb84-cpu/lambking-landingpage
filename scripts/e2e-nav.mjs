@@ -147,11 +147,11 @@ try {
     await waitForPageState(`document.querySelectorAll('[role="dialog"]').length === 1`)
     const galleryStart = await evalJs(`document.querySelector('[role="dialog"]')?.textContent.includes('Cover · 1/')`)
     await evalJs(`document.querySelector('[role="dialog"] button[aria-label="Nächstes Bild"]')?.click()`)
-    const lifestyleShown = await waitForPageState(`document.querySelector('[role="dialog"] img[alt*="Buch in der Hand"]') !== null`)
+    const lifestyleShown = await waitForPageState(`document.querySelector('[role="dialog"] img[alt*="Buchfoto"]') !== null`)
     await evalJs(`document.querySelector('[role="dialog"] button[aria-label="Nächstes Bild"]')?.click()`)
-    const openBookShown = await waitForPageState(`document.querySelector('[role="dialog"] img[src*="schoepfung-de-offen.png"]') !== null`)
+    const openBookShown = await waitForPageState(`document.querySelector('[role="dialog"] img[src*="schoepfung-de-offen-rechts.png"]') !== null`)
     await evalJs(`document.querySelector('[role="dialog"] button[aria-label="Nächstes Bild"]')?.click()`)
-    const sampleShown = await waitForPageState(`document.querySelector('[role="dialog"] img[alt*="Vorschauseite 1"]') !== null`)
+    const sampleShown = await waitForPageState(`document.querySelector('[role="dialog"] img[src*="schoepfung-de-originalseite-05.jpg"]') !== null`)
     const galleryOk = galleryStart && lifestyleShown && openBookShown && sampleShown
     console.log(`${galleryOk ? '✓' : '✗'} Buchgalerie: Cover → Buchfoto → aufgeschlagenes Buch → echte Vorschauseite`)
     if (!galleryOk) fehler++
@@ -204,14 +204,17 @@ try {
       cover: document.querySelector('.book3d-leaf-front')?.getAttribute('src'),
       coverCropped: document.querySelector('.book3d-leaf-front')?.classList.contains('book3d-leaf-front--spread'),
       coverPosition: getComputedStyle(document.querySelector('.book3d-leaf-front')).objectPosition,
-      backs: [...document.querySelectorAll('.book3d-leaf-back')].map(img => ({ src: img.getAttribute('src'), loaded: img.complete && img.naturalWidth > 0 }))
+      fronts: [...document.querySelectorAll('.book3d-leaf-front')].slice(1).map(img => ({ src: img.getAttribute('src'), loaded: img.complete && img.naturalWidth > 0 })),
+      backs: [...document.querySelectorAll('.book3d-leaf-back')].map(page => ({ tag: page.tagName, images: page.querySelectorAll('img').length }))
     })`) || '{}')
     const realPages = media.cover?.includes('cover-band01-de-spread')
       && media.coverCropped
       && media.coverPosition.startsWith('100%')
+      && media.fronts?.length > 0
+      && media.fronts.every(page => page.loaded)
       && media.backs?.length > 0
-      && media.backs.every(page => page.loaded && page.src?.includes('seite-'))
-    console.log(`${realPages ? '✓' : '✗'} Hero-Buch: vollständige Cover-Vorderseite und echte bedruckte Rückseiten`)
+      && media.backs.every(page => page.tag === 'DIV' && page.images === 0)
+    console.log(`${realPages ? '✓' : '✗'} Hero-Buch: vollständiges Cover, echte rechte Seiten und freie linke Seiten`)
     if (!realPages) fehler++
     const result = await evalJs(`(() => {
       const book = document.querySelector('.book3d-scene')

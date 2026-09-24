@@ -141,9 +141,9 @@ export const BOOKS: Book[] = [
     coverSpread: true,
     description: "Am Anfang erschafft Gott Himmel und Erde. Licht und Dunkelheit, Meer und Land, Pflanzen und Tiere entstehen. Schließlich erschafft Gott die Menschen und gibt ihnen einen Platz in seiner guten Schöpfung.",
     highlights: ["30 große Ausmalbilder", "Bibelstelle: 1. Mose 1–2"],
-    lifestyleImages: ["images/lifestyle/schoepfung-de-hochformat.png", "images/lifestyle/schoepfung-de-offen.png"],
+    lifestyleImages: ["images/lifestyle/schoepfung-de-hochformat.png", "images/lifestyle/schoepfung-de-offen-rechts.png"],
     samples: [
-      'images/bibelgeschichten-zum-ausmalen-seite-1.jpg',
+      'images/schoepfung-de-originalseite-05.jpg',
       'images/bibelgeschichten-zum-ausmalen-seite-2.jpg',
       'images/bibelgeschichten-zum-ausmalen-seite-3.jpg',
       'images/bibelgeschichten-zum-ausmalen-seite-4.jpg',

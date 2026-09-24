@@ -134,8 +134,9 @@
   transform-style: preserve-3d;
   transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.book3d:hover {
-  transform: rotateY(-18deg) rotateX(3deg);
+.book3d-scene:is(:hover, :focus-visible) .book3d {
+  /* Die aufgeschlagene linke Seite bleibt in der rechten Hero-Spalte. */
+  transform: translateX(14%) scale(0.82) rotateY(-18deg) rotateX(3deg);
 }
 @media (max-width: 639px) {
   /* Das aufgeklappte Buch ist zwei Seiten breit: auf kleinen Displays
@@ -185,7 +186,6 @@
   backface-visibility: hidden;
   width: 100%;
   height: 100%;
-  object-fit: cover;
   background: #fff;
   border-radius: 8px 3px 3px 8px;
   box-shadow: inset 0 0 40px rgba(30, 42, 74, 0.08);

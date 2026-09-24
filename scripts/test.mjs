@@ -80,12 +80,12 @@ test('Hero-Buch blättert am Smartphone ohne Bildmenü und ohne Weiterleitung', 
   assert(hero.includes('data-touch-open'), 'Prüfbarer Touch-Öffnungszustand fehlt')
 })
 
-test('Hero-Buch zeigt den vollständigen Vorderdeckel und bedruckte Blattrückseiten', () => {
+test('Hero-Buch zeigt den vollständigen Vorderdeckel und rechts bedruckte Seiten', () => {
   const hero = readFileSync(join(SRC, 'sections/Hero.tsx'), 'utf-8')
   const css = readFileSync(join(SRC, 'index.css'), 'utf-8')
   assert(hero.includes('featured.coverSpread') && css.includes('object-position: right center'), 'Druckbogen-Cover wird nicht auf die Vorderseite ausgerichtet')
-  assert(hero.includes('src={leaf.back}') && hero.includes('pairedPages'), 'Rückseiten zeigen keine echten Vorschauseiten')
-  assert(!hero.includes('<div className="book3d-leaf-back" />'), 'Leere Blattrückseiten sind noch vorhanden')
+  assert(hero.includes('featured.samples.slice(0, 5)') && hero.includes('front: featured.cover'), 'Rechte Buchseiten stammen nicht aus der Vorschau')
+  assert(hero.includes('<div className="book3d-leaf-back" aria-hidden="true" />'), 'Linke Buchseiten sind nicht papierweiß')
 })
 
 // ── 2. Buchdaten ──────────────────────────────────────────────
@@ -155,6 +155,10 @@ test('Mehrsprachige Bücher besitzen ein eigenes, korrekt verknüpftes Cover je 
 test('Buchgalerie und kurze Inhaltsangaben sind pro Buch gepflegt', () => {
   const booksView = readFileSync(join(SRC, 'sections/Books.tsx'), 'utf-8')
   assert(booksView.includes('BookMediaGallery') && booksView.includes('onTouchEnd'), 'Wischbare Buchgalerie fehlt')
+  const creation = booksJson.books.find((book) => book.id === 'bibelgeschichten-zum-ausmalen')
+  assert(creation?.lifestyleImages?.includes('images/lifestyle/schoepfung-de-offen-rechts.png'), 'Korrigierte Buchansicht fehlt')
+  assert(creation?.samples?.includes('images/schoepfung-de-originalseite-05.jpg'), 'Originalseite aus dem Buch fehlt')
+  assert(!creation?.lifestyleImages?.includes('images/lifestyle/schoepfung-de-offen.png'), 'Falsche Doppelseite ist noch eingebunden')
   for (const book of booksJson.books) {
     assert(book.description?.length > 50, `${book.id}: kurze Inhaltsangabe fehlt`)
     assert(!/70 Seiten|70 pages|70 páginas|DIN A4|21,6 × 27,9/.test(book.description), `${book.id}: allgemeine Buchfakten stehen in der Geschichte`)
@@ -206,7 +210,7 @@ test('Vorschauseiten lassen sich ordnen und ein Hero-Buch auswählen', () => {
   assert(admin.includes('sampleOrder') && admin.includes('moveSampleItem'), 'Sortierung der Vorschauseiten fehlt')
   assert(admin.includes('f_showInHero'), 'Hero-Vorschau-Schalter fehlt im Backend')
   assert(server.includes('MAX_SAMPLE_IMAGES = 10') && server.includes('sampleOrder'), 'Server begrenzt/sortiert Vorschauseiten nicht korrekt')
-  assert(hero.includes('book.showInHero') && hero.includes('slice(0, 10)'), 'Startbereich verwendet die gewählte Vorschau nicht')
+  assert(hero.includes('book.showInHero') && hero.includes('featured.samples.slice(0, 5)'), 'Startbereich verwendet die gewählte Vorschau nicht')
 })
 
 test('Buchtypen/Kategorien sind lokalisiert und konsistent', () => {
@@ -283,6 +287,7 @@ test('Unterstützte Werke sind erweiterbar und können zweisprachige Flyer anzei
   assert(admin.includes('supportLogo_') && admin.includes('descriptionDe'), 'Backend-Felder für unterstützte Werke fehlen')
   assert(admin.includes('addSupportOrganization') && admin.includes('supportFlyer_de_') && admin.includes('supportFlyer_en_'), 'Organisationen oder Flyer sind im Backend nicht erweiterbar')
   assert(section.includes('supportedOrganizations'), 'Unterstützungssektion ist nicht mit den Einstellungen verbunden')
+  assert(section.includes('items-center justify-center rounded-xl'), 'Logos sind nicht mittig ausgerichtet')
   assert(section.includes('viewFlyer') && section.includes('<iframe'), 'Flyer können auf der Landingpage nicht angesehen werden')
   assert(server.includes('MAX_SUPPORTED_ORGANIZATIONS') && server.includes('supportFlyer_'), 'Flyer werden serverseitig nicht sicher verarbeitet')
   assert(generatedBooks.includes('supportedOrganizations:'), 'Automatisch erzeugte Seitendaten verlieren die unterstützten Werke')
