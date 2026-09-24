@@ -305,6 +305,23 @@ test('Alle Malbücher zeigen einheitlich Umfang, Format, Alter und Rätselseiten
   assert(admin.includes("coloringFactsTitle:") && !admin.includes("coloringCardSummary:"), 'Überflüssige Malbuch-Kurzinfo steht noch im Backend')
 })
 
+test('Buchfenster bietet einen barrierearmen Mengenrabatt mit E-Mail-Kontakt an', () => {
+  const defaults = JSON.parse(readFileSync(join(SRC, 'data/texts.defaults.json'), 'utf-8'))
+  const books = readFileSync(join(SRC, 'sections/Books.tsx'), 'utf-8')
+  const admin = readFileSync(join(ROOT, 'admin/index.html'), 'utf-8')
+  for (const lang of ['de', 'en']) {
+    const texts = defaults[lang].books
+    assert(texts.bulkDiscountButton && texts.bulkDiscountTitle, `${lang}: Mengenrabatt-Texte fehlen`)
+    assert(texts.bulkDiscountContactButton && texts.bulkDiscountEmailSubject, `${lang}: Mengenrabatt-Kontakttexte fehlen`)
+  }
+  for (const value of ['quantity: 10, discount: 15', 'quantity: 25, discount: 25', 'quantity: 50, discount: 35', 'quantity: 100, discount: 40']) {
+    assert(books.includes(value), `Rabattstaffel fehlt: ${value}`)
+  }
+  assert(books.includes('<table') && books.includes('scope="col"'), 'Barrierearme Rabatttabelle fehlt')
+  assert(books.includes('mailto:${SITE.contactEmail}') && books.includes('bulkDiscountEmailSubject'), 'E-Mail-Kontakt zum Mengenrabatt fehlt')
+  assert(admin.includes('bulkDiscountButton:') && admin.includes('bulkDiscountEmailSubject:'), 'Mengenrabatt-Texte sind im Backend nicht beschriftet')
+})
+
 test('Verwaiste Medien können sicher angesehen und gelöscht werden', () => {
   const admin = readFileSync(join(ROOT, 'admin/index.html'), 'utf-8')
   const server = readFileSync(join(ROOT, 'admin/admin_server.py'), 'utf-8')

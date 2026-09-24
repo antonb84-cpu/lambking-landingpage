@@ -138,6 +138,37 @@ try {
     if (!ok) fehler++
   }
 
+  // Buchfenster: Mengenrabatt öffnet eine eigene, zweisprachige Information
+  // mit der vereinbarten Staffel und direktem E-Mail-Kontakt.
+  {
+    await send('Page.navigate', { url: `http://127.0.0.1:${HTTP_PORT}/#buecher` })
+    await new Promise((r) => setTimeout(r, 1400))
+    await evalJs(`document.querySelector('#buecher article button[aria-label^="Inhalt ansehen:"]')?.click()`)
+    await waitForPageState(`document.querySelectorAll('[role="dialog"]').length === 1`)
+    await evalJs(`[...document.querySelectorAll('button')].find(b => b.textContent.includes('Mengenrabatt ab 10 Stück'))?.click()`)
+    const discountStateJson = await waitForPageState(`(() => {
+      const dialogs = [...document.querySelectorAll('[role="dialog"]')]
+      const dialog = dialogs.at(-1)
+      if (dialogs.length !== 2 || !dialog) return ''
+      return JSON.stringify({
+        text: dialog.textContent,
+        email: dialog.querySelector('a[href^="mailto:"]')?.getAttribute('href') || '',
+        rows: dialog.querySelectorAll('tbody tr').length,
+      })
+    })()`)
+    const discountState = JSON.parse(discountStateJson || '{}')
+    const ok = discountState.rows === 4
+      && ['ab 10 Stück', '15 %', 'ab 25 Stück', '25 %', 'ab 50 Stück', '35 %', 'ab 100 Stück', '40 %']
+        .every((part) => discountState.text?.includes(part))
+      && discountState.email.startsWith('mailto:hello@lambking.store?subject=')
+    console.log(`${ok ? '✓' : '✗'} Mengenrabatt: vier Rabattstufen und E-Mail-Kontakt im Buchfenster`)
+    if (!ok) fehler++
+    await evalJs(`[...document.querySelectorAll('[role="dialog"]')].at(-1)?.querySelector('[data-slot="dialog-close"]')?.click()`)
+    await waitForPageState(`document.querySelectorAll('[role="dialog"]').length === 1`)
+    await send('Page.navigate', { url: `http://127.0.0.1:${HTTP_PORT}/` })
+    await new Promise((r) => setTimeout(r, 1200))
+  }
+
   {
     const before = await targetCount()
     const result = await evalJs(`(() => {

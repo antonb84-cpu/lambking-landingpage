@@ -100,6 +100,16 @@
           "page": "Seite",
           "growing": "Die Serie wächst – bald erhältlich:",
           "buyAmazon": "Bei Amazon ansehen",
+          "bulkDiscountButton": "Mengenrabatt ab 10 Stück",
+          "bulkDiscountTitle": "Mengenrabatt für größere Bestellungen",
+          "bulkDiscountIntro": "Für größere Bestellungen bieten wir folgende Mengenrabatte an:",
+          "bulkDiscountOrderHeader": "Bestellung",
+          "bulkDiscountDiscountHeader": "Rabatt",
+          "bulkDiscountFrom": "ab",
+          "bulkDiscountPieces": "Stück",
+          "bulkDiscountContact": "Du möchtest eine größere Menge bestellen? Schreib uns, welche Titel, Sprachen und Stückzahlen du benötigst.",
+          "bulkDiscountContactButton": "Mengenrabatt per E-Mail anfragen",
+          "bulkDiscountEmailSubject": "Anfrage zum Mengenrabatt",
           "availableLanguages": "Erhältlich in"
         },
         "trust": {
@@ -263,6 +273,16 @@
           "page": "Page",
           "growing": "The series is growing – coming soon:",
           "buyAmazon": "View on Amazon",
+          "bulkDiscountButton": "Bulk discount from 10 copies",
+          "bulkDiscountTitle": "Bulk discounts for larger orders",
+          "bulkDiscountIntro": "For larger orders, we offer the following bulk discounts:",
+          "bulkDiscountOrderHeader": "Quantity",
+          "bulkDiscountDiscountHeader": "Discount",
+          "bulkDiscountFrom": "from",
+          "bulkDiscountPieces": "copies",
+          "bulkDiscountContact": "Would you like to order a larger quantity? Tell us which titles, languages, and quantities you need.",
+          "bulkDiscountContactButton": "Request a bulk discount by email",
+          "bulkDiscountEmailSubject": "Bulk discount request",
           "availableLanguages": "Available in"
         },
         "trust": {

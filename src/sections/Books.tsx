@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { ArrowLeft, ArrowRight, BookOpen, CheckCircle2, Eye, HelpCircle, Languages, Palette, Ruler, ShieldCheck, X, ZoomIn } from 'lucide-react'
+import { ArrowLeft, ArrowRight, BookOpen, CheckCircle2, Eye, HelpCircle, Languages, Mail, PackageCheck, Palette, Ruler, ShieldCheck, X, ZoomIn } from 'lucide-react'
 import Reveal from '@/components/Reveal'
 import RichText from '@/components/RichText'
 import AmazonRating from '@/components/AmazonRating'
-import { BOOKS, CATEGORIES, COMING_SOON, isNew, type Book, type Category } from '@/data/books'
+import { BOOKS, CATEGORIES, COMING_SOON, SITE, isNew, type Book, type Category } from '@/data/books'
 import { useLang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
 import { OPEN_BOOK_EVENT } from '@/data/openBook'
@@ -135,6 +135,13 @@ function BookCover({ book, variant }: { book: Book; variant: 'card' | 'dialog' }
 
 const isColoringBook = (book: Book) => book.category === 'malbuecher'
 
+const BULK_DISCOUNT_TIERS = [
+  { quantity: 10, discount: 15 },
+  { quantity: 25, discount: 25 },
+  { quantity: 50, discount: 35 },
+  { quantity: 100, discount: 40 },
+] as const
+
 function ColoringBookFacts({ compact = false, copy }: { compact?: boolean; copy?: BooksCopy }) {
   const siteCopy = textsFor(useLang()).books
   const labels = copy ?? siteCopy
@@ -224,11 +231,75 @@ function BuyButton({ book, size = 'md', preferredLanguage, label }: { book: Book
       target="_blank"
       rel="noopener noreferrer"
       onClick={() => trackAmazonClick(`${book.id}:${edition.language}`)}
-      className={`mx-auto block w-full ${width} transition-transform hover:scale-[1.05]`}
+      className={`block w-full ${width} transition-transform hover:scale-[1.03] focus-visible:rounded-full focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/60`}
       aria-label={`${book.title} – ${label ?? t.books.buyAmazon}`}
     >
       <img src="images/buttons/amazon.png" alt={label ?? t.books.buyAmazon} className="h-auto w-full" />
     </a>
+  )
+}
+
+function BulkDiscountDialog({
+  open,
+  onOpenChange,
+  bookTitle,
+}: {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  bookTitle: string
+}) {
+  const lang = useLang()
+  const copy = textsFor(lang).books
+  const subject = `${copy.bulkDiscountEmailSubject}: ${bookTitle}`
+  const emailHref = `mailto:${SITE.contactEmail}?subject=${encodeURIComponent(subject)}`
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="w-[92vw] max-w-lg rounded-2xl border-2 bg-background p-6 sm:p-8">
+        <DialogHeader className="pr-8 text-left">
+          <div className="mb-2 flex h-11 w-11 items-center justify-center rounded-full bg-accent/15 text-primary">
+            <PackageCheck className="h-6 w-6" aria-hidden />
+          </div>
+          <DialogTitle className="font-display text-2xl font-semibold sm:text-3xl">
+            {copy.bulkDiscountTitle}
+          </DialogTitle>
+          <DialogDescription className="pt-2 text-base leading-relaxed">
+            {copy.bulkDiscountIntro}
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="mt-5 overflow-hidden rounded-xl border border-border">
+          <table className="w-full border-collapse text-left">
+            <thead className="bg-primary text-primary-foreground">
+              <tr>
+                <th scope="col" className="px-4 py-3 text-sm font-bold">{copy.bulkDiscountOrderHeader}</th>
+                <th scope="col" className="px-4 py-3 text-right text-sm font-bold">{copy.bulkDiscountDiscountHeader}</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {BULK_DISCOUNT_TIERS.map((tier) => (
+                <tr key={tier.quantity} className="bg-card">
+                  <td className="px-4 py-3 font-semibold">
+                    {copy.bulkDiscountFrom} {tier.quantity} {copy.bulkDiscountPieces}
+                  </td>
+                  <td className="px-4 py-3 text-right font-bold text-primary">{tier.discount} %</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <p className="mt-5 text-sm leading-relaxed text-muted-foreground">{copy.bulkDiscountContact}</p>
+        <a
+          href={emailHref}
+          className="mt-5 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-center text-sm font-bold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/60"
+        >
+          <Mail className="h-5 w-5" aria-hidden />
+          {copy.bulkDiscountContactButton}
+        </a>
+        <p className="mt-3 text-center text-sm font-semibold text-muted-foreground">{SITE.contactEmail}</p>
+      </DialogContent>
+    </Dialog>
   )
 }
 
@@ -250,12 +321,15 @@ function BookDialog({
   onEditionChange: (language: string) => void
 }) {
   const lang = useLang()
+  const [bulkDiscountOpen, setBulkDiscountOpen] = useState(false)
   const zoomOpen = !!zoom
   const edition = book ? editionsOf(book).find((item) => item.language === editionLanguage) : undefined
   const displayBook = book && edition ? localizedBook(book, edition.language) : book
   const dialogCopy = booksCopyForEdition(lang, editionLanguage)
+  const siteCopy = textsFor(lang).books
   return (
-    <Dialog open={!!book} onOpenChange={(open) => !open && !zoomOpen && onClose()}>
+    <>
+    <Dialog open={!!book} onOpenChange={(open) => !open && !zoomOpen && !bulkDiscountOpen && onClose()}>
       <DialogContent
         className="max-h-[92vh] w-[94vw] max-w-5xl overflow-y-auto rounded-md border-2 bg-background p-0"
         closeButtonClassName="right-3 top-3 flex size-12 items-center justify-center rounded-full border border-primary/15 bg-white opacity-100 shadow-lg sm:right-4 sm:top-4 sm:size-10"
@@ -340,9 +414,19 @@ function BookDialog({
                   </div>
                 </>
               )}
-              <div className="sticky bottom-0 z-10 -mx-8 mt-9 flex flex-wrap items-center justify-between gap-4 border-t-2 border-border bg-background/95 px-8 py-5 shadow-[0_-8px_20px_-16px_rgba(30,42,74,0.35)] backdrop-blur lg:-mx-12 lg:px-12">
-                <p className="font-semibold text-muted-foreground">{dialogCopy.seePrice}</p>
-                {displayBook && <BuyButton book={displayBook} size="lg" preferredLanguage={editionLanguage || undefined} label={dialogCopy.buyAmazon} />}
+              <div className="sticky bottom-0 z-10 -mx-8 mt-9 border-t-2 border-border bg-background/95 px-8 py-5 shadow-[0_-8px_20px_-16px_rgba(30,42,74,0.35)] backdrop-blur lg:-mx-12 lg:px-12">
+                <p className="mb-3 text-center font-semibold text-muted-foreground sm:text-left">{dialogCopy.seePrice}</p>
+                <div className="mx-auto grid w-full max-w-[640px] gap-3 sm:grid-cols-2">
+                  {displayBook && <BuyButton book={displayBook} size="lg" preferredLanguage={editionLanguage || undefined} label={dialogCopy.buyAmazon} />}
+                  <button
+                    type="button"
+                    onClick={() => setBulkDiscountOpen(true)}
+                    className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full border-2 border-accent bg-accent/10 px-5 py-3 text-center text-sm font-bold text-primary shadow-sm transition-colors hover:bg-accent/20 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/60"
+                  >
+                    <PackageCheck className="h-5 w-5" aria-hidden />
+                    {siteCopy.bulkDiscountButton}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -360,6 +444,12 @@ function BookDialog({
         />
       </DialogContent>
     </Dialog>
+    <BulkDiscountDialog
+      open={bulkDiscountOpen}
+      onOpenChange={setBulkDiscountOpen}
+      bookTitle={displayBook?.title ?? ''}
+    />
+    </>
   )
 }
 
