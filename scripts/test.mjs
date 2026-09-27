@@ -255,7 +255,12 @@ test('App-Datenschutz ist enthalten und unter der Store-URL erreichbar', () => {
   assert(ds.includes('Nutzung der App „LambKing Stories“'), 'App-Abschnitt fehlt')
   assert(ds.includes('Render Services') && ds.includes('MongoDB Atlas'), 'App-Hosting fehlt')
   const appSection = ds.split('8. Nutzung der App „LambKing Stories“')[1]?.split('9. Ihre Rechte')[0] || ''
-  assert(!appSection.includes('Kennung') && !appSection.includes('13 Monaten'), 'Die entfernte Gerätekennung wird noch im App-Abschnitt beschrieben')
+  assert(!appSection.includes('zufällige Kennung') && !appSection.includes('pro Kennung') && !appSection.includes('13 Monaten'), 'Die entfernte Gerätekennung wird noch im App-Abschnitt beschrieben')
+  assert(appSection.includes('Anonyme Buchdetailseiten-Aufrufe') && appSection.includes('gemeinsame Tagessummen'), 'Anonyme tägliche Buchdetailseiten-Zählung fehlt')
+  assert(appSection.includes('keine persönlichen Informationen oder Nutzerkennungen') && appSection.includes('keine Wiedererkennung'), 'Datensparsame App-Zählung ist nicht beschrieben')
+  assert(appSection.includes('Freiwillige einmalige Apple-In-App-Trinkgelder') && appSection.includes('Zahlungsabwicklung erfolgt über Apple'), 'Einmalige freiwillige Apple-Trinkgelder fehlen im App-Datenschutz')
+  assert(!appSection.includes('keine In-App-Käufe'), 'Veraltete Aussage über fehlende In-App-Käufe')
+  assert(!appSection.includes('Abfrage für Erwachsene'), 'Die entfernte Elternabfrage wird noch beschrieben')
   assert(ds.includes('9. Ihre Rechte'), 'Rechte-Abschnitt wurde nicht korrekt verschoben')
   assert(legalGenerator.includes("join(privacyDir, 'index.html')"), 'Die Route /datenschutz/ wird nicht erzeugt')
   assert(postbuild.includes("'datenschutz/'"), 'Die Store-URL fehlt in der Sitemap')
