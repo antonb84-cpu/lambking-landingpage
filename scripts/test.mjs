@@ -152,6 +152,20 @@ test('Mehrsprachige Bücher besitzen ein eigenes, korrekt verknüpftes Cover je 
   }
 })
 
+test('Band 10 zeigt die neuen 80-Seiten-Ausgaben in Deutsch, Englisch und Spanisch', () => {
+  const book = booksJson.books.find((item) => item.id === 'bibelgeschichten-zum-ausmalen-2')
+  assert(book?.detail.includes('80 Seiten') && book.age === 'Ab 6 Jahren', 'Band 10 hat veralteten Umfang oder Altersangabe')
+  assert(book.lifestyleImages.length === 0, 'Veraltetes Foto des früheren Band-10-Covers wird noch gezeigt')
+  assert(book.highlights.some((item) => item.includes('35 große Ausmalbilder')), '35 Motive fehlen in den Buchinformationen')
+  assert(book.editions.map((item) => item.language).join(',') === 'de,en,es', 'Band 10 hat nicht alle drei Sprachausgaben')
+  for (const edition of book.editions) {
+    assert(edition.coverSpread && edition.cover?.includes(`band10-${edition.language}-spread`), `${edition.language}: neues Druckbogen-Cover fehlt`)
+    assert(edition.samples?.length === 5, `${edition.language}: echte Vorschauseiten fehlen`)
+    assert(edition.samples.every((sample) => existsSync(join(ROOT, 'public', sample))), `${edition.language}: Vorschauseite nicht gefunden`)
+    assert(edition.highlights?.length || edition.language === 'de', `${edition.language}: übersetzte Buchinformationen fehlen`)
+  }
+})
+
 test('Buchgalerie und kurze Inhaltsangaben sind pro Buch gepflegt', () => {
   const booksView = readFileSync(join(SRC, 'sections/Books.tsx'), 'utf-8')
   assert(booksView.includes('BookMediaGallery') && booksView.includes('onTouchEnd'), 'Wischbare Buchgalerie fehlt')
@@ -162,7 +176,7 @@ test('Buchgalerie und kurze Inhaltsangaben sind pro Buch gepflegt', () => {
   for (const book of booksJson.books) {
     assert(book.description?.length > 50, `${book.id}: kurze Inhaltsangabe fehlt`)
     assert(!/70 Seiten|70 pages|70 páginas|DIN A4|21,6 × 27,9/.test(book.description), `${book.id}: allgemeine Buchfakten stehen in der Geschichte`)
-    assert(book.lifestyleImages?.length, `${book.id}: Buchfoto fehlt`)
+    if (book.id !== 'bibelgeschichten-zum-ausmalen-2') assert(book.lifestyleImages?.length, `${book.id}: Buchfoto fehlt`)
     for (const image of book.lifestyleImages) {
       const path = join(ROOT, 'public', image)
       assert(existsSync(path), `${book.id}: Buchfoto fehlt (${image})`)
@@ -332,15 +346,15 @@ test('Alle Malbücher zeigen einheitlich Umfang, Format, Alter und Rätselseiten
   const coloringBooks = booksJson.books.filter((book) => book.category === 'malbuecher')
   assert(coloringBooks.length > 0, 'Keine Malbücher zum Prüfen gefunden')
   for (const book of coloringBooks) {
-    const coverAge = ['bibelgeschichten-zum-ausmalen-4', 'bibelgeschichten-zum-ausmalen-5', 'bibelgeschichten-zum-ausmalen-2'].includes(book.id) ? 'Ab 5 Jahren' : 'Ab 6 Jahren'
+    const coverAge = ['bibelgeschichten-zum-ausmalen-4', 'bibelgeschichten-zum-ausmalen-5'].includes(book.id) ? 'Ab 5 Jahren' : 'Ab 6 Jahren'
     assert(book.age === coverAge, `${book.title}: Altersangabe passt nicht zum aktuellen Cover`)
-    assert(book.detail.includes('70 Seiten'), `${book.title}: Seitenzahl ist nicht einheitlich`)
+    assert(book.detail.includes(book.id === 'bibelgeschichten-zum-ausmalen-2' ? '80 Seiten' : '70 Seiten'), `${book.title}: Seitenzahl passt nicht zur Ausgabe`)
   }
   for (const lang of ['de', 'en']) {
     const texts = defaults[lang].books
     assert(texts.coloringFactsTitle, `${lang}: Überschrift zu den Malbuch-Eigenschaften fehlt`)
     assert(Array.isArray(texts.coloringFacts) && texts.coloringFacts.length === 5, `${lang}: Es müssen genau fünf Malbuch-Eigenschaften vorhanden sein`)
-    assert(texts.coloringFacts[0] === (lang === 'de' ? 'Jedes Malbuch hat 70 Seiten' : 'Every coloring book has 70 pages'), `${lang}: Seitenzahl-Aussage fehlt`)
+    assert(texts.coloringFacts[0] === (lang === 'de' ? 'Je nach Band 70 oder 80 Seiten' : '70 or 80 pages, depending on the volume'), `${lang}: Seitenzahl-Aussage fehlt`)
   }
   assert(booksSection.includes('ColoringBookFacts') && !booksSection.includes('coloringCardSummary'), 'Malbuch-Kurzinfo steht noch wiederholt auf den Kacheln')
   assert(!booksSection.includes('<ColoringBookFacts compact'), 'Malbuch-Faktenkasten wird im Buchfenster wiederholt')

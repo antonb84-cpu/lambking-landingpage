@@ -67,8 +67,8 @@ const editionCopyOverrides: Record<string, Partial<BooksCopy>> = {
     mediaLifestyle: 'Foto del libro (imagen ilustrativa)', mediaVideo: 'Reproducir vídeo del libro',
     mediaSwipeHint: 'Desliza o usa las flechas', previousImage: 'Imagen anterior', nextImage: 'Imagen siguiente',
     coloringFactsTitle: 'Qué contiene cada libro para colorear de LambKing',
-    coloringFacts: ['70 páginas', 'Tamaño aprox. DIN A4', 'Fiel a la Biblia', 'Además, 5 páginas con juegos, preguntas y pasatiempos', 'Disponible en varios idiomas'],
-    coloringAge: 'A partir de 6 años', coloringFormat: '70 páginas · aprox. DIN A4',
+    coloringFacts: ['70 u 80 páginas, según el tomo', 'Tamaño aprox. DIN A4', 'Fiel a la Biblia', 'Además, 5 páginas con juegos, preguntas y pasatiempos', 'Disponible en varios idiomas'],
+    coloringAge: 'A partir de 6 años', coloringFormat: '70 u 80 páginas · aprox. DIN A4',
     amazonPending: 'Aún no hay un enlace de Amazon para esta edición. El botón de compra aparecerá cuando se añada en la administración.',
   },
   ro: {
@@ -80,8 +80,8 @@ const editionCopyOverrides: Record<string, Partial<BooksCopy>> = {
     mediaLifestyle: 'Fotografie a cărții (imagine ilustrativă)', mediaVideo: 'Redă videoclipul cărții',
     mediaSwipeHint: 'Glisează sau folosește săgețile', previousImage: 'Imaginea precedentă', nextImage: 'Imaginea următoare',
     coloringFactsTitle: 'Ce conține fiecare carte de colorat LambKing',
-    coloringFacts: ['70 de pagini', 'Mărime aprox. DIN A4', 'Fidelă Bibliei', 'În plus, 5 pagini cu jocuri, întrebări și puzzle-uri', 'Disponibilă în mai multe limbi'],
-    coloringAge: 'De la 6 ani', coloringFormat: '70 de pagini · aprox. DIN A4',
+    coloringFacts: ['70 sau 80 de pagini, în funcție de volum', 'Mărime aprox. DIN A4', 'Fidelă Bibliei', 'În plus, 5 pagini cu jocuri, întrebări și puzzle-uri', 'Disponibilă în mai multe limbi'],
+    coloringAge: 'De la 6 ani', coloringFormat: '70 sau 80 de pagini · aprox. DIN A4',
     amazonPending: 'Nu există încă un link Amazon pentru această ediție. Butonul de cumpărare va apărea după adăugarea linkului în administrare.',
   },
 }
@@ -475,7 +475,7 @@ function BookDialog({
                 </p>
               )}
               <div className="sticky bottom-0 z-10 -mx-8 mt-9 border-t-2 border-border bg-background/95 px-8 py-5 shadow-[0_-8px_20px_-16px_rgba(30,42,74,0.35)] backdrop-blur lg:-mx-12 lg:px-12">
-                <p className="mb-3 text-center font-semibold text-muted-foreground sm:text-left">{dialogCopy.seePrice}</p>
+                {edition?.amazon.startsWith('https://') && <p className="mb-3 text-center font-semibold text-muted-foreground sm:text-left">{dialogCopy.seePrice}</p>}
                 <div className="mx-auto flex w-full flex-col items-center gap-3">
                   {displayBook && <BuyButton book={displayBook} size="lg" preferredLanguage={editionLanguage || undefined} label={dialogCopy.buyAmazon} />}
                   <button

@@ -701,15 +701,15 @@
     {
       "id": "bibelgeschichten-zum-ausmalen-2",
       "samples": [
-        "images/bibelgeschichten-zum-ausmalen-2-seite-1.jpg",
-        "images/bibelgeschichten-zum-ausmalen-2-seite-2.jpg",
-        "images/bibelgeschichten-zum-ausmalen-2-seite-3.jpg",
-        "images/bibelgeschichten-zum-ausmalen-2-seite-4.jpg",
-        "images/bibelgeschichten-zum-ausmalen-2-seite-5.jpg",
-        "images/bibelgeschichten-zum-ausmalen-2-seite-6.jpg"
+        "images/band10-de-preview-3.jpg",
+        "images/band10-de-preview-35.jpg",
+        "images/band10-de-preview-75.jpg",
+        "images/band10-de-preview-76.jpg",
+        "images/band10-de-preview-79.jpg"
       ],
       "highlights": [
-        "27 große Ausmalbilder",
+        "Band 10: 80 Seiten",
+        "35 große Ausmalbilder",
         "Bibelstellen: Lukas 19–24; Johannes 13 und 20",
         "Einseitig bedruckt"
       ],
@@ -717,17 +717,47 @@
       "title": "Ostern – Jesus lebt!",
       "series": "Bibelgeschichten zum Ausmalen · Band 10",
       "category": "malbuecher",
-      "age": "Ab 5 Jahren",
-      "detail": "70 Seiten · Großformat",
+      "age": "Ab 6 Jahren",
+      "detail": "80 Seiten · ca. DIN A4",
       "description": "Jesus zieht in Jerusalem ein und feiert mit seinen Freunden das letzte Abendmahl. Dann wird er gefangen genommen und stirbt am Kreuz. Doch am dritten Tag ist das Grab leer: Jesus lebt und begegnet seinen Freunden wieder.",
-      "lifestyleImages": ["images/lifestyle/ostern-de.png"],
+      "lifestyleImages": [],
       "amazon": "https://www.amazon.de/dp/B0HH8W2RSD",
       "releaseDate": "2026-09-01",
-      "cover": "images/cover-bibelgeschichten-zum-ausmalen-2.jpg",
+      "cover": "images/cover-band10-de-spread.jpg",
+      "coverSpread": true,
       "editions": [
         {
           "language": "de",
-          "amazon": "https://www.amazon.de/dp/B0HH8W2RSD"
+          "amazon": "https://www.amazon.de/dp/B0HH8W2RSD",
+          "cover": "images/cover-band10-de-spread.jpg",
+          "coverSpread": true,
+          "samples": ["images/band10-de-preview-3.jpg", "images/band10-de-preview-35.jpg", "images/band10-de-preview-75.jpg", "images/band10-de-preview-76.jpg", "images/band10-de-preview-79.jpg"]
+        },
+        {
+          "language": "en",
+          "amazon": "",
+          "cover": "images/cover-band10-en-spread.jpg",
+          "coverSpread": true,
+          "samples": ["images/band10-en-preview-3.jpg", "images/band10-en-preview-35.jpg", "images/band10-en-preview-75.jpg", "images/band10-en-preview-76.jpg", "images/band10-en-preview-79.jpg"],
+          "title": "Easter – Jesus Is Alive!",
+          "series": "Bible Stories to Color · Volume 10",
+          "age": "Ages 6+",
+          "detail": "80 pages · approx. A4",
+          "description": "Jesus enters Jerusalem and shares the Last Supper with his friends. After his death on the cross, his friends find the tomb empty on the third day. Jesus is alive and meets them again.",
+          "highlights": ["Volume 10: 80 pages", "35 large coloring pictures", "Bible passages: Luke 19–24; John 13 and 20", "Printed on one side"]
+        },
+        {
+          "language": "es",
+          "amazon": "",
+          "cover": "images/cover-band10-es-spread.jpg",
+          "coverSpread": true,
+          "samples": ["images/band10-es-preview-3.jpg", "images/band10-es-preview-35.jpg", "images/band10-es-preview-75.jpg", "images/band10-es-preview-76.jpg", "images/band10-es-preview-79.jpg"],
+          "title": "Pascua – ¡Jesús vive!",
+          "series": "Historias bíblicas para colorear · Tomo 10",
+          "age": "A partir de 6 años",
+          "detail": "80 páginas · aprox. DIN A4",
+          "description": "Jesús entra en Jerusalén y comparte la última cena con sus amigos. Después de su muerte en la cruz, al tercer día encuentran la tumba vacía. Jesús vive y vuelve a encontrarse con ellos.",
+          "highlights": ["Tomo 10: 80 páginas", "35 dibujos grandes para colorear", "Pasajes bíblicos: Lucas 19–24; Juan 13 y 20", "Impreso por una sola cara"]
         }
       ]
     },
