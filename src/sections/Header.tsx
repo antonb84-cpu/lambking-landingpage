@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import { Menu, X } from 'lucide-react'
-import PaypalButton from '@/components/PaypalButton'
 import { setLang, useLang, type Lang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
 import { openLegal } from '@/data/openLegal'
@@ -39,12 +38,13 @@ function LangSwitch() {
       onClick={() => setLang(l)}
       aria-pressed={lang === l}
       title={l === 'de' ? 'Deutsch' : 'English'}
-      className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold transition-colors ${
+      className={`flex items-center gap-1.5 rounded-full min-h-9 px-2.5 py-1 text-xs font-bold transition-colors ${
         lang === l ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'
       }`}
     >
       {flag}
-      {label}
+      <span className="sm:hidden">{label}</span>
+      <span className="hidden sm:inline">{l === 'de' ? 'Deutsch' : 'English'}</span>
     </button>
   )
   return (
@@ -68,6 +68,7 @@ export default function Header() {
 
   const NAV = [
     { label: t.nav.books, href: homeHref('#buecher') },
+    { label: t.nav.support, href: homeHref('#unterstuetzen') },
     { label: t.nav.app, href: homeHref('#app') },
     { label: t.nav.about, href: homeHref('#ueber') },
     { label: t.nav.faq, href: homeHref('#faq') },
@@ -94,16 +95,22 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/90 backdrop-blur-md">
       <div className="mx-auto flex h-24 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6">
-        <a href={homeHref()} className="flex items-center" aria-label={t.a11y.brandHome}>
+        <a href={homeHref()} className="flex items-center gap-1.5" aria-label={t.a11y.brandHome}>
           <img
             src="images/lambking-logo.png"
             alt="LambKing Stories"
             className="h-14 w-auto transition-transform hover:scale-[1.04] sm:h-16"
           />
+          <img
+            src="images/lamm-kopf.png"
+            alt=""
+            aria-hidden
+            className="hidden h-12 w-auto transition-transform hover:rotate-3 sm:block sm:h-14"
+          />
         </a>
-        {/* Desktop: Navigation, dann ca. 3 cm Abstand, dann DE/EN + PayPal */}
+        {/* Desktop: Navigation, dann Abstand, dann DE/EN */}
         <div className="hidden items-center lg:flex">
-          <nav className="flex items-center gap-5 text-sm font-bold text-muted-foreground" aria-label={t.a11y.mainNavigation}>
+          <nav className="flex items-center gap-4 whitespace-nowrap text-sm font-bold text-muted-foreground xl:gap-5" aria-label={t.a11y.mainNavigation}>
             {NAV.map((n) => (
               <a key={n.href} href={n.href} className="transition-colors hover:text-foreground">
                 {n.label}
@@ -111,12 +118,8 @@ export default function Header() {
             ))}
           </nav>
           {/* ml-28 = 112px ≈ 3 cm Abstand hinter FAQ */}
-          <div className="ml-28 flex items-center gap-4">
+          <div className="ml-8 flex items-center gap-3 xl:ml-16">
             <LangSwitch />
-            {/* PayPal erst ab xl – bei schmaleren Desktop-Fenstern bleibt genug Luft */}
-            <div className="hidden xl:block">
-              <PaypalButton />
-            </div>
           </div>
         </div>
         {/* Mobil: Sprachschalter + Hamburger */}

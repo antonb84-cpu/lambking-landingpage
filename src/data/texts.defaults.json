@@ -5,7 +5,9 @@
       "how": "So funktioniert's",
       "app": "App",
       "about": "Über das Projekt",
-      "faq": "FAQ"
+      "faq": "FAQ",
+      "support": "Unterstützen",
+      "languages": "Sprachen"
     },
     "contact": {
       "write": "Schreib uns",
@@ -42,10 +44,22 @@
       "howTitle": "So funktioniert die Zusammenarbeit",
       "howIntro": "Ein klarer Ablauf – von der Bewerbung bis zur transparenten Abrechnung.",
       "howSteps": [
-        { "title": "Bewerbung einreichen", "text": "Erzähl uns kurz von dir, deiner Community und den Plattformen, auf denen du aktiv bist." },
-        { "title": "Persönlichen Link erhalten", "text": "Wenn wir zueinander passen, erhältst du deinen persönlichen Tracking-Link." },
-        { "title": "Bücher authentisch vorstellen", "text": "Du entscheidest selbst, wie du LambKing-Bücher ehrlich und passend zu deiner Community präsentierst." },
-        { "title": "Vergütung erhalten", "text": "Bestätigte Verkäufe über deinen persönlichen Link werden anhand der verfügbaren Daten abgerechnet." }
+        {
+          "title": "Bewerbung einreichen",
+          "text": "Erzähl uns kurz von dir, deiner Community und den Plattformen, auf denen du aktiv bist."
+        },
+        {
+          "title": "Persönlichen Link erhalten",
+          "text": "Wenn wir zueinander passen, erhältst du deinen persönlichen Tracking-Link."
+        },
+        {
+          "title": "Bücher authentisch vorstellen",
+          "text": "Du entscheidest selbst, wie du LambKing-Bücher ehrlich und passend zu deiner Community präsentierst."
+        },
+        {
+          "title": "Vergütung erhalten",
+          "text": "Bestätigte Verkäufe über deinen persönlichen Link werden anhand der verfügbaren Daten abgerechnet."
+        }
       ],
       "attributionNote": "Amazon Attribution kann dabei als technische Tracking-Methode eingesetzt werden, soweit sie für das LambKing-Konto und den jeweiligen Markt verfügbar ist.",
       "compensationTitle": "Fair und nachvollziehbar vergütet",
@@ -83,8 +97,24 @@
         "privacyLink": "Datenschutzerklärung",
         "privacyAfter": " zur Verarbeitung meiner E-Mail-Bewerbung zur Kenntnis genommen."
       },
-      "platformOptions": ["Instagram", "TikTok", "YouTube", "Blog / Website", "Facebook", "Podcast", "Andere"],
-      "languageOptions": ["Deutsch", "Englisch", "Spanisch", "Französisch", "Italienisch", "Portugiesisch", "Andere"],
+      "platformOptions": [
+        "Instagram",
+        "TikTok",
+        "YouTube",
+        "Blog / Website",
+        "Facebook",
+        "Podcast",
+        "Andere"
+      ],
+      "languageOptions": [
+        "Deutsch",
+        "Englisch",
+        "Spanisch",
+        "Französisch",
+        "Italienisch",
+        "Portugiesisch",
+        "Andere"
+      ],
       "profileHint": "Eine URL pro Zeile.",
       "requiredHint": "Mit * gekennzeichnete Felder sind Pflichtfelder.",
       "validationError": "Bitte fülle alle Pflichtfelder aus und prüfe deine Angaben.",
@@ -100,13 +130,34 @@
       "emailSubject": "Creator-/Influencer-Partner-Bewerbung",
       "faqTitle": "Häufige Fragen zum Creator- und Influencer-Programm",
       "faqItems": [
-        { "q": "Brauche ich eine bestimmte Reichweite?", "a": "Nein. Es gibt keine starre Mindestreichweite. Wichtiger sind eine passende Community, authentische Inhalte und ein glaubwürdiger Bezug zu den Themen von LambKing Stories." },
-        { "q": "Wie funktioniert die Vergütung?", "a": "Du erhältst 10 % der tatsächlich bei LambKing eingegangenen KDP-Tantieme für bestätigte Verkäufe über deinen persönlichen Link. Die Abrechnung erfolgt anhand der verfügbaren Amazon-/KDP-Daten." },
-        { "q": "Was ist eine bestätigte Bestellung?", "a": "Eine Bestellung gilt als bestätigt, wenn sie in den verfügbaren Amazon-/KDP-Daten dem persönlichen Link zugeordnet und nicht storniert oder zurückgegeben wurde." },
-        { "q": "Wann erfolgt die Auszahlung?", "a": "Der Abrechnungs- und Auszahlungszeitpunkt wird vor Beginn der Zusammenarbeit schriftlich festgelegt und berücksichtigt, wann die erforderlichen Amazon-/KDP-Daten verfügbar sind." },
-        { "q": "Darf ich zusätzlich Amazon-Affiliate-Links verwenden?", "a": "Ja. Eine eigene Teilnahme am Amazon-Partnerprogramm ist unabhängig vom LambKing Creator-Programm möglich und kann zusätzliche Einnahmen ermöglichen. Sie ist keine Voraussetzung." },
-        { "q": "Welche Inhalte werden erwartet?", "a": "Erwartet werden ehrliche, eigenständige und zur jeweiligen Community passende Inhalte. Konkrete Kampagnenvorgaben werden – sofern es sie gibt – vorab transparent vereinbart." },
-        { "q": "Gibt es Exklusivität?", "a": "Grundsätzlich nein, sofern nicht separat schriftlich etwas anderes vereinbart wurde." }
+        {
+          "q": "Brauche ich eine bestimmte Reichweite?",
+          "a": "Nein. Es gibt keine starre Mindestreichweite. Wichtiger sind eine passende Community, authentische Inhalte und ein glaubwürdiger Bezug zu den Themen von LambKing Stories."
+        },
+        {
+          "q": "Wie funktioniert die Vergütung?",
+          "a": "Du erhältst 10 % der tatsächlich bei LambKing eingegangenen KDP-Tantieme für bestätigte Verkäufe über deinen persönlichen Link. Die Abrechnung erfolgt anhand der verfügbaren Amazon-/KDP-Daten."
+        },
+        {
+          "q": "Was ist eine bestätigte Bestellung?",
+          "a": "Eine Bestellung gilt als bestätigt, wenn sie in den verfügbaren Amazon-/KDP-Daten dem persönlichen Link zugeordnet und nicht storniert oder zurückgegeben wurde."
+        },
+        {
+          "q": "Wann erfolgt die Auszahlung?",
+          "a": "Der Abrechnungs- und Auszahlungszeitpunkt wird vor Beginn der Zusammenarbeit schriftlich festgelegt und berücksichtigt, wann die erforderlichen Amazon-/KDP-Daten verfügbar sind."
+        },
+        {
+          "q": "Darf ich zusätzlich Amazon-Affiliate-Links verwenden?",
+          "a": "Ja. Eine eigene Teilnahme am Amazon-Partnerprogramm ist unabhängig vom LambKing Creator-Programm möglich und kann zusätzliche Einnahmen ermöglichen. Sie ist keine Voraussetzung."
+        },
+        {
+          "q": "Welche Inhalte werden erwartet?",
+          "a": "Erwartet werden ehrliche, eigenständige und zur jeweiligen Community passende Inhalte. Konkrete Kampagnenvorgaben werden – sofern es sie gibt – vorab transparent vereinbart."
+        },
+        {
+          "q": "Gibt es Exklusivität?",
+          "a": "Grundsätzlich nein, sofern nicht separat schriftlich etwas anderes vereinbart wurde."
+        }
       ],
       "contactTitle": "Noch Fragen zur Partnerschaft?",
       "contactText": "Schreib uns gerne direkt. Wir beantworten deine Fragen zum Ablauf und zur Bewerbung persönlich.",
@@ -115,7 +166,7 @@
     "hero": {
       "title1": "Kleine Helden. Große Geschichten.",
       "title2": "Ein großer Gott.",
-      "subtitle": "Liebevoll gestaltete Mal- und Kinderbücher, die biblische Geschichten lebendig erzählen und Kinder im Glauben stärken.",
+      "subtitle": "Kindgerechte Bibelgeschichten zum Ausmalen und Entdecken – von Jesus, dem Lamm Gottes und König aller Könige.",
       "ctaBooks": "Bücher entdecken",
       "ctaApp": "Zur kostenlosen App",
       "trust": [
@@ -124,7 +175,9 @@
         "Druck & Versand über Amazon"
       ],
       "bookHint": "Mit der Maus drüberfahren – das Buch blättert sich selbstständig auf",
-      "mobileBookHint": "Antippen zum Öffnen oder Schließen"
+      "mobileBookHint": "Antippen zum Öffnen oder Schließen",
+      "ctaSupport": "Projekt unterstützen",
+      "videoAlt": "Jesus erzählt Kindern unter einem Olivenbaum am See eine Geschichte, neben ihnen ruht ein kleines Lamm"
     },
     "books": {
       "eyebrow": "Unsere Bücher",
@@ -172,15 +225,20 @@
       "nextImage": "Nächstes Bild",
       "coloringFactsTitle": "Das steckt in jedem LambKing-Malbuch",
       "coloringFacts": [
-        "Je nach Band 70 oder 80 Seiten",
+        "Mindestens 70 Seiten",
         "ca. DIN A4 Größe",
         "Bibeltreu erzählt",
         "Zusätzlich 5 Seiten mit Spielen, Fragen und Rätseln",
         "In mehreren Sprachen erhältlich"
       ],
       "coloringAge": "Ab 6 Jahren",
-      "coloringFormat": "70 oder 80 Seiten · ca. DIN A4",
-      "amazonPending": "Für diese Sprachausgabe ist noch kein Amazon-Link hinterlegt. Sobald er im Backend eingetragen ist, erscheint hier der Kaufbutton."
+      "coloringFormat": "Mindestens 70 Seiten · ca. DIN A4",
+      "amazonPending": "Für diese Sprachausgabe ist noch kein Amazon-Link hinterlegt. Sobald er im Backend eingetragen ist, erscheint hier der Kaufbutton.",
+      "ratingNone": "Noch keine Bewertung",
+      "ratingCta": "Jetzt auf Amazon bewerten",
+      "ratingOf": "von 5 Sternen",
+      "titleOne": "Titel",
+      "titleMany": "Titel"
     },
     "trust": {
       "title": "Darauf können Familien vertrauen.",
@@ -201,18 +259,22 @@
       ]
     },
     "supportedWorks": {
-      "title": "Aus Glauben handeln",
-      "firstBefore": "LambKing Stories soll mehr sein als ein Buchprojekt. Deshalb unterstützen wir christliche Organisationen, die das Evangelium weitergeben und Menschen in schwierigen Lebenssituationen praktisch begleiten.",
-      "firstStrong": "Einen festen Teil unserer Einnahmen geben wir an christliche Missions-, Evangelisations- und Hilfsprojekte weiter.",
+      "title": "Gemeinsam bauen wir am Reich Gottes",
+      "firstBefore": "",
+      "firstStrong": "10 % unserer Einnahmen geben wir an christliche Projekte weiter, die Menschen dienen und Gottes Liebe weitertragen.",
       "firstAfter": "",
-      "second": "So möchten wir nicht nur vom Glauben erzählen, sondern Hoffnung ganz konkret weitergeben.",
+      "second": "",
       "third": "",
       "current": "Aktuell unterstützen wir folgende Einrichtungen und Werke:",
       "visit": "Mehr über diese Arbeit erfahren",
       "viewFlyer": "Flyer ansehen",
       "flyerTitle": "Informationsflyer",
       "flyerDescription": "Der Flyer kann hier direkt gelesen und vergrößert werden.",
-      "openFlyerNewTab": "Flyer in einem neuen Fenster öffnen"
+      "openFlyerNewTab": "Flyer in einem neuen Fenster öffnen",
+      "eyebrow": "Aus Glauben handeln",
+      "supportCta": "Du möchtest mithelfen? Projekt unterstützen",
+      "more": "Mehr lesen",
+      "less": "Weniger"
     },
     "how": {
       "eyebrow": "So funktioniert's",
@@ -268,7 +330,7 @@
         },
         {
           "q": "Für welches Alter sind die Bücher geeignet?",
-          "a": "Die Altersempfehlung steht jeweils direkt beim Buch – klicke dazu einfach auf „Inhalt ansehen“."
+          "a": "Unsere Malbücher mit vielen Details eignen sich besonders für Schulkinder und größere Kinder – gern auch gemeinsam mit den Eltern. Malbücher für die Kleinsten sind in Planung."
         },
         {
           "q": "Gibt es die Geschichten auch digital?",
@@ -294,6 +356,120 @@
       "datenschutzTitle": "Datenschutzerklärung",
       "legalEmpty": "Dieser Text wird gerade vorbereitet.",
       "legalFullPage": "Als eigene Seite öffnen"
+    },
+    "mission": {
+      "title": "Mit jedem Buch Hoffnung weitergeben",
+      "text": "Ein fester Teil unserer Einnahmen unterstützt diese christlichen Werke:",
+      "cta": "Mehr erfahren"
+    },
+    "donate": {
+      "eyebrow": "Ein evangelistisches Herzensprojekt",
+      "title": "Hilf mit, dass Gottes Geschichten Kinder erreichen",
+      "text": "LambKing Stories erzählt Bibelgeschichten für Kinder – in Büchern und in einer kostenlosen, werbefreien App. Neue Geschichten zu schreiben, zu illustrieren und in weitere Sprachen zu bringen kostet viel Zeit und Geld. Mit deiner freiwilligen Unterstützung wird das möglich.",
+      "itemsTitle": "Damit ermöglichst du",
+      "items": [
+        "Neue Bibelgeschichten schreiben und liebevoll gestalten",
+        "Bücher in weiteren Sprachen veröffentlichen",
+        "Die App kostenlos und werbefrei halten"
+      ],
+      "note": "Freiwillig und ohne Gegenleistung – jede Gabe hilft. Von Herzen danke, dass du mitträgst!"
+    },
+    "languages": {
+      "eyebrow": "Mehrsprachig",
+      "title": "Gottes Geschichten in vielen Sprachen",
+      "text": "Viele unserer Bücher gibt es in mehreren Sprachen – jede Ausgabe mit eigenem Amazon-Link. Die Flagge zeigt dir, welche Sprachen verfügbar sind.",
+      "one": "Buch",
+      "many": "Bücher",
+      "cta": "Bücher ansehen",
+      "label": "Die Bücher gibt es in:"
+    },
+    "mascot": {
+      "eyebrow": "Unsere Vision",
+      "hello": "",
+      "title": "Die gute Botschaft von Jesus – für Kinder und Erwachsene in der ganzen Welt",
+      "items": [
+        {
+          "title": "Lamb – das Lamm",
+          "text": "Jesus wird in der Bibel das „Lamm Gottes“ genannt: sanft, voller Liebe, für uns gestorben und auferstanden."
+        },
+        {
+          "title": "King – der König",
+          "text": "Jesus ist der König aller Könige und Herr aller Herren – darum trägt unser Maskottchen eine Krone."
+        },
+        {
+          "title": "Offenbarung 17,14",
+          "text": "„… das Lamm wird sie überwinden; denn es ist der Herr aller Herren und der König aller Könige …“ (Luther 1912)"
+        }
+      ],
+      "videoAlt": "LambKing, das kleine Lamm mit Krone, steht auf einer Blumenwiese und schaut freundlich",
+      "lead": "LambKing Stories erzählt kindgerechte Geschichten rund um die Bibel – und von Jesus, dem Lamm Gottes und König aller Könige. Unsere Vision: die gute Botschaft von Jesus zu Kindern und Erwachsenen in der ganzen Welt zu bringen.",
+      "nameTitle": "Was bedeutet LambKing?"
+    },
+    "kids": {
+      "eyebrow": "Aus dem Familienalltag",
+      "title": "So malen Kinder mit LambKing",
+      "text": "Echte Momente: Unsere Töchter beim Ausmalen und Entdecken der Bibelgeschichten."
+    },
+    "tryit": {
+      "eyebrow": "Blick ins Buch",
+      "title": "Blättere durch das ganze Buch",
+      "text": "Sieh dir das Buch von vorn bis hinten an – so, wie es gedruckt ist: ein Softcover mit der Geschichte und vielen Ausmalbildern.",
+      "download": "Gratis Ausmalseite (PDF)",
+      "lookInside": "Mehr zum Buch",
+      "cover": "Titelseite",
+      "pages": "Seiten",
+      "of": "von",
+      "play": "Automatisch blättern",
+      "pause": "Pause",
+      "prev": "Zurückblättern",
+      "next": "Weiterblättern",
+      "first": "Zur Titelseite",
+      "last": "Zur Rückseite"
+    },
+    "usp": {
+      "items": [
+        {
+          "title": "Bibeltreu & kindgerecht",
+          "text": "Geschichten nah am Bibeltext"
+        },
+        {
+          "title": "Werbefrei & sicher",
+          "text": "Keine Werbung, kein Tracking"
+        },
+        {
+          "title": "Mehrsprachig",
+          "text": "Bücher in mehreren Sprachen"
+        },
+        {
+          "title": "Kostenlose App",
+          "text": "Geschichten für unterwegs"
+        }
+      ]
+    },
+    "freebie": {
+      "eyebrow": "Gratis zum Ausmalen",
+      "title": "Kinder und Lamm spielen auf der Wiese – male mit!",
+      "text": "Lade dir dieses Ausmalbild kostenlos als PDF herunter – ohne Anmeldung und ohne E-Mail-Adresse. Viel Freude beim Bunt-Machen!",
+      "badge": "Gratis",
+      "download": "Ausmalbild herunterladen (PDF)",
+      "hint": "DIN A4 · zum Ausdrucken"
+    },
+    "artwork": {
+      "eyebrow": "Eure Kunstwerke",
+      "title": "Eure ausgemalten Bilder",
+      "text": "So bunt malen Kinder mit LambKing. Schick uns dein ausgemaltes Bild – wir zeigen eine Auswahl hier auf der Seite.",
+      "empty": "Hier könnte dein Bild hängen",
+      "send": "Mein Bild einsenden",
+      "howTitle": "So geht's",
+      "steps": [
+        "Ausmalen und fotografieren – das Blatt gut sichtbar, ohne Kindergesicht und ohne Namen im Bild.",
+        "Per E-Mail an uns senden. Ein Elternteil schreibt dazu: „Ich bin einverstanden, dass das Bild auf lambking.store gezeigt wird.“",
+        "Wir wählen eine Auswahl aus und zeigen sie hier – nur mit eurer Zustimmung, jederzeit auf Wunsch wieder entfernt."
+      ],
+      "mailSubject": "Mein LambKing-Kunstwerk",
+      "mailBody": "Hallo LambKing-Team,\n\nhier ist unser ausgemaltes Bild (im Anhang).\n\nIch bin der/die Erziehungsberechtigte und einverstanden, dass das Bild auf lambking.store gezeigt werden darf (ohne Namen).\n\nViele Grüße",
+      "byline": "ausgemalt von einem Kind",
+      "enlarge": "Vergrößern"
     }
   },
   "en": {
@@ -302,7 +478,9 @@
       "how": "How it works",
       "app": "App",
       "about": "About the project",
-      "faq": "FAQ"
+      "faq": "FAQ",
+      "support": "Support",
+      "languages": "Languages"
     },
     "contact": {
       "write": "Write to us",
@@ -339,10 +517,22 @@
       "howTitle": "How the partnership works",
       "howIntro": "A clear process – from your application to transparent reporting.",
       "howSteps": [
-        { "title": "Submit your application", "text": "Tell us briefly about yourself, your community, and the platforms where you are active." },
-        { "title": "Receive your personal link", "text": "If we are a good fit, you will receive your personal tracking link." },
-        { "title": "Share the books authentically", "text": "You decide how to present LambKing books honestly and in a way that fits your community." },
-        { "title": "Receive commission", "text": "Confirmed sales through your personal link are calculated using the available data." }
+        {
+          "title": "Submit your application",
+          "text": "Tell us briefly about yourself, your community, and the platforms where you are active."
+        },
+        {
+          "title": "Receive your personal link",
+          "text": "If we are a good fit, you will receive your personal tracking link."
+        },
+        {
+          "title": "Share the books authentically",
+          "text": "You decide how to present LambKing books honestly and in a way that fits your community."
+        },
+        {
+          "title": "Receive commission",
+          "text": "Confirmed sales through your personal link are calculated using the available data."
+        }
       ],
       "attributionNote": "Amazon Attribution may be used as the technical tracking method where it is available for the LambKing account and the relevant marketplace.",
       "compensationTitle": "Fair and transparent compensation",
@@ -380,8 +570,24 @@
         "privacyLink": "Privacy Policy",
         "privacyAfter": " on how my email application will be processed."
       },
-      "platformOptions": ["Instagram", "TikTok", "YouTube", "Blog / website", "Facebook", "Podcast", "Other"],
-      "languageOptions": ["German", "English", "Spanish", "French", "Italian", "Portuguese", "Other"],
+      "platformOptions": [
+        "Instagram",
+        "TikTok",
+        "YouTube",
+        "Blog / website",
+        "Facebook",
+        "Podcast",
+        "Other"
+      ],
+      "languageOptions": [
+        "German",
+        "English",
+        "Spanish",
+        "French",
+        "Italian",
+        "Portuguese",
+        "Other"
+      ],
       "profileHint": "One URL per line.",
       "requiredHint": "Fields marked with * are required.",
       "validationError": "Please complete all required fields and check your information.",
@@ -397,13 +603,34 @@
       "emailSubject": "Creator or Influencer Partner application",
       "faqTitle": "Creator and Influencer Program FAQs",
       "faqItems": [
-        { "q": "Do I need a certain audience size?", "a": "No. There is no fixed minimum audience size. A relevant community, authentic content, and a credible connection to LambKing Stories matter more." },
-        { "q": "How does compensation work?", "a": "You receive 10% of the KDP royalty actually received by LambKing for confirmed sales through your personal link. Reporting is based on the available Amazon/KDP data." },
-        { "q": "What is a confirmed order?", "a": "An order is confirmed when the available Amazon/KDP data attributes it to your personal link and it has not been cancelled or returned." },
-        { "q": "When will I be paid?", "a": "The reporting and payment schedule will be agreed in writing before the partnership begins and will reflect when the required Amazon/KDP data becomes available." },
-        { "q": "May I also use Amazon affiliate links?", "a": "Yes. Participation in the Amazon Associates program is separate from the LambKing Creator Program and may provide additional income. It is not required." },
-        { "q": "What kind of content is expected?", "a": "We expect honest, original content that fits your community. Any specific campaign requirements will be agreed transparently in advance." },
-        { "q": "Is the partnership exclusive?", "a": "Generally no, unless otherwise agreed separately in writing." }
+        {
+          "q": "Do I need a certain audience size?",
+          "a": "No. There is no fixed minimum audience size. A relevant community, authentic content, and a credible connection to LambKing Stories matter more."
+        },
+        {
+          "q": "How does compensation work?",
+          "a": "You receive 10% of the KDP royalty actually received by LambKing for confirmed sales through your personal link. Reporting is based on the available Amazon/KDP data."
+        },
+        {
+          "q": "What is a confirmed order?",
+          "a": "An order is confirmed when the available Amazon/KDP data attributes it to your personal link and it has not been cancelled or returned."
+        },
+        {
+          "q": "When will I be paid?",
+          "a": "The reporting and payment schedule will be agreed in writing before the partnership begins and will reflect when the required Amazon/KDP data becomes available."
+        },
+        {
+          "q": "May I also use Amazon affiliate links?",
+          "a": "Yes. Participation in the Amazon Associates program is separate from the LambKing Creator Program and may provide additional income. It is not required."
+        },
+        {
+          "q": "What kind of content is expected?",
+          "a": "We expect honest, original content that fits your community. Any specific campaign requirements will be agreed transparently in advance."
+        },
+        {
+          "q": "Is the partnership exclusive?",
+          "a": "Generally no, unless otherwise agreed separately in writing."
+        }
       ],
       "contactTitle": "Questions about the partnership?",
       "contactText": "Feel free to email us directly. We will personally answer your questions about the process and application.",
@@ -412,7 +639,7 @@
     "hero": {
       "title1": "Little heroes. Big stories.",
       "title2": "A great God.",
-      "subtitle": "Lovingly designed coloring books and children’s books that bring Bible stories to life and help children grow in faith.",
+      "subtitle": "Child-friendly Bible stories to color and discover – about Jesus, the Lamb of God and King of kings.",
       "ctaBooks": "Discover the books",
       "ctaApp": "Free app",
       "trust": [
@@ -421,7 +648,9 @@
         "Printing & shipping via Amazon"
       ],
       "bookHint": "Hover over the book – it opens and flips through automatically",
-      "mobileBookHint": "Tap the book to open or close it"
+      "mobileBookHint": "Tap the book to open or close it",
+      "ctaSupport": "Support the project",
+      "videoAlt": "Jesus tells children a story under an olive tree by the lake, a little lamb resting beside them"
     },
     "books": {
       "eyebrow": "Our books",
@@ -469,15 +698,20 @@
       "nextImage": "Next image",
       "coloringFactsTitle": "Every LambKing coloring book includes",
       "coloringFacts": [
-        "70 or 80 pages, depending on the volume",
+        "At least 70 pages",
         "Approx. A4 size",
         "Faithful to Scripture",
         "Plus 5 pages of games, questions, and puzzles",
         "Available in multiple languages"
       ],
       "coloringAge": "Ages 6+",
-      "coloringFormat": "70 or 80 pages · approx. A4",
-      "amazonPending": "There is no Amazon link for this language edition yet. The purchase button will appear once the link is entered in the admin area."
+      "coloringFormat": "At least 70 pages · approx. A4",
+      "amazonPending": "There is no Amazon link for this language edition yet. The purchase button will appear once the link is entered in the admin area.",
+      "ratingNone": "No ratings yet",
+      "ratingCta": "Rate it on Amazon",
+      "ratingOf": "out of 5 stars",
+      "titleOne": "title",
+      "titleMany": "titles"
     },
     "trust": {
       "title": "What families can trust.",
@@ -498,18 +732,22 @@
       ]
     },
     "supportedWorks": {
-      "title": "Faith in Action",
-      "firstBefore": "LambKing Stories is meant to be more than a book project. That is why we support Christian organizations that share the Gospel and provide practical help to people facing difficult circumstances.",
-      "firstStrong": "We give a dedicated share of our income to Christian mission, evangelism, and relief projects.",
+      "title": "Together we build God's kingdom",
+      "firstBefore": "",
+      "firstStrong": "We give 10 % of our income to Christian projects that serve people and carry God's love forward.",
       "firstAfter": "",
-      "second": "In this way, we want not only to tell stories about faith, but also to share hope in practical ways.",
+      "second": "",
       "third": "",
       "current": "We currently support the following ministries and organizations:",
       "visit": "Learn more about this work",
       "viewFlyer": "View flyer",
       "flyerTitle": "Information flyer",
       "flyerDescription": "The flyer can be read and enlarged directly here.",
-      "openFlyerNewTab": "Open flyer in a new window"
+      "openFlyerNewTab": "Open flyer in a new window",
+      "eyebrow": "Faith in action",
+      "supportCta": "Want to help? Support the project",
+      "more": "Read more",
+      "less": "Less"
     },
     "how": {
       "eyebrow": "How it works",
@@ -565,7 +803,7 @@
         },
         {
           "q": "What age are the books suitable for?",
-          "a": "The age recommendation is shown directly with each book – simply click “Look inside”."
+          "a": "Our detailed coloring books are especially suited to school-age and older children – gladly together with parents. Coloring books for the youngest are being planned."
         },
         {
           "q": "Are the stories available digitally?",
@@ -591,6 +829,120 @@
       "datenschutzTitle": "Privacy Policy",
       "legalEmpty": "This text is currently being prepared.",
       "legalFullPage": "Open as a separate page"
+    },
+    "mission": {
+      "title": "Passing on hope with every book",
+      "text": "A fixed share of our income supports these Christian ministries:",
+      "cta": "Learn more"
+    },
+    "donate": {
+      "eyebrow": "An evangelistic labor of love",
+      "title": "Help God's stories reach children",
+      "text": "LambKing Stories tells Bible stories for children – in books and in a free, ad-free app. Writing, illustrating and translating new stories takes a lot of time and money. Your voluntary support makes it possible.",
+      "itemsTitle": "Your gift makes possible",
+      "items": [
+        "Writing and lovingly creating new Bible stories",
+        "Publishing books in more languages",
+        "Keeping the app free and ad-free"
+      ],
+      "note": "Voluntary and with nothing expected in return – every gift helps. Heartfelt thanks for standing with us!"
+    },
+    "languages": {
+      "eyebrow": "Multilingual",
+      "title": "God's stories in many languages",
+      "text": "Many of our books are available in several languages – each edition with its own Amazon link. The flags show which languages are available.",
+      "one": "book",
+      "many": "books",
+      "cta": "View books",
+      "label": "Our books are available in:"
+    },
+    "mascot": {
+      "eyebrow": "Our vision",
+      "hello": "",
+      "title": "The good news of Jesus – for children and adults all over the world",
+      "items": [
+        {
+          "title": "Lamb",
+          "text": "In the Bible, Jesus is called the “Lamb of God”: gentle, full of love, who died for us and rose again."
+        },
+        {
+          "title": "King",
+          "text": "Jesus is King of kings and Lord of lords – that is why our mascot wears a crown."
+        },
+        {
+          "title": "Revelation 17:14",
+          "text": "“… the Lamb shall overcome them: for he is Lord of lords, and King of kings …” (KJV)"
+        }
+      ],
+      "videoAlt": "LambKing, the little lamb with a crown, stands in a flower meadow and looks friendly",
+      "lead": "LambKing Stories tells child-friendly stories from the Bible – about Jesus, the Lamb of God and King of kings. Our vision: to bring the good news of Jesus to children and adults all over the world.",
+      "nameTitle": "What does LambKing mean?"
+    },
+    "kids": {
+      "eyebrow": "From family life",
+      "title": "How children color with LambKing",
+      "text": "Real moments: our daughters coloring and discovering the Bible stories."
+    },
+    "tryit": {
+      "eyebrow": "Look inside",
+      "title": "Flip through the whole book",
+      "text": "Look through the book from front to back – just as it is printed: a softcover with the story and many coloring pages.",
+      "download": "Free coloring page (PDF)",
+      "lookInside": "More about the book",
+      "cover": "Cover",
+      "pages": "Pages",
+      "of": "of",
+      "play": "Flip automatically",
+      "pause": "Pause",
+      "prev": "Previous page",
+      "next": "Next page",
+      "first": "To the front cover",
+      "last": "To the back"
+    },
+    "usp": {
+      "items": [
+        {
+          "title": "Faithful to the Bible",
+          "text": "Stories close to the biblical text"
+        },
+        {
+          "title": "Ad-free & safe",
+          "text": "No ads, no tracking"
+        },
+        {
+          "title": "Multilingual",
+          "text": "Books in several languages"
+        },
+        {
+          "title": "Free app",
+          "text": "Stories on the go"
+        }
+      ]
+    },
+    "freebie": {
+      "eyebrow": "Free to color",
+      "title": "Children and lamb playing in the meadow – color along!",
+      "text": "Download this coloring page as a free PDF – no sign-up and no email address needed. Have fun coloring!",
+      "badge": "Free",
+      "download": "Download coloring page (PDF)",
+      "hint": "A4 · ready to print"
+    },
+    "artwork": {
+      "eyebrow": "Your artwork",
+      "title": "Your colored pictures",
+      "text": "This is how colorful children color with LambKing. Send us your colored picture – we show a selection here on the site.",
+      "empty": "Your picture could hang here",
+      "send": "Send my picture",
+      "howTitle": "How it works",
+      "steps": [
+        "Color it and take a photo – the page clearly visible, no child's face and no names in the picture.",
+        "Email it to us. A parent adds: “I agree that the picture may be shown on lambking.store.”",
+        "We choose a selection and show it here – only with your consent, and removed again on request."
+      ],
+      "mailSubject": "My LambKing artwork",
+      "mailBody": "Hello LambKing team,\n\nhere is our colored picture (attached).\n\nI am the parent/guardian and agree that the picture may be shown on lambking.store (without names).\n\nKind regards",
+      "byline": "colored by a child",
+      "enlarge": "Enlarge"
     }
   }
 }

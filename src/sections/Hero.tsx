@@ -1,254 +1,61 @@
-import { BookOpen, ShieldCheck, Smartphone, Sparkles } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { BookOpen, HandHeart } from 'lucide-react'
 import Reveal from '@/components/Reveal'
 import RichText from '@/components/RichText'
-import { BOOKS, isNew } from '@/data/books'
 import { useLang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
-
-const TRUST_ICONS = [ShieldCheck, Sparkles, BookOpen]
-
-// ── Blätter-Physik ────────────────────────────────────────────
-// Jede Seite ist eine weiche Feder: Sie bewegt sich aus ihrer
-// aktuellen Position Richtung Ziel – nie ein Sprung, nie ein
-// Neustart. Deshalb wiederholen sich Seiten auch bei schnellem
-// Rein/Raus mit der Maus nicht. Die Wölbung entsteht aus dem
-// Blätterwinkel (sinusförmig, in der Mitte am stärksten).
-const OPEN_ANGLE = -172 // Zielwinkel einer umgeblätterten Seite
-const OPEN_DELAY = 420  // ms Staffelung pro Seite beim Öffnen
-const CLOSE_DELAY = 260 // ms Staffelung pro Seite beim Schließen
-const OPEN_RATE = 3.1   // Feder-Geschwindigkeit Öffnen (weich)
-const CLOSE_RATE = 4.2  // Feder-Geschwindigkeit Schließen
-// Höhenstaffelung: Die Grundseite liegt bei BASE_Z, jedes Blatt
-// darüber – sonst deckt die Grundseite die letzten Blätter ab
-// und ihr Bild erscheint mehrfach beim Durchblättern.
-const BASE_Z = 10
-const LEAF_STEP = 0.6
-
-function Book3D() {
-  const lang = useLang()
-  const t = textsFor(lang)
-  const [isTouchOpen, setIsTouchOpen] = useState(false)
-  const lastPointerType = useRef('mouse')
-  // Im Backend kann genau ein Buch pro Sprache für die Vorschau markiert
-  // werden. Ohne Auswahl bleibt das bisherige Verhalten erhalten.
-  const langBooks = BOOKS.filter((b) => b.lang === lang)
-  const pool = langBooks.length > 0 ? langBooks : BOOKS
-  const featured = pool.find((book) => book.showInHero) ?? pool.find(isNew) ?? pool[0]
-  // Im gedruckten Malbuch liegt das Ausmalmotiv rechts; die linke Seite
-  // der Doppelseite bleibt frei. Die Vorderseiten stammen aus den echten
-  // Buchvorschauen, die Rückseiten werden als leeres Papier dargestellt.
-  const previewPages = featured.samples.slice(0, 5)
-  const leaves = [
-    { front: featured.cover, isCover: true },
-    ...previewPages.slice(0, -1).map((front) => ({ front, isCover: false })),
-  ]
-  const basePage = previewPages[previewPages.length - 1] ?? featured.cover
-  const count = leaves.length
-
-  const leafEls = useRef<(HTMLDivElement | null)[]>([])
-  const kickRef = useRef<(hovering: boolean) => void>(() => {})
-  const sim = useRef({
-    angles: [] as number[],   // aktueller Winkel pro Blatt
-    hovering: false,
-    stateSince: 0,            // Zeitpunkt des letzten Hover-Wechsels
-    raf: 0,
-    last: 0,
-  })
-
-  useEffect(() => {
-    const s = sim.current
-    s.angles = Array(count).fill(0)
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-
-    const paint = () => {
-      for (let i = 0; i < count; i++) {
-        const el = leafEls.current[i]
-        if (!el) continue
-        const t = Math.min(1, Math.abs(s.angles[i]) / Math.abs(OPEN_ANGLE))
-        const bow = Math.sin(t * Math.PI) * 4.5
-        const lift = Math.sin(t * Math.PI) * 10
-        const z = BASE_Z + (count - i) * LEAF_STEP + lift
-        el.style.transform = `translateZ(${z}px) rotateY(${s.angles[i]}deg) skewY(${bow}deg)`
-        // Vorder-/Rückseite hart umschalten (robuster als reine
-        // backface-visibility, die bei vielen 3D-Ebenen aussetzen kann)
-        const showFront = Math.abs(s.angles[i]) <= 90
-        const front = el.children[0] as HTMLElement | undefined
-        const back = el.children[1] as HTMLElement | undefined
-        if (front) front.style.visibility = showFront ? 'visible' : 'hidden'
-        if (back) back.style.visibility = showFront ? 'hidden' : 'visible'
-      }
-    }
-
-    const tick = (now: number) => {
-      const dt = Math.min(0.05, (now - s.last) / 1000) // Sekunden, gedeckelt
-      s.last = now
-      let busy = false
-      for (let i = 0; i < count; i++) {
-        const delay = s.hovering ? i * OPEN_DELAY : (count - 1 - i) * CLOSE_DELAY
-        const released = now - s.stateSince >= delay
-        const angle = s.angles[i]
-        // Vor Freigabe: Blatt ruht an seiner aktuellen Position
-        const target = released ? (s.hovering ? OPEN_ANGLE : 0) : angle
-        const rate = s.hovering ? OPEN_RATE : CLOSE_RATE
-        const next = angle + (target - angle) * (1 - Math.exp(-dt * rate))
-        s.angles[i] = Math.abs(target - next) < 0.02 ? target : next
-        if (s.angles[i] !== target || !released) busy = true
-      }
-      paint()
-      if (busy) {
-        s.raf = requestAnimationFrame(tick)
-      } else {
-        s.raf = 0
-      }
-    }
-
-    const start = () => {
-      s.last = performance.now()
-      if (!s.raf) s.raf = requestAnimationFrame(tick)
-    }
-    kickRef.current = (hovering: boolean) => {
-      if (s.hovering === hovering) return
-      s.hovering = hovering
-      s.stateSince = performance.now()
-      if (reducedMotion) {
-        // Ohne Bewegung: Seiten direkt umlegen
-        s.angles = s.angles.map(() => (hovering ? OPEN_ANGLE : 0))
-        paint()
-        return
-      }
-      start()
-    }
-    return () => cancelAnimationFrame(s.raf)
-  }, [count])
-
-  return (
-    <button
-      type="button"
-      onPointerDown={(event) => {
-        lastPointerType.current = event.pointerType
-      }}
-      onClick={(event) => {
-        // Ein echter Mausklick ist hier absichtlich ohne Navigation: Am
-        // Computer reicht Hover. Touch und Tastatur starten dagegen das
-        // vollständige automatische Durchblättern und schließen es beim
-        // nächsten Antippen wieder.
-        if (lastPointerType.current !== 'mouse' || event.detail === 0) {
-          setIsTouchOpen((open) => {
-            const nextOpen = !open
-            kickRef.current(nextOpen)
-            return nextOpen
-          })
-        }
-      }}
-      onContextMenu={(event) => event.preventDefault()}
-      onDragStart={(event) => event.preventDefault()}
-      aria-label={`${featured.title} – ${t.hero.mobileBookHint}`}
-      aria-pressed={isTouchOpen}
-      data-touch-open={isTouchOpen ? 'true' : 'false'}
-      className="book3d-scene relative mx-auto block w-[min(62vw,15rem)] cursor-pointer sm:w-72"
-      onPointerEnter={(event) => {
-        if (event.pointerType === 'mouse') kickRef.current(true)
-      }}
-      onPointerLeave={(event) => {
-        if (event.pointerType === 'mouse') kickRef.current(false)
-      }}
-      onFocus={() => kickRef.current(true)}
-      onBlur={() => {
-        setIsTouchOpen(false)
-        kickRef.current(false)
-      }}
-    >
-      <div className="book3d-float">
-        <div className="book3d">
-          <div className="book3d-back" />
-          <div className="book3d-spine" />
-          <div className="book3d-pages" />
-          {/* Grundseite: letzte Vorschauseite, bleibt beim Blättern liegen */}
-          <img
-            src={basePage}
-            alt={`${t.books.samplePage} – ${featured.title}`}
-            className="book3d-page-base"
-            loading="eager"
-            fetchPriority="high"
-            draggable={false}
-          />
-          {/* Umschlag und echte rechte Buchseiten; links bleibt Papier frei */}
-          {leaves.map((leaf, i) => (
-            <div
-              key={leaf.front + i}
-              ref={(el) => {
-                leafEls.current[i] = el
-              }}
-              className="book3d-leaf"
-              style={{ transform: `translateZ(${BASE_Z + (count - i) * LEAF_STEP}px)` }}
-            >
-              <img
-                src={leaf.front}
-                alt={i === 0 ? featured.title : `${t.books.samplePage} ${i} – ${featured.title}`}
-                className={`book3d-leaf-front${leaf.isCover && featured.coverSpread ? ' book3d-leaf-front--spread' : ''}`}
-                loading="eager"
-                draggable={false}
-              />
-              <div className="book3d-leaf-back" aria-hidden="true" />
-            </div>
-          ))}
-          <div className="book3d-shadow" />
-        </div>
-      </div>
-      <span className="mt-12 block text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-        <span className="hidden sm:inline">{t.hero.bookHint}</span>
-        <span className="sm:hidden">{t.hero.mobileBookHint}</span>
-      </span>
-    </button>
-  )
-}
 
 export default function Hero() {
   const lang = useLang()
   const t = textsFor(lang)
   return (
-    <section id="top" className="texture-paper overflow-hidden">
-      <div className="mx-auto grid max-w-6xl items-center gap-7 px-4 pb-12 pt-9 sm:gap-10 sm:px-6 sm:pb-16 sm:pt-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-12 lg:pb-24 lg:pt-16">
-        <Reveal>
-          <h1 className="font-display text-4xl font-semibold leading-[1.16] tracking-tight sm:text-5xl">
-            <span className="lg:block">{t.hero.title1}</span>{' '}
-            <span className="italic text-accent lg:block">{t.hero.title2}</span>
+    <section id="top" className="relative overflow-hidden bg-background">
+      {/* Titelbild: mobil oben, ab lg als Hintergrund hinter dem Text */}
+      <div className="relative aspect-[16/10] w-full sm:aspect-[16/8] xl:absolute xl:inset-0 xl:aspect-auto">
+        <picture>
+          <source media="(min-width: 1280px)" srcSet="images/hero-titel-breit.jpg" />
+          <source media="(min-width: 768px)" srcSet="images/hero-titel.jpg" />
+          <img
+            src="images/hero-titel-mobil.jpg"
+            alt={t.hero.videoAlt}
+            fetchPriority="high"
+            decoding="async"
+            className="h-full w-full object-cover object-[72%_50%] xl:absolute xl:inset-0 xl:object-[100%_60%]"
+          />
+        </picture>
+        <div
+          className="pointer-events-none absolute inset-0 hidden xl:block"
+          style={{
+            background:
+              'linear-gradient(90deg, hsl(var(--background) / 0.8) 0%, hsl(var(--background) / 0.62) 26%, hsl(var(--background) / 0.2) 44%, hsl(var(--background) / 0) 58%)',
+          }}
+        />
+      </div>
+
+      <div className="relative mx-auto flex max-w-6xl px-4 pb-10 pt-8 sm:px-6 xl:min-h-[700px] xl:items-start xl:pb-24 xl:pt-14">
+        <Reveal className="max-w-[32rem]">
+          <h1 className="font-display text-4xl font-semibold leading-[1.14] tracking-tight sm:text-5xl xl:text-[3.1rem]">
+            <span className="xl:block">{t.hero.title1}</span>{' '}
+            <span className="italic text-accent xl:block">{t.hero.title2}</span>
           </h1>
-          <p className="mt-4 max-w-xl text-base leading-relaxed text-muted-foreground sm:mt-5 sm:text-lg">
+          <p className="mt-5 text-base font-medium leading-relaxed text-foreground/80 sm:text-lg">
             <RichText text={t.hero.subtitle} />
           </p>
-          <div className="mt-6 flex flex-wrap items-center gap-3 sm:mt-8">
+          <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <a
               href="#buecher"
-              className="inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3.5 font-bold text-primary-foreground shadow-lg shadow-primary/25 transition-transform hover:scale-[1.03]"
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-7 py-3.5 font-bold text-primary-foreground shadow-lg shadow-primary/25 transition-transform hover:scale-[1.03]"
             >
               <BookOpen className="h-5 w-5" aria-hidden />
               {t.hero.ctaBooks}
             </a>
             <a
-              href="#app"
-              className="inline-flex items-center gap-2 rounded-full border-2 border-primary/25 bg-card px-7 py-3 font-bold text-primary transition-colors hover:border-primary/50"
+              href="#unterstuetzen"
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-accent px-7 py-3.5 font-bold text-accent-foreground shadow-lg shadow-accent/30 transition-transform hover:scale-[1.03]"
             >
-              <Smartphone className="h-5 w-5" aria-hidden />
-              {t.hero.ctaApp}
+              <HandHeart className="h-5 w-5" aria-hidden />
+              {t.hero.ctaSupport}
             </a>
           </div>
-          <div className="mt-7 grid gap-2 border-t border-border/80 pt-5 sm:mt-9 sm:flex sm:flex-wrap sm:gap-x-8 sm:gap-y-3 sm:border-0 sm:pt-0">
-            {t.hero.trust.map((label, i) => {
-              const Icon = TRUST_ICONS[i]
-              return (
-                <div key={label} className="flex items-center gap-2 text-xs font-semibold text-muted-foreground sm:text-sm">
-                  <Icon className="h-4 w-4 text-accent" aria-hidden />
-                  {label}
-                </div>
-              )
-            })}
-          </div>
-        </Reveal>
-
-        <Reveal delay={100} className="pb-2 pt-0 sm:py-4 lg:py-6">
-          <Book3D />
         </Reveal>
       </div>
     </section>

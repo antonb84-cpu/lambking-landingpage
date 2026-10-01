@@ -14,13 +14,13 @@ export default function PaypalButton({ compact = false }: { compact?: boolean })
       href={SITE.paypalUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-block shrink-0 transition-transform hover:scale-[1.05]"
+      className={`inline-block shrink-0 transition-transform hover:scale-[1.05] ${compact ? '' : 'h-12 w-[264px]'}`}
       aria-label={t.support.paypalAlt}
     >
       <img
-        src={`images/buttons/paypal-${lang}-crop.png`}
+        src={`images/buttons/paypal-${lang}-trim.png`}
         alt={t.support.paypalAlt}
-        className={`block w-auto ${compact ? 'h-9' : 'h-10'}`}
+        className={`block ${compact ? 'h-9 w-auto' : 'h-full w-full'}`}
       />
     </a>
   )

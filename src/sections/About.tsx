@@ -16,17 +16,15 @@ const SIZES = {
   gross: 'h-44 w-44',
 } as const
 
-export default function About() {
+export default function About({ embedded = false }: { embedded?: boolean }) {
   const t = textsFor(useLang())
   const shape = SHAPES[SITE.authorPhotoShape] ?? SHAPES.rund
   const size = SIZES[SITE.authorPhotoSize] ?? SIZES.klein
 
-  return (
-    <section id="ueber" className="scroll-mt-28 border-y border-border bg-card/70 py-16 lg:py-24">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+  const content = (
         <Reveal className="grid items-center gap-9 md:grid-cols-[260px_1fr] lg:gap-14">
           <div className="text-center md:text-left">
-            <div className="mx-auto w-fit rounded-[2rem] border border-accent/25 bg-background p-4 shadow-[0_18px_45px_-30px_rgba(21,49,103,0.45)] md:mx-0">
+            <div className="mx-auto w-fit md:mx-0">
               <img
                 src={SITE.authorPhoto}
                 alt={SITE.authorName}
@@ -39,7 +37,7 @@ export default function About() {
           </div>
           <div>
             <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-accent">{t.about.eyebrow}</p>
-            <h2 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">
+            <h2 className={`font-display font-semibold tracking-tight ${embedded ? 'text-2xl sm:text-3xl' : 'text-3xl sm:text-4xl'}`}>
               {t.about.title}
             </h2>
             <div className="mt-6 max-w-3xl space-y-4 leading-relaxed text-muted-foreground">
@@ -52,6 +50,12 @@ export default function About() {
             </div>
           </div>
         </Reveal>
+  )
+  if (embedded) return <div id="ueber" className="scroll-mt-28">{content}</div>
+  return (
+    <section id="ueber" className="scroll-mt-28 border-y border-border bg-card/70 py-16 lg:py-24">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        {content}
       </div>
     </section>
   )

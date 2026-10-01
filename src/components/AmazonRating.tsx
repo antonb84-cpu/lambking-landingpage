@@ -1,39 +1,48 @@
 import { Star } from 'lucide-react'
 import { SITE, type Book } from '@/data/books'
 import { useLang } from '@/data/lang'
+import { textsFor } from '@/data/texts'
 
+// Link zum „Bewertung schreiben"-Formular des Buches bei Amazon (gleicher Shop wie der Kauf-Link).
+function reviewUrl(amazon: string): string {
+  const match = amazon.match(/^(https:\/\/[^/]+)\/(?:[^/]+\/)?dp\/([A-Z0-9]{10})/)
+  return match ? `${match[1]}/review/create-review?asin=${match[2]}` : amazon
+}
+
+// Sterne (1–5) unter jedem Buch. Mit Amazon-Bewertung: echte Sterne. Ohne: leere Sterne und
+// eine Einladung, bei Amazon zu bewerten – es werden nie Bewertungen erfunden.
 export default function AmazonRating({ book }: { book: Book }) {
   const lang = useLang()
+  const t = textsFor(lang).books
   const rating = book.amazonRating
+  if (!SITE.showRatings || !book.amazon.startsWith('https://')) return null
 
-  if (!SITE.showRatings || !rating || rating < 1 || rating > 5) return null
-
-  const formatted = rating.toLocaleString(lang === 'de' ? 'de-DE' : 'en-US', {
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 1,
-  })
+  const hasRating = !!rating && rating >= 1 && rating <= 5
+  const locale = lang === 'de' ? 'de-DE' : 'en-US'
   const count = book.amazonRatingCount
-  const countText = count
-    ? ` · ${count.toLocaleString(lang === 'de' ? 'de-DE' : 'en-US')} ${lang === 'de' ? 'Bewertungen' : 'ratings'}`
+  const formatted = hasRating
+    ? rating.toLocaleString(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 })
     : ''
-  const label = lang === 'de'
-    ? `${formatted} von 5 Sternen bei Amazon${countText}`
-    : `${formatted} out of 5 stars on Amazon${countText}`
+  const label = hasRating
+    ? `${formatted} ${t.ratingOf}${count ? ` (${count.toLocaleString(locale)})` : ''} – Amazon`
+    : `${t.ratingNone} – ${t.ratingCta}`
 
   return (
     <a
-      href={book.amazon}
+      href={hasRating ? book.amazon : reviewUrl(book.amazon)}
       target="_blank"
       rel="noopener noreferrer"
       aria-label={label}
-      className="mt-3 inline-flex w-fit flex-wrap items-center gap-1.5 rounded-full border border-accent/25 bg-accent/5 px-2.5 py-1 text-xs font-semibold text-muted-foreground transition-colors hover:border-accent/45 hover:text-foreground"
+      className="mt-3 inline-flex w-fit max-w-full flex-col items-center justify-center gap-y-0.5 rounded-2xl border border-accent/25 bg-accent/5 px-3 py-1.5 text-[11px] font-semibold leading-tight sm:flex-row sm:gap-x-2 sm:rounded-full sm:text-xs text-muted-foreground transition-colors hover:border-accent/45 hover:text-foreground"
     >
       <span className="flex items-center gap-0.5 text-accent" aria-hidden>
         {[1, 2, 3, 4, 5].map((value) => (
-          <Star key={value} className="h-3.5 w-3.5" fill={value <= Math.round(rating) ? 'currentColor' : 'none'} />
+          <Star key={value} className="h-4 w-4" fill={hasRating && value <= Math.round(rating) ? 'currentColor' : 'none'} />
         ))}
       </span>
-      <span>{formatted}/5 · Amazon{count ? ` (${count.toLocaleString(lang === 'de' ? 'de-DE' : 'en-US')})` : ''}</span>
+      <span>
+        {hasRating ? `${formatted}/5${count ? ` (${count.toLocaleString(locale)})` : ''} · Amazon` : t.ratingCta}
+      </span>
     </a>
   )
 }

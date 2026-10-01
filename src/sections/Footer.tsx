@@ -93,10 +93,10 @@ export default function Footer() {
               </button>
             )}
             {/* Öffnen ein Fenster auf derselben Seite – kein neuer Tab */}
-            <button type="button" onClick={() => setLegal('impressum')} className="hover:text-primary-foreground">
+            <button type="button" onClick={() => setLegal('impressum')} className="inline-flex min-h-11 items-center px-1 hover:text-primary-foreground">
               {t.footer.impressum}
             </button>
-            <button type="button" onClick={() => setLegal('datenschutz')} className="hover:text-primary-foreground">
+            <button type="button" onClick={() => setLegal('datenschutz')} className="inline-flex min-h-11 items-center px-1 hover:text-primary-foreground">
               {t.footer.datenschutz}
             </button>
           </div>

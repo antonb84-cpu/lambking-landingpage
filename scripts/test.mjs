@@ -70,22 +70,27 @@ test('Alle internen Ankerziele existieren als Sektion', () => {
   }
 })
 
-test('Hero-Buch blättert am Smartphone ohne Bildmenü und ohne Weiterleitung', () => {
-  const hero = readFileSync(join(SRC, 'sections/Hero.tsx'), 'utf-8')
-  assert(!/<a[^>]*book3d/.test(hero), '3D-Buch ist noch ein Link')
-  assert(!hero.includes('openBookById'), 'Hero-Buch öffnet noch die Buchansicht')
-  assert(hero.includes('event.pointerType') && hero.includes("lastPointerType.current !== 'mouse'"), 'Touch-Aktivierung fehlt')
-  assert(hero.includes('const nextOpen = !open') && hero.includes('kickRef.current(nextOpen)'), 'Erneutes Antippen schließt das Hero-Buch nicht')
-  assert(hero.includes('onContextMenu') && hero.includes('draggable={false}'), 'Schutz vor dem mobilen Bildmenü fehlt')
-  assert(hero.includes('data-touch-open'), 'Prüfbarer Touch-Öffnungszustand fehlt')
+test('Blätterbuch: bedienbar per Tippen/Tastatur, ohne Bildmenü, respektiert reduzierte Bewegung', () => {
+  const flip = readFileSync(join(SRC, 'components/FlipBook.tsx'), 'utf-8')
+  assert(flip.includes('draggable={false}'), 'Schutz vor dem mobilen Bildmenü fehlt')
+  assert(flip.includes('prefers-reduced-motion'), 'Reduzierte Bewegung wird nicht beachtet')
+  assert(flip.includes('aria-pressed={playing}') && flip.includes('aria-live="polite"'), 'Bedienelemente/Seitenanzeige nicht zugänglich')
+  assert(flip.includes('IntersectionObserver'), 'Blätterbuch läuft auch außerhalb des Bildes')
+  assert(!/<a[^>]*flip/i.test(flip), 'Blätterbuch ist ein Link')
 })
 
-test('Hero-Buch zeigt den vollständigen Vorderdeckel und rechts bedruckte Seiten', () => {
-  const hero = readFileSync(join(SRC, 'sections/Hero.tsx'), 'utf-8')
-  const css = readFileSync(join(SRC, 'index.css'), 'utf-8')
-  assert(hero.includes('featured.coverSpread') && css.includes('object-position: right center'), 'Druckbogen-Cover wird nicht auf die Vorderseite ausgerichtet')
-  assert(hero.includes('featured.samples.slice(0, 5)') && hero.includes('front: featured.cover'), 'Rechte Buchseiten stammen nicht aus der Vorschau')
-  assert(hero.includes('<div className="book3d-leaf-back" aria-hidden="true" />'), 'Linke Buchseiten sind nicht papierweiß')
+test('Blätterbuch zeigt Titelseite (auch Druckbogen-Cover) und alle Seiten des Buches', () => {
+  const flip = readFileSync(join(SRC, 'components/FlipBook.tsx'), 'utf-8')
+  assert(flip.includes('book.coverSpread') && flip.includes('flipPagesFor(book.id, book.lang)'), 'Cover/Seiten kommen nicht aus den Buchdaten')
+  assert(flip.includes('book.samples'), 'Fallback auf Vorschauseiten fehlt')
+  const manifest = JSON.parse(readFileSync(join(SRC, 'data/flipbooks.json'), 'utf-8'))
+  for (const [id, langs] of Object.entries(manifest)) {
+    if (id.startsWith('_')) continue
+    for (const [lang, entry] of Object.entries(langs)) {
+      assert(existsSync(join(ROOT, 'public', entry.dir, 'p01.jpg')), `Blätterbuch ${id}/${lang}: Seite 1 fehlt`)
+      assert(existsSync(join(ROOT, 'public', entry.dir, `p${String(entry.count).padStart(2, '0')}.jpg`)), `Blätterbuch ${id}/${lang}: letzte Seite fehlt`)
+    }
+  }
 })
 
 // ── 2. Buchdaten ──────────────────────────────────────────────
@@ -196,7 +201,7 @@ test('David und Weihnachten verwenden sprachrichtige Cover und PDF-Vorschauseite
   const server = readFileSync(join(ROOT, 'admin/admin_server.py'), 'utf-8')
   assert(booksView.includes('samples: edition.samples?.length ? edition.samples : book.samples'), 'Sprachspezifische Vorschauseiten werden nicht verwendet')
   assert(booksView.includes('sources={displayBook?.samples ?? []}'), 'Vergrößerte Vorschau verwendet nicht die Sprach-Ausgabe')
-  assert(booksView.includes("flag-icons/flags/4x3/ro.svg"), 'Rumänische Flagge fehlt')
+  assert(readFileSync(join(SRC, 'data/languageMeta.ts'), 'utf-8').includes("flag-icons/flags/4x3/ro.svg"), 'Rumänische Flagge fehlt')
   assert(admin.includes('Vorschauseiten dieser Sprache') && admin.includes("['ro','🇷🇴 Rumänisch']"), 'Sprach-Vorschauseiten oder Rumänisch fehlen im Backend')
   assert(server.includes('cleaned_edition["samples"]'), 'Backend verwirft Sprach-Vorschauseiten beim Speichern')
   for (const [id, languages] of [
@@ -220,11 +225,11 @@ test('David und Weihnachten verwenden sprachrichtige Cover und PDF-Vorschauseite
 test('Vorschauseiten lassen sich ordnen und ein Hero-Buch auswählen', () => {
   const admin = readFileSync(join(ROOT, 'admin/index.html'), 'utf-8')
   const server = readFileSync(join(ROOT, 'admin/admin_server.py'), 'utf-8')
-  const hero = readFileSync(join(SRC, 'sections/Hero.tsx'), 'utf-8')
+  const hero = readFileSync(join(SRC, 'components/FlipBook.tsx'), 'utf-8') + readFileSync(join(SRC, 'data/featured.ts'), 'utf-8')
   assert(admin.includes('sampleOrder') && admin.includes('moveSampleItem'), 'Sortierung der Vorschauseiten fehlt')
   assert(admin.includes('f_showInHero'), 'Hero-Vorschau-Schalter fehlt im Backend')
   assert(server.includes('MAX_SAMPLE_IMAGES = 10') && server.includes('sampleOrder'), 'Server begrenzt/sortiert Vorschauseiten nicht korrekt')
-  assert(hero.includes('book.showInHero') && hero.includes('featured.samples.slice(0, 5)'), 'Startbereich verwendet die gewählte Vorschau nicht')
+  assert(hero.includes('book.showInHero') && hero.includes('book.samples'), 'Vorschaubuch verwendet die gewählte Vorschau nicht')
 })
 
 test('Buchtypen/Kategorien sind lokalisiert und konsistent', () => {
@@ -268,14 +273,14 @@ test('App-Datenschutz ist enthalten und unter der Store-URL erreichbar', () => {
   const previewServer = readFileSync(join(ROOT, 'admin/admin_server.py'), 'utf-8')
   assert(ds.includes('Nutzung der App „LambKing Stories“'), 'App-Abschnitt fehlt')
   assert(ds.includes('Render Services') && ds.includes('MongoDB Atlas'), 'App-Hosting fehlt')
-  const appSection = ds.split('8. Nutzung der App „LambKing Stories“')[1]?.split('9. Ihre Rechte')[0] || ''
+  const appSection = ds.split('9. Nutzung der App „LambKing Stories“')[1]?.split('10. Ihre Rechte')[0] || ''
   assert(!appSection.includes('zufällige Kennung') && !appSection.includes('pro Kennung') && !appSection.includes('13 Monaten'), 'Die entfernte Gerätekennung wird noch im App-Abschnitt beschrieben')
   assert(appSection.includes('Anonyme Buchdetailseiten-Aufrufe') && appSection.includes('gemeinsame Tagessummen'), 'Anonyme tägliche Buchdetailseiten-Zählung fehlt')
   assert(appSection.includes('keine persönlichen Informationen oder Nutzerkennungen') && appSection.includes('keine Wiedererkennung'), 'Datensparsame App-Zählung ist nicht beschrieben')
   assert(appSection.includes('Freiwillige einmalige Apple-In-App-Trinkgelder') && appSection.includes('Zahlungsabwicklung erfolgt über Apple'), 'Einmalige freiwillige Apple-Trinkgelder fehlen im App-Datenschutz')
   assert(!appSection.includes('keine In-App-Käufe'), 'Veraltete Aussage über fehlende In-App-Käufe')
   assert(!appSection.includes('Abfrage für Erwachsene'), 'Die entfernte Elternabfrage wird noch beschrieben')
-  assert(ds.includes('9. Ihre Rechte'), 'Rechte-Abschnitt wurde nicht korrekt verschoben')
+  assert(ds.includes('10. Ihre Rechte'), 'Rechte-Abschnitt wurde nicht korrekt verschoben')
   assert(legalGenerator.includes("join(privacyDir, 'index.html')"), 'Die Route /datenschutz/ wird nicht erzeugt')
   assert(postbuild.includes("'datenschutz/'"), 'Die Store-URL fehlt in der Sitemap')
   assert(previewServer.includes('"datenschutz/index.html"'), 'Die lokale Vorschau aktualisiert die Datenschutzroute nicht')
@@ -308,7 +313,8 @@ test('Unterstützte Werke sind erweiterbar und können zweisprachige Flyer anzei
   assert(section.includes('supportedOrganizations'), 'Unterstützungssektion ist nicht mit den Einstellungen verbunden')
   assert(section.includes('items-center justify-center rounded-xl'), 'Logos sind nicht mittig ausgerichtet')
   assert(!section.includes('line-clamp-6'), 'Beschreibung der unterstützten Werke wird abgeschnitten')
-  assert(section.includes('aria-haspopup="dialog"') && section.includes('text-center text-base font-bold'), 'Flyer ist kein zentrierter, fetter Textlink')
+  assert(section.includes('aria-haspopup="dialog"') && section.includes('justify-center gap-x-5') && section.includes('text-sm font-bold'), 'Flyer ist kein zentrierter, fetter Textlink')
+  assert(section.includes('aria-expanded={open}') && section.includes('{open ? less : more}'), 'Vollständige Beschreibung ist nicht über „Mehr lesen“ erreichbar')
   assert(section.includes('viewFlyer') && section.includes('<iframe'), 'Flyer können auf der Landingpage nicht angesehen werden')
   assert(server.includes('MAX_SUPPORTED_ORGANIZATIONS') && server.includes('supportFlyer_'), 'Flyer werden serverseitig nicht sicher verarbeitet')
   assert(generatedBooks.includes('supportedOrganizations:'), 'Automatisch erzeugte Seitendaten verlieren die unterstützten Werke')
@@ -339,7 +345,7 @@ test('Auf Smartphones stehen zwei Bücher nebeneinander', () => {
   assert(books.includes('grid grid-cols-2'), 'Mobile Buchübersicht hat keine zwei Spalten')
 })
 
-test('Alle Malbücher zeigen einheitlich Umfang, Format, Alter und Rätselseiten', () => {
+test('Alle Malbücher zeigen einheitlich Umfang (mindestens 70 Seiten), Format und Rätselseiten', () => {
   const defaults = JSON.parse(readFileSync(join(SRC, 'data/texts.defaults.json'), 'utf-8'))
   const booksSection = readFileSync(join(SRC, 'sections/Books.tsx'), 'utf-8')
   const admin = readFileSync(join(ROOT, 'admin/index.html'), 'utf-8')
@@ -354,7 +360,7 @@ test('Alle Malbücher zeigen einheitlich Umfang, Format, Alter und Rätselseiten
     const texts = defaults[lang].books
     assert(texts.coloringFactsTitle, `${lang}: Überschrift zu den Malbuch-Eigenschaften fehlt`)
     assert(Array.isArray(texts.coloringFacts) && texts.coloringFacts.length === 5, `${lang}: Es müssen genau fünf Malbuch-Eigenschaften vorhanden sein`)
-    assert(texts.coloringFacts[0] === (lang === 'de' ? 'Je nach Band 70 oder 80 Seiten' : '70 or 80 pages, depending on the volume'), `${lang}: Seitenzahl-Aussage fehlt`)
+    assert(texts.coloringFacts[0] === (lang === 'de' ? 'Mindestens 70 Seiten' : 'At least 70 pages'), `${lang}: Seitenzahl-Aussage fehlt`)
   }
   assert(booksSection.includes('ColoringBookFacts') && !booksSection.includes('coloringCardSummary'), 'Malbuch-Kurzinfo steht noch wiederholt auf den Kacheln')
   assert(!booksSection.includes('<ColoringBookFacts compact'), 'Malbuch-Faktenkasten wird im Buchfenster wiederholt')
@@ -538,7 +544,7 @@ test('Creator-Bewerbungsseite ist im portablen Backend vollständig schaltbar', 
   assert(app.includes('SITE.creatorPartnerEnabled && isCreatorPartnerPath()'), 'Creator-Route wird im Frontend nicht abgeschaltet')
   assert(header.includes('SITE.creatorPartnerEnabled') && footer.includes('SITE.creatorPartnerEnabled'), 'Creator-Navigation wird nicht vollständig abgeschaltet')
   assert(header.includes("label: t.creatorPartner.navLabel") && header.includes("href: creatorPartnerHref()"), 'Creator-Link fehlt in der allgemeinen Header-Navigation')
-  assert(app.indexOf('<SupportedWorks />') < app.indexOf('<CreatorPartnerTeaser />') && app.indexOf('<CreatorPartnerTeaser />') < app.indexOf('<Faq />'), 'Creator-Rubrik steht nicht direkt nach „Aus Glauben handeln“')
+  assert(app.indexOf('<SupportedWorks />') < app.indexOf('<CreatorPartnerTeaser />') && app.indexOf('<CreatorPartnerTeaser />') < app.indexOf('<Faq />'), 'Creator-Rubrik steht nicht vor den häufigen Fragen')
   assert(app.includes('SITE.creatorPartnerEnabled ? <CreatorPartnerTeaser /> : null'), 'Creator-Rubrik beachtet den Backend-Schalter nicht')
   assert(teaser.includes('creatorPartnerHref()') && teaser.includes('cp.applyNow'), 'Creator-Rubrik führt nicht zur Bewerbungsseite')
   assert(lang.includes('SITE.creatorPartnerEnabled && isCreatorPartnerPath()'), 'SEO-Metadaten beachten den Creator-Schalter nicht')

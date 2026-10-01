@@ -33,7 +33,7 @@ export default function KofiButton({ compact = false }: { compact?: boolean }) {
       rel="noopener noreferrer"
       aria-label={t.support.kofiAlt}
       className={`inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-[#20242e]/15 bg-[#FFF8F0] font-bold text-[#20242e] shadow-sm transition-transform hover:scale-[1.05] ${
-        compact ? 'h-10 gap-1.5 px-3 text-xs' : 'h-[45px] w-[240px] gap-2 px-4 text-sm'
+        compact ? 'h-10 gap-1.5 px-3 text-xs' : 'h-12 w-[264px] gap-2 px-4 text-sm'
       }`}
     >
       <KofiCup className={compact ? 'h-5 w-5' : 'h-6 w-6'} />

@@ -2,6 +2,15 @@
 <html lang="de">
   <head>
     <meta charset="UTF-8" />
+    <!-- Lokale Vorschau: Auf /creator-partner/ müssen relative Pfade (Bilder, Schriften) eine Ebene höher
+         gesucht werden. Der Produktions-Build setzt dieses <base> selbst (scripts/postbuild.mjs). -->
+    <script>
+      if (!document.querySelector('base') && /\/creator-partner\/?$/.test(location.pathname)) {
+        var b = document.createElement('base')
+        b.setAttribute('href', location.pathname.replace(/creator-partner\/?$/, ''))
+        document.head.appendChild(b)
+      }
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>LambKing Stories – Bibelgeschichten zum Ausmalen</title>

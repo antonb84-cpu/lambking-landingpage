@@ -1,36 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { ArrowLeft, ArrowRight, BookOpen, CheckCircle2, Copy, Eye, HelpCircle, Languages, Mail, PackageCheck, Palette, Play, Ruler, ShieldCheck, X } from 'lucide-react'
+import { ArrowLeft, ArrowRight, BookOpen, CheckCircle2, Copy, Eye, HelpCircle, Languages, Mail, PackageCheck, Palette, Play, Ruler, ShieldCheck, ChevronDown, X, ScrollText } from 'lucide-react'
 import Reveal from '@/components/Reveal'
 import RichText from '@/components/RichText'
 import AmazonRating from '@/components/AmazonRating'
-import { BOOKS, CATEGORIES, COMING_SOON, SITE, isNew, type Book, type Category } from '@/data/books'
+import { BOOKS, CATEGORIES, COMING_SOON, SITE, isNew, type Book } from '@/data/books'
 import { useLang } from '@/data/lang'
+import { LANGUAGE_META } from '@/data/languageMeta'
 import { textsFor } from '@/data/texts'
 import { OPEN_BOOK_EVENT } from '@/data/openBook'
 import { trackAmazonClick } from '@/data/analytics'
-import deFlag from 'flag-icons/flags/4x3/de.svg'
-import gbFlag from 'flag-icons/flags/4x3/gb.svg'
-import esFlag from 'flag-icons/flags/4x3/es.svg'
-import roFlag from 'flag-icons/flags/4x3/ro.svg'
-import frFlag from 'flag-icons/flags/4x3/fr.svg'
-import itFlag from 'flag-icons/flags/4x3/it.svg'
-import ptFlag from 'flag-icons/flags/4x3/pt.svg'
-import ruFlag from 'flag-icons/flags/4x3/ru.svg'
-import jpFlag from 'flag-icons/flags/4x3/jp.svg'
-import cnFlag from 'flag-icons/flags/4x3/cn.svg'
-import krFlag from 'flag-icons/flags/4x3/kr.svg'
-import plFlag from 'flag-icons/flags/4x3/pl.svg'
-import nlFlag from 'flag-icons/flags/4x3/nl.svg'
-import trFlag from 'flag-icons/flags/4x3/tr.svg'
-import uaFlag from 'flag-icons/flags/4x3/ua.svg'
-import saFlag from 'flag-icons/flags/4x3/sa.svg'
-import inFlag from 'flag-icons/flags/4x3/in.svg'
-import seFlag from 'flag-icons/flags/4x3/se.svg'
-import dkFlag from 'flag-icons/flags/4x3/dk.svg'
-import noFlag from 'flag-icons/flags/4x3/no.svg'
-import fiFlag from 'flag-icons/flags/4x3/fi.svg'
 
 // Kategorie-Helfer (Labels/Typen kommen aus den Buchdaten, sprachabhängig)
 const catDefOf = (id: string) => CATEGORIES.find((c) => c.id === id)
@@ -43,18 +23,6 @@ const catLabelOf = (id: string, lang: 'de' | 'en'): string => {
   return c ? (lang === 'en' ? c.labelEn : c.labelDe) : id
 }
 
-const LANGUAGE_META: Record<string, { flag: string; de: string; en: string }> = {
-  de: { flag: deFlag, de: 'Deutsch', en: 'German' }, en: { flag: gbFlag, de: 'Englisch', en: 'English' },
-  es: { flag: esFlag, de: 'Spanisch', en: 'Spanish' }, ro: { flag: roFlag, de: 'Rumänisch', en: 'Romanian' }, fr: { flag: frFlag, de: 'Französisch', en: 'French' },
-  it: { flag: itFlag, de: 'Italienisch', en: 'Italian' }, pt: { flag: ptFlag, de: 'Portugiesisch', en: 'Portuguese' },
-  ru: { flag: ruFlag, de: 'Russisch', en: 'Russian' }, ja: { flag: jpFlag, de: 'Japanisch', en: 'Japanese' },
-  zh: { flag: cnFlag, de: 'Chinesisch', en: 'Chinese' }, ko: { flag: krFlag, de: 'Koreanisch', en: 'Korean' },
-  pl: { flag: plFlag, de: 'Polnisch', en: 'Polish' }, nl: { flag: nlFlag, de: 'Niederländisch', en: 'Dutch' },
-  tr: { flag: trFlag, de: 'Türkisch', en: 'Turkish' }, uk: { flag: uaFlag, de: 'Ukrainisch', en: 'Ukrainian' },
-  ar: { flag: saFlag, de: 'Arabisch', en: 'Arabic' }, hi: { flag: inFlag, de: 'Hindi', en: 'Hindi' },
-  sv: { flag: seFlag, de: 'Schwedisch', en: 'Swedish' }, da: { flag: dkFlag, de: 'Dänisch', en: 'Danish' },
-  no: { flag: noFlag, de: 'Norwegisch', en: 'Norwegian' }, fi: { flag: fiFlag, de: 'Finnisch', en: 'Finnish' },
-}
 
 type BooksCopy = ReturnType<typeof textsFor>['books']
 const editionCopyOverrides: Record<string, Partial<BooksCopy>> = {
@@ -67,8 +35,8 @@ const editionCopyOverrides: Record<string, Partial<BooksCopy>> = {
     mediaLifestyle: 'Foto del libro (imagen ilustrativa)', mediaVideo: 'Reproducir vídeo del libro',
     mediaSwipeHint: 'Desliza o usa las flechas', previousImage: 'Imagen anterior', nextImage: 'Imagen siguiente',
     coloringFactsTitle: 'Qué contiene cada libro para colorear de LambKing',
-    coloringFacts: ['70 u 80 páginas, según el tomo', 'Tamaño aprox. DIN A4', 'Fiel a la Biblia', 'Además, 5 páginas con juegos, preguntas y pasatiempos', 'Disponible en varios idiomas'],
-    coloringAge: 'A partir de 6 años', coloringFormat: '70 u 80 páginas · aprox. DIN A4',
+    coloringFacts: ['Mínimo 70 páginas', 'Tamaño aprox. DIN A4', 'Fiel a la Biblia', 'Además, 5 páginas con juegos, preguntas y pasatiempos', 'Disponible en varios idiomas'],
+    coloringAge: 'A partir de 6 años', coloringFormat: 'Mínimo 70 páginas · aprox. DIN A4',
     amazonPending: 'Aún no hay un enlace de Amazon para esta edición. El botón de compra aparecerá cuando se añada en la administración.',
   },
   ro: {
@@ -80,8 +48,8 @@ const editionCopyOverrides: Record<string, Partial<BooksCopy>> = {
     mediaLifestyle: 'Fotografie a cărții (imagine ilustrativă)', mediaVideo: 'Redă videoclipul cărții',
     mediaSwipeHint: 'Glisează sau folosește săgețile', previousImage: 'Imaginea precedentă', nextImage: 'Imaginea următoare',
     coloringFactsTitle: 'Ce conține fiecare carte de colorat LambKing',
-    coloringFacts: ['70 sau 80 de pagini, în funcție de volum', 'Mărime aprox. DIN A4', 'Fidelă Bibliei', 'În plus, 5 pagini cu jocuri, întrebări și puzzle-uri', 'Disponibilă în mai multe limbi'],
-    coloringAge: 'De la 6 ani', coloringFormat: '70 sau 80 de pagini · aprox. DIN A4',
+    coloringFacts: ['Minimum 70 de pagini', 'Mărime aprox. DIN A4', 'Fidelă Bibliei', 'În plus, 5 pagini cu jocuri, întrebări și puzzle-uri', 'Disponibilă în mai multe limbi'],
+    coloringAge: 'De la 6 ani', coloringFormat: 'Minimum 70 de pagini · aprox. DIN A4',
     amazonPending: 'Nu există încă un link Amazon pentru această ediție. Butonul de cumpărare va apărea după adăugarea linkului în administrare.',
   },
 }
@@ -115,13 +83,53 @@ const localizedBook = (book: Book, language: string): Book => {
   }
 }
 
+// Kartentitel: „Bibelgeschichten zum Ausmalen: Band 1 - Die Schöpfung - Gott macht die Welt"
+// wird zu Haupttitel „Die Schöpfung" und Untertitel „Gott macht die Welt"; die Reihe steht darüber.
+function splitTitle(book: Book): { main: string; sub?: string } {
+  let title = book.title
+  const series = (book.series ?? '').split('·')[0].trim()
+  if (series && title.toLowerCase().startsWith(series.toLowerCase())) {
+    title = title.slice(series.length).replace(/^[\s:–-]+/, '')
+  }
+  title = title.replace(/^(Band|Volume|Vol\.|Tomo|Volumen)\s*\d+\s*[-–:]\s*/i, '')
+  const parts = title.split(/\s[–-]\s/)
+  if (parts.length > 1) return { main: parts[0].trim(), sub: parts.slice(1).join(' – ').trim() }
+  return { main: title.trim() }
+}
+
+// „Bibelgeschichten zum Ausmalen · Band 1" -> „Band 1" (die Reihe steht schon in der Überschrift des Abschnitts)
+function volumeLabel(book: Book): string {
+  const parts = (book.series ?? '').split('·')
+  return parts.length > 1 ? parts.slice(1).join('·').trim() : ''
+}
+
+function highlightIcon(text: string) {
+  if (/bibelstelle|bible passage|pasaje|pasaj/i.test(text)) return ScrollText
+  if (/seite|page|página|pagin/i.test(text)) return BookOpen
+  if (/ausmal|color|colorear|colorat/i.test(text)) return Palette
+  if (/sprach|language|idioma|limb/i.test(text)) return Languages
+  return CheckCircle2
+}
+
 function BookCover({ book, variant }: { book: Book; variant: 'card' | 'dialog' }) {
   const shared = variant === 'card'
-    ? 'max-h-full w-auto max-w-full rounded-md shadow-lg shadow-primary/15 transition-transform duration-300 group-hover:scale-[1.02]'
-    : 'mx-auto w-full max-w-[320px] rounded-md shadow-2xl shadow-primary/25 lg:sticky lg:top-10'
+    ? 'max-h-full w-auto max-w-full rounded-[3px] shadow-[0_14px_26px_-10px_rgba(21,49,103,0.55)] transition-transform duration-300 group-hover:-rotate-1 group-hover:scale-[1.03]'
+    : 'mx-auto w-full max-w-[320px] rounded-[3px] shadow-2xl shadow-primary/25 lg:sticky lg:top-10'
+  // Softcover: heller Falz am Buchrücken und leichter Glanz, keine harte Hardcover-Kante
+  const crease = (
+    <span
+      aria-hidden
+      className="pointer-events-none absolute inset-y-0 left-0 w-[6%] rounded-l-[3px] bg-gradient-to-r from-black/25 via-white/20 to-transparent"
+    />
+  )
 
   if (!book.coverSpread) {
-    return <img src={book.cover} alt={book.title} loading={variant === 'card' ? 'lazy' : undefined} className={shared} />
+    return (
+      <span className="relative inline-flex max-h-full max-w-full">
+        <img src={book.cover} alt={book.title} loading={variant === 'card' ? 'lazy' : undefined} className={shared} />
+        {crease}
+      </span>
+    )
   }
 
   return (
@@ -137,6 +145,7 @@ function BookCover({ book, variant }: { book: Book; variant: 'card' | 'dialog' }
         loading={variant === 'card' ? 'lazy' : undefined}
         className="absolute right-0 top-0 h-full w-auto max-w-none"
       />
+      {crease}
     </div>
   )
 }
@@ -239,7 +248,7 @@ function LanguageEditions({
   if (!editions.length) return null
   return (
     <div className={`${compact ? 'mt-2.5' : 'mt-5'} text-center`}>
-      <p className={`mb-1.5 font-semibold text-muted-foreground ${compact ? 'text-[10px] sm:text-xs' : 'text-xs'}`}>{label ?? t.books.availableLanguages}</p>
+      {label === '' ? null : <p className={`mb-1.5 font-semibold text-muted-foreground ${compact ? 'text-[10px] sm:text-xs' : 'text-xs'}`}>{label ?? t.books.availableLanguages}</p>}
       <div className="flex flex-wrap justify-center gap-1">
         {editions.map((edition) => {
           const meta = LANGUAGE_META[edition.language]
@@ -437,14 +446,7 @@ function BookDialog({
               <DialogHeader>
                 <div className="mb-3 flex flex-wrap gap-2">
                   <Badge variant="secondary" className="rounded-full">{editionLanguage === 'es' && isColoringBook(book) ? 'Libro para colorear' : editionLanguage === 'ro' && isColoringBook(book) ? 'Carte de colorat' : typeLabelOf(book, editionLanguage === 'en' ? 'en' : 'de')}</Badge>
-                  {isColoringBook(book) ? (
-                    <Badge variant="secondary" className="rounded-full">{dialogCopy.coloringAge}</Badge>
-                  ) : (
-                    <>
-                      {displayBook?.age && <Badge variant="secondary" className="rounded-full">{displayBook.age}</Badge>}
-                      {displayBook?.detail && <Badge variant="secondary" className="rounded-full">{displayBook.detail}</Badge>}
-                    </>
-                  )}
+                  {displayBook?.detail ? <Badge variant="secondary" className="rounded-full">{displayBook.detail}</Badge> : null}
                 </div>
                 <DialogTitle className="font-display text-3xl font-semibold leading-tight lg:text-4xl">
                   {displayBook?.title}
@@ -459,13 +461,18 @@ function BookDialog({
                 <RichText text={displayBook?.description || ''} />
               </DialogDescription>
               {(displayBook?.highlights?.length ?? 0) > 0 && <p className="mt-6 font-display text-lg font-semibold text-foreground">{dialogCopy.bookInfoTitle}</p>}
-              <ul className="mt-2 grid max-w-2xl gap-2.5 sm:grid-cols-2">
-                {(displayBook?.highlights || []).map((h) => (
-                  <li key={h} className="flex items-center gap-2.5 font-semibold">
-                    <span className="h-2 w-2 rounded-full bg-accent" aria-hidden />
-                    <RichText text={h} />
-                  </li>
-                ))}
+              <ul className="mt-3 grid max-w-2xl gap-3 sm:grid-cols-2">
+                {(displayBook?.highlights || []).map((h) => {
+                  const Icon = highlightIcon(h)
+                  return (
+                    <li key={h} className="flex items-center gap-3 rounded-xl border border-border bg-card p-3 font-semibold leading-snug shadow-sm">
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                        <Icon className="h-5 w-5" aria-hidden />
+                      </span>
+                      <RichText text={h} />
+                    </li>
+                  )
+                })}
               </ul>
               {displayBook && <AmazonRating book={displayBook} />}
               <LanguageEditions book={book} label={dialogCopy.availableLanguages} onSelect={onEditionChange} />
@@ -642,7 +649,6 @@ export default function Books() {
       ?? editions[0]?.language
       ?? null
   })
-  const [cat, setCat] = useState<Category | 'alle'>('alle')
   const [zoom, setZoom] = useState<string | null>(() => {
     const params = new URLSearchParams(window.location.search)
     const found = BOOKS.find((b) => b.id === params.get('buch'))
@@ -682,16 +688,13 @@ export default function Books() {
     return () => window.removeEventListener(OPEN_BOOK_EVENT, onOpen)
   })
 
-  const visible = cat === 'alle' ? books : books.filter((b) => b.category === cat)
-
-  const catLabel = (id: Category | 'alle'): string =>
-    id === 'alle' ? t.books.all : catLabelOf(id, lang)
-  const typeLabel = (b: Book): string => typeLabelOf(b, lang)
-  const catColor = (id: Category | 'alle'): string | undefined =>
-    id === 'alle' ? undefined : catDefOf(id)?.color
-
-  const emptyHint = (id: Category | 'alle'): string =>
-    id === 'alle' ? t.books.emptyAll : t.books.emptyComics
+  // Gruppen je Kategorie (nur Kategorien mit Büchern); unbekannte Kategorien landen unter „Weitere"
+  const groups = [
+    ...CATEGORIES.map((c) => ({ id: c.id, label: catLabelOf(c.id, lang), color: c.color, items: books.filter((b) => b.category === c.id) })),
+    { id: 'weitere', label: lang === 'en' ? 'More' : 'Weitere', color: '#64748b', items: books.filter((b) => !catDefOf(b.category)) },
+  ]
+    .filter((g) => g.items.length > 0)
+    .sort((a, b) => b.items.length - a.items.length)
 
   return (
     <section id="buecher" className="scroll-mt-28 py-14 lg:py-24">
@@ -704,121 +707,97 @@ export default function Books() {
           <p className="mt-3 text-muted-foreground"><RichText text={t.books.subtitle} /></p>
         </Reveal>
 
-        {/* Kategorien */}
-        <Reveal delay={100} className="mt-9 flex flex-wrap justify-center gap-2.5">
-          {(['alle', ...CATEGORIES.map((c) => c.id).filter((id) => books.some((b) => b.category === id))] as const).map((id) => {
-            const count = id === 'alle' ? books.length : books.filter((b) => b.category === id).length
-            const activeTab = cat === id
-            const color = catColor(id)
-            return (
-              <button
-                key={id}
-                type="button"
-                onClick={() => setCat(id)}
-                aria-pressed={activeTab}
-                style={activeTab && color ? { backgroundColor: color, borderColor: color, color: '#fff' } : undefined}
-                className={`rounded-full border-2 px-5 py-2 text-sm font-bold transition-all ${
-                  activeTab
-                    ? color
-                      ? 'shadow-md'
-                      : 'border-primary bg-primary text-primary-foreground shadow-md'
-                    : 'border-border bg-card text-muted-foreground hover:border-primary/40 hover:text-foreground'
-                }`}
-              >
-                {catLabel(id)}
-                <span
-                  className={`ml-2 rounded-full px-2 py-0.5 text-xs ${
-                    activeTab ? 'bg-white/25' : 'bg-secondary'
-                  }`}
-                >
-                  {count}
-                </span>
-              </button>
-            )
-          })}
-        </Reveal>
-
-        {(cat === 'alle' || cat === 'malbuecher') && books.some(isColoringBook) ? (
-          <Reveal delay={130} className="mt-7">
-            <ColoringBookFacts />
-          </Reveal>
-        ) : null}
-
-        {visible.length > 0 ? (
-          <div className="mt-9 grid grid-cols-2 gap-2.5 sm:gap-6 lg:grid-cols-3">
-            {visible.map((b, i) => {
-              const cardBook = localizedBook(b, lang)
-              return (
-              <Reveal key={b.id} delay={i * 100}>
-                <article className="book-card group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-[0_10px_32px_-26px_rgba(21,49,103,0.8)] transition-all duration-200 hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_18px_38px_-24px_rgba(21,49,103,0.45)]">
-                  <button
-                    type="button"
-                    onClick={() => openBook(b)}
-                    className="relative flex aspect-[4/5] items-center justify-center bg-secondary/45 p-2.5 text-left sm:p-5"
-                    aria-label={`${t.books.lookInside}: ${b.title}`}
-                  >
-                    {isNew(b) && (
-                      <span className="absolute left-2 top-2 z-10 rounded-full bg-accent px-2 py-1 text-[10px] font-bold text-accent-foreground shadow sm:left-4 sm:top-4 sm:px-3 sm:text-xs">
-                        {t.books.newBadge}
+        {/* Kategorien als auf- und zuklappbare Bereiche (Kategorien kommen aus dem Admin) */}
+        {groups.length > 0 ? (
+          <div className="mt-10 grid gap-5">
+            {groups.map((group, gi) => (
+              <Reveal key={group.id} delay={gi * 80}>
+                <details open={gi === 0} className="group/cat overflow-hidden rounded-3xl border border-border bg-card/50 shadow-sm">
+                  <summary className="flex cursor-pointer list-none items-center gap-4 px-5 py-4 transition-colors hover:bg-secondary/50 sm:px-7 sm:py-5 [&::-webkit-details-marker]:hidden">
+                    <span className="h-10 w-1.5 shrink-0 rounded-full" style={{ backgroundColor: group.color }} aria-hidden />
+                    <span className="flex-1">
+                      <span className="block font-display text-xl font-semibold sm:text-2xl">{group.label}</span>
+                      <span className="text-sm font-semibold text-muted-foreground">
+                        {group.items.length} {group.items.length === 1 ? t.books.titleOne : t.books.titleMany}
                       </span>
-                    )}
-                    <BookCover book={cardBook} variant="card" />
-                    <span className="absolute bottom-4 right-4 inline-flex items-center gap-1.5 rounded-full bg-foreground/85 px-3 py-1.5 text-xs font-bold text-background opacity-0 backdrop-blur transition-opacity group-hover:opacity-100">
-                      <Eye className="h-3.5 w-3.5" aria-hidden />
-                      {t.books.lookInside}
                     </span>
-                  </button>
-                  <div className="flex flex-1 flex-col p-2.5 sm:p-5">
-                    <div className="mb-2 hidden flex-wrap gap-1.5 sm:flex">
-                      <Badge variant="secondary" className="gap-1 rounded-full">
-                        <Palette className="h-3 w-3" aria-hidden />
-                        {typeLabel(b)}
-                      </Badge>
-                      {isColoringBook(b)
-                        ? <Badge variant="secondary" className="rounded-full">{t.books.coloringAge}</Badge>
-                        : cardBook.age && <Badge variant="secondary" className="rounded-full">{cardBook.age}</Badge>}
-                    </div>
-                    <h3 className="book-card-title font-display text-sm font-semibold leading-snug sm:text-xl">{cardBook.title}</h3>
-                    <LanguageEditions book={b} compact onSelect={(language) => openBook(b, language)} />
-                    <div className="hidden sm:block"><AmazonRating book={b} /></div>
-                    <div className="mt-3 flex flex-1 flex-col items-center justify-end sm:mt-4">
-                      <button
-                        type="button"
-                        onClick={() => openBook(b)}
-                        className="flex min-h-11 w-full max-w-[240px] items-center justify-center rounded-full bg-primary px-2 py-2 text-xs font-bold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 sm:aspect-[900/165] sm:text-sm"
-                      >
-                        {t.books.lookInside}
-                      </button>
-                    </div>
+                    <span className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background text-primary transition-transform duration-300 group-open/cat:rotate-180" aria-hidden>
+                      <ChevronDown className="h-5 w-5" />
+                    </span>
+                  </summary>
+                  <div className="px-3 pb-6 sm:px-7">
+                    {group.id === 'malbuecher' && group.items.some(isColoringBook) ? <ColoringBookFacts /> : null}
+          <div className="mt-6 grid grid-cols-2 gap-2.5 sm:gap-6 lg:grid-cols-3">
+                    {group.items.map((b, i) => {
+                      const cardBook = localizedBook(b, lang)
+                      return (
+                      <Reveal key={b.id} delay={i * 100}>
+                        <article className="book-card group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-[0_10px_32px_-26px_rgba(21,49,103,0.8)] transition-all duration-200 hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_18px_38px_-24px_rgba(21,49,103,0.45)]">
+                          <button
+                            type="button"
+                            onClick={() => openBook(b)}
+                            className="relative flex aspect-[4/5] items-center justify-center bg-secondary/45 p-2.5 text-left sm:p-5"
+                            aria-label={`${t.books.lookInside}: ${b.title}`}
+                          >
+                            {isNew(b) && (
+                              <span className="absolute left-2 top-2 z-10 rounded-full bg-accent px-2 py-1 text-[10px] font-bold text-accent-foreground shadow sm:left-4 sm:top-4 sm:px-3 sm:text-xs">
+                                {t.books.newBadge}
+                              </span>
+                            )}
+                            <BookCover book={cardBook} variant="card" />
+                            <span className="absolute bottom-4 right-4 inline-flex items-center gap-1.5 rounded-full bg-foreground/85 px-3 py-1.5 text-xs font-bold text-background opacity-0 backdrop-blur transition-opacity group-hover:opacity-100">
+                              <Eye className="h-3.5 w-3.5" aria-hidden />
+                              {t.books.lookInside}
+                            </span>
+                          </button>
+                          <div className="flex flex-1 flex-col p-2.5 sm:p-5">
+                            {(() => {
+                              const { main, sub } = splitTitle(cardBook)
+                              return (
+                                <>
+                                  {volumeLabel(cardBook) ? (
+                                    <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-accent">{volumeLabel(cardBook)}</p>
+                                  ) : null}
+                                  <h3 className="book-card-title font-display text-base font-semibold leading-tight sm:mt-1 sm:text-2xl">{main}</h3>
+                                  {sub ? <p className="mt-1 text-xs leading-snug text-muted-foreground sm:text-sm">{sub}</p> : null}
+                                  {cardBook.detail ? <p className="mt-2 text-xs font-semibold text-muted-foreground">{cardBook.detail}</p> : null}
+                                </>
+                              )
+                            })()}
+                            <LanguageEditions book={b} compact label="" onSelect={(language) => openBook(b, language)} />
+                            <div className="flex justify-center"><AmazonRating book={b} /></div>
+                            <div className="mt-3 flex flex-1 flex-col items-center justify-end sm:mt-4">
+                              <button
+                                type="button"
+                                onClick={() => openBook(b)}
+                                className="flex min-h-11 w-full max-w-[240px] items-center justify-center rounded-full bg-primary px-2 py-2 text-xs font-bold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 sm:aspect-[900/165] sm:text-sm"
+                              >
+                                {t.books.lookInside}
+                              </button>
+                            </div>
+                          </div>
+                        </article>
+                      </Reveal>
+                      )
+                    })}
                   </div>
-                </article>
+                          </div>
+                </details>
               </Reveal>
-              )
-            })}
+            ))}
           </div>
         ) : (
           <Reveal className="mt-10">
             <div className="mx-auto max-w-lg rounded-2xl border border-accent/35 bg-gradient-to-b from-accent/10 to-accent/5 px-8 py-14 text-center shadow-sm">
-              {cat !== 'alle' && (
-                <p className="font-display text-2xl font-semibold">
-                  {catLabel(cat)} – {t.books.comingSoonSuffix}
-                </p>
-              )}
-              <p className={cat === 'alle' ? 'font-display text-2xl font-semibold' : 'mt-3 text-muted-foreground'}>
-                {emptyHint(cat)}
-              </p>
+              <p className="font-display text-2xl font-semibold">{t.books.emptyAll}</p>
             </div>
           </Reveal>
         )}
 
-        {lang === 'de' && (
-          <Reveal delay={200} className="mt-12 rounded-2xl border border-accent/35 bg-gradient-to-r from-accent/10 via-accent/5 to-accent/10 px-6 py-5 text-center shadow-sm">
-            <p className="text-sm font-semibold text-muted-foreground">
-              <span className="mr-2 font-bold text-foreground">{t.books.growing}</span>
-              {' '}
-              {COMING_SOON.join(' · ')}
-            </p>
-          </Reveal>
+        {lang === 'de' && COMING_SOON.length > 0 && (
+          <p className="mt-8 text-center text-sm font-semibold text-muted-foreground">
+            <span className="font-bold text-foreground">{t.books.growing}</span> {COMING_SOON.join(' · ')}
+          </p>
         )}
       </div>
 

@@ -47,7 +47,7 @@
     "authorPhoto": "images/autor.jpg?v=1788241701",
     "authorName": "Anton Bernt",
     "impressum": "Angaben gemäß § 5 DDG\r\n\r\nAnton Bernt\r\nLambKing Stories\r\nAllmendstr. 35\r\n75223 Niefern-Öschelbronn\r\nDeutschland\r\n\r\nKontakt\r\n\r\nE-Mail:\r\nhello@lambking.store",
-    "datenschutz": "1. Verantwortlicher\r\n\r\nAnton Bernt, LambKing Stories, Allmendstr. 35, 75223 Niefern-Öschelbronn, Deutschland\r\nE-Mail: hello@lambking.store\r\n\r\n2. Hosting über GitHub Pages\r\n\r\nDiese Website wird über GitHub Pages (GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, USA) bereitgestellt. Beim Aufruf der Seite verarbeitet GitHub technisch notwendige Verbindungsdaten (z. B. IP-Adresse, Datum und Uhrzeit des Zugriffs, aufgerufene Seite, Browsertyp) in Server-Logfiles. Diese Verarbeitung ist erforderlich, um die Website auszuliefern (Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO – berechtigtes Interesse am sicheren Betrieb dieser Website). Da GitHub seinen Sitz in den USA hat, kann eine Datenverarbeitung in den USA nicht ausgeschlossen werden. Details dazu finden Sie im GitHub Privacy Statement.\r\n\r\n3. Spracheinstellung (lokale Speicherung)\r\n\r\nDiese Website speichert Ihre gewählte Sprache (Deutsch/Englisch) ausschließlich lokal in Ihrem Browser (localStorage, Schlüssel „lambking-lang\"). Diese Information wird nicht an uns oder Dritte übertragen und nicht für Werbung oder Tracking verwendet. Sie können sie jederzeit über die Browser-Einstellungen löschen.\r\n\r\n4. Anonyme Reichweitenmessung und Amazon-Klickstatistik\n\nZur rein statistischen Auswertung erfassen wir die Anzahl der Aufrufe dieser Landingpage und die Anzahl der Klicks auf die Amazon-Schaltfläche des jeweiligen Buches. Unsere Anwendung speichert dabei ausschließlich zusammengefasste Zählerstände pro Kalendertag und Ereignis beziehungsweise interner Buch-ID. Wir setzen hierfür keine Cookies oder vergleichbaren Wiedererkennungstechniken ein, speichern keine Kennungen im Browser, erstellen keine Nutzerprofile und führen einzelne Aufrufe nicht zu einem Besucherverlauf zusammen.\n\nBei der Übermittlung an den von Cloudflare bereitgestellten Zähldienst wird die IP-Adresse technisch als Verbindungsdatum übertragen. Sie wird von unserer Zähleranwendung weder ausgelesen noch in der Zählerdatenbank gespeichert. Die automatischen Aufrufprotokolle des Workers sind deaktiviert. Anbieter der technischen Infrastruktur ist Cloudflare, Inc., 101 Townsend St, San Francisco, CA 94107, USA. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO; unser berechtigtes Interesse liegt in der anonymen Reichweiten- und Erfolgsmessung unserer Website.\n\n5. Keine Cookies und keine Wiedererkennung\n\nDiese Website verwendet keine Cookies und keine Analyse- oder Marketingtechnik zur Wiedererkennung von Besuchern. Schriftarten werden lokal von dieser Website geladen, nicht von externen Diensten.\n\n6. Externe Links\r\n\r\nDiese Website enthält Links zu externen Anbietern:\r\n- Amazon (Kauf der Bücher)\r\n- PayPal (freiwillige Unterstützung) – als reiner Link, ohne eingebettetes Zahlungsformular\r\n- Ko-fi (freiwillige Unterstützung) – als reiner Link, ohne JavaScript-Widget oder iFrame; erst wenn Sie den Ko-fi-Link anklicken, wird die Website von Ko-fi geöffnet, und ab diesem Zeitpunkt erfolgt die Datenverarbeitung nach den Datenschutzbestimmungen von Ko-fi\r\n- LambKing Web-App (ebenfalls über GitHub Pages)\r\n\r\nErst wenn Sie einen dieser Links anklicken, verlassen Sie diese Website. Ab diesem Zeitpunkt erfolgt die Datenverarbeitung nach den Datenschutzbestimmungen des jeweiligen Anbieters.\n\n7. Kontaktaufnahme und Creator-Bewerbungen per E-Mail\n\nBei Kontaktaufnahme per E-Mail werden die übermittelten Daten (E-Mail-Adresse und Inhalt der Nachricht) ausschließlich zur Bearbeitung der Anfrage verarbeitet. Das Creator-Bewerbungsformular speichert und übermittelt selbst keine Angaben. Nach dem Ausfüllen wird lediglich im E-Mail-Programm des Bewerbers eine vorbereitete Nachricht an hello@lambking.store geöffnet. Erst wenn der Bewerber diese Nachricht dort absendet, werden die Angaben über die beteiligten E-Mail-Anbieter übertragen.\n\nCreator-Bewerbungen werden zur Prüfung einer möglichen Zusammenarbeit und zur Kontaktaufnahme verarbeitet. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO (vorvertragliche Maßnahmen auf Anfrage des Bewerbers) sowie, soweit erforderlich, Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an der Bearbeitung und Dokumentation geschäftlicher Anfragen). Nicht angenommene Bewerbungen werden grundsätzlich spätestens sechs Monate nach Abschluss des Bewerbungsverfahrens gelöscht, sofern keine gesetzlichen Pflichten oder die Geltendmachung, Ausübung oder Verteidigung von Rechtsansprüchen eine längere Aufbewahrung erfordern.\n\n8. Nutzung der App „LambKing Stories“ (iOS und Android)\n\nDie App lässt sich ohne Benutzerkonto nutzen. Es gibt keine Registrierung und keinen Login; wir fragen in der App keine Angaben zu deiner Person ab.\n\nAbruf der Inhalte. Geschichten, Bilder und Hörbücher lädt die App von unserem Server. Er wird bei Render Services, Inc. betrieben und steht in Frankfurt am Main; die Inhalte liegen in einer Datenbank bei MongoDB, Inc. (MongoDB Atlas). Bei jedem Abruf werden technisch notwendige Daten verarbeitet, insbesondere die IP-Adresse, Datum und Uhrzeit sowie die abgerufene Adresse. Sie dienen der Auslieferung der Inhalte und der Sicherheit des Dienstes (Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO – berechtigtes Interesse am sicheren Betrieb).\n\nAnonyme Buchdetailseiten-Aufrufe. Beim Abruf einer Buchdetailseite über die API wird ausschließlich die Anzahl der Aufrufe gezählt. Die Aufrufe werden als gemeinsame Tagessummen erfasst. Dabei werden keine persönlichen Informationen oder Nutzerkennungen gespeichert, und es findet keine Wiedererkennung von Nutzern statt. Die Zählung ermittelt keine einzelnen oder eindeutig gezählten Nutzer und erstellt keine Nutzerprofile.\n\nNur auf dem Gerät gespeichert. Der Name und das Profilbild in „Mein Bereich“, die Merkliste und der Lesefortschritt werden ausschließlich auf dem Gerät gespeichert und nicht an uns übertragen.\n\nKeine Werbung und keine externen Analyse-Dienste. Wir setzen keine Analyse-Dienste (etwa Google Analytics) und keine Werbenetzwerke ein.\n\nFreiwillige einmalige Apple-In-App-Trinkgelder. In der iOS-App kannst du LambKing Stories freiwillig durch ein einmaliges kostenpflichtiges Trinkgeld als Apple-In-App-Kauf unterstützen. Die Zahlungsabwicklung erfolgt über Apple. Für die dabei von Apple verarbeiteten Kauf- und Zahlungsdaten gelten die Datenschutzbestimmungen von Apple.\n\nBilder teilen. Fertige Ausmalbilder lassen sich über die „Teilen“-Funktion des Geräts weitergeben (z. B. das Share-Sheet von iOS oder Android). Die Verarbeitung findet dabei lokal auf dem Gerät statt; wir haben keinen Zugriff auf Kontakte, Empfänger oder die genutzten Dienste.\n\nLinks aus der App heraus. In der Android-App führen Spenden-Schaltflächen zu PayPal bzw. Ko-fi; dort gelten deren eigene Datenschutzbestimmungen. Beim Öffnen externer Links gelten die Datenschutzbestimmungen des jeweiligen Anbieters.\n\nKinder. Die App richtet sich an Kinder. Wir fordern Kinder nicht auf, Namen, Adressen oder sonstige private Informationen preiszugeben.\n\n9. Ihre Rechte\r\n\r\nSie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch. Zudem haben Sie das Recht, sich bei einer Datenschutz-Aufsichtsbehörde zu beschweren.\r\n\r\nStand: September 2026",
+    "datenschutz": "1. Verantwortlicher\r\n\r\nAnton Bernt, LambKing Stories, Allmendstr. 35, 75223 Niefern-Öschelbronn, Deutschland\r\nE-Mail: hello@lambking.store\r\n\r\n2. Hosting über GitHub Pages\r\n\r\nDiese Website wird über GitHub Pages (GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, USA) bereitgestellt. Beim Aufruf der Seite verarbeitet GitHub technisch notwendige Verbindungsdaten (z. B. IP-Adresse, Datum und Uhrzeit des Zugriffs, aufgerufene Seite, Browsertyp) in Server-Logfiles. Diese Verarbeitung ist erforderlich, um die Website auszuliefern (Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO – berechtigtes Interesse am sicheren Betrieb dieser Website). Da GitHub seinen Sitz in den USA hat, kann eine Datenverarbeitung in den USA nicht ausgeschlossen werden. Details dazu finden Sie im GitHub Privacy Statement.\r\n\r\n3. Spracheinstellung (lokale Speicherung)\r\n\r\nDiese Website speichert Ihre gewählte Sprache (Deutsch/Englisch) ausschließlich lokal in Ihrem Browser (localStorage, Schlüssel „lambking-lang\"). Diese Information wird nicht an uns oder Dritte übertragen und nicht für Werbung oder Tracking verwendet. Sie können sie jederzeit über die Browser-Einstellungen löschen.\r\n\r\n4. Anonyme Reichweitenmessung und Amazon-Klickstatistik\n\nZur rein statistischen Auswertung erfassen wir die Anzahl der Aufrufe dieser Landingpage und die Anzahl der Klicks auf die Amazon-Schaltfläche des jeweiligen Buches. Unsere Anwendung speichert dabei ausschließlich zusammengefasste Zählerstände pro Kalendertag und Ereignis beziehungsweise interner Buch-ID. Wir setzen hierfür keine Cookies oder vergleichbaren Wiedererkennungstechniken ein, speichern keine Kennungen im Browser, erstellen keine Nutzerprofile und führen einzelne Aufrufe nicht zu einem Besucherverlauf zusammen.\n\nBei der Übermittlung an den von Cloudflare bereitgestellten Zähldienst wird die IP-Adresse technisch als Verbindungsdatum übertragen. Sie wird von unserer Zähleranwendung weder ausgelesen noch in der Zählerdatenbank gespeichert. Die automatischen Aufrufprotokolle des Workers sind deaktiviert. Anbieter der technischen Infrastruktur ist Cloudflare, Inc., 101 Townsend St, San Francisco, CA 94107, USA. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO; unser berechtigtes Interesse liegt in der anonymen Reichweiten- und Erfolgsmessung unserer Website.\n\n5. Keine Cookies und keine Wiedererkennung\n\nDiese Website verwendet keine Cookies und keine Analyse- oder Marketingtechnik zur Wiedererkennung von Besuchern. Schriftarten werden lokal von dieser Website geladen, nicht von externen Diensten.\n\n6. Externe Links\r\n\r\nDiese Website enthält Links zu externen Anbietern:\r\n- Amazon (Kauf der Bücher)\r\n- PayPal (freiwillige Unterstützung) – als reiner Link, ohne eingebettetes Zahlungsformular\r\n- Ko-fi (freiwillige Unterstützung) – als reiner Link, ohne JavaScript-Widget oder iFrame; erst wenn Sie den Ko-fi-Link anklicken, wird die Website von Ko-fi geöffnet, und ab diesem Zeitpunkt erfolgt die Datenverarbeitung nach den Datenschutzbestimmungen von Ko-fi\r\n- LambKing Web-App (ebenfalls über GitHub Pages)\r\n\r\nErst wenn Sie einen dieser Links anklicken, verlassen Sie diese Website. Ab diesem Zeitpunkt erfolgt die Datenverarbeitung nach den Datenschutzbestimmungen des jeweiligen Anbieters.\n\n7. Kontaktaufnahme und Creator-Bewerbungen per E-Mail\n\nBei Kontaktaufnahme per E-Mail werden die übermittelten Daten (E-Mail-Adresse und Inhalt der Nachricht) ausschließlich zur Bearbeitung der Anfrage verarbeitet. Das Creator-Bewerbungsformular speichert und übermittelt selbst keine Angaben. Nach dem Ausfüllen wird lediglich im E-Mail-Programm des Bewerbers eine vorbereitete Nachricht an hello@lambking.store geöffnet. Erst wenn der Bewerber diese Nachricht dort absendet, werden die Angaben über die beteiligten E-Mail-Anbieter übertragen.\n\nCreator-Bewerbungen werden zur Prüfung einer möglichen Zusammenarbeit und zur Kontaktaufnahme verarbeitet. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO (vorvertragliche Maßnahmen auf Anfrage des Bewerbers) sowie, soweit erforderlich, Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an der Bearbeitung und Dokumentation geschäftlicher Anfragen). Nicht angenommene Bewerbungen werden grundsätzlich spätestens sechs Monate nach Abschluss des Bewerbungsverfahrens gelöscht, sofern keine gesetzlichen Pflichten oder die Geltendmachung, Ausübung oder Verteidigung von Rechtsansprüchen eine längere Aufbewahrung erfordern.\n\n8. Einsendung ausgemalter Bilder („Eure Kunstwerke“) und kostenloses Ausmalbild\r\n\r\nEinsendung per E-Mail. Auf unserer Website können Eltern oder Erziehungsberechtigte ein von ihrem Kind ausgemaltes Bild an hello@lambking.store senden. Die Website selbst erhebt, speichert oder überträgt dabei keine Daten: Über den Button „Mein Bild einsenden“ öffnet sich lediglich eine vorbereitete Nachricht in Ihrem E-Mail-Programm. Erst wenn Sie diese Nachricht dort absenden, werden die Angaben und das Bild über die beteiligten E-Mail-Anbieter an uns übertragen.\r\n\r\nWelche Daten wir dabei verarbeiten. Ihre E-Mail-Adresse, den Inhalt Ihrer Nachricht, das angehängte Bild und Ihre Einwilligungserklärung. Wir bitten ausdrücklich darum, nur Bilder von Zeichnungen und Ausmalseiten einzusenden – ohne erkennbare Gesichter von Personen, ohne Namen und ohne weitere persönliche Angaben im Bild.\r\n\r\nZweck und Rechtsgrundlage. Wir verwenden das Bild nur, um eine Auswahl ausgemalter Bilder auf lambking.store zu zeigen. Dies geschieht ausschließlich mit Ihrer Einwilligung (Art. 6 Abs. 1 lit. a DSGVO). Die Einwilligung geben Sie als Erziehungsberechtigte in der E-Mail ab, mit der Sie das Bild senden. Kinder unter 16 Jahren können nicht selbst einwilligen (Art. 8 DSGVO); wir veröffentlichen deshalb nur Bilder, bei denen uns ein Erziehungsberechtigter schriftlich zugestimmt hat.\r\n\r\nVeröffentlichung. Ausgewählte Bilder werden auf lambking.store veröffentlicht, wahlweise mit einer Bildunterschrift wie „ausgemalt von einem Kind“, ohne Namen, Alter oder Wohnort. Die Website wird über GitHub Pages bereitgestellt (siehe Abschnitt 2); veröffentlichte Bilder sind damit weltweit abrufbar und können von Dritten gespeichert oder kopiert werden. Wir können nicht ausschließen, dass sie später in Suchmaschinen oder Archiven auffindbar bleiben.\r\n\r\nSpeicherdauer. Nicht ausgewählte Einsendungen löschen wir spätestens vier Wochen nach Eingang. Ausgewählte Bilder bleiben veröffentlicht, bis Sie Ihre Einwilligung widerrufen oder wir die Galerie ändern.\r\n\r\nWiderruf. Sie können Ihre Einwilligung jederzeit mit Wirkung für die Zukunft widerrufen, formlos per E-Mail an hello@lambking.store. Wir entfernen das Bild dann unverzüglich von der Website. Die Rechtmäßigkeit der bis zum Widerruf erfolgten Verarbeitung bleibt unberührt.\r\n\r\nKostenloses Ausmalbild (PDF). Das Ausmalbild laden Sie direkt von unserer Website herunter. Dafür sind keine Angaben, keine Anmeldung und keine E-Mail-Adresse nötig. Beim Abruf gelten die Angaben zur technischen Bereitstellung in Abschnitt 2. Ein Klick auf den Download wird nicht gesondert erfasst.\r\n\r\nVideos. Die auf der Website gezeigten Videos und Bilder werden von unserem eigenen Hosting ausgeliefert. Es werden keine Videodienste Dritter (z. B. YouTube) eingebunden und keine Daten dorthin übertragen. Die Videos im Bereich „So malen Kinder mit LambKing“ werden erst nach Ihrem Klick auf „Abspielen“ geladen.\r\n\r\n9. Nutzung der App „LambKing Stories“ (iOS und Android)\n\nDie App lässt sich ohne Benutzerkonto nutzen. Es gibt keine Registrierung und keinen Login; wir fragen in der App keine Angaben zu deiner Person ab.\n\nAbruf der Inhalte. Geschichten, Bilder und Hörbücher lädt die App von unserem Server. Er wird bei Render Services, Inc. betrieben und steht in Frankfurt am Main; die Inhalte liegen in einer Datenbank bei MongoDB, Inc. (MongoDB Atlas). Bei jedem Abruf werden technisch notwendige Daten verarbeitet, insbesondere die IP-Adresse, Datum und Uhrzeit sowie die abgerufene Adresse. Sie dienen der Auslieferung der Inhalte und der Sicherheit des Dienstes (Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO – berechtigtes Interesse am sicheren Betrieb).\n\nAnonyme Buchdetailseiten-Aufrufe. Beim Abruf einer Buchdetailseite über die API wird ausschließlich die Anzahl der Aufrufe gezählt. Die Aufrufe werden als gemeinsame Tagessummen erfasst. Dabei werden keine persönlichen Informationen oder Nutzerkennungen gespeichert, und es findet keine Wiedererkennung von Nutzern statt. Die Zählung ermittelt keine einzelnen oder eindeutig gezählten Nutzer und erstellt keine Nutzerprofile.\n\nNur auf dem Gerät gespeichert. Der Name und das Profilbild in „Mein Bereich“, die Merkliste und der Lesefortschritt werden ausschließlich auf dem Gerät gespeichert und nicht an uns übertragen.\n\nKeine Werbung und keine externen Analyse-Dienste. Wir setzen keine Analyse-Dienste (etwa Google Analytics) und keine Werbenetzwerke ein.\n\nFreiwillige einmalige Apple-In-App-Trinkgelder. In der iOS-App kannst du LambKing Stories freiwillig durch ein einmaliges kostenpflichtiges Trinkgeld als Apple-In-App-Kauf unterstützen. Die Zahlungsabwicklung erfolgt über Apple. Für die dabei von Apple verarbeiteten Kauf- und Zahlungsdaten gelten die Datenschutzbestimmungen von Apple.\n\nBilder teilen. Fertige Ausmalbilder lassen sich über die „Teilen“-Funktion des Geräts weitergeben (z. B. das Share-Sheet von iOS oder Android). Die Verarbeitung findet dabei lokal auf dem Gerät statt; wir haben keinen Zugriff auf Kontakte, Empfänger oder die genutzten Dienste.\n\nLinks aus der App heraus. In der Android-App führen Spenden-Schaltflächen zu PayPal bzw. Ko-fi; dort gelten deren eigene Datenschutzbestimmungen. Beim Öffnen externer Links gelten die Datenschutzbestimmungen des jeweiligen Anbieters.\n\nKinder. Die App richtet sich an Kinder. Wir fordern Kinder nicht auf, Namen, Adressen oder sonstige private Informationen preiszugeben.\n\n10. Ihre Rechte\r\n\r\nSie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch. Zudem haben Sie das Recht, sich bei einer Datenschutz-Aufsichtsbehörde zu beschweren.\r\n\r\nStand: September 2026",
     "authorPhotoShape": "rund",
     "authorPhotoSize": "mittel",
     "kofiUrl": "https://ko-fi.com/U6U21YO0Z5",
@@ -59,7 +59,9 @@
           "how": "So funktioniert's",
           "app": "App",
           "about": "Über das Projekt",
-          "faq": "FAQ"
+          "faq": "FAQ",
+          "support": "Unterstützen",
+          "languages": "Sprachen"
         },
         "contact": {
           "write": "Schreib uns",
@@ -70,7 +72,7 @@
         "hero": {
           "title1": "Kleine Helden. Starke Geschichten.",
           "title2": "Ein großer Gott.",
-          "subtitle": "Liebevoll gestaltete Mal- und Kinderbücher, die biblische Geschichten lebendig erzählen und Kinder im Glauben stärken.",
+          "subtitle": "Kindgerechte Bibelgeschichten zum Ausmalen und Entdecken – von Jesus, dem Lamm Gottes und König aller Könige.",
           "ctaBooks": "Bücher entdecken",
           "ctaApp": "Zur kostenlosen App",
           "trust": [
@@ -79,7 +81,9 @@
             "Druck & Versand über Amazon"
           ],
           "bookHint": "Mit der Maus drüberfahren – das Buch blättert sich selbstständig auf",
-          "mobileBookHint": "Antippen zum Öffnen oder Schließen"
+          "mobileBookHint": "Antippen zum Öffnen oder Schließen",
+          "ctaSupport": "Projekt unterstützen",
+          "videoAlt": "Jesus erzählt Kindern unter einem Olivenbaum am See eine Geschichte, neben ihnen ruht ein kleines Lamm"
         },
         "books": {
           "eyebrow": "Unsere Bücher",
@@ -114,7 +118,12 @@
           "bulkDiscountCopyError": "Die Adresse konnte nicht automatisch kopiert werden. Bitte markiere die E-Mail-Adresse unten.",
           "bulkDiscountOpenMail": "E-Mail-Programm öffnen",
           "bulkDiscountEmailSubject": "Anfrage zum Mengenrabatt",
-          "availableLanguages": "Erhältlich in"
+          "availableLanguages": "Erhältlich in",
+          "ratingNone": "Noch keine Bewertung",
+          "ratingCta": "Jetzt auf Amazon bewerten",
+          "ratingOf": "von 5 Sternen",
+          "titleOne": "Titel",
+          "titleMany": "Titel"
         },
         "trust": {
           "title": "Darauf können Familien vertrauen.",
@@ -135,18 +144,22 @@
           ]
         },
         "supportedWorks": {
-          "title": "Aus Glauben handeln",
-          "firstBefore": "LambKing Stories soll mehr sein als ein Buchprojekt. Deshalb unterstützen wir christliche Organisationen, die das Evangelium weitergeben und Menschen in schwierigen Lebenssituationen praktisch begleiten.",
-          "firstStrong": "Einen festen Teil unserer Einnahmen geben wir an christliche Missions-, Evangelisations- und Hilfsprojekte weiter.",
+          "title": "Gemeinsam bauen wir am Reich Gottes",
+          "firstBefore": "",
+          "firstStrong": "10 % unserer Einnahmen geben wir an christliche Projekte weiter, die Menschen dienen und Gottes Liebe weitertragen.",
           "firstAfter": "",
-          "second": "So möchten wir nicht nur vom Glauben erzählen, sondern Hoffnung ganz konkret weitergeben.",
+          "second": "",
           "third": "",
           "current": "Wir unterstützen folgende christliche Werke und Einrichtungen:",
           "visit": "Mehr über diese Arbeit erfahren",
           "viewFlyer": "Flyer ansehen",
           "flyerTitle": "Informationsflyer",
           "flyerDescription": "Der Flyer kann hier direkt gelesen und vergrößert werden.",
-          "openFlyerNewTab": "Flyer in einem neuen Fenster öffnen"
+          "openFlyerNewTab": "Flyer in einem neuen Fenster öffnen",
+          "eyebrow": "Aus Glauben handeln",
+          "supportCta": "Du möchtest mithelfen? Projekt unterstützen",
+          "more": "Mehr lesen",
+          "less": "Weniger"
         },
         "how": {
           "eyebrow": "So funktioniert's",
@@ -202,7 +215,7 @@
             },
             {
               "q": "Für welches Alter sind die Bücher geeignet?",
-              "a": "Die Altersempfehlung steht jeweils direkt beim Buch – klicke dazu einfach auf „Inhalt ansehen“."
+              "a": "Unsere Malbücher mit vielen Details eignen sich besonders für Schulkinder und größere Kinder – gern auch gemeinsam mit den Eltern. Malbücher für die Kleinsten sind in Planung."
             },
             {
               "q": "Gibt es die Geschichten auch digital?",
@@ -228,6 +241,90 @@
           "datenschutzTitle": "Datenschutzerklärung",
           "legalEmpty": "Dieser Text wird gerade vorbereitet.",
           "legalFullPage": "Als eigene Seite öffnen"
+        },
+        "usp": {
+          "items": [
+            {
+              "title": "Bibeltreu & kindgerecht",
+              "text": "Geschichten nah am Bibeltext"
+            },
+            {
+              "title": "Werbefrei & sicher",
+              "text": "Keine Werbung, kein Tracking"
+            },
+            {
+              "title": "Mehrsprachig",
+              "text": "Bücher in mehreren Sprachen"
+            },
+            {
+              "title": "Kostenlose App",
+              "text": "Geschichten für unterwegs"
+            }
+          ]
+        },
+        "languages": {
+          "label": "Die Bücher gibt es in:"
+        },
+        "tryit": {
+          "eyebrow": "Blick ins Buch",
+          "title": "Blättere durch das ganze Buch",
+          "text": "Sieh dir das Buch von vorn bis hinten an – so, wie es gedruckt ist: ein Softcover mit der Geschichte und vielen Ausmalbildern.",
+          "lookInside": "Mehr zum Buch",
+          "cover": "Titelseite",
+          "pages": "Seiten",
+          "of": "von",
+          "play": "Automatisch blättern",
+          "pause": "Pause",
+          "prev": "Zurückblättern",
+          "next": "Weiterblättern",
+          "first": "Zur Titelseite",
+          "last": "Zur Rückseite"
+        },
+        "freebie": {
+          "eyebrow": "Gratis zum Ausmalen",
+          "title": "Kinder und Lamm spielen auf der Wiese – male mit!",
+          "text": "Lade dir dieses Ausmalbild kostenlos als PDF herunter – ohne Anmeldung und ohne E-Mail-Adresse. Viel Freude beim Bunt-Machen!",
+          "badge": "Gratis",
+          "download": "Ausmalbild herunterladen (PDF)",
+          "hint": "DIN A4 · zum Ausdrucken"
+        },
+        "mascot": {
+          "eyebrow": "Unsere Vision",
+          "hello": "",
+          "title": "Die gute Botschaft von Jesus – für Kinder und Erwachsene in der ganzen Welt",
+          "items": [
+            {
+              "title": "Lamb – das Lamm",
+              "text": "Jesus wird in der Bibel das „Lamm Gottes“ genannt: sanft, voller Liebe, für uns gestorben und auferstanden."
+            },
+            {
+              "title": "King – der König",
+              "text": "Jesus ist der König aller Könige und Herr aller Herren – darum trägt unser Maskottchen eine Krone."
+            },
+            {
+              "title": "Offenbarung 17,14",
+              "text": "„… das Lamm wird sie überwinden; denn es ist der Herr aller Herren und der König aller Könige …“ (Luther 1912)"
+            }
+          ],
+          "lead": "LambKing Stories erzählt kindgerechte Geschichten rund um die Bibel – und von Jesus, dem Lamm Gottes und König aller Könige. Unsere Vision: die gute Botschaft von Jesus zu Kindern und Erwachsenen in der ganzen Welt zu bringen.",
+          "nameTitle": "Was bedeutet LambKing?"
+        },
+        "artwork": {
+          "eyebrow": "Eure Kunstwerke",
+          "title": "Eure ausgemalten Bilder",
+          "text": "So bunt malen Kinder mit LambKing. Schick uns dein ausgemaltes Bild – wir zeigen eine Auswahl hier auf der Seite.",
+          "empty": "Hier könnte dein Bild hängen",
+          "send": "Mein Bild einsenden",
+          "howTitle": "So geht's",
+          "steps": [
+            "Ausmalen und fotografieren – das Blatt gut sichtbar, ohne Kindergesicht und ohne Namen im Bild.",
+            "Per E-Mail an uns senden. Ein Elternteil schreibt dazu: „Ich bin einverstanden, dass das Bild auf lambking.store gezeigt wird.“",
+            "Wir wählen eine Auswahl aus und zeigen sie hier – nur mit eurer Zustimmung, jederzeit auf Wunsch wieder entfernt."
+          ],
+          "mailSubject": "Mein LambKing-Kunstwerk",
+          "mailBody": "Hallo LambKing-Team,\n\nhier ist unser ausgemaltes Bild (im Anhang).\n\nIch bin der/die Erziehungsberechtigte und einverstanden, dass das Bild auf lambking.store gezeigt werden darf (ohne Namen).\n\nViele Grüße",
+          "byline": "ausgemalt von einem Kind",
+          "enlarge": "Vergrößern"
         }
       },
       "en": {
@@ -236,7 +333,9 @@
           "how": "How it works",
           "app": "App",
           "about": "About the project",
-          "faq": "FAQ"
+          "faq": "FAQ",
+          "support": "Support",
+          "languages": "Languages"
         },
         "contact": {
           "write": "Write to us",
@@ -247,7 +346,7 @@
         "hero": {
           "title1": "Little Heroes. Powerful Stories.",
           "title2": "One Great God.",
-          "subtitle": "Lovingly designed coloring books and children’s books that bring Bible stories to life and help children grow in faith.",
+          "subtitle": "Child-friendly Bible stories to color and discover – about Jesus, the Lamb of God and King of kings.",
           "ctaBooks": "Discover the books",
           "ctaApp": "Free app",
           "trust": [
@@ -256,7 +355,9 @@
             "Printing & shipping via Amazon"
           ],
           "bookHint": "Hover over the book – it opens and flips through automatically",
-          "mobileBookHint": "Tap the book to open or close it"
+          "mobileBookHint": "Tap the book to open or close it",
+          "ctaSupport": "Support the project",
+          "videoAlt": "Jesus tells children a story under an olive tree by the lake, a little lamb resting beside them"
         },
         "books": {
           "eyebrow": "Our books",
@@ -291,7 +392,12 @@
           "bulkDiscountCopyError": "The address could not be copied automatically. Please select the email address below.",
           "bulkDiscountOpenMail": "Open email app",
           "bulkDiscountEmailSubject": "Bulk discount request",
-          "availableLanguages": "Available in"
+          "availableLanguages": "Available in",
+          "ratingNone": "No ratings yet",
+          "ratingCta": "Rate it on Amazon",
+          "ratingOf": "out of 5 stars",
+          "titleOne": "title",
+          "titleMany": "titles"
         },
         "trust": {
           "title": "What families can trust.",
@@ -312,18 +418,22 @@
           ]
         },
         "supportedWorks": {
-          "title": "Faith in Action",
-          "firstBefore": "LambKing Stories is meant to be more than a book project. That is why we support Christian organizations that share the Gospel and provide practical help to people facing difficult circumstances.",
-          "firstStrong": "We give a dedicated share of our income to Christian mission, evangelism, and relief projects.",
+          "title": "Together we build God's kingdom",
+          "firstBefore": "",
+          "firstStrong": "We give 10 % of our income to Christian projects that serve people and carry God's love forward.",
           "firstAfter": "",
-          "second": "In this way, we want not only to tell stories about faith, but also to share hope in practical ways.",
+          "second": "",
           "third": "",
           "current": "We support the following ministries and organizations:",
           "visit": "Learn more about this work",
           "viewFlyer": "View flyer",
           "flyerTitle": "Information flyer",
           "flyerDescription": "The flyer can be read and enlarged directly here.",
-          "openFlyerNewTab": "Open flyer in a new window"
+          "openFlyerNewTab": "Open flyer in a new window",
+          "eyebrow": "Faith in action",
+          "supportCta": "Want to help? Support the project",
+          "more": "Read more",
+          "less": "Less"
         },
         "how": {
           "eyebrow": "How it works",
@@ -379,7 +489,7 @@
             },
             {
               "q": "What age are the books suitable for?",
-              "a": "The age recommendation is shown directly with each book – simply click “Look inside”."
+              "a": "Our detailed coloring books are especially suited to school-age and older children – gladly together with parents. Coloring books for the youngest are being planned."
             },
             {
               "q": "Are the stories available digitally?",
@@ -405,6 +515,90 @@
           "datenschutzTitle": "Privacy Policy",
           "legalEmpty": "This text is currently being prepared.",
           "legalFullPage": "Open as a separate page"
+        },
+        "usp": {
+          "items": [
+            {
+              "title": "Faithful to the Bible",
+              "text": "Stories close to the biblical text"
+            },
+            {
+              "title": "Ad-free & safe",
+              "text": "No ads, no tracking"
+            },
+            {
+              "title": "Multilingual",
+              "text": "Books in several languages"
+            },
+            {
+              "title": "Free app",
+              "text": "Stories on the go"
+            }
+          ]
+        },
+        "languages": {
+          "label": "Our books are available in:"
+        },
+        "tryit": {
+          "eyebrow": "Look inside",
+          "title": "Flip through the whole book",
+          "text": "Look through the book from front to back – just as it is printed: a softcover with the story and many coloring pages.",
+          "lookInside": "More about the book",
+          "cover": "Cover",
+          "pages": "Pages",
+          "of": "of",
+          "play": "Flip automatically",
+          "pause": "Pause",
+          "prev": "Previous page",
+          "next": "Next page",
+          "first": "To the front cover",
+          "last": "To the back"
+        },
+        "freebie": {
+          "eyebrow": "Free to color",
+          "title": "Children and lamb playing in the meadow – color along!",
+          "text": "Download this coloring page as a free PDF – no sign-up and no email address needed. Have fun coloring!",
+          "badge": "Free",
+          "download": "Download coloring page (PDF)",
+          "hint": "A4 · ready to print"
+        },
+        "mascot": {
+          "eyebrow": "Our vision",
+          "hello": "",
+          "title": "The good news of Jesus – for children and adults all over the world",
+          "items": [
+            {
+              "title": "Lamb",
+              "text": "In the Bible, Jesus is called the “Lamb of God”: gentle, full of love, who died for us and rose again."
+            },
+            {
+              "title": "King",
+              "text": "Jesus is King of kings and Lord of lords – that is why our mascot wears a crown."
+            },
+            {
+              "title": "Revelation 17:14",
+              "text": "“… the Lamb shall overcome them: for he is Lord of lords, and King of kings …” (KJV)"
+            }
+          ],
+          "lead": "LambKing Stories tells child-friendly stories from the Bible – about Jesus, the Lamb of God and King of kings. Our vision: to bring the good news of Jesus to children and adults all over the world.",
+          "nameTitle": "What does LambKing mean?"
+        },
+        "artwork": {
+          "eyebrow": "Your artwork",
+          "title": "Your colored pictures",
+          "text": "This is how colorful children color with LambKing. Send us your colored picture – we show a selection here on the site.",
+          "empty": "Your picture could hang here",
+          "send": "Send my picture",
+          "howTitle": "How it works",
+          "steps": [
+            "Color it and take a photo – the page clearly visible, no child's face and no names in the picture.",
+            "Email it to us. A parent adds: “I agree that the picture may be shown on lambking.store.”",
+            "We choose a selection and show it here – only with your consent, and removed again on request."
+          ],
+          "mailSubject": "My LambKing artwork",
+          "mailBody": "Hello LambKing team,\n\nhere is our colored picture (attached).\n\nI am the parent/guardian and agree that the picture may be shown on lambking.store (without names).\n\nKind regards",
+          "byline": "colored by a child",
+          "enlarge": "Enlarge"
         }
       }
     }
@@ -442,7 +636,10 @@
       "age": "Ab 6 Jahren",
       "detail": "70 Seiten · Großformat",
       "description": "Am Anfang erschafft Gott Himmel und Erde. Licht und Dunkelheit, Meer und Land, Pflanzen und Tiere entstehen. Schließlich erschafft Gott die Menschen und gibt ihnen einen Platz in seiner guten Schöpfung.",
-      "lifestyleImages": ["images/lifestyle/schoepfung-de-hochformat.png", "images/lifestyle/schoepfung-de-offen-rechts.png"],
+      "lifestyleImages": [
+        "images/lifestyle/schoepfung-de-hochformat.png",
+        "images/lifestyle/schoepfung-de-offen-rechts.png"
+      ],
       "amazon": "https://www.amazon.de/dp/B0HFWX8DH5",
       "releaseDate": "2026-09-01",
       "cover": "images/cover-band01-de-spread.png",
@@ -508,7 +705,9 @@
       "age": "Ab 5 Jahren",
       "detail": "70 Seiten · Großformat",
       "description": "Gott gibt Noah einen ungewöhnlichen Auftrag: Er soll eine Arche bauen und seine Familie und die Tiere hineinbringen. Als die Flut kommt, sind sie darin sicher. Nach der Flut zeigt Gott mit dem Regenbogen, dass er sein Versprechen nicht vergisst.",
-      "lifestyleImages": ["images/lifestyle/noah-de.png"],
+      "lifestyleImages": [
+        "images/lifestyle/noah-de.png"
+      ],
       "amazon": "https://www.amazon.de/dp/B0HH8GRWZS",
       "releaseDate": "2026-09-01",
       "cover": "images/cover-bibelgeschichten-zum-ausmalen-4.jpg",
@@ -541,7 +740,9 @@
       "age": "Ab 5 Jahren",
       "detail": "70 Seiten · Großformat",
       "description": "Gott ruft Abraham auf, seine Heimat zu verlassen und in ein unbekanntes Land zu ziehen. Abraham vertraut ihm und macht sich auf den Weg. Unter dem Sternenhimmel verspricht Gott ihm eine große Familie und zeigt: Er begleitet Abraham auch dann, wenn der Weg noch ungewiss ist.",
-      "lifestyleImages": ["images/lifestyle/abraham-de.png"],
+      "lifestyleImages": [
+        "images/lifestyle/abraham-de.png"
+      ],
       "amazon": "https://www.amazon.de/dp/B0HH6HXFC9",
       "releaseDate": "2026-09-01",
       "cover": "images/cover-bibelgeschichten-zum-ausmalen-5.jpg",
@@ -562,7 +763,9 @@
       "cover": "images/cover-david-de-spread.jpg",
       "coverSpread": true,
       "description": "David hütet die Schafe seines Vaters, als Samuel ihn zum künftigen König salbt. Später fordert der riesige Goliath das Volk Israel heraus. David vertraut auf Gott, tritt ihm mit einer Schleuder entgegen und besiegt ihn.",
-      "lifestyleImages": ["images/lifestyle/david-de.png"],
+      "lifestyleImages": [
+        "images/lifestyle/david-de.png"
+      ],
       "highlights": [
         "30 große Ausmalbilder",
         "Bibelstelle: 1. Samuel 16–17"
@@ -584,7 +787,14 @@
           "amazon": "https://www.amazon.de/dp/B0H33VYPY7",
           "cover": "images/cover-david-de-spread.jpg",
           "coverSpread": true,
-          "samples": ["images/david-de-preview-1.jpg", "images/david-de-preview-2.jpg", "images/david-de-preview-3.jpg", "images/david-de-preview-4.jpg", "images/david-de-preview-5.jpg", "images/david-de-preview-6.jpg"]
+          "samples": [
+            "images/david-de-preview-1.jpg",
+            "images/david-de-preview-2.jpg",
+            "images/david-de-preview-3.jpg",
+            "images/david-de-preview-4.jpg",
+            "images/david-de-preview-5.jpg",
+            "images/david-de-preview-6.jpg"
+          ]
         },
         {
           "language": "en",
@@ -596,8 +806,18 @@
           "age": "Ages 6+",
           "detail": "70 pages · large format",
           "description": "David tends his father's sheep when Samuel anoints him as the future king. Later, the giant Goliath challenges Israel. Trusting God, David faces him with a sling and defeats him.",
-          "highlights": ["30 large coloring pictures", "Bible passage: 1 Samuel 16–17"],
-          "samples": ["images/david-en-preview-1.jpg", "images/david-en-preview-2.jpg", "images/david-en-preview-3.jpg", "images/david-en-preview-4.jpg", "images/david-en-preview-5.jpg", "images/david-en-preview-6.jpg"]
+          "highlights": [
+            "30 large coloring pictures",
+            "Bible passage: 1 Samuel 16–17"
+          ],
+          "samples": [
+            "images/david-en-preview-1.jpg",
+            "images/david-en-preview-2.jpg",
+            "images/david-en-preview-3.jpg",
+            "images/david-en-preview-4.jpg",
+            "images/david-en-preview-5.jpg",
+            "images/david-en-preview-6.jpg"
+          ]
         },
         {
           "language": "es",
@@ -609,8 +829,18 @@
           "age": "A partir de 6 años",
           "detail": "70 páginas · formato grande",
           "description": "David cuida las ovejas de su padre cuando Samuel lo unge como futuro rey. Más tarde, el gigante Goliat desafía a Israel. David confía en Dios, se enfrenta a él con una honda y lo vence.",
-          "highlights": ["30 grandes ilustraciones para colorear", "Pasaje bíblico: 1 Samuel 16–17"],
-          "samples": ["images/david-es-preview-1.jpg", "images/david-es-preview-2.jpg", "images/david-es-preview-3.jpg", "images/david-es-preview-4.jpg", "images/david-es-preview-5.jpg", "images/david-es-preview-6.jpg"]
+          "highlights": [
+            "30 grandes ilustraciones para colorear",
+            "Pasaje bíblico: 1 Samuel 16–17"
+          ],
+          "samples": [
+            "images/david-es-preview-1.jpg",
+            "images/david-es-preview-2.jpg",
+            "images/david-es-preview-3.jpg",
+            "images/david-es-preview-4.jpg",
+            "images/david-es-preview-5.jpg",
+            "images/david-es-preview-6.jpg"
+          ]
         },
         {
           "language": "ro",
@@ -622,8 +852,18 @@
           "age": "De la 6 ani",
           "detail": "70 de pagini · format mare",
           "description": "David păzește oile tatălui său când Samuel îl unge ca viitor rege. Mai târziu, uriașul Goliat provoacă poporul Israel. David se încrede în Dumnezeu, îl înfruntă cu o praștie și îl învinge.",
-          "highlights": ["30 de ilustrații mari de colorat", "Pasaj biblic: 1 Samuel 16–17"],
-          "samples": ["images/david-ro-preview-1.jpg", "images/david-ro-preview-2.jpg", "images/david-ro-preview-3.jpg", "images/david-ro-preview-4.jpg", "images/david-ro-preview-5.jpg", "images/david-ro-preview-6.jpg"]
+          "highlights": [
+            "30 de ilustrații mari de colorat",
+            "Pasaj biblic: 1 Samuel 16–17"
+          ],
+          "samples": [
+            "images/david-ro-preview-1.jpg",
+            "images/david-ro-preview-2.jpg",
+            "images/david-ro-preview-3.jpg",
+            "images/david-ro-preview-4.jpg",
+            "images/david-ro-preview-5.jpg",
+            "images/david-ro-preview-6.jpg"
+          ]
         }
       ]
     },
@@ -649,7 +889,9 @@
       "age": "Ab 6 Jahren",
       "detail": "70 Seiten",
       "description": "Maria und Josef reisen nach Bethlehem. Dort wird Jesus geboren und in eine Krippe gelegt. Hirten hören die frohe Botschaft von einem Engel und machen sich auf den Weg zu ihm. Auch Weise aus dem Osten folgen dem Stern, um das Kind zu finden.",
-      "lifestyleImages": ["images/lifestyle/weihnachten-de.png"],
+      "lifestyleImages": [
+        "images/lifestyle/weihnachten-de.png"
+      ],
       "amazon": "https://www.amazon.de/dp/B0HH6ND5MC",
       "releaseDate": "2026-09-01",
       "cover": "images/cover-band09-de-spread.jpg",
@@ -660,14 +902,28 @@
           "amazon": "https://www.amazon.de/dp/B0HH6ND5MC",
           "cover": "images/cover-band09-de-spread.jpg",
           "coverSpread": true,
-          "samples": ["images/christmas-de-preview-1.jpg", "images/christmas-de-preview-2.jpg", "images/christmas-de-preview-3.jpg", "images/christmas-de-preview-4.jpg", "images/christmas-de-preview-5.jpg", "images/christmas-de-preview-6.jpg"]
+          "samples": [
+            "images/christmas-de-preview-1.jpg",
+            "images/christmas-de-preview-2.jpg",
+            "images/christmas-de-preview-3.jpg",
+            "images/christmas-de-preview-4.jpg",
+            "images/christmas-de-preview-5.jpg",
+            "images/christmas-de-preview-6.jpg"
+          ]
         },
         {
           "language": "en",
           "amazon": "https://www.amazon.com/dp/B0HK8R5V3S",
           "cover": "images/cover-band09-en-spread.jpg",
           "coverSpread": true,
-          "samples": ["images/christmas-en-preview-1.jpg", "images/christmas-en-preview-2.jpg", "images/christmas-en-preview-3.jpg", "images/christmas-en-preview-4.jpg", "images/christmas-en-preview-5.jpg", "images/christmas-en-preview-6.jpg"],
+          "samples": [
+            "images/christmas-en-preview-1.jpg",
+            "images/christmas-en-preview-2.jpg",
+            "images/christmas-en-preview-3.jpg",
+            "images/christmas-en-preview-4.jpg",
+            "images/christmas-en-preview-5.jpg",
+            "images/christmas-en-preview-6.jpg"
+          ],
           "title": "Bible Stories to Color: Volume 9 EN - The Christmas Story - Jesus Is Born",
           "series": "Bible Stories to Color · Volume 9",
           "age": "Ages 6+",
@@ -684,7 +940,14 @@
           "amazon": "https://www.amazon.es/dp/B0HK6WFQFR",
           "cover": "images/cover-band09-es-spread.jpg",
           "coverSpread": true,
-          "samples": ["images/christmas-es-preview-1.jpg", "images/christmas-es-preview-2.jpg", "images/christmas-es-preview-3.jpg", "images/christmas-es-preview-4.jpg", "images/christmas-es-preview-5.jpg", "images/christmas-es-preview-6.jpg"],
+          "samples": [
+            "images/christmas-es-preview-1.jpg",
+            "images/christmas-es-preview-2.jpg",
+            "images/christmas-es-preview-3.jpg",
+            "images/christmas-es-preview-4.jpg",
+            "images/christmas-es-preview-5.jpg",
+            "images/christmas-es-preview-6.jpg"
+          ],
           "title": "Historias bíblicas para colorear: Tomo 9 ES - La historia de Navidad - Jesús ha nacido",
           "series": "Historias bíblicas para colorear · Tomo 9",
           "age": "A partir de 6 años",
@@ -731,33 +994,61 @@
           "amazon": "https://www.amazon.de/dp/B0HH8W2RSD",
           "cover": "images/cover-band10-de-spread.jpg",
           "coverSpread": true,
-          "samples": ["images/band10-de-preview-3.jpg", "images/band10-de-preview-35.jpg", "images/band10-de-preview-75.jpg", "images/band10-de-preview-76.jpg", "images/band10-de-preview-79.jpg"]
+          "samples": [
+            "images/band10-de-preview-3.jpg",
+            "images/band10-de-preview-35.jpg",
+            "images/band10-de-preview-75.jpg",
+            "images/band10-de-preview-76.jpg",
+            "images/band10-de-preview-79.jpg"
+          ]
         },
         {
           "language": "en",
           "amazon": "",
           "cover": "images/cover-band10-en-spread.jpg",
           "coverSpread": true,
-          "samples": ["images/band10-en-preview-3.jpg", "images/band10-en-preview-35.jpg", "images/band10-en-preview-75.jpg", "images/band10-en-preview-76.jpg", "images/band10-en-preview-79.jpg"],
+          "samples": [
+            "images/band10-en-preview-3.jpg",
+            "images/band10-en-preview-35.jpg",
+            "images/band10-en-preview-75.jpg",
+            "images/band10-en-preview-76.jpg",
+            "images/band10-en-preview-79.jpg"
+          ],
           "title": "Easter – Jesus Is Alive!",
           "series": "Bible Stories to Color · Volume 10",
           "age": "Ages 6+",
           "detail": "80 pages · approx. A4",
           "description": "Jesus enters Jerusalem and shares the Last Supper with his friends. After his death on the cross, his friends find the tomb empty on the third day. Jesus is alive and meets them again.",
-          "highlights": ["Volume 10: 80 pages", "35 large coloring pictures", "Bible passages: Luke 19–24; John 13 and 20", "Printed on one side"]
+          "highlights": [
+            "Volume 10: 80 pages",
+            "35 large coloring pictures",
+            "Bible passages: Luke 19–24; John 13 and 20",
+            "Printed on one side"
+          ]
         },
         {
           "language": "es",
           "amazon": "",
           "cover": "images/cover-band10-es-spread.jpg",
           "coverSpread": true,
-          "samples": ["images/band10-es-preview-3.jpg", "images/band10-es-preview-35.jpg", "images/band10-es-preview-75.jpg", "images/band10-es-preview-76.jpg", "images/band10-es-preview-79.jpg"],
+          "samples": [
+            "images/band10-es-preview-3.jpg",
+            "images/band10-es-preview-35.jpg",
+            "images/band10-es-preview-75.jpg",
+            "images/band10-es-preview-76.jpg",
+            "images/band10-es-preview-79.jpg"
+          ],
           "title": "Pascua – ¡Jesús vive!",
           "series": "Historias bíblicas para colorear · Tomo 10",
           "age": "A partir de 6 años",
           "detail": "80 páginas · aprox. DIN A4",
           "description": "Jesús entra en Jerusalén y comparte la última cena con sus amigos. Después de su muerte en la cruz, al tercer día encuentran la tumba vacía. Jesús vive y vuelve a encontrarse con ellos.",
-          "highlights": ["Tomo 10: 80 páginas", "35 dibujos grandes para colorear", "Pasajes bíblicos: Lucas 19–24; Juan 13 y 20", "Impreso por una sola cara"]
+          "highlights": [
+            "Tomo 10: 80 páginas",
+            "35 dibujos grandes para colorear",
+            "Pasajes bíblicos: Lucas 19–24; Juan 13 y 20",
+            "Impreso por una sola cara"
+          ]
         }
       ]
     },
@@ -770,7 +1061,9 @@
       "detail": "29 Seiten · auch als eBook",
       "cover": "images/cover-zachaeus.jpg",
       "description": "Zachäus möchte Jesus sehen, doch die Menschenmenge versperrt ihm die Sicht. Deshalb klettert er auf einen Baum. Jesus bleibt stehen, ruft Zachäus beim Namen und besucht ihn zu Hause. Diese Begegnung verändert sein Leben.",
-      "lifestyleImages": ["images/lifestyle/zachaeus-de.png"],
+      "lifestyleImages": [
+        "images/lifestyle/zachaeus-de.png"
+      ],
       "highlights": [
         "Farbenfroh illustriert",
         "Bibeltreu & leicht verständlich",
@@ -792,7 +1085,9 @@
           "language": "de",
           "amazon": "https://www.amazon.de/dp/B0G9MDSJVL"
         }
-      ]
+      ],
+      "amazonRating": 5.0,
+      "amazonRatingCount": 3
     },
     {
       "id": "the-man-in-the-tree",
@@ -816,7 +1111,9 @@
       "age": "6–12 years",
       "detail": "Kindle eBook",
       "description": "Zacchaeus wants to see Jesus, but the crowd blocks his view. So he climbs a tree. Jesus stops, calls Zacchaeus by name and visits him at home. The encounter changes his life.",
-      "lifestyleImages": ["images/lifestyle/zachaeus-en.png"],
+      "lifestyleImages": [
+        "images/lifestyle/zachaeus-en.png"
+      ],
       "amazon": "https://www.amazon.com/dp/B0G4XFDCXQ",
       "releaseDate": "2025-12-03",
       "cover": "images/cover-the-man-in-the-tree.jpg",

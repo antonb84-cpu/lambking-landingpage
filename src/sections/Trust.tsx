@@ -9,10 +9,10 @@ const ICONS = ['images/icons/bibeltreu.png', '', 'images/icons/werbefrei.png']
 export default function Trust() {
   const t = textsFor(useLang())
   return (
-    <section className="border-t border-border bg-card/50 py-14 lg:py-16">
-      <div className="mx-auto max-w-5xl px-4 sm:px-6">
+    <section className="border-t border-border bg-card/50 py-8 lg:py-10">
+      <div className="mx-auto max-w-3xl px-4 sm:px-6">
         <Reveal className="text-center">
-          <h2 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">
+          <h2 className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">
             {t.trust.title}
           </h2>
           <div className="mx-auto mt-4 flex w-56 items-center gap-3">
@@ -21,7 +21,7 @@ export default function Trust() {
             <span className="h-px flex-1 bg-accent/50" />
           </div>
         </Reveal>
-        <div className="mt-10 grid gap-10 sm:grid-cols-3">
+        <div className="mt-6 grid gap-6 sm:grid-cols-3">
           {t.trust.items.map((it, i) => (
             <Reveal key={it.title} delay={i * 120} className="text-center">
               {i === 1 ? (

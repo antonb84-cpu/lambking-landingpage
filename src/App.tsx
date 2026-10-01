@@ -1,11 +1,13 @@
 import { useEffect } from 'react'
 import Header from '@/sections/Header'
 import Hero from '@/sections/Hero'
+import UspBand from '@/sections/UspBand'
+import Mascot from '@/sections/Mascot'
+import TryIt from '@/sections/TryIt'
+import Family from '@/sections/Family'
 import Books from '@/sections/Books'
-import Trust from '@/sections/Trust'
 import AppSection from '@/sections/AppSection'
 import Donate from '@/sections/Donate'
-import About from '@/sections/About'
 import SupportedWorks from '@/sections/SupportedWorks'
 import CreatorPartnerTeaser from '@/sections/CreatorPartnerTeaser'
 import Faq from '@/sections/Faq'
@@ -40,12 +42,14 @@ export default function App() {
       <Header />
       <main id="inhalt">
         <Hero />
+        <UspBand />
         <Books />
-        <Trust />
-        <AppSection />
+        <TryIt />
+        <Family />
         <Donate />
-        <About />
+        <Mascot />
         <SupportedWorks />
+        <AppSection />
         {SITE.creatorPartnerEnabled ? <CreatorPartnerTeaser /> : null}
         <Faq />
       </main>
