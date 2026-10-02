@@ -16,3 +16,6 @@ __pycache__/
 Thumbs.db
 public/images/cover-amazon-*.jpg
 public/images/sample-amazon-*.jpg
+
+# Entwürfe und Arbeitsmaterial (nicht veröffentlichen)
+/_Entwuerfe-und-Material/
