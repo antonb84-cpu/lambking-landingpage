@@ -165,7 +165,7 @@ try {
     await send('Emulation.setDeviceMetricsOverride', { width: 820, height: 900, deviceScaleFactor: 1, mobile: false })
     const buttonLayoutJson = await evalJs(`(() => {
       const dialog = document.querySelector('[role="dialog"]')
-      const amazon = dialog.querySelector('a[href*="amazon."]:not([href*="review"])')?.getBoundingClientRect()
+      const amazon = dialog.querySelector('a[href*="amazon."] img[src*="buttons/amazon"]')?.closest('a')?.getBoundingClientRect()
       const discount = [...dialog.querySelectorAll('button')].find(b => b.textContent.includes('Mengenrabatt ab 10 Stück'))?.getBoundingClientRect()
       return JSON.stringify({amazon:{x:amazon?.x,width:amazon?.width}, discount:{x:discount?.x,width:discount?.width}})
     })()`)

@@ -2222,6 +2222,15 @@ class Handler(BaseHTTPRequestHandler):
                             "log": check_log, "checks": checks})
             return
 
+        # 2b. Browser-Test wie bei GitHub (Navigation, Buchfenster, Sprachwechsel). So schlägt der Aufbau bei GitHub
+        # nicht erst nach dem Hochladen fehl. Ohne installierten Chrome wird dieser Schritt übersprungen.
+        e2e_ok, e2e_log = build_site(command="test:e2e", timeout=600)
+        if not e2e_ok and "nicht gefunden" not in e2e_log:
+            self.send_json({"ok": False, "stage": "build",
+                            "error": "Veröffentlichung abgebrochen: Der Browser-Test ist fehlgeschlagen. Es wurde nichts übertragen.",
+                            "log": e2e_log, "checks": checks})
+            return
+
         # 3. Remote-Konflikte erkennen – nichts blind überschreiben
         fetched = git("fetch", "-q", "origin", timeout=60)
         if fetched.returncode != 0:

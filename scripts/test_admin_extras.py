@@ -678,5 +678,21 @@ class PrecheckEchteDatenTests(unittest.TestCase):
         self.assertEqual(blocker, [], blocker)
 
 
+
+class PublishE2ETests(PublishFlowTests):
+    def test_fehlgeschlagener_browser_test_verhindert_das_hochladen(self):
+        server.build_site = lambda command="build", timeout=600: (command != "test:e2e", "E2E kaputt")
+        (self.work / "src" / "data" / "neu.json").write_text("{}", encoding="utf-8")
+        result = self.post("/api/publish")
+        self.assertFalse(result["ok"], result)
+        self.assertIn("Browser-Test", result["error"])
+        self.assertNotIn("src/data/neu.json", self.git(self.origin, "ls-tree", "-r", "--name-only", "main").stdout.split())
+
+    def test_ohne_chrome_wird_der_browser_test_uebersprungen(self):
+        server.build_site = lambda command="build", timeout=600: (command != "test:e2e", "Chrome/Chromium wurde nicht gefunden")
+        (self.work / "src" / "data" / "neu.json").write_text("{}", encoding="utf-8")
+        self.assertTrue(self.post("/api/publish")["ok"])
+
+
 if __name__ == "__main__":
     unittest.main()
