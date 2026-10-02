@@ -652,5 +652,31 @@ class VersionTests(ServerTests):
         self.assertIn(f"const ADMIN_VERSION = '{server.ADMIN_VERSION}'", html)
 
 
+
+class PrecheckTests(TempProject):
+    def test_hinweistext_und_unvollstaendige_eintraege_bringen_die_pruefung_nicht_zum_absturz(self):
+        (self.tmp / "src" / "data" / "flipbooks.json").write_text(json.dumps({
+            "_hinweis": "nur ein Hinweistext",
+            "david": {"de": {"dir": "images/buch-david-de", "count": 3}, "kaputt": "text"},
+            "seltsam": "kein Objekt",
+        }), encoding="utf-8")
+        state = json.loads(server.DATA_JSON.read_text(encoding="utf-8"))
+        checks = server.precheck_flipbook(state, [])
+        self.assertTrue(any(status == "rot" and "david" in text for status, text in checks), checks)  # Dateien fehlen → gemeldet, nicht abgestürzt
+
+
+class PrecheckEchteDatenTests(unittest.TestCase):
+    """Die komplette Vorab-Prüfung muss mit den ECHTEN Projektdaten ohne Fehler durchlaufen (nur lesend)."""
+
+    def test_gesamte_vorabpruefung_laeuft_mit_den_echten_daten(self):
+        from unittest import mock
+        with mock.patch.object(server.urllib.request, "urlopen", return_value=None):
+            checks = server.precheck(server.load_state())
+        self.assertTrue(checks)
+        self.assertTrue(all(status in ("gruen", "gelb", "rot") for status, _ in checks))
+        blocker = [text for status, text in checks if status == "rot" and "GitHub" not in text and "Git " not in text]
+        self.assertEqual(blocker, [], blocker)
+
+
 if __name__ == "__main__":
     unittest.main()

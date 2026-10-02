@@ -706,7 +706,11 @@ def precheck_flipbook(state: dict, visible: list) -> list:
     flipbooks = extras.load_flipbooks()
     broken = []
     for book_id, langs in flipbooks.items():
+        if book_id.startswith("_") or not isinstance(langs, dict):
+            continue  # z. B. der Hinweistext „_hinweis“ in flipbooks.json
         for lang, entry in langs.items():
+            if not isinstance(entry, dict):
+                continue
             d = ROOT / "public" / entry.get("dir", "")
             if not (d / "p01.jpg").is_file() or not (d / f"p{int(entry.get('count', 0)):02d}.jpg").is_file():
                 broken.append(f"{book_id} ({lang.upper()})")
