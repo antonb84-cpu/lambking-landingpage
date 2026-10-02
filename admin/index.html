@@ -218,7 +218,7 @@
   .text-format-toolbar{display:flex; align-items:center; gap:10px; margin:12px 0 2px; padding:9px 10px; border:1px solid var(--line); border-radius:10px; background:#FCFAF5;}
   .text-format-toolbar button{min-width:72px; padding:7px 12px;}
   .text-format-toolbar small{color:var(--muted); line-height:1.35;}
-  .settings-save{position:sticky; bottom:10px; z-index:4; display:flex; justify-content:flex-end; padding:10px; border:1px solid var(--line); border-radius:12px; background:rgba(255,255,255,.94); box-shadow:0 5px 20px rgba(27,58,92,.12);}
+  .settings-save{position:sticky; bottom:10px; z-index:4; display:flex; justify-content:flex-end; gap:10px; flex-wrap:wrap; padding:10px; border:1px solid var(--line); border-radius:12px; background:rgba(255,255,255,.94); box-shadow:0 5px 20px rgba(27,58,92,.12);}
   .orphan-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); gap:12px; margin-top:14px;}
   .orphan-item{display:flex; min-width:0; flex-direction:column; gap:8px; padding:10px; border:1px solid var(--line); border-radius:12px; background:#fff;}
   .orphan-item img{width:100%; height:150px; border-radius:8px; background:#f5f1e8; object-fit:contain;}
@@ -457,6 +457,7 @@
 
       <div class="form-actions">
         <button class="btn btn-gold" id="saveBtn" onclick="saveBook()">💾 Speichern</button>
+        <button class="btn btn-ghost" onclick="resetBookForm()" title="Setzt das Formular auf den gespeicherten Stand zurück (bei einem neuen Buch: leer)">↺ Zurücksetzen</button>
         <button class="btn btn-ghost" onclick="closeForm()">Abbrechen</button>
       </div>
     </div>
@@ -495,7 +496,7 @@
       <h2>🧩 Bereiche der Startseite</h2>
       <p class="hint">Schalte Bereiche ein oder aus. Ausgeschaltete Bereiche verschwinden von der Seite (und, wo nötig, aus dem Menü). Die Bücherliste, Spenden, Vision und FAQ gehören immer dazu.</p>
       <div id="mediaSections"></div>
-      <div class="form-actions"><button class="btn btn-blue" onclick="saveSections()">💾 Auswahl speichern</button></div>
+      <div class="form-actions"><button class="btn btn-blue" onclick="saveSections()">💾 Auswahl speichern</button><button class="btn btn-ghost" onclick="renderMediaTab(); toast('Zurückgesetzt auf den gespeicherten Stand.')">↺ Zurücksetzen</button></div>
     </section>
 
     <section>
@@ -562,6 +563,8 @@
       </div>
       <div class="form-actions">
         <button class="btn btn-blue" onclick="saveHeroSettings()">💾 Schrift- und Ausschnitt-Einstellungen speichern</button>
+        <button class="btn btn-ghost" onclick="resetHeroSettings()" title="Verwirft deine Änderungen und zeigt wieder den zuletzt gespeicherten Stand">↺ Zurücksetzen</button>
+        <button class="btn btn-ghost" onclick="heroDefaults()" title="Setzt alles auf die ursprünglichen Werte (dunkle Schrift, 80 %, Ausschnitt wie am Anfang) – gespeichert wird erst mit dem blauen Knopf">↺ Auf Standard</button>
         <input type="file" id="heroFile" accept="image/jpeg,image/png,image/webp" class="hidden" onchange="uploadHero(this)">
         <button class="btn btn-gold" onclick="document.getElementById('heroFile').click()">🖼 Neues Titelbild auswählen</button>
       </div>
@@ -618,7 +621,7 @@
             <button type="button" class="btn btn-ghost" style="margin-top:12px;" onclick="resetFrontendTexts()">↺ Texte auf Standard zurücksetzen</button>
           </div>
         </details>
-        <div class="settings-save"><button class="btn btn-blue" onclick="saveSite()">💾 Alle Website-Einstellungen speichern</button></div>
+        <div class="settings-save"><button class="btn btn-ghost" onclick="discardSettings()" title="Verwirft alle nicht gespeicherten Änderungen an Texten und Einstellungen">↺ Änderungen verwerfen</button><button class="btn btn-blue" onclick="saveSite()">💾 Alle Website-Einstellungen speichern</button></div>
       </div>
     </section>
   </div>
@@ -708,7 +711,7 @@
           </div>
         </details>
 
-        <div class="settings-save"><button class="btn btn-blue" onclick="saveSite()">💾 Alle Website-Einstellungen speichern</button></div>
+        <div class="settings-save"><button class="btn btn-ghost" onclick="discardSettings()" title="Verwirft alle nicht gespeicherten Änderungen an Texten und Einstellungen">↺ Änderungen verwerfen</button><button class="btn btn-blue" onclick="saveSite()">💾 Alle Website-Einstellungen speichern</button></div>
       </div>
     </section>
   </div>
@@ -967,7 +970,7 @@ function renderFrontendTextEditors(useDefaults=false){
         return `<label for="${fieldId}">${esc(textFieldLabel(section, path))}</label>${control}`;
       }).join('')}</div>`;
     }).join('');
-    return `<details class="settings-panel" style="margin-top:10px;"><summary>${label}</summary><div class="settings-body"><div class="text-format-toolbar"><button type="button" class="btn btn-ghost" onmousedown="event.preventDefault()" onclick="formatSelectedTextBold()"><b>B</b>&nbsp; Fett</button><small>Text in einem mehrzeiligen Textfeld markieren und auf „Fett“ klicken. Die Markierung <code>**…**</code> wird auf der Landingpage fett dargestellt.</small></div><div class="text-language-grid">${languages}</div></div></details>`;
+    return `<details class="settings-panel" style="margin-top:10px;"><summary>${label}</summary><div class="settings-body"><div class="text-format-toolbar"><button type="button" class="btn btn-ghost" onmousedown="event.preventDefault()" onclick="formatSelectedTextBold()"><b>B</b>&nbsp; Fett</button><small>Text in einem mehrzeiligen Textfeld markieren und auf „Fett“ klicken. Die Markierung <code>**…**</code> wird auf der Landingpage fett dargestellt.</small></div><div style="margin:10px 0;"><button type="button" class="btn btn-ghost" style="padding:7px 14px;" onclick="resetTextSection('${section}')" title="Setzt die Texte dieses Bereichs (Deutsch und Englisch) auf die Standardtexte – gespeichert wird erst mit dem blauen Knopf unten">↺ Diesen Bereich auf Standardtexte zurücksetzen</button></div><div class="text-language-grid">${languages}</div></div></details>`;
   }).join('');
   document.querySelectorAll('[data-text-lang]').forEach(field => {
     field.addEventListener('focus', () => { activeRichTextField = field.tagName === 'TEXTAREA' ? field : null; });
@@ -2190,6 +2193,7 @@ function renderMediaTab(){
           <div><label>Satz (Englisch)</label><input type="text" id="as_xe_${i}" value="${esc(a.en.text)}"></div>
         </div>
         <button class="btn btn-ghost" style="margin-top:8px; padding:6px 14px;" onclick="saveAppScreen(${i})">💾 Texte speichern</button>
+        <button class="btn btn-ghost" style="margin-top:8px; padding:6px 14px;" onclick="resetAppScreen(${i})">↺ Zurücksetzen</button>
       </div>
       <button class="icon-btn" title="Nach oben" ${i === 0 ? 'disabled' : ''} onclick="moveMedia('appscreens/move', ${i}, -1)">▲</button>
       <button class="icon-btn" title="Nach unten" ${i === m.appScreens.length - 1 ? 'disabled' : ''} onclick="moveMedia('appscreens/move', ${i}, 1)">▼</button>
@@ -2197,6 +2201,52 @@ function renderMediaTab(){
     </div>`).join('');
 }
 
+
+
+/* ── Zurücksetzen ── */
+function resetHeroSettings(){
+  renderHeroPanel();
+  toast('Zurückgesetzt auf den gespeicherten Stand.');
+}
+
+function heroDefaults(){
+  $('hero_tone').value = 'dark'; $('hero_scrim').value = 80;
+  $('hero_fdx').value = 50; $('hero_fdy').value = 35;
+  $('hero_fmx').value = 70; $('hero_fmy').value = 50;
+  heroSimUpdate();
+  toast('Standardwerte eingesetzt – zum Übernehmen unten speichern.');
+}
+
+function resetAppScreen(i){
+  const a = state.media.appScreens[i];
+  if (!a) return;
+  $('as_td_' + i).value = a.de.title; $('as_te_' + i).value = a.en.title;
+  $('as_xd_' + i).value = a.de.text; $('as_xe_' + i).value = a.en.text;
+  toast('Zurückgesetzt auf den gespeicherten Stand.');
+}
+
+async function discardSettings(){
+  if (!confirm('Alle nicht gespeicherten Änderungen an Texten und Einstellungen verwerfen?\n\nAngezeigt wird danach wieder der zuletzt gespeicherte Stand.')) return;
+  await load();
+  toast('Änderungen verworfen – es gilt wieder der gespeicherte Stand.');
+}
+
+function resetTextSection(section){
+  if (!confirm('Alle Texte dieses Bereichs (Deutsch und Englisch) auf die Standardtexte zurücksetzen?\n\nGespeichert wird erst mit dem blauen Knopf unten.')) return;
+  const defaults = state.textDefaults || {};
+  document.querySelectorAll(`[data-text-path^="${section}."]`).forEach(field => {
+    let value = (defaults[field.dataset.textLang] || {});
+    for (const part of field.dataset.textPath.split('.')){ value = value == null ? undefined : value[/^\d+$/.test(part) ? Number(part) : part]; }
+    if (typeof value === 'string') field.value = value;
+  });
+  toast('Standardtexte eingesetzt – zum Übernehmen unten speichern.');
+}
+
+function resetBookForm(){
+  if (!confirm('Das Formular auf den gespeicherten Stand zurücksetzen? Deine ungespeicherten Eingaben gehen verloren.')) return;
+  openForm(editId || undefined);
+  toast('Formular zurückgesetzt.');
+}
 
 /* ── Titelbild: Einstellungen, Vorschau, Upload ── */
 function renderHeroPanel(){
