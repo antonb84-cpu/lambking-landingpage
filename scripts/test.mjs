@@ -320,6 +320,21 @@ test('Unterstützte Werke sind erweiterbar und können zweisprachige Flyer anzei
   assert(generatedBooks.includes('supportedOrganizations:'), 'Automatisch erzeugte Seitendaten verlieren die unterstützten Werke')
 })
 
+test('Ausgeblendete Bücher bleiben im Admin, erscheinen aber nicht auf der Seite', () => {
+  const server = readFileSync(join(ROOT, 'admin/admin_server.py'), 'utf-8')
+  const adminUi = readFileSync(join(ROOT, 'admin/index.html'), 'utf-8')
+  const post = readFileSync(join(ROOT, 'scripts/postbuild.mjs'), 'utf-8')
+  assert(server.includes('/api/visibility') && server.includes('not x.get("hidden")'), 'Backend kann Bücher nicht ausblenden')
+  assert(adminUi.includes('setBookVisible') && adminUi.includes('id="f_visible"'), 'Schalter zum Ein-/Ausblenden fehlt im Backend')
+  assert(post.includes('!b.hidden'), 'Ausgeblendete Bücher stehen noch in den Suchmaschinen-Daten')
+  const generated = readFileSync(join(SRC, 'data/books.ts'), 'utf-8')
+  for (const b of booksJson.books) {
+    const inSite = generated.includes(`id: '${b.id}'`)
+    assert(inSite === !b.hidden, `${b.id}: ${b.hidden ? 'ausgeblendet, steht aber auf der Seite' : 'sichtbar, fehlt aber auf der Seite'}`)
+  }
+  assert(booksJson.books.some((b) => !b.hidden), 'Alle Bücher sind ausgeblendet')
+})
+
 test('Alle Frontend-Texte sind zweisprachig und im Backend bearbeitbar', () => {
   const defaults = JSON.parse(readFileSync(join(SRC, 'data/texts.defaults.json'), 'utf-8'))
   const admin = readFileSync(join(ROOT, 'admin/index.html'), 'utf-8')

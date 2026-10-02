@@ -25,7 +25,7 @@ const jsonLd = {
       url: BASE + '/',
       inLanguage: ['de', 'en'],
     },
-    ...data.books.map((b) => ({
+    ...data.books.filter((b) => !b.hidden).map((b) => ({
       '@type': 'Book',
       name: b.title,
       author: { '@type': 'Person', name: site.authorName },

@@ -245,7 +245,8 @@ def render_books_ts(state: dict):
     out.append("}")
     out.append("")
     out.append("export const BOOKS: Book[] = [")
-    for b in state["books"]:
+    # Ausgeblendete Bücher bleiben im Admin (books.json), erscheinen aber nicht auf der Seite
+    for b in [x for x in state["books"] if not x.get("hidden")]:
         out.append("  {")
         out.append(f"    id: '{b['id']}',")
         out.append(f"    lang: '{b.get('lang', 'de')}',")
@@ -660,11 +661,13 @@ def precheck(state: dict) -> list:
         checks.append(("gruen", "Impressum vollständig"))
     checks.append(("gruen" if s.get("datenschutz", "").strip() else "rot",
                    "Datenschutzerklärung vorhanden"))
-    checks.append(("gruen" if state["books"] else "gelb", "Mindestens ein Buch eingetragen"))
-    no_cover = [b["title"] for b in state["books"] if not (IMAGES / Path(b["cover"]).name).is_file()]
+    visible = [b for b in state["books"] if not b.get("hidden")]
+    hidden_count = len(state["books"]) - len(visible)
+    checks.append(("gruen" if visible else "gelb", "Mindestens ein Buch sichtbar" + (f" ({hidden_count} ausgeblendet)" if hidden_count else "")))
+    no_cover = [b["title"] for b in visible if not (IMAGES / Path(b["cover"]).name).is_file()]
     checks.append(("rot" if no_cover else "gruen",
                    "Alle Cover vorhanden" if not no_cover else f"Cover fehlt: {', '.join(no_cover)}"))
-    no_amazon = [b["title"] for b in state["books"] if not (
+    no_amazon = [b["title"] for b in visible if not (
         b.get("amazon", "").startswith("https://") or
         any(e.get("amazon", "").startswith("https://") for e in b.get("editions", []))
     )]
@@ -837,6 +840,8 @@ class Handler(BaseHTTPRequestHandler):
                 self.api_delete()
             elif path == "/api/move":
                 self.api_move()
+            elif path == "/api/visibility":
+                self.api_visibility()
             elif path == "/api/site":
                 self.api_site()
             elif path == "/api/analytics/config":
@@ -1012,6 +1017,10 @@ class Handler(BaseHTTPRequestHandler):
             book["showInHero"] = True
         else:
             book.pop("showInHero", None)
+        if fields.get("hidden") == "1":
+            book["hidden"] = True
+        else:
+            book.pop("hidden", None)
         book["title"] = title
         book["series"] = fields.get("series", "").strip()
         book["category"] = category
@@ -1396,6 +1405,21 @@ class Handler(BaseHTTPRequestHandler):
         state["books"] = [b for b in state["books"] if b["id"] != book_id]
         save_state(state)
         self.send_json({"ok": True, "removedFiles": removed})
+
+    def api_visibility(self):
+        """Blendet ein Buch auf der Landingpage ein oder aus (bleibt im Admin erhalten)."""
+        d = self.read_json()
+        state = load_state()
+        book = next((b for b in state["books"] if b["id"] == d.get("id", "")), None)
+        if book is None:
+            self.send_json({"ok": False, "error": "Buch nicht gefunden."})
+            return
+        if d.get("hidden"):
+            book["hidden"] = True
+        else:
+            book.pop("hidden", None)
+        save_state(state)
+        self.send_json({"ok": True, "hidden": bool(book.get("hidden"))})
 
     def api_move(self):
         d = self.read_json()

@@ -686,7 +686,8 @@
           "language": "de",
           "amazon": "https://www.amazon.de/dp/B0HH8GRWZS"
         }
-      ]
+      ],
+      "hidden": true
     },
     {
       "id": "bibelgeschichten-zum-ausmalen-5",
@@ -721,7 +722,8 @@
           "language": "de",
           "amazon": "https://www.amazon.de/dp/B0HH6HXFC9"
         }
-      ]
+      ],
+      "hidden": true
     },
     {
       "id": "david",
