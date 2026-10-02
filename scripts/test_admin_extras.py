@@ -517,5 +517,95 @@ class RatingsTests(ServerTests):
         self.assertTrue(any(b.get("amazonRating") == 4.8 for b in books))
 
 
+
+class PublishFlowTests(unittest.TestCase):
+    """Veröffentlichen und Zurücknehmen gegen ein echtes (lokales) Mini-Repository mit Test-Ziel."""
+
+    def setUp(self):
+        self.base = Path(tempfile.mkdtemp())
+        git = lambda cwd, *a: subprocess.run(["git", "-C", str(cwd), *a], check=True, capture_output=True, text=True)
+        self.git = git
+        self.origin = self.base / "origin.git"
+        subprocess.run(["git", "init", "-q", "--bare", "-b", "main", str(self.origin)], check=True, capture_output=True)
+        self.work = self.base / "work"
+        self.work.mkdir()
+        git(self.work, "init", "-q", "-b", "main")
+        git(self.work, "config", "user.email", "t@t")
+        git(self.work, "config", "user.name", "t")
+        (self.work / "src" / "data").mkdir(parents=True)
+        (self.work / "src" / "data" / "books.json").write_text('{"books": [], "site": {}}', encoding="utf-8")
+        git(self.work, "add", "-A")
+        git(self.work, "commit", "-qm", "start")
+        git(self.work, "remote", "add", "origin", str(self.origin))
+        git(self.work, "push", "-q", "origin", "main")
+        git(self.work, "fetch", "-q", "origin")
+        self.saved = (server.ROOT, extras.ROOT, server.precheck, server.build_site, server.DATA_JSON)
+        server.ROOT = self.work
+        extras.ROOT = self.work
+        server.DATA_JSON = self.work / "src" / "data" / "books.json"
+        server.precheck = lambda state: [("gruen", "ok")]
+        server.build_site = lambda command="build", timeout=600: (True, "")
+        self.httpd = HTTPServer(("127.0.0.1", 0), server.Handler)
+        self.port = self.httpd.server_address[1]
+        threading.Thread(target=self.httpd.serve_forever, daemon=True).start()
+
+    def tearDown(self):
+        self.httpd.shutdown()
+        server.ROOT, extras.ROOT, server.precheck, server.build_site, server.DATA_JSON = self.saved
+        shutil.rmtree(self.base, ignore_errors=True)
+
+    def post(self, path):
+        request = urllib.request.Request(f"http://127.0.0.1:{self.port}{path}", data=b"{}", headers={"Content-Type": "application/json"}, method="POST")
+        return json.loads(urllib.request.urlopen(request).read())
+
+    def test_nur_seitendateien_werden_veroeffentlicht(self):
+        (self.work / "src" / "data" / "neu.json").write_text("{}", encoding="utf-8")
+        (self.work / "public" / "images").mkdir(parents=True)
+        (self.work / "public" / "images" / "bild.jpg").write_bytes(b"jpg")
+        (self.work / "_Entwuerfe").mkdir()
+        (self.work / "_Entwuerfe" / "video.mp4").write_bytes(b"x" * 100)
+        (self.work / "notiz.docx").write_bytes(b"x")
+        result = self.post("/api/publish")
+        self.assertTrue(result["ok"], result)
+        self.assertEqual(sorted(result["excluded"]), ["_Entwuerfe/", "notiz.docx"])
+        remote_files = self.git(self.origin, "ls-tree", "-r", "--name-only", "main").stdout.split()
+        self.assertIn("src/data/neu.json", remote_files)
+        self.assertIn("public/images/bild.jpg", remote_files)
+        self.assertFalse(any(f.startswith("_Entwuerfe") or f.endswith(".docx") for f in remote_files), remote_files)
+        self.assertTrue((self.work / "_Entwuerfe" / "video.mp4").is_file(), "lokale Datei darf nicht verschwinden")
+        # beim zweiten Mal gibt es nichts mehr zu tun und die Entwürfe bleiben draußen
+        (self.work / "_Entwuerfe" / "noch-eins.mp4").write_bytes(b"y")
+        again = self.post("/api/publish")
+        self.assertTrue(again["ok"])
+        self.assertTrue(again.get("already"), again)
+
+    def test_letzte_veroeffentlichung_zuruecknehmen(self):
+        (self.work / "src" / "data" / "neu.json").write_text("{}", encoding="utf-8")
+        self.assertTrue(self.post("/api/publish")["ok"])
+        self.assertIn("src/data/neu.json", self.git(self.origin, "ls-tree", "-r", "--name-only", "main").stdout.split())
+        undone = self.post("/api/undo-publish")
+        self.assertTrue(undone["ok"], undone)
+        self.assertNotIn("src/data/neu.json", self.git(self.origin, "ls-tree", "-r", "--name-only", "main").stdout.split())
+        history = self.git(self.origin, "log", "--format=%s", "main").stdout.splitlines()
+        self.assertEqual(len(history), 3)  # start, Veröffentlichung, Zurücknehmen – nichts wurde gelöscht
+        # eine fremde Veröffentlichung (nicht aus dem Admin) wird nicht automatisch zurückgenommen
+        (self.work / "src" / "data" / "x.json").write_text("{}", encoding="utf-8")
+        self.git(self.work, "add", "-A")
+        self.git(self.work, "commit", "-qm", "Handarbeit")
+        self.git(self.work, "push", "-q", "origin", "main")
+        self.assertFalse(self.post("/api/undo-publish")["ok"])
+
+    def test_zu_grosse_datei_in_seitenordner_wird_ausgeschlossen(self):
+        (self.work / "public" / "videos").mkdir(parents=True)
+        big = self.work / "public" / "videos" / "riesig.mp4"
+        with big.open("wb") as handle:
+            handle.truncate(extras.MAX_PUBLISH_FILE_BYTES + 1024)
+        (self.work / "src" / "data" / "ok.json").write_text("{}", encoding="utf-8")
+        result = self.post("/api/publish")
+        self.assertTrue(result["ok"], result)
+        self.assertEqual(result["excluded"], ["public/videos/riesig.mp4"])
+        self.assertNotIn("public/videos/riesig.mp4", self.git(self.origin, "ls-tree", "-r", "--name-only", "main").stdout.split())
+
+
 if __name__ == "__main__":
     unittest.main()
