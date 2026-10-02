@@ -1,7 +1,7 @@
 {
   "site": {
     "brand": "LambKing Stories",
-    "appUrl": "https://konstantinsteinmiller.github.io/little-bible-stories/#/app",
+    "appUrl": "",
     "playStoreUrl": "https://play.google.com/store/apps/details?id=com.stories.lambking",
     "iosStoreUrl": "",
     "paypalUrl": "https://www.paypal.com/ncp/payment/DGMPDALZ9PUQS",
@@ -219,7 +219,7 @@
             },
             {
               "q": "Gibt es die Geschichten auch digital?",
-              "a": "Ja. Die kostenlose LambKing Web-App kann direkt im Browser genutzt werden. Die Android-App ist außerdem bei Google Play erhältlich. Eine Version für den App Store ist in Vorbereitung."
+              "a": "Ja. Die kostenlose LambKing App ist bei Google Play erhältlich. Eine Version für den App Store ist in Vorbereitung."
             },
             {
               "q": "Wie kann ich LambKing Stories unterstützen?",
@@ -476,7 +476,7 @@
             },
             {
               "q": "Are the stories available digitally?",
-              "a": "Yes. The free LambKing web app can be used directly in your browser, and the Android app is available on Google Play. An App Store version is in preparation."
+              "a": "Yes. The free LambKing app is available on Google Play. An App Store version is in preparation."
             },
             {
               "q": "How can I support LambKing Stories?",

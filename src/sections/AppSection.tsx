@@ -1,4 +1,4 @@
-import { ExternalLink } from 'lucide-react'
+import PhoneCarousel from '@/components/PhoneCarousel'
 import Reveal from '@/components/Reveal'
 import RichText from '@/components/RichText'
 import { SITE } from '@/data/books'
@@ -6,8 +6,7 @@ import { useLang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
 
 export default function AppSection() {
-  const lang = useLang()
-  const t = textsFor(lang)
+  const t = textsFor(useLang())
   const hasPlayStoreLink = SITE.playStoreUrl.startsWith('https://')
   const hasAppStoreLink = SITE.iosStoreUrl.startsWith('https://')
 
@@ -28,73 +27,56 @@ export default function AppSection() {
   )
 
   return (
-    <section id="app" className="scroll-mt-28 py-16 lg:py-24">
-      <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-2">
-        <Reveal>
-          <div className="mx-auto aspect-[760/1647] w-[60%] overflow-hidden rounded-2xl border border-border shadow-xl shadow-primary/10">
-            <img
-              src={lang === 'en' ? 'images/app-welcome-en.jpg' : 'images/app-willkommen.jpg'}
-              alt={t.app.title}
-              className="h-full w-full object-cover"
-              loading="lazy"
-            />
-          </div>
-        </Reveal>
-        <Reveal delay={120}>
+    <section id="app" className="scroll-mt-28 overflow-hidden bg-gradient-to-b from-primary/[0.07] via-primary/[0.04] to-transparent py-16 lg:py-24">
+      <div className="mx-auto max-w-5xl px-4 sm:px-6">
+        <Reveal className="mx-auto max-w-2xl text-center">
           <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-accent">{t.app.eyebrow}</p>
-          <h2 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">
-            {t.app.title}
-          </h2>
-          <p className="mt-4 leading-relaxed text-muted-foreground">
+          <h2 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">{t.app.title}</h2>
+          <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
             <RichText text={t.app.text} />
           </p>
-          <div className="mt-7 flex flex-col items-start gap-3">
-            {/* Primär: die Web-App (echter externer Link aus den Einstellungen) */}
-            {SITE.appUrl.startsWith('https://') && (
+        </Reveal>
+      </div>
+
+      <Reveal delay={100} className="mx-auto mt-8 max-w-[1500px]">
+        <PhoneCarousel />
+      </Reveal>
+
+      <div className="mx-auto mt-8 max-w-5xl px-4 sm:px-6">
+        <Reveal delay={150}>
+          <div className="flex flex-wrap items-start justify-center gap-3 sm:gap-5">
+            {hasPlayStoreLink ? (
               <a
-                href={SITE.appUrl}
+                href={SITE.playStoreUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3.5 font-bold text-primary-foreground shadow-lg shadow-primary/25 transition-transform hover:scale-[1.03]"
+                className="inline-block transition-transform hover:scale-[1.04]"
+                aria-label={t.app.playAlt}
               >
-                <ExternalLink className="h-5 w-5" aria-hidden />
-                {t.app.ctaWebApp}
+                {playBadge}
               </a>
+            ) : (
+              <div className="w-[168px] sm:w-48">
+                {playBadge}
+                <p className="mt-2 text-xs font-semibold text-muted-foreground">{t.app.playSoon}</p>
+              </div>
             )}
-            <div className="flex flex-wrap items-start gap-3">
-              {hasPlayStoreLink ? (
-                <a
-                  href={SITE.playStoreUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block transition-transform hover:scale-[1.04]"
-                  aria-label={t.app.playAlt}
-                >
-                  {playBadge}
-                </a>
-              ) : (
-                <div className="w-[168px] sm:w-48">
-                  {playBadge}
-                  <p className="mt-2 text-xs font-semibold text-muted-foreground">{t.app.playSoon}</p>
-                </div>
-              )}
-              {hasAppStoreLink ? (
-                <a
-                  href={SITE.iosStoreUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block transition-transform hover:scale-[1.04]"
-                  aria-label={t.app.appStoreAlt}
-                >
-                  {appStoreBadge}
-                </a>
-              ) : (
-                <div className="w-[168px] sm:w-48" aria-disabled="true">
-                  <span className="block opacity-45 grayscale">{appStoreBadge}</span>
-                  <p className="mt-2 text-xs font-semibold text-muted-foreground">{t.app.appStoreSoon}</p>
-                </div>
-              )}
-            </div>
+            {hasAppStoreLink ? (
+              <a
+                href={SITE.iosStoreUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block transition-transform hover:scale-[1.04]"
+                aria-label={t.app.appStoreAlt}
+              >
+                {appStoreBadge}
+              </a>
+            ) : (
+              <div className="w-[168px] sm:w-48" aria-disabled="true">
+                <span className="block opacity-45 grayscale">{appStoreBadge}</span>
+                <p className="mt-2 text-xs font-semibold text-muted-foreground">{t.app.appStoreSoon}</p>
+              </div>
+            )}
           </div>
         </Reveal>
       </div>
