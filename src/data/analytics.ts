@@ -22,21 +22,32 @@ function send(event: AnalyticsEvent): void {
   if (!url || isLocalPreview()) return
 
   const body = JSON.stringify(event)
-  if (typeof navigator.sendBeacon === 'function') {
-    const payload = new Blob([body], { type: 'text/plain;charset=UTF-8' })
-    if (navigator.sendBeacon(`${url}/event`, payload)) return
+  // Reserve: sendBeacon, falls die normale Anfrage nicht abgeschickt werden kann
+  const beacon = () => {
+    try {
+      if (typeof navigator.sendBeacon === 'function') {
+        navigator.sendBeacon(`${url}/event`, new Blob([body], { type: 'text/plain;charset=UTF-8' }))
+      }
+    } catch {
+      // Statistik darf die Landingpage niemals beeinträchtigen.
+    }
   }
 
-  void fetch(`${url}/event`, {
-    method: 'POST',
-    body,
-    headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
-    keepalive: true,
-    credentials: 'omit',
-    referrerPolicy: 'no-referrer',
-  }).catch(() => {
-    // Statistik darf die Landingpage niemals beeinträchtigen.
-  })
+  // Hauptweg ist eine normale Anfrage mit „keepalive“ (läuft auch beim Seitenwechsel zu Ende). Der frühere Hauptweg
+  // sendBeacon wird von manchen Browsern und Werbeblockern (z. B. Brave) stillschweigend blockiert, normale
+  // Anfragen dagegen nicht – dadurch gingen dort Seitenaufrufe und Klicks verloren.
+  if (typeof fetch === 'function') {
+    void fetch(`${url}/event`, {
+      method: 'POST',
+      body,
+      headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+      keepalive: true,
+      credentials: 'omit',
+      referrerPolicy: 'no-referrer',
+    }).catch(beacon)
+    return
+  }
+  beacon()
 }
 
 /** Zählt genau einen Seitenaufruf pro vollständig geladener SPA-Sitzung. */

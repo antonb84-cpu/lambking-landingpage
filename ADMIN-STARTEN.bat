@@ -51,9 +51,6 @@ if errorlevel 1 exit /b 1
 REM Ein noch laufendes aelteres Admin-Programm beenden, damit immer die neueste Version startet.
 powershell -NoProfile -ExecutionPolicy Bypass -File "%LAMBKING_ROOT%admin\alte-instanz-beenden.ps1"
 
-REM Ein noch laufendes aelteres Admin-Programm beenden, damit immer die neueste Version startet.
-powershell -NoProfile -ExecutionPolicy Bypass -File "%LAMBKING_ROOT%adminlte-instanz-beenden.ps1"
-
 REM Der anonyme Zaehldienst wird beim ersten Start als Bestandteil des Admins
 REM eingerichtet. Danach bleibt die Konfiguration im transportablen Ordner.
 if not exist "admin\analytics.local.json" (
