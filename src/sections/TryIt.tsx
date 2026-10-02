@@ -12,7 +12,8 @@ export default function TryIt() {
   const texts = textsFor(lang)
   const t = texts.tryit
   const facts = texts.books.coloringFacts.slice(0, 4)
-  const featured = pickFeatured(lang)
+  const featured = pickFeatured()
+  if (!featured) return null // alle Bücher ausgeblendet
   return (
     <section id="ausprobieren" className="scroll-mt-28 texture-paper relative overflow-hidden py-16 lg:py-24">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
@@ -25,7 +26,7 @@ export default function TryIt() {
               aria-hidden
             />
             <div className="relative z-10">
-              <FlipBook book={featured} />
+              <FlipBook key={`${featured.id}-${lang}`} book={featured} />
             </div>
           </Reveal>
           <Reveal delay={100}>

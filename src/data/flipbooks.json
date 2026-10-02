@@ -11,6 +11,21 @@
       "dir": "images/buch-david-de",
       "count": 70,
       "back": "images/buch-david-de/rueckseite.jpg"
+    },
+    "en": {
+      "dir": "images/buch-david-en",
+      "count": 70,
+      "back": "images/buch-david-en/rueckseite.jpg"
+    },
+    "es": {
+      "dir": "images/buch-david-es",
+      "count": 70,
+      "back": "images/buch-david-es/rueckseite.jpg"
+    },
+    "ro": {
+      "dir": "images/buch-david-ro",
+      "count": 70,
+      "back": "images/buch-david-ro/rueckseite.jpg"
     }
   }
 }

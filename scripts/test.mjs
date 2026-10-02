@@ -81,7 +81,8 @@ test('Blätterbuch: bedienbar per Tippen/Tastatur, ohne Bildmenü, respektiert r
 
 test('Blätterbuch zeigt Titelseite (auch Druckbogen-Cover) und alle Seiten des Buches', () => {
   const flip = readFileSync(join(SRC, 'components/FlipBook.tsx'), 'utf-8')
-  assert(flip.includes('book.coverSpread') && flip.includes('flipPagesFor(book.id, book.lang)'), 'Cover/Seiten kommen nicht aus den Buchdaten')
+  assert(flip.includes('book.coverSpread') && flip.includes('flipPagesFor(book.id, sel)'), 'Cover/Seiten kommen nicht aus den Buchdaten')
+  assert(flip.includes('flipLanguagesFor(book.id)') && flip.includes('aria-pressed={active}') && flip.includes('switchLang'), 'Sprach-Flaggen im Blätterbuch fehlen')
   assert(flip.includes('book.samples'), 'Fallback auf Vorschauseiten fehlt')
   const manifest = JSON.parse(readFileSync(join(SRC, 'data/flipbooks.json'), 'utf-8'))
   for (const [id, langs] of Object.entries(manifest)) {
@@ -89,6 +90,7 @@ test('Blätterbuch zeigt Titelseite (auch Druckbogen-Cover) und alle Seiten des 
     for (const [lang, entry] of Object.entries(langs)) {
       assert(existsSync(join(ROOT, 'public', entry.dir, 'p01.jpg')), `Blätterbuch ${id}/${lang}: Seite 1 fehlt`)
       assert(existsSync(join(ROOT, 'public', entry.dir, `p${String(entry.count).padStart(2, '0')}.jpg`)), `Blätterbuch ${id}/${lang}: letzte Seite fehlt`)
+      if (entry.back) assert(existsSync(join(ROOT, 'public', entry.back)), `Blätterbuch ${id}/${lang}: Rückseite fehlt`)
     }
   }
 })

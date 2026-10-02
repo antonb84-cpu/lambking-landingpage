@@ -258,7 +258,7 @@ function LanguageEditions({
               type="button"
               key={edition.language}
               onClick={() => onSelect(edition.language)}
-              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-primary/20 bg-white p-2 shadow-sm transition hover:scale-105 hover:border-primary/50 hover:bg-primary/5 hover:shadow"
+              className="relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-primary/20 bg-white p-1.5 shadow-sm transition before:absolute before:-inset-1 before:content-[''] hover:scale-105 hover:border-primary/50 hover:bg-primary/5 hover:shadow"
               title={`${name} – ${t.books.lookInside}`}
               aria-label={`${book.title}, ${name} – ${t.books.lookInside}`}
             >

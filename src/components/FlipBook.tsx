@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Pause, Play } from 'lucide-react'
 import type { Book } from '@/data/books'
-import { flipBackFor, flipPagesFor } from '@/data/flipbooks'
+import { flipBackFor, flipLanguagesFor, flipPagesFor } from '@/data/flipbooks'
 import { useLang } from '@/data/lang'
+import { LANGUAGE_META } from '@/data/languageMeta'
 import { textsFor } from '@/data/texts'
 
 // Durchblätterbares Softcover-Vorschaubuch: zeigt das Buch einmal vollständig
@@ -45,15 +46,25 @@ function Face({ src, side, spread }: { src?: string; side: 'front' | 'back'; spr
 export default function FlipBook({ book }: { book: Book }) {
   const lang = useLang()
   const t = textsFor(lang).tryit
-  const pages = useMemo(() => flipPagesFor(book.id, book.lang) ?? book.samples, [book])
-  const backCover = useMemo(() => flipBackFor(book.id, book.lang), [book])
+  // Sprachen mit vollständigem Blätterbuch: je Flagge eine eigene Fassung (Seiten, Cover, Rückseite)
+  const flipLangs = useMemo(() => flipLanguagesFor(book.id), [book.id])
+  // Startsprache = Seitensprache (DE/EN oben), sonst die Sprache des Buches. Wechselt die Seitensprache,
+  // wird das Buch von der Seite neu aufgebaut (key in TryIt) und folgt so der Sprache.
+  const [sel, setSel] = useState<string>(() =>
+    flipLangs.includes(lang) ? lang : flipLangs.includes(book.lang) ? book.lang : flipLangs[0] ?? book.lang,
+  )
+  const edition = useMemo(() => book.editions.find((item) => item.language === sel), [book, sel])
+  const cover = edition?.cover ?? book.cover
+  const coverSpread = edition?.cover ? edition.coverSpread : book.coverSpread
+  const pages = useMemo(() => flipPagesFor(book.id, sel) ?? (edition?.samples?.length ? edition.samples : book.samples), [book, sel, edition])
+  const backCover = useMemo(() => flipBackFor(book.id, sel), [book.id, sel])
   const leaves = useMemo<Leaf[]>(() => {
-    const list: Leaf[] = [{ front: book.cover, cover: true }]
+    const list: Leaf[] = [{ front: cover, cover: true }]
     for (let i = 0; i < pages.length; i += 2) list.push({ front: pages[i], back: pages[i + 1] })
     // Rückseite als letztes Blatt: innen leer, außen das Rückseiten-Cover
     if (backCover) list.push({ back: backCover, cover: true })
     return list
-  }, [book, pages, backCover])
+  }, [cover, pages, backCover])
   const L = leaves.length
   const lastPageLeaf = backCover ? L - 1 : L // Zustand, in dem links die letzte Buchseite liegt
 
@@ -157,6 +168,27 @@ export default function FlipBook({ book }: { book: Book }) {
     }, 380)
   }
 
+  // Flagge angeklickt: das Buch erscheint in dieser Sprache (Seiten, Titelseite, Rückseite), von vorn
+  const switchLang = useCallback(
+    (code: string) => {
+      if (code === sel) return
+      setPlaying(false)
+      setFading(true)
+      window.setTimeout(() => {
+        setInstant(true)
+        fRef.current = 0
+        setF(0)
+        setMoving(null)
+        setSel(code)
+        window.setTimeout(() => {
+          setInstant(false)
+          setFading(false)
+        }, 60)
+      }, 380)
+    },
+    [sel],
+  )
+
   const manual = (dir: 1 | -1) => {
     setPlaying(false)
     go(dir)
@@ -213,7 +245,7 @@ export default function FlipBook({ book }: { book: Book }) {
                     boxShadow: moving === i ? '0 10px 26px rgba(40,30,10,0.28)' : leaf.cover ? '0 6px 16px rgba(40,30,10,0.22)' : undefined,
                   }}
                 >
-                  <Face src={leaf.front} side="front" spread={leaf.cover ? book.coverSpread : false} />
+                  <Face src={leaf.front} side="front" spread={leaf.cover ? coverSpread : false} />
                   <Face src={leaf.back} side="back" />
                 </div>
               </div>
@@ -225,6 +257,34 @@ export default function FlipBook({ book }: { book: Book }) {
         <button type="button" className="absolute inset-y-0 right-0 z-[300] w-1/2 cursor-e-resize" onClick={() => manual(1)} aria-label={t.next} tabIndex={-1} />
       </div>
       <div className="mx-auto mt-3 h-3 w-3/4 rounded-[50%] bg-black/15 blur-md" aria-hidden />
+      {flipLangs.length > 1 ? (
+        <div className="mx-auto mt-4 flex items-center justify-center gap-2" role="group" aria-label={t.bookLanguage}>
+          {flipLangs.map((code) => {
+            const meta = LANGUAGE_META[code]
+            const name = meta ? meta[lang] : code.toUpperCase()
+            const active = code === sel
+            return (
+              <button
+                type="button"
+                key={code}
+                onClick={() => switchLang(code)}
+                aria-pressed={active}
+                aria-label={name}
+                title={name}
+                className={`relative inline-flex h-8 w-8 items-center justify-center rounded-full border bg-white p-1 shadow-sm transition before:absolute before:-inset-1.5 before:content-[''] hover:scale-110 ${
+                  active ? 'border-accent ring-2 ring-accent/50' : 'border-primary/20 opacity-75 hover:opacity-100'
+                }`}
+              >
+                {meta ? (
+                  <img src={meta.flag} alt="" className="h-full w-full rounded-full object-cover" aria-hidden draggable={false} />
+                ) : (
+                  <span className="text-sm leading-none" aria-hidden>🌐</span>
+                )}
+              </button>
+            )
+          })}
+        </div>
+      ) : null}
       <div className="mx-auto mt-4 flex w-fit max-w-full flex-wrap items-center justify-center gap-1.5 rounded-full border border-border/70 bg-card/80 px-3 py-2 shadow-sm backdrop-blur sm:gap-2">
         <button type="button" onClick={() => jumpTo(0)} disabled={f === 0} aria-label={t.first} title={t.first} className="flex h-10 w-10 items-center justify-center rounded-full border border-primary/20 bg-card text-primary shadow-sm transition hover:border-primary/50 disabled:opacity-35">
           <ChevronsLeft className="h-5 w-5" aria-hidden />
