@@ -10,7 +10,7 @@ import { useLang } from '@/data/lang'
 import { LANGUAGE_META } from '@/data/languageMeta'
 import { textsFor } from '@/data/texts'
 import { OPEN_BOOK_EVENT } from '@/data/openBook'
-import { trackAmazonClick } from '@/data/analytics'
+import { isMiddleClick, trackAmazonClick } from '@/data/analytics'
 
 // Kategorie-Helfer (Labels/Typen kommen aus den Buchdaten, sprachabhängig)
 const catDefOf = (id: string) => CATEGORIES.find((c) => c.id === id)
@@ -291,6 +291,7 @@ function BuyButton({ book, size = 'md', preferredLanguage, label }: { book: Book
       target="_blank"
       rel="noopener noreferrer"
       onClick={() => trackAmazonClick(book.id, edition.language)}
+      onAuxClick={(event) => isMiddleClick(event) && trackAmazonClick(book.id, edition.language)}
       className={`block w-full ${width} transition-transform hover:scale-[1.03] focus-visible:rounded-full focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/60`}
       aria-label={`${book.title} – ${label ?? t.books.buyAmazon}`}
     >

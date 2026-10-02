@@ -483,6 +483,17 @@ test('Anonyme Statistik speichert keine Besucherkennungen', () => {
       assert(pattern.test(target) && frontPattern.test(target), `Klickziel „${target}" wird vom Zähler abgelehnt`)
     }
   }
+  assert(analytics.includes('isLocalPreview()') && /localhost/.test(analytics) && analytics.includes('if (!url || isLocalPreview()) return'), 'Lokale Vorschau zählt mit und verfälscht die Statistik')
+  assert(analytics.includes('counterSelfTest') && readFileSync(join(SRC, 'App.tsx'), 'utf-8').includes("has('zaehler-test')"), 'Zähler-Selbsttest fehlt')
+  const ratingSrc = readFileSync(join(SRC, 'components/AmazonRating.tsx'), 'utf-8')
+  assert(ratingSrc.includes('trackAmazonClick(book.id, book.lang)'), 'Klick auf die Sterne (führt zu Amazon) wird nicht gezählt')
+  for (const file of ['sections/Books.tsx', 'components/PaypalButton.tsx', 'components/KofiButton.tsx', 'sections/AppSection.tsx', 'components/AmazonRating.tsx']) {
+    assert(readFileSync(join(SRC, file), 'utf-8').includes('onAuxClick'), `${file}: Klick mit der mittleren Maustaste wird nicht gezählt`)
+  }
+  // Admin-Programm und Oberfläche müssen dieselbe Version haben, sonst läuft noch ein altes Programm
+  const serverVersion = adminServer.match(/ADMIN_VERSION = "([^"]+)"/)?.[1]
+  const uiVersion = readFileSync(join(ROOT, 'admin/index.html'), 'utf-8').match(/const ADMIN_VERSION = '([^']+)'/)?.[1]
+  assert(serverVersion && serverVersion === uiVersion, `Admin-Version stimmt nicht überein (${serverVersion} / ${uiVersion})`)
   for (const link of ['paypal', 'kofi', 'playstore', 'appstore']) {
     assert(pattern.test(`link-${link}`), `Klickziel link-${link} wird vom Zähler abgelehnt`)
   }

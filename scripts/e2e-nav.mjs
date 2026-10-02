@@ -113,6 +113,13 @@ try {
     (await (await fetch(`http://127.0.0.1:${CDP_PORT}/json`)).json()).filter((t) => t.type === 'page').length
 
   await new Promise((r) => ws.addEventListener('open', r))
+  // Lokale Vorschau darf keine Zähler-Ereignisse senden (sonst verfälschen eigene Tests die Statistik)
+  const countedRequests = []
+  ws.addEventListener('message', (ev) => {
+    const msg = JSON.parse(ev.data)
+    if (msg.method === 'Network.requestWillBeSent' && String(msg.params.request.url).includes('/event')) countedRequests.push(msg.params.request.url)
+  })
+  await send('Network.enable')
   await send('Page.navigate', { url: `http://127.0.0.1:${HTTP_PORT}/` })
   await new Promise((r) => setTimeout(r, 5000))
 
@@ -314,6 +321,12 @@ try {
     const invalid = await evalJs(`!!document.querySelector('form :invalid')`)
     const ok = invalid === true
     console.log(`${ok ? '✓' : '✗'} Creator-Bewerbungsformular verhindert unvollständige Übermittlung`)
+    if (!ok) fehler++
+  }
+
+  {
+    const ok = countedRequests.length === 0
+    console.log(`${ok ? '✓' : '✗'} Lokale Vorschau sendet keine Zähler-Ereignisse (${countedRequests.length} gesendet)`)
     if (!ok) fehler++
   }
 

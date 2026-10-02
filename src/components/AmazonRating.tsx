@@ -1,4 +1,5 @@
 import { Star } from 'lucide-react'
+import { isMiddleClick, trackAmazonClick } from '@/data/analytics'
 import { SITE, type Book } from '@/data/books'
 import { useLang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
@@ -33,6 +34,8 @@ export default function AmazonRating({ book }: { book: Book }) {
       target="_blank"
       rel="noopener noreferrer"
       aria-label={label}
+      onClick={() => hasRating && trackAmazonClick(book.id, book.lang)}
+      onAuxClick={(event) => hasRating && isMiddleClick(event) && trackAmazonClick(book.id, book.lang)}
       className="mt-3 inline-flex w-fit max-w-full flex-col items-center justify-center gap-y-0.5 rounded-2xl border border-accent/25 bg-accent/5 px-3 py-1.5 text-[11px] font-semibold leading-tight sm:flex-row sm:gap-x-2 sm:rounded-full sm:text-xs text-muted-foreground transition-colors hover:border-accent/45 hover:text-foreground"
     >
       <span className="flex items-center gap-0.5 text-accent" aria-hidden>

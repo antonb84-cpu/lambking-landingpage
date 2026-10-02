@@ -1,4 +1,4 @@
-import { trackLinkClick } from '@/data/analytics'
+import { isMiddleClick, trackLinkClick } from '@/data/analytics'
 import { SITE } from '@/data/books'
 import { useLang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
@@ -31,6 +31,7 @@ export default function KofiButton({ compact = false }: { compact?: boolean }) {
     <a
       href={SITE.kofiUrl}
       onClick={() => trackLinkClick('kofi')}
+      onAuxClick={(event) => isMiddleClick(event) && trackLinkClick('kofi')}
       target="_blank"
       rel="noopener noreferrer"
       aria-label={t.support.kofiAlt}

@@ -18,6 +18,7 @@ import { isCreatorPartnerPath } from '@/data/routes'
 import { useLang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
 import { SITE } from '@/data/books'
+import CounterSelfTest from '@/components/CounterSelfTest'
 
 export default function App() {
   const t = textsFor(useLang())
@@ -54,6 +55,7 @@ export default function App() {
         <Faq />
       </main>
       <Footer />
+      {typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('zaehler-test') ? <CounterSelfTest /> : null}
     </div>
   )
 }

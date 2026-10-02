@@ -643,5 +643,14 @@ class HeroTests(MediaTests):
         self.assertEqual(hero["focusMobile"], {"x": 70, "y": 100})
 
 
+
+class VersionTests(ServerTests):
+    def test_state_nennt_die_programmversion(self):
+        state = json.loads(urllib.request.urlopen(f"http://127.0.0.1:{self.port}/api/state").read())
+        self.assertEqual(state["adminVersion"], server.ADMIN_VERSION)
+        html = (REAL_ROOT / "admin" / "index.html").read_text(encoding="utf-8")
+        self.assertIn(f"const ADMIN_VERSION = '{server.ADMIN_VERSION}'", html)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -1,7 +1,7 @@
 import PhoneCarousel from '@/components/PhoneCarousel'
 import Reveal from '@/components/Reveal'
 import RichText from '@/components/RichText'
-import { trackLinkClick } from '@/data/analytics'
+import { isMiddleClick, trackLinkClick } from '@/data/analytics'
 import { SITE } from '@/data/books'
 import { useLang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
@@ -50,6 +50,7 @@ export default function AppSection() {
               <a
                 href={SITE.playStoreUrl}
                 onClick={() => trackLinkClick('playstore')}
+                onAuxClick={(event) => isMiddleClick(event) && trackLinkClick('playstore')}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-block transition-transform hover:scale-[1.04]"
@@ -67,6 +68,7 @@ export default function AppSection() {
               <a
                 href={SITE.iosStoreUrl}
                 onClick={() => trackLinkClick('appstore')}
+                onAuxClick={(event) => isMiddleClick(event) && trackLinkClick('appstore')}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-block transition-transform hover:scale-[1.04]"
