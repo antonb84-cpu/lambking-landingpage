@@ -158,7 +158,7 @@ try {
     await send('Emulation.setDeviceMetricsOverride', { width: 820, height: 900, deviceScaleFactor: 1, mobile: false })
     const buttonLayoutJson = await evalJs(`(() => {
       const dialog = document.querySelector('[role="dialog"]')
-      const amazon = dialog?.querySelector('a[href*="amazon."]')?.getBoundingClientRect()
+      const amazon = dialog.querySelector('a[href*="amazon."]:not([href*="review"])')?.getBoundingClientRect()
       const discount = [...dialog.querySelectorAll('button')].find(b => b.textContent.includes('Mengenrabatt ab 10 Stück'))?.getBoundingClientRect()
       return JSON.stringify({amazon:{x:amazon?.x,width:amazon?.width}, discount:{x:discount?.x,width:discount?.width}})
     })()`)
@@ -197,74 +197,38 @@ try {
     await new Promise((r) => setTimeout(r, 1200))
   }
 
+  // Blick ins Buch: Das Softcover startet nicht von selbst, alle Seiten sind abrufbar
+  // und die Sprungtasten funktionieren – ohne neuen Tab oder Dialog.
   {
     await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: true })
     const before = await targetCount()
-    const media = JSON.parse(await evalJs(`JSON.stringify({
-      cover: document.querySelector('.book3d-leaf-front')?.getAttribute('src'),
-      coverCropped: document.querySelector('.book3d-leaf-front')?.classList.contains('book3d-leaf-front--spread'),
-      coverPosition: getComputedStyle(document.querySelector('.book3d-leaf-front')).objectPosition,
-      fronts: [...document.querySelectorAll('.book3d-leaf-front')].slice(1).map(img => ({ src: img.getAttribute('src'), loaded: img.complete && img.naturalWidth > 0 })),
-      backs: [...document.querySelectorAll('.book3d-leaf-back')].map(page => ({ tag: page.tagName, images: page.querySelectorAll('img').length }))
-    })`) || '{}')
-    const realPages = media.cover?.includes('cover-band01-de-spread')
-      && media.coverCropped
-      && media.coverPosition.startsWith('100%')
-      && media.fronts?.length > 0
-      && media.fronts.every(page => page.loaded)
-      && media.backs?.length > 0
-      && media.backs.every(page => page.tag === 'DIV' && page.images === 0)
-    console.log(`${realPages ? '✓' : '✗'} Hero-Buch: vollständiges Cover, echte rechte Seiten und freie linke Seiten`)
-    if (!realPages) fehler++
-    const result = await evalJs(`(() => {
-      const book = document.querySelector('.book3d-scene')
-      book.dispatchEvent(new PointerEvent('pointerdown', {bubbles:true, pointerType:'touch'}))
-      book.click()
-      const contextMenuBlocked = !book.dispatchEvent(new MouseEvent('contextmenu', {bubbles:true, cancelable:true}))
-      return {contextMenuBlocked, touchOpen:book.dataset.touchOpen}
-    })()`)
-    const stateJson = await waitForPageState(`(() => {
-      const state = {
-        dialog: !!document.querySelector('[role="dialog"]'),
-        touchOpen: document.querySelector('.book3d-scene')?.dataset.touchOpen,
-        allLeavesOpen: [...document.querySelectorAll('.book3d-leaf')].every(leaf => leaf.style.transform.includes('rotateY(-172deg)'))
-      }
-      return state.touchOpen === 'true' && state.allLeavesOpen ? JSON.stringify(state) : ''
-    })()`)
-    const after = await targetCount()
-    const state = JSON.parse(stateJson || '{}')
-    const openBounds = JSON.parse(await evalJs(`(() => {
-      const pages = [...document.querySelectorAll('.book3d-leaf, .book3d-page-base')]
-      return JSON.stringify({ left: Math.min(...pages.map(page => page.getBoundingClientRect().left)), right: Math.max(...pages.map(page => page.getBoundingClientRect().right)), width: innerWidth })
+    const state = JSON.parse(await evalJs(`(() => {
+      const group = document.querySelector('#ausprobieren [role="group"]')
+      const label = (re) => [...(group?.querySelectorAll('button') ?? [])].find(b => re.test(b.getAttribute('aria-label') || ''))
+      const play = label(/Automatisch blättern|Pause/)
+      return JSON.stringify({
+        found: !!group,
+        paused: play?.getAttribute('aria-pressed') === 'false',
+        lastEnabled: label(/Rückseite/)?.disabled === false,
+        firstDisabled: label(/Titelseite/)?.disabled === true,
+        images: group ? group.querySelectorAll('img').length : 0,
+        overflow: document.documentElement.scrollWidth > innerWidth
+      })
     })()`) || '{}')
-    const opened = after === before && result.contextMenuBlocked && state.touchOpen === 'true' && state.allLeavesOpen && !state.dialog
-      && openBounds.left >= -2 && openBounds.right <= openBounds.width + 2
-    await evalJs(`(() => {
-      const book = document.querySelector('.book3d-scene')
-      book.dispatchEvent(new PointerEvent('pointerdown', {bubbles:true, pointerType:'touch'}))
-      book.click()
-    })()`)
-    const closedJson = await waitForPageState(`(() => {
-      const state = {
-        touchOpen: document.querySelector('.book3d-scene')?.dataset.touchOpen,
-        allLeavesClosed: [...document.querySelectorAll('.book3d-leaf')].every(leaf => leaf.style.transform.includes('rotateY(0deg)'))
-      }
-      return state.touchOpen === 'false' && state.allLeavesClosed ? JSON.stringify(state) : ''
-    })()`)
-    const closed = JSON.parse(closedJson || '{}')
-    const ok = opened && closed.touchOpen === 'false' && closed.allLeavesClosed
-    console.log(`${ok ? '✓' : '✗'} Smartphone-Tipp öffnet und schließt das Hero-Buch vollständig, ohne Bildmenü oder Dialog (Tabs ${before}→${after})`)
+    await evalJs(`[...document.querySelectorAll('#ausprobieren [role="group"] button')].find(b => /Rückseite/.test(b.getAttribute('aria-label') || ''))?.click()`)
+    const atEnd = await waitForPageState(`[...document.querySelectorAll('#ausprobieren [role="group"] button')].find(b => /Rückseite/.test(b.getAttribute('aria-label') || ''))?.disabled === true`, 15000)
+    const after = await targetCount()
+    const ok = state.found && state.paused && state.lastEnabled && state.firstDisabled && state.images > 0 && !state.overflow
+      && atEnd === true && after === before && !(await evalJs(`!!document.querySelector('[role="dialog"]')`))
+    console.log(`${ok ? '✓' : '✗'} Blick ins Buch: startet nicht automatisch, Sprung zur Rückseite funktioniert, kein Überlauf am Smartphone (Tabs ${before}→${after})`)
     if (!ok) fehler++
     await send('Emulation.clearDeviceMetricsOverride')
-    // Für die folgenden Prüfungen auf einen garantiert sauberen Seitenzustand
-    // zurückkehren. Das ist auch auf langsameren GitHub-Runnern stabiler als
-    // auf das Ende einer Dialog-Schließanimation zu warten.
     await send('Page.navigate', { url: `http://127.0.0.1:${HTTP_PORT}/` })
     await new Promise((r) => setTimeout(r, 1800))
   }
 
   {
-    await evalJs(`[...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'EN')?.click()`)
+    await evalJs(`[...document.querySelectorAll('button')].find(b => /^EN(English)?$/.test(b.textContent.trim()))?.click()`)
     await new Promise((r) => setTimeout(r, 1500))
     const s = JSON.parse(await evalJs(`JSON.stringify({
       lang: document.documentElement.lang,
@@ -276,7 +240,7 @@ try {
   }
 
   // Rechts-Fenster: Impressum & Datenschutz öffnen ein Fenster (kein neuer Tab)
-  await evalJs(`[...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'DE')?.click()`)
+  await evalJs(`[...document.querySelectorAll('button')].find(b => /^DE(Deutsch)?$/.test(b.textContent.trim()))?.click()`)
   await new Promise((r) => setTimeout(r, 1000))
   for (const [label, marker] of [['Impressum', 'Anton Bernt'], ['Datenschutz', 'GitHub']]) {
     const before = await targetCount()
@@ -315,7 +279,7 @@ try {
   }
 
   {
-    await evalJs(`[...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'EN')?.click()`)
+    await evalJs(`[...document.querySelectorAll('button')].find(b => /^EN(English)?$/.test(b.textContent.trim()))?.click()`)
     await new Promise((r) => setTimeout(r, 900))
     const s = JSON.parse(await evalJs(`JSON.stringify({
       lang: document.documentElement.lang,
