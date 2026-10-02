@@ -107,6 +107,61 @@
   .form-actions{display:flex; gap:12px; margin-top:18px; flex-wrap:wrap;}
   .hidden{display:none !important;}
 
+  /* Reiter */
+  .tabs{position:sticky; top:0; z-index:20; display:flex; gap:6px; flex-wrap:wrap; padding:10px 20px; background:#fff; border-bottom:1px solid var(--line); box-shadow:0 2px 8px rgba(0,0,0,.05);}
+  .tabs button{border:none; background:transparent; color:var(--blue); font-size:14.5px; font-weight:600; padding:9px 16px; border-radius:999px; position:relative;}
+  .tabs button:hover{background:var(--gold-light);}
+  .tabs button.active{background:var(--blue); color:#fff;}
+  .tab-dot{display:inline-block; width:9px; height:9px; border-radius:50%; background:var(--gold); margin-left:4px; vertical-align:1px;}
+  .tabpanel{animation:fadein .15s ease;}
+  @keyframes fadein{from{opacity:0;}to{opacity:1;}}
+  main{padding-bottom:110px;}
+  .quick-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px;}
+  .quick{display:flex; flex-direction:column; gap:3px; align-items:flex-start; text-align:left; padding:16px; border:1px solid var(--line); border-radius:14px; background:#FCFAF5; color:var(--ink);}
+  .quick:hover{border-color:var(--gold); background:#fff;}
+  .quick span{font-size:26px;}
+  .quick b{font-size:15px; color:var(--blue);}
+  .quick small{color:var(--muted); font-size:12.5px;}
+  /* Statusleiste */
+  #statusBar{position:fixed; left:0; right:0; bottom:0; z-index:30; display:flex; align-items:center; gap:12px; flex-wrap:wrap; padding:10px 20px; background:#fff; border-top:1px solid var(--line); box-shadow:0 -3px 12px rgba(0,0,0,.08); font-size:14px; font-weight:600;}
+  #statusBar .sb-dot{width:11px; height:11px; border-radius:50%; background:var(--green); flex-shrink:0;}
+  #statusBar.pending .sb-dot{background:var(--gold);}
+  #statusBar.warn .sb-dot{background:var(--red);}
+  #statusBar .sb-spacer{flex:1;}
+  #statusBar .sb-btn{padding:7px 16px;}
+  #statusBar a{text-decoration:none;}
+  /* Buchliste: Ziehen */
+  .book-row{cursor:default;}
+  .book-row .grip{cursor:grab; color:var(--muted); font-size:20px; padding:0 4px; user-select:none; touch-action:none;}
+  .book-row.dragging{opacity:.4;}
+  .book-row.drop-before{box-shadow:0 -3px 0 var(--gold);}
+  .book-row.drop-after{box-shadow:0 3px 0 var(--gold);}
+  .list-summary{font-size:13px; color:var(--muted); margin:-6px 0 12px;}
+  /* Blick ins Buch */
+  .fb-card{border:1px solid var(--line); border-radius:14px; padding:16px; margin-bottom:14px; background:#fff;}
+  .fb-head{display:flex; align-items:center; gap:10px; margin-bottom:10px; flex-wrap:wrap;}
+  .fb-head img.flag{width:30px; height:22px; border-radius:4px; object-fit:cover; border:1px solid var(--line);}
+  .fb-head b{font-size:16px; color:var(--blue);}
+  .fb-chip{font-size:12px; font-weight:700; padding:3px 10px; border-radius:999px; background:#E7F4EA; color:var(--green);}
+  .fb-chip.no{background:#FBF3DC; color:var(--amber);}
+  .fb-thumbs{display:flex; gap:12px; flex-wrap:wrap; margin:10px 0;}
+  .fb-thumb{width:96px; text-align:center; font-size:11px; color:var(--muted);}
+  .fb-thumb .box{height:128px; border:1px solid var(--line); border-radius:6px; background:#f5f1e8; overflow:hidden; position:relative; display:flex; align-items:center; justify-content:center;}
+  .fb-thumb .box img{width:100%; height:100%; object-fit:cover;}
+  .fb-thumb .box img.spread{width:200%; max-width:none; height:100%; object-fit:cover; object-position:right; transform:translateX(-25%);}
+  .fb-thumb .box .none{font-size:11px; padding:6px;}
+  .fb-actions{display:flex; gap:8px; flex-wrap:wrap; margin-top:6px;}
+  .fb-actions .btn{padding:8px 14px; font-size:13px;}
+  .fb-busy{margin-top:10px; padding:10px 12px; border-radius:10px; background:#FFF8E5; border:1px solid #E7D39A; font-size:13.5px;}
+  /* Links prüfen / Sicherungen */
+  .link-list, .backup-list{list-style:none; margin-top:14px;}
+  .link-list li, .backup-list li{display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--line); font-size:14px;}
+  .link-list .light{width:12px; height:12px; border-radius:50%; flex-shrink:0;}
+  .link-list .ok{background:var(--green);} .link-list .unsure{background:var(--amber);} .link-list .broken{background:var(--red);}
+  .link-list small{color:var(--muted);}
+  .backup-list li span{flex:1;}
+  @media (max-width:640px){ .tabs{padding:8px 10px;} .tabs button{padding:8px 11px; font-size:13.5px;} }
+
   /* Pre-Publish-Ampel */
   #ampel{list-style:none; margin:14px 0;}
   #ampel li{display:flex; align-items:center; gap:10px; padding:7px 0; font-size:14px;}
@@ -172,12 +227,33 @@
   <a id="liveLink" href="#" target="_blank"><button class="btn btn-white">🌍 Live-Seite</button></a>
 </header>
 
+<nav class="tabs" id="tabs" role="tablist" aria-label="Bereiche">
+  <button role="tab" data-go="uebersicht" onclick="showTab('uebersicht')">🏠 Übersicht</button>
+  <button role="tab" data-go="buecher" onclick="showTab('buecher')">📚 Bücher</button>
+  <button role="tab" data-go="blaetterbuch" onclick="showTab('blaetterbuch')">📖 Blick ins Buch</button>
+  <button role="tab" data-go="texte" onclick="showTab('texte')">✍️ Texte</button>
+  <button role="tab" data-go="einstellungen" onclick="showTab('einstellungen')">⚙️ Einstellungen</button>
+  <button role="tab" data-go="veroeffentlichen" onclick="showTab('veroeffentlichen')">🚀 Veröffentlichen <span class="tab-dot hidden" id="tabDot"></span></button>
+</nav>
+
 <main>
 
+  <div class="tabpanel" id="tab-uebersicht" data-tab="uebersicht">
+  <section>
+    <h2>Willkommen 👋</h2>
+    <p class="hint">Was möchtest du tun?</p>
+    <div class="quick-grid">
+      <button class="quick" onclick="showTab('buecher'); openForm();"><span>📚</span><b>Neues Buch anlegen</b><small>bleibt unsichtbar, bis du es freigibst</small></button>
+      <button class="quick" onclick="showTab('blaetterbuch')"><span>📖</span><b>Blick ins Buch</b><small>Buch, Sprachen, PDF, Titel- und Rückseite</small></button>
+      <button class="quick" onclick="showTab('texte')"><span>✍️</span><b>Texte ändern</b><small>alle Überschriften und Absätze</small></button>
+      <button class="quick" onclick="showTab('veroeffentlichen')"><span>🚀</span><b>Veröffentlichen</b><small>prüfen und auf die Live-Seite senden</small></button>
+    </div>
+  </section>
+
   <!-- ═══ GITHUB-SICHERUNGSSTATUS ═══ -->
-  <div id="ghBanner" class="ok"><span class="dot"></span><span id="ghText">GitHub-Status wird geprüft …</span>
+  <div id="ghBanner" class="ok"><span class="dot"></span><span id="ghText">Status wird geprüft …</span>
     <span class="spacer"></span>
-    <a id="ghActions" href="#" target="_blank" class="hidden">Deployment ansehen →</a>
+    <a id="ghActions" href="#" target="_blank" class="hidden">Fortschritt ansehen →</a>
   </div>
 
   <!-- ═══ ANONYME STATISTIK ═══ -->
@@ -212,6 +288,9 @@
     </details>
   </section>
 
+  </div>
+
+  <div class="tabpanel hidden" id="tab-buecher" data-tab="buecher">
   <!-- ═══ BUCHLISTE ═══ -->
   <section>
     <h2>📚 Deine Bücher</h2>
@@ -310,6 +389,9 @@
       <textarea id="f_highlights" class="draft" rows="3" placeholder="Bibelstelle: 1. Mose 1–2&#10;30 Ausmalbilder"></textarea>
       <p class="hint">Gemeinsame Malbuch-Fakten wie ca. DIN A4 Größe stehen bereits oberhalb aller Bücher. Die genaue Seitenzahl (70 oder 80, je nach Band) bitte in den Buchinformationen prüfen. Nach einem Amazon-Import bitte Geschichte und Buchangaben kontrollieren.</p>
 
+      <details class="settings-panel" style="margin-top:16px;">
+        <summary>🖼 Erweitert: Buchfotos und Durchblätter-Video (optional)</summary>
+        <div class="settings-body">
       <label for="f_lifestyle">Buchfotos im Hochformat für die Galerie (optional, bis zu 3 JPG/PNG)</label>
       <input type="file" id="f_lifestyle" accept="image/jpeg,image/png" multiple>
       <p class="hint" id="lifestyleStatus"></p>
@@ -319,6 +401,9 @@
       <p class="hint" id="videoStatus"></p>
       <div class="checkline"><input type="checkbox" id="f_removeVideo"><label for="f_removeVideo" style="margin:0; font-weight:500;">Vorhandenes Video entfernen</label></div>
 
+        </div>
+      </details>
+
       <label>Sprach-Ausgaben und Amazon-Links</label>
       <p class="hint" style="margin-bottom:6px;">Für jede verfügbare Buchsprache eine Zeile anlegen. Auf der Landingpage erscheint dafür eine anklickbare Flagge.</p>
       <div id="f_editions" class="edition-list"></div>
@@ -326,8 +411,8 @@
       <input type="hidden" id="f_amazon" class="draft">
 
       <div class="checkline">
-        <input type="checkbox" id="f_visible" checked>
-        <label for="f_visible" style="margin:0; font-weight:500;"><b>Auf der Landingpage anzeigen</b> – ausgeschaltet bleibt das Buch hier im Admin, erscheint aber nicht auf der Seite</label>
+        <input type="checkbox" id="f_visible">
+        <label for="f_visible" style="margin:0; font-weight:500;"><b>Auf der Landingpage anzeigen</b> – neue Bücher bleiben ausgeblendet, bis du hier den Haken setzt</label>
       </div>
 
       <div class="checkline">
@@ -335,10 +420,7 @@
         <label for="f_isNew" style="margin:0; font-weight:500;">Als <b>„Neu"</b> markieren (Abzeichen erscheint 30 Tage ab heute)</label>
       </div>
 
-      <div class="checkline">
-        <input type="checkbox" id="f_showInHero">
-        <label for="f_showInHero" style="margin:0; font-weight:500;"><b>Im Bereich „Blick ins Buch“ zeigen</b> – dieses Buch wird dort zum Durchblättern angeboten</label>
-      </div>
+      <p class="hint" style="margin-top:16px;">📖 Welches Buch unter „Blick ins Buch“ zum Durchblättern erscheint, stellst du im Reiter <a href="#blaetterbuch" onclick="showTab('blaetterbuch'); return false;">„Blick ins Buch“</a> ein.</p>
 
       <div class="form-actions">
         <button class="btn btn-gold" id="saveBtn" onclick="saveBook()">💾 Speichern</button>
@@ -347,14 +429,56 @@
     </div>
   </section>
 
-  <!-- ═══ EINSTELLUNGEN ═══ -->
-  <section>
-    <details id="siteSettings">
-      <summary>⚙️ Website-Einstellungen (PayPal, Ko-fi, Links, Foto, Rechtstexte …)</summary>
-      <div class="settings-stack">
-        <p class="hint" style="margin:0;">Öffne nur den Bereich, den du gerade bearbeiten möchtest. Alle Änderungen werden gemeinsam mit dem blauen Knopf gespeichert.</p>
+  </div>
 
-        <details class="settings-panel">
+  <div class="tabpanel hidden" id="tab-blaetterbuch" data-tab="blaetterbuch">
+  <section>
+    <h2>📖 Blick ins Buch</h2>
+    <p class="hint">So blättern Besucher auf der Landingpage durch ein ganzes Buch. Mit den Flaggen darunter wechseln sie die Sprache – jede Sprache hat ihre eigenen Seiten, Titelseite und Rückseite.</p>
+    <label for="fb_book">Welches Buch soll gezeigt werden?</label>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+      <select id="fb_book" style="flex:1; min-width:240px;" onchange="fbSelectBook(this.value)"></select>
+      <button class="btn btn-gold" id="fb_setBtn" onclick="fbSetFeatured()">✓ Dieses Buch zeigen</button>
+    </div>
+    <p class="hint" id="fb_current" style="margin-top:10px;"></p>
+  </section>
+
+  <section>
+    <h2 id="fb_langTitle">Sprachen dieses Buches</h2>
+    <p class="hint">Pro Sprache lädst du <b>die komplette Innen-PDF</b> (alle Seiten, ohne Umschlag) hoch – daraus entstehen die Seiten zum Blättern. Dazu optional die <b>Titelseite</b> (Bild der Vorderseite; ein ganzer Umschlag ist erlaubt, die Vorderseite liegt dann rechts) und die <b>Rückseite</b> (Hochformat-Bild). Die Rückseite erscheint, wenn man das Buch am Ende zuklappt.</p>
+    <div id="fb_langs"></div>
+    <div class="step" style="padding:14px; margin-top:14px;">
+      <b style="color:var(--blue);">＋ Weitere Sprache hinzufügen</b>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
+        <select id="fb_newLang" style="flex:1; min-width:200px;"></select>
+        <button class="btn btn-ghost" onclick="fbAddLanguage()">Sprache hinzufügen</button>
+      </div>
+    </div>
+  </section>
+  </div>
+
+  <div class="tabpanel hidden" id="tab-texte" data-tab="texte">
+    <section>
+      <div class="settings-stack" style="margin-top:0;">
+        <details class="settings-panel" open>
+          <summary>✍️ Alle Texte der Landingpage</summary>
+          <div class="settings-body">
+            <p class="hint" style="margin-top:10px;">Jeder sichtbare Standardtext kann hier für Deutsch und Englisch geändert werden. Die einzelnen Seitenbereiche sind zusätzlich aufklappbar.</p>
+            <div id="frontendTextSections"></div>
+            <button type="button" class="btn btn-ghost" style="margin-top:12px;" onclick="resetFrontendTexts()">↺ Texte auf Standard zurücksetzen</button>
+          </div>
+        </details>
+        <div class="settings-save"><button class="btn btn-blue" onclick="saveSite()">💾 Alle Website-Einstellungen speichern</button></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="tabpanel hidden" id="tab-einstellungen" data-tab="einstellungen">
+    <section>
+      <h2>⚙️ Einstellungen</h2>
+      <p class="hint">Öffne nur den Bereich, den du gerade bearbeiten möchtest. Alle Änderungen werden gemeinsam mit dem blauen Knopf unten gespeichert.</p>
+      <div class="settings-stack" style="margin-top:0;">
+        <details class="settings-panel" open>
           <summary>🔗 Links, Kontakt und Bewertungen</summary>
           <div class="settings-body">
             <div class="grid2">
@@ -362,7 +486,6 @@
               <div><label for="s_kofi">Ko-fi-Unterstützungslink</label><input type="url" id="s_kofi" placeholder="https://ko-fi.com/…"></div>
             </div>
             <p class="hint" style="margin-top:4px;">Ist ein Unterstützungslink leer, wird der Button auf der Seite ausgeblendet.</p>
-            <label for="s_appUrl">Web-App-Link</label><input type="url" id="s_appUrl">
             <label for="s_playStore">Google-Play-Link</label><input type="url" id="s_playStore" placeholder="https://play.google.com/store/apps/details?id=…">
             <label for="s_iosStore">App-Store-Link für iPhone/iPad</label><input type="url" id="s_iosStore" placeholder="https://apps.apple.com/…">
             <div class="grid2">
@@ -380,16 +503,6 @@
             <small>Ausgeschaltet werden der Link, die Route und der Sitemap-Eintrag beim nächsten Aktualisieren der Vorschau bzw. Veröffentlichen entfernt.</small>
           </div>
         </details>
-
-        <details class="settings-panel">
-          <summary>✍️ Alle Texte der Landingpage</summary>
-          <div class="settings-body">
-            <p class="hint" style="margin-top:10px;">Jeder sichtbare Standardtext kann hier für Deutsch und Englisch geändert werden. Die einzelnen Seitenbereiche sind zusätzlich aufklappbar.</p>
-            <div id="frontendTextSections"></div>
-            <button type="button" class="btn btn-ghost" style="margin-top:12px;" onclick="resetFrontendTexts()">↺ Texte auf Standard zurücksetzen</button>
-          </div>
-        </details>
-
         <details class="settings-panel">
           <summary>👤 Marke, Autor und Foto</summary>
           <div class="settings-body">
@@ -410,7 +523,6 @@
             </div>
           </div>
         </details>
-
         <details class="settings-panel">
           <summary>📚 Bücherbereich, demnächst und Kategorien</summary>
           <div class="settings-body">
@@ -428,7 +540,6 @@
             </div>
           </div>
         </details>
-
         <details class="settings-panel">
           <summary>🤝 Unterstützte christliche Werke</summary>
           <div class="settings-body">
@@ -437,7 +548,6 @@
             <button type="button" class="btn btn-blue" style="margin-top:14px;" onclick="addSupportOrganization()">＋ Weitere Organisation hinzufügen</button>
           </div>
         </details>
-
         <details class="settings-panel">
           <summary>⚖️ Impressum und Datenschutz</summary>
           <div class="settings-body">
@@ -449,19 +559,10 @@
 
         <div class="settings-save"><button class="btn btn-blue" onclick="saveSite()">💾 Alle Website-Einstellungen speichern</button></div>
       </div>
-    </details>
-  </section>
+    </section>
+  </div>
 
-  <!-- ═══ WARTUNG ═══ -->
-  <section>
-    <details>
-      <summary>🧹 Wartung (verwaiste Dateien finden)</summary>
-      <p class="hint" style="margin-top:10px;">Findet Bilddateien, die keinem Buch mehr zugeordnet sind (z. B. Reste gelöschter Bücher).</p>
-      <button class="btn btn-ghost" onclick="findOrphans()">Verwaiste Medien finden</button>
-      <div id="orphanOut" style="margin-top:10px; font-size:14px;"></div>
-    </details>
-  </section>
-
+  <div class="tabpanel hidden" id="tab-veroeffentlichen" data-tab="veroeffentlichen">
   <!-- ═══ LIVE-SEITE AKTUALISIEREN ═══ -->
   <section>
     <h2>🌍 Live-Seite aktualisieren</h2>
@@ -474,7 +575,44 @@
     <div id="buildOut"></div>
   </section>
 
+  <section>
+    <h2>🔗 Links prüfen</h2>
+    <p class="hint">Prüft alle Links, die auf der Landingpage vorkommen (Amazon, PayPal, Ko-fi, App-Stores, unterstützte Werke), ob sie noch erreichbar sind. Amazon blockiert Prüfungen manchmal – das wird dann nur als „nicht eindeutig“ gemeldet.</p>
+    <button class="btn btn-blue" id="linkBtn" onclick="runLinkCheck()">🔗 Links jetzt prüfen</button>
+    <ul id="linkOut" class="link-list"></ul>
+  </section>
+
+  <section>
+    <h2>↩ Zurücknehmen und Sicherungen</h2>
+    <p class="hint">Falls etwas schiefgelaufen ist. Beides löscht nichts endgültig: Die Landingpage geht zurück auf den Stand davor, und frühere Stände deiner Bücher und Texte bleiben als Sicherung erhalten.</p>
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <button class="btn btn-ghost" onclick="undoPublish()">↩ Letzte Veröffentlichung zurücknehmen</button>
+      <button class="btn btn-ghost" onclick="loadBackups()">🗂 Frühere Stände anzeigen</button>
+    </div>
+    <ul id="backupOut" class="backup-list"></ul>
+  </section>
+
+  <!-- ═══ WARTUNG ═══ -->
+  <section>
+    <details>
+      <summary>🧹 Wartung (verwaiste Dateien finden)</summary>
+      <p class="hint" style="margin-top:10px;">Findet Bilddateien, die keinem Buch mehr zugeordnet sind (z. B. Reste gelöschter Bücher).</p>
+      <button class="btn btn-ghost" onclick="findOrphans()">Verwaiste Medien finden</button>
+      <div id="orphanOut" style="margin-top:10px; font-size:14px;"></div>
+    </details>
+  </section>
+
+  </div>
+
 </main>
+
+<div id="statusBar" role="status" aria-live="polite">
+  <span class="sb-dot" id="sbDot"></span>
+  <span id="sbText">Status wird geprüft …</span>
+  <span class="sb-spacer"></span>
+  <a href="/vorschau/" target="_blank"><button class="btn btn-ghost sb-btn">👁 Vorschau ansehen</button></a>
+  <button class="btn btn-gold sb-btn" onclick="showTab('veroeffentlichen')">🚀 Veröffentlichen</button>
+</div>
 
 <div id="toast" role="status" aria-live="polite"></div>
 
@@ -817,34 +955,51 @@ async function api(path, opts){
   return d;
 }
 
-/* ── GitHub-Status-Banner ── */
+/* ── Status: was ist noch nicht live? ── */
+const CHANGE_LABELS = [['books','Bücher'], ['texts','Texte'], ['images','Bilder'], ['videos','Videos'], ['downloads','Downloads/Flyer'], ['design','Seitendesign'], ['admin','Admin-Programm'], ['other','Sonstiges']];
+function describeChanges(groups){
+  return CHANGE_LABELS.filter(([k]) => groups && groups[k]).map(([k, label]) => label + ' (' + groups[k] + ')').join(', ');
+}
+
 async function refreshGhStatus(){
   const banner = $('ghBanner'), txt = $('ghText'), link = $('ghActions');
+  const bar = $('statusBar'), barText = $('sbText'), dot = $('tabDot');
+  const setAll = (cls, text) => {
+    banner.className = cls === 'pending' ? 'warn' : cls;
+    txt.innerHTML = text;
+    bar.className = cls;
+    barText.innerHTML = text;
+  };
   try{
     const d = await api('/api/git-status');
     if (!d.ok){
-      banner.className = 'warn';
-      txt.textContent = '⚠ ' + (d.error || 'GitHub-Status konnte nicht geprüft werden.');
+      setAll('warn', '⚠ ' + esc(d.error || 'Der Stand der Live-Seite konnte nicht geprüft werden.') + ' <small>Lokal arbeiten ist trotzdem möglich.</small>');
+      dot.classList.add('hidden');
       return;
     }
-    const parts = [];
-    const unsaved = d.unsaved + d.unpublished;
-    if (unsaved === 0){
-      banner.className = 'ok';
-      parts.push('Keine unübertragenen lokalen Änderungen ✓');
-    } else {
-      banner.className = 'warn';
-      parts.push(unsaved + ' lokale Änderung' + (unsaved > 1 ? 'en' : '') + (unsaved > 1 ? ' warten' : ' wartet') + ' auf die Übertragung zur Live-Seite');
+    const pending = d.unsaved + d.unpublished;
+    let text;
+    if (d.behind > 0){
+      setAll('warn', '⚠ Die Live-Seite hat eine neuere Version als dieser Computer. Bitte jetzt nicht veröffentlichen, sondern erst abgleichen lassen.');
+      dot.classList.add('hidden');
+      return;
     }
-    if (d.behind > 0) parts.push('⚠ Auf GitHub liegt eine neuere Version – bitte Kimi um Synchronisierung bitten');
+    if (pending === 0){
+      text = '✓ Alles ist auf der Live-Seite. Es gibt keine offenen Änderungen.';
+      setAll('ok', text);
+      dot.classList.add('hidden');
+    } else {
+      const what = describeChanges(d.groups);
+      text = 'Noch nicht live: ' + (what ? esc(what) : d.unpublished + ' vorbereitete Änderung(en)');
+      setAll('pending', text);
+      dot.classList.remove('hidden');
+    }
     if (d.lastBackup){
       const dt = new Date(d.lastBackup);
-      parts.push('Letzte Übertragung an GitHub: ' + dt.toLocaleString('de-DE', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'}) + ' Uhr');
+      txt.innerHTML += ' <small>· Letzte Veröffentlichung: ' + dt.toLocaleString('de-DE', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'}) + ' Uhr</small>';
     }
-    txt.innerHTML = parts.join(' · <small>') + (parts.length > 1 ? '</small>' : '');
   } catch {
-    banner.className = 'warn';
-    txt.textContent = 'GitHub-Status konnte nicht geprüft werden (kein Internet?). Lokal arbeiten ist trotzdem möglich.';
+    setAll('warn', 'Der Stand der Live-Seite konnte nicht geprüft werden (kein Internet?). <small>Lokal arbeiten ist trotzdem möglich.</small>');
   }
 }
 
@@ -855,7 +1010,6 @@ async function load(){
   renderCategories();
   $('s_paypal').value = state.site.paypalUrl || '';
   $('s_kofi').value = state.site.kofiUrl || '';
-  $('s_appUrl').value = state.site.appUrl || '';
   $('s_playStore').value = state.site.playStoreUrl || '';
   $('s_iosStore').value = state.site.iosStoreUrl || '';
   $('s_contactEmail').value = state.site.contactEmail || 'hello@lambking.store';
@@ -887,6 +1041,7 @@ async function load(){
   if (state.site.authorPhoto){
     $('photoPreview').innerHTML = `<img src="/${state.site.authorPhoto}" style="max-height:120px; border-radius:${state.site.authorPhotoShape==='eckig'?'4px':'50%'}; border:1px solid var(--line);"><br><small>Aktuelles Foto</small>`;
   }
+  renderFlipbookTab();
   refreshGhStatus();
   refreshAnalytics();
 }
@@ -958,6 +1113,7 @@ function renderList(){
   books.forEach((b, i) => {
     const row = document.createElement('div');
     row.className = 'book-row' + (b.hidden ? ' is-hidden' : '');
+    row.dataset.id = b.id;
     const isNew = b.releaseDate && (Date.now() - new Date(b.releaseDate+'T00:00:00').getTime()) < 30*24*3600*1000;
     const editions = Array.isArray(b.editions) && b.editions.length ? b.editions : (b.amazon ? [{language:b.lang || 'de', amazon:b.amazon}] : []);
     const editionBadges = editions.map(edition => {
@@ -965,6 +1121,7 @@ function renderList(){
       return `<span class="badge">${esc(label)}</span>`;
     }).join('');
     row.innerHTML = `
+      <span class="grip" title="Zum Sortieren ziehen" aria-hidden="true">⋮⋮</span>
       <img src="/${b.cover}" alt="" onerror="this.style.visibility='hidden'">
       <div class="info">
         <b>${esc(b.title)}</b>
@@ -980,7 +1137,44 @@ function renderList(){
         <button class="icon-btn" title="Bearbeiten" onclick="openForm('${b.id}')">✏️</button>
         <button class="icon-btn" title="Löschen" onclick="deleteBook('${b.id}')">🗑</button>
       </div>`;
+    attachDrag(row);
     el.appendChild(row);
+  });
+  const hiddenCount = books.filter(b => b.hidden).length;
+  const summary = document.createElement('p');
+  summary.className = 'list-summary';
+  summary.textContent = books.length + (books.length === 1 ? ' Buch' : ' Bücher') + (hiddenCount ? ' · ' + hiddenCount + ' ausgeblendet' : '') + ' · Reihenfolge per Ziehen (⋮⋮) oder mit den Pfeilen ändern';
+  el.prepend(summary);
+}
+
+/* Bücher per Ziehen sortieren */
+let dragId = null;
+function attachDrag(row){
+  const grip = row.querySelector('.grip');
+  grip.addEventListener('mousedown', () => { row.draggable = true; });
+  grip.addEventListener('mouseup', () => { row.draggable = false; });
+  row.addEventListener('dragstart', e => { dragId = row.dataset.id; row.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', dragId); });
+  row.addEventListener('dragend', () => {
+    row.draggable = false; dragId = null;
+    document.querySelectorAll('.book-row').forEach(r => r.classList.remove('dragging', 'drop-before', 'drop-after'));
+  });
+  row.addEventListener('dragover', e => {
+    if (!dragId || dragId === row.dataset.id) return;
+    e.preventDefault();
+    const after = e.clientY > row.getBoundingClientRect().top + row.offsetHeight / 2;
+    row.classList.toggle('drop-after', after); row.classList.toggle('drop-before', !after);
+  });
+  row.addEventListener('dragleave', () => row.classList.remove('drop-before', 'drop-after'));
+  row.addEventListener('drop', async e => {
+    e.preventDefault();
+    if (!dragId || dragId === row.dataset.id) return;
+    const after = row.classList.contains('drop-after');
+    const ids = [...document.querySelectorAll('#bookList .book-row')].map(r => r.dataset.id).filter(id => id !== dragId);
+    const at = ids.indexOf(row.dataset.id) + (after ? 1 : 0);
+    ids.splice(at, 0, dragId);
+    const d = await api('/api/reorder', {method:'POST', body: JSON.stringify({ids})});
+    if (d.ok === false) toast(d.error || 'Das Sortieren hat nicht geklappt.', true); else toast('Reihenfolge gespeichert.');
+    await load();
   });
 }
 
@@ -1244,6 +1438,7 @@ function clearAllSamples(){
 
 /* ── Formular ── */
 function openForm(id){
+  showTab('buecher');
   editId = id || null;
   amazonCover = ''; amazonSamples = []; amazonRating = null; amazonRatingCount = null; bookEditions = []; coverData = null; sampleData = []; existingSamples = []; sampleItems = []; removeCover = false;
   $('coverPreview').innerHTML = ''; $('samplePreview').innerHTML = '';
@@ -1274,10 +1469,9 @@ function openForm(id){
   if (!bookEditions.length) bookEditions = [{language:(b && b.lang) || currentLang, amazon:''}];
   renderBookEditions();
   $('f_amazon').value = b ? (b.amazon||'') : '';
-  $('f_visible').checked = !(b && b.hidden);
+  $('f_visible').checked = b ? !b.hidden : false;
   $('f_isNew').checked = !b;
   $('f_isNew').dataset.release = b ? (b.releaseDate||'') : '';
-  $('f_showInHero').checked = !!(b && b.showInHero);
   if (b && b.cover){
     renderCoverPreview('/' + b.cover, 'Aktuelles Cover');
   }
@@ -1449,8 +1643,7 @@ async function saveBook(){
     const importedSamples = sampleItems.filter(item => item.kind === 'amazon').map(item => item.src);
     fd.append('amazonSamples', JSON.stringify(importedSamples));
     fd.append('keepSamples', JSON.stringify(keptSamples));
-    if (!$('f_visible').checked) fd.append('hidden', '1');
-    if ($('f_showInHero').checked) fd.append('showInHero', '1');
+    fd.append('visible', $('f_visible').checked ? '1' : '0');
     if (removeCover) fd.append('removeCover', '1');
     if ($('f_isNew').checked) fd.append('isNew', '1');
     else fd.append('releaseDate', $('f_isNew').dataset.release || '');
@@ -1511,7 +1704,6 @@ async function saveSite(){
   const fd = new FormData();
   fd.append('paypalUrl', $('s_paypal').value);
   fd.append('kofiUrl', $('s_kofi').value);
-  fd.append('appUrl', $('s_appUrl').value);
   fd.append('playStoreUrl', $('s_playStore').value);
   fd.append('iosStoreUrl', $('s_iosStore').value);
   fd.append('contactEmail', $('s_contactEmail').value);
@@ -1656,7 +1848,7 @@ async function runPublish(){
         $('buildOut').innerHTML = `<div class="status-panel" style="background:#ECF7EF; border-color:#B8DCC3; color:var(--green); font-weight:600;">✓ ${esc(d.message)}</div>`;
         toast('✓ Keine neuen lokalen Änderungen vorhanden.');
       } else {
-        $('buildOut').innerHTML = `<div class="status-panel">✓ ${esc(d.message)}</div>`;
+        $('buildOut').innerHTML = `<div class="status-panel">✓ ${esc(d.message)}</div>` + ((d.excluded && d.excluded.length) ? `<div class="status-panel" style="margin-top:10px; background:#FFF8E5; border-color:#E7D39A;">ℹ️ Diese Dateien gehören nicht zur Landingpage und wurden <b>nicht</b> veröffentlicht: <b>${d.excluded.map(esc).join(', ')}</b></div>` : '');
         toast('✓ Übertragen. GitHub aktualisiert die Live-Seite jetzt automatisch.');
         await monitorDeployment(d.commit || '', d.actionsUrl || '');
       }
@@ -1673,7 +1865,189 @@ async function runPublish(){
   }
 }
 
-load().then(() => setLangFilter('de'));
+
+/* ── Reiter ── */
+const TAB_NAMES = ['uebersicht', 'buecher', 'blaetterbuch', 'texte', 'einstellungen', 'veroeffentlichen'];
+function showTab(name){
+  if (!TAB_NAMES.includes(name)) name = 'uebersicht';
+  document.querySelectorAll('.tabpanel').forEach(p => p.classList.toggle('hidden', p.dataset.tab !== name));
+  document.querySelectorAll('#tabs button').forEach(b => {
+    const on = b.dataset.go === name;
+    b.classList.toggle('active', on);
+    b.setAttribute('aria-selected', on ? 'true' : 'false');
+  });
+  try { localStorage.setItem('lk-tab', name); } catch (e) { /* ohne Speicher weiterarbeiten */ }
+  if (location.hash !== '#' + name) history.replaceState(null, '', '#' + name);
+  window.scrollTo({top: 0});
+}
+function initTabs(){
+  let name = location.hash.replace('#', '');
+  if (!TAB_NAMES.includes(name)){ try { name = localStorage.getItem('lk-tab') || ''; } catch (e) { name = ''; } }
+  showTab(name);
+}
+
+/* ── Blick ins Buch (Blätterbuch) ── */
+let fbBookId = null;
+const fbExtraLangs = {};
+const fbLangLabel = code => (BOOK_LANGUAGES.find(([c]) => c === code) || [code, code.toUpperCase()])[1];
+
+function renderFlipbookTab(){
+  const sel = $('fb_book');
+  if (!sel || !state) return;
+  const books = state.books || [];
+  if (!books.length){
+    sel.innerHTML = '';
+    $('fb_langs').innerHTML = '<p class="hint">Noch keine Bücher vorhanden.</p>';
+    return;
+  }
+  const featured = books.find(b => b.showInHero);
+  if (!fbBookId || !books.some(b => b.id === fbBookId)) fbBookId = (featured || books[0]).id;
+  sel.innerHTML = books.map(b => `<option value="${esc(b.id)}" ${b.id === fbBookId ? 'selected' : ''}>${esc(b.title)}${b.hidden ? ' (ausgeblendet)' : ''}${b.showInHero ? ' ★ wird gezeigt' : ''}</option>`).join('');
+  const book = books.find(b => b.id === fbBookId);
+  $('fb_current').innerHTML = featured
+    ? 'Aktuell auf der Landingpage: <b>' + esc(featured.title) + '</b>' + (featured.hidden ? ' – <span style="color:var(--red)">das Buch ist ausgeblendet, deshalb wird ein anderes gezeigt</span>' : '')
+    : 'Noch keines ausgewählt – die Landingpage zeigt automatisch das neueste Buch mit komplettem Blätterbuch.';
+  $('fb_setBtn').disabled = !!(book && book.showInHero);
+  $('fb_langTitle').textContent = 'Sprachen: ' + (book ? book.title : '');
+
+  const manifest = (state.flipbooks || {})[fbBookId] || {};
+  const codes = [];
+  const add = c => { if (c && !codes.includes(c)) codes.push(c); };
+  (book.editions || []).forEach(e => add(e.language));
+  Object.keys(manifest).forEach(add);
+  add(book.lang);
+  (fbExtraLangs[fbBookId] || []).forEach(add);
+  $('fb_langs').innerHTML = codes.map(code => fbCard(book, code, manifest[code])).join('');
+
+  const used = new Set(codes);
+  $('fb_newLang').innerHTML = BOOK_LANGUAGES.filter(([c]) => !used.has(c)).map(([c, label]) => `<option value="${c}">${esc(label)}</option>`).join('');
+}
+
+function fbThumb(label, src, spread){
+  return `<div class="fb-thumb"><div class="box">${src ? `<img src="${esc(src)}" alt="${esc(label)}" class="${spread ? 'spread' : ''}" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'none',textContent:'nicht gefunden'}))">` : '<span class="none">fehlt</span>'}</div>${esc(label)}</div>`;
+}
+
+function fbCard(book, code, entry){
+  const edition = (book.editions || []).find(e => e.language === code);
+  const cover = (edition && edition.cover) || book.cover || '';
+  const spread = edition && edition.cover ? !!edition.coverSpread : !!book.coverSpread;
+  const coverSrc = cover ? '/' + cover.replace(/^\/+/, '') : '';
+  const base = `/flipbook-file/${encodeURIComponent(book.id)}/${encodeURIComponent(code)}/`;
+  const chips = [
+    entry ? `<span class="fb-chip">📄 ${entry.count} Seiten</span>` : '<span class="fb-chip no">📄 noch keine PDF</span>',
+    entry && entry.back ? '<span class="fb-chip">✓ Rückseite</span>' : '<span class="fb-chip no">keine Rückseite</span>',
+    edition && edition.cover ? '<span class="fb-chip">✓ eigene Titelseite</span>' : '<span class="fb-chip no">Titelseite vom Buch</span>',
+  ].join(' ');
+  const thumbs = fbThumb('Titelseite', coverSrc, spread) + fbThumb('Seite 1', entry ? base + 'p01.jpg' : '', false) + fbThumb('Rückseite', entry && entry.back ? base + 'rueckseite.jpg' : '', false);
+  const idp = `fb_${code}`;
+  return `<div class="fb-card" id="${idp}_card">
+    <div class="fb-head"><b>${esc(fbLangLabel(code))}</b>${chips}</div>
+    <div class="fb-thumbs">${thumbs}</div>
+    <div class="fb-actions">
+      <button class="btn btn-blue" onclick="document.getElementById('${idp}_pdf').click()">📄 ${entry ? 'PDF ersetzen' : 'Komplette PDF hochladen'}</button>
+      <button class="btn btn-ghost" onclick="document.getElementById('${idp}_cover').click()">📗 Titelseite hochladen</button>
+      <button class="btn btn-ghost" onclick="document.getElementById('${idp}_back').click()" ${entry ? '' : 'disabled title="Zuerst die PDF hochladen"'}>📕 Rückseite hochladen</button>
+      ${entry && entry.back ? `<button class="btn btn-ghost" onclick="fbDelete('${code}','back')">Rückseite entfernen</button>` : ''}
+      ${entry ? `<button class="btn btn-ghost" style="border-color:var(--red); color:var(--red);" onclick="fbDelete('${code}','all')">🗑 Blätterbuch löschen</button>` : ''}
+    </div>
+    <input type="file" id="${idp}_pdf" accept="application/pdf" class="hidden" onchange="fbUpload('${code}','pdf',this)">
+    <input type="file" id="${idp}_cover" accept="image/jpeg,image/png,image/webp" class="hidden" onchange="fbUpload('${code}','cover',this)">
+    <input type="file" id="${idp}_back" accept="image/jpeg,image/png,image/webp" class="hidden" onchange="fbUpload('${code}','back',this)">
+    <div class="fb-busy hidden" id="${idp}_busy"></div>
+  </div>`;
+}
+
+function fbSelectBook(id){ fbBookId = id; renderFlipbookTab(); }
+
+async function fbSetFeatured(){
+  const d = await api('/api/flipbook/featured', {method:'POST', body: JSON.stringify({id: fbBookId})});
+  if (d.ok === false){ toast(d.error || 'Das hat nicht geklappt.', true); return; }
+  toast('✓ Dieses Buch wird jetzt unter „Blick ins Buch“ gezeigt (lokal – noch nicht veröffentlicht).');
+  await load();
+}
+
+function fbAddLanguage(){
+  const code = $('fb_newLang').value;
+  if (!code) return;
+  (fbExtraLangs[fbBookId] = fbExtraLangs[fbBookId] || []).push(code);
+  renderFlipbookTab();
+}
+
+async function fbUpload(code, kind, input){
+  const file = input.files && input.files[0];
+  input.value = '';
+  if (!file) return;
+  const limit = kind === 'pdf' ? 150 : 15;
+  if (file.size > limit * 1024 * 1024){ toast('Die Datei ist größer als ' + limit + ' MB.', true); return; }
+  const busy = $('fb_' + code + '_busy');
+  busy.classList.remove('hidden');
+  busy.innerHTML = '<span class="spinner" style="border-color:rgba(0,0,0,.2); border-top-color:var(--blue);"></span>' + (kind === 'pdf'
+    ? 'PDF wird hochgeladen und in Seiten umgewandelt … das dauert bei 70 Seiten etwa eine halbe bis eine Minute. Bitte nicht schließen.'
+    : 'Bild wird gespeichert …');
+  const fd = new FormData();
+  fd.append('id', fbBookId); fd.append('lang', code); fd.append(kind, file);
+  try{
+    const d = await api('/api/flipbook', {method:'POST', body: fd});
+    if (d.ok === false){ busy.innerHTML = '<span style="color:var(--red)">✗ ' + esc(d.error || 'Das hat nicht geklappt.') + '</span>'; toast(d.error || 'Das hat nicht geklappt.', true); return; }
+    toast('✓ Gespeichert – lokal, noch nicht veröffentlicht.');
+    await load();
+  } catch (e){
+    busy.innerHTML = '<span style="color:var(--red)">✗ Die Übertragung ist fehlgeschlagen. Bitte erneut versuchen.</span>';
+  }
+}
+
+async function fbDelete(code, part){
+  const what = part === 'back' ? 'Die Rückseite' : 'Das komplette Blätterbuch dieser Sprache (alle Seitenbilder)';
+  if (!confirm(what + ' wirklich entfernen?')) return;
+  const d = await api('/api/flipbook/delete', {method:'POST', body: JSON.stringify({id: fbBookId, lang: code, part})});
+  if (d.ok === false){ toast(d.error || 'Das hat nicht geklappt.', true); return; }
+  toast('Entfernt.');
+  await load();
+}
+
+/* ── Links prüfen ── */
+async function runLinkCheck(){
+  const btn = $('linkBtn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Prüfe Links …';
+  try{
+    const d = await api('/api/linkcheck', {method:'POST', body:'{}'});
+    const text = {ok:'erreichbar', unsure:'nicht eindeutig (Seite blockiert Prüfungen oder antwortet nicht)', broken:'NICHT gefunden – bitte Link korrigieren'};
+    $('linkOut').innerHTML = (d.results || []).map(r => `<li><span class="light ${r.status}"></span><span style="flex:1;"><b>${esc(r.label)}</b><br><small>${esc(r.url)}</small></span><span>${text[r.status] || ''}</span></li>`).join('') || '<li>Keine Links gefunden.</li>';
+    const broken = (d.results || []).filter(r => r.status === 'broken').length;
+    toast(broken ? '⚠ ' + broken + ' Link(s) funktionieren nicht.' : '✓ Keine toten Links gefunden.', !!broken);
+  } finally {
+    btn.disabled = false; btn.innerHTML = '🔗 Links jetzt prüfen';
+  }
+}
+
+/* ── Zurücknehmen und Sicherungen ── */
+async function undoPublish(){
+  if (!confirm('Die letzte Veröffentlichung zurücknehmen?\n\nDie Landingpage geht auf den Stand davor zurück. Es wird nichts endgültig gelöscht.')) return;
+  if (!confirm('Wirklich zurücknehmen? Die Änderungen der letzten Veröffentlichung sind danach auch hier im Admin nicht mehr zu sehen (sie bleiben als Sicherung erhalten).')) return;
+  const d = await api('/api/undo-publish', {method:'POST', body:'{}'});
+  if (d.ok === false){ toast(d.error || 'Das Zurücknehmen hat nicht geklappt.', true); return; }
+  toast('✓ ' + d.message);
+  await load();
+}
+
+async function loadBackups(){
+  const d = await api('/api/backups');
+  const list = d.backups || [];
+  $('backupOut').innerHTML = list.length
+    ? list.map(b => `<li><span>${esc(b.when)} Uhr · ${b.books} Bücher</span><button class="btn btn-ghost" style="padding:6px 14px;" onclick="restoreBackup('${esc(b.name)}')">Wiederherstellen</button></li>`).join('')
+    : '<li>Noch keine Sicherungen vorhanden. Sie entstehen automatisch bei jeder Änderung.</li>';
+}
+
+async function restoreBackup(name){
+  if (!confirm('Diesen früheren Stand wiederherstellen?\n\nDer aktuelle Stand wird vorher selbst gesichert.')) return;
+  const d = await api('/api/backups/restore', {method:'POST', body: JSON.stringify({name})});
+  if (d.ok === false){ toast(d.error || 'Das hat nicht geklappt.', true); return; }
+  toast('✓ Früherer Stand wiederhergestellt (lokal, noch nicht veröffentlicht).');
+  await load();
+  loadBackups();
+}
+
+load().then(() => { setLangFilter('de'); initTabs(); });
 </script>
 </body>
 </html>

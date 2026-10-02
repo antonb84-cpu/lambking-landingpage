@@ -16,6 +16,7 @@ import datetime
 import html as html_lib
 import io
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -44,7 +45,7 @@ BOOKS_TS = ROOT / "src" / "data" / "books.ts"
 TEXT_DEFAULTS_JSON = ROOT / "src" / "data" / "texts.defaults.json"
 ANALYTICS_LOCAL_JSON = ADMIN / "analytics.local.json"
 
-PORT = 8123
+PORT = int(os.environ.get("LAMBKING_ADMIN_PORT", "8123"))  # nur für Tests anders
 MAX_IMAGE_BYTES = 15 * 1024 * 1024    # 15 MB für Cover/Fotos
 MAX_VIDEO_BYTES = 30 * 1024 * 1024    # kurze, portable MP4-Vorschau
 MAX_PDF_BYTES = 60 * 1024 * 1024      # 60 MB für Buch-PDFs
@@ -863,8 +864,8 @@ class Handler(BaseHTTPRequestHandler):
             # Nur Dateiname erlauben – kein Zugriff außerhalb von public/images
             name = Path(path[len("/images/"):]).name
             f = IMAGES / name
-            if f.is_file() and f.suffix.lower() in (".jpg", ".jpeg", ".png", ".webp"):
-                ct = "image/png" if f.suffix.lower() == ".png" else ("image/webp" if f.suffix.lower() == ".webp" else "image/jpeg")
+            if f.is_file() and f.suffix.lower() in (".jpg", ".jpeg", ".png", ".webp", ".svg"):
+                ct = {".png": "image/png", ".webp": "image/webp", ".svg": "image/svg+xml"}.get(f.suffix.lower(), "image/jpeg")
                 self.send_file(f, ct)
             else:
                 self.send_error(404)
@@ -1088,8 +1089,9 @@ class Handler(BaseHTTPRequestHandler):
                 if other is not book:
                     other.pop("showInHero", None)  # nur ein Buch wird in „Blick ins Buch" gezeigt
             book["showInHero"] = True
-        else:
+        elif fields.get("showInHero") == "0":
             book.pop("showInHero", None)
+        # fehlt das Feld, bleibt die Auswahl für „Blick ins Buch" unverändert (Auswahl im Bereich „Blick ins Buch")
         visible_field = fields.get("visible")
         if visible_field == "1":
             book.pop("hidden", None)
