@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Pause, Play } from 'lucide-react'
 import type { Book } from '@/data/books'
-import { flipPagesFor } from '@/data/flipbooks'
+import { flipBackFor, flipPagesFor } from '@/data/flipbooks'
 import { useLang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
 
@@ -46,12 +46,16 @@ export default function FlipBook({ book }: { book: Book }) {
   const lang = useLang()
   const t = textsFor(lang).tryit
   const pages = useMemo(() => flipPagesFor(book.id, book.lang) ?? book.samples, [book])
+  const backCover = useMemo(() => flipBackFor(book.id, book.lang), [book])
   const leaves = useMemo<Leaf[]>(() => {
     const list: Leaf[] = [{ front: book.cover, cover: true }]
     for (let i = 0; i < pages.length; i += 2) list.push({ front: pages[i], back: pages[i + 1] })
+    // Rückseite als letztes Blatt: innen leer, außen das Rückseiten-Cover
+    if (backCover) list.push({ back: backCover, cover: true })
     return list
-  }, [book, pages])
+  }, [book, pages, backCover])
   const L = leaves.length
+  const lastPageLeaf = backCover ? L - 1 : L // Zustand, in dem links die letzte Buchseite liegt
 
   const reduced = useMemo(
     () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches,
@@ -122,13 +126,19 @@ export default function FlipBook({ book }: { book: Book }) {
     }
   }, [f, L, leaves])
 
-  const leftPage = f === 0 ? null : f * 2 // Seitenzahl links (nach Titelblatt: Seite 2, 4, …)
+  // Seitenanzeige: nach dem Titelblatt liegt links die gerade, rechts die ungerade Seite
+  const leftPage = (f - 1) * 2
+  const n = pages.length
   const shown =
     f === 0
       ? t.cover
-      : f >= L
-        ? `${t.pages} ${pages.length} ${t.of} ${pages.length}`
-        : `${t.pages} ${leftPage}–${(leftPage ?? 0) + 1} ${t.of} ${pages.length}`
+      : backCover && f >= L
+        ? t.backCover
+        : f === 1
+          ? `${t.page} 1 ${t.of} ${n}`
+          : f >= lastPageLeaf
+            ? `${t.page} ${n} ${t.of} ${n}`
+            : `${t.pages} ${leftPage}–${leftPage + 1} ${t.of} ${n}`
 
   // Mit einem Klick zur Titelseite oder zur Rückseite (Überblendung statt Durchblättern)
   const jumpTo = (target: number) => {
@@ -159,8 +169,8 @@ export default function FlipBook({ book }: { book: Book }) {
   return (
     <div ref={rootRef} className="mx-auto w-full max-w-[680px]" role="group" aria-label={book.title}>
       <div
-        className="relative w-full select-none"
-        style={{ aspectRatio: `${PAGE_RATIO * 2}`, perspective: '2600px', opacity: fading ? 0 : 1, transition: 'opacity 500ms ease' }}
+        className="relative w-full select-none [@media(hover:hover)]:hover:-translate-y-1 [@media(hover:hover)]:hover:-rotate-1 [@media(hover:hover)]:hover:scale-[1.025]"
+        style={{ aspectRatio: `${PAGE_RATIO * 2}`, perspective: '2600px', opacity: fading ? 0 : 1, transition: 'opacity 500ms ease, transform 300ms ease' }}
       >
         <div
           className="absolute inset-0"
@@ -169,7 +179,7 @@ export default function FlipBook({ book }: { book: Book }) {
           {/* Seitenstapel: sichtbare Papierkanten, die beim Blättern wandern */}
           <div
             className="absolute right-0 top-[1.2%] h-[97.6%] rounded-r-[3px]"
-            style={{ width: `calc(50% + ${thickRight}px)`, background: `repeating-linear-gradient(90deg, #efe8d3 0 1px, #fbf7ea 1px 2px)`, transition: 'width 400ms' }}
+            style={{ width: `calc(50% + ${thickRight}px)`, background: `repeating-linear-gradient(90deg, #efe8d3 0 1px, #fbf7ea 1px 2px)`, transition: 'width 400ms, opacity 400ms', opacity: f >= L ? 0 : 1 }}
             aria-hidden
           />
           <div
@@ -215,7 +225,7 @@ export default function FlipBook({ book }: { book: Book }) {
         <button type="button" className="absolute inset-y-0 right-0 z-[300] w-1/2 cursor-e-resize" onClick={() => manual(1)} aria-label={t.next} tabIndex={-1} />
       </div>
       <div className="mx-auto mt-3 h-3 w-3/4 rounded-[50%] bg-black/15 blur-md" aria-hidden />
-      <div className="mt-3 flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
+      <div className="mx-auto mt-4 flex w-fit max-w-full flex-wrap items-center justify-center gap-1.5 rounded-full border border-border/70 bg-card/80 px-3 py-2 shadow-sm backdrop-blur sm:gap-2">
         <button type="button" onClick={() => jumpTo(0)} disabled={f === 0} aria-label={t.first} title={t.first} className="flex h-10 w-10 items-center justify-center rounded-full border border-primary/20 bg-card text-primary shadow-sm transition hover:border-primary/50 disabled:opacity-35">
           <ChevronsLeft className="h-5 w-5" aria-hidden />
         </button>
