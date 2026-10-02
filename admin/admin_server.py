@@ -27,6 +27,11 @@ import webbrowser
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
+try:
+    import extras  # normaler Start: python admin/admin_server.py
+except ImportError:  # Import als Paket (Tests)
+    from admin import extras
+
 # Alle Pfade werden relativ zum Speicherort dieses Skripts bestimmt –
 # das Projekt funktioniert dadurch in jedem Ordner / auf jedem Laufwerk.
 ROOT = Path(__file__).resolve().parent.parent        # Projektordner
@@ -48,6 +53,7 @@ MAX_SAMPLE_IMAGES = 10                 # einzelne Vorschauseiten/Screenshots
 MAX_FLYER_BYTES = 25 * 1024 * 1024    # 25 MB je Organisations-Flyer
 MAX_SUPPORTED_ORGANIZATIONS = 20       # ausreichend erweiterbar, trotzdem begrenzt
 MAX_SITE_UPLOAD_BYTES = 200 * 1024 * 1024
+MAX_FLIPBOOK_PDF_BYTES = 150 * 1024 * 1024  # komplette Innen-PDF für das Blätterbuch
 MAX_ANALYTICS_CONFIG_BYTES = 8 * 1024
 
 PREVIEW_BUILD_LOCK = threading.Lock()
@@ -68,6 +74,10 @@ def load_state() -> dict:
 
 
 def save_state(state: dict):
+    try:
+        extras.backup_state_file(DATA_JSON)  # Sicherung des bisherigen Stands (rotierend)
+    except Exception:
+        pass  # eine fehlgeschlagene Sicherung darf das Speichern nie verhindern
     DATA_JSON.write_text(json.dumps(state, ensure_ascii=False, indent=2), encoding="utf-8")
     render_books_ts(state)
 
@@ -650,6 +660,44 @@ def build_site(command="build", timeout=600):
     return proc.returncode == 0, (proc.stdout + "\n" + proc.stderr).strip()[-4000:]
 
 
+def precheck_flipbook(state: dict, visible: list) -> list:
+    """Prüfungen rund um „Blick ins Buch" und große Bilder (Hinweise; nur fehlende Dateien blockieren)."""
+    checks = []
+    flipbooks = extras.load_flipbooks()
+    broken = []
+    for book_id, langs in flipbooks.items():
+        for lang, entry in langs.items():
+            d = ROOT / "public" / entry.get("dir", "")
+            if not (d / "p01.jpg").is_file() or not (d / f"p{int(entry.get('count', 0)):02d}.jpg").is_file():
+                broken.append(f"{book_id} ({lang.upper()})")
+            if entry.get("back") and not (ROOT / "public" / entry["back"]).is_file():
+                broken.append(f"{book_id} ({lang.upper()}) Rückseite")
+    if broken:
+        checks.append(("rot", "Blätterbuch-Dateien fehlen: " + ", ".join(broken)))
+    featured = next((b for b in state["books"] if b.get("showInHero")), None)
+    if featured is not None and featured.get("hidden"):
+        checks.append(("gelb", "Das Buch für „Blick ins Buch“ ist ausgeblendet – es wird ein anderes gezeigt"))
+    elif featured is not None:
+        editions = [e.get("language") for e in featured.get("editions", []) if e.get("language")] or [featured.get("lang", "de")]
+        have = flipbooks.get(featured["id"], {})
+        missing = [l.upper() for l in editions if l not in have]
+        if len(missing) == len(editions):
+            checks.append(("gelb", "Blick ins Buch zeigt nur Beispielseiten – die komplette PDF fehlt noch"))
+        elif missing:
+            checks.append(("gelb", "Blick ins Buch: Blätterbuch fehlt in " + ", ".join(missing)))
+        else:
+            checks.append(("gruen", "Blick ins Buch: alle Sprachen vollständig"))
+    heavy = []
+    for b in visible:
+        for rel in {b.get("cover", "")} | {e.get("cover", "") for e in b.get("editions", [])}:
+            f = ROOT / "public" / rel if rel else None
+            if f is not None and f.is_file() and f.stat().st_size > 4 * 1024 * 1024:
+                heavy.append(Path(rel).name)
+    if heavy:
+        checks.append(("gelb", "Sehr große Bilder (langsame Seite): " + ", ".join(sorted(set(heavy)))))
+    return checks
+
+
 def precheck(state: dict) -> list:
     """Pre-Publish-Checkliste: (status, text) mit status = gruen/gelb/rot."""
     s = state["site"]
@@ -673,6 +721,7 @@ def precheck(state: dict) -> list:
     )]
     checks.append(("rot" if no_amazon else "gruen",
                    "Alle Amazon-Links gültig" if not no_amazon else f"Amazon-Link fehlt: {', '.join(no_amazon)}"))
+    checks.extend(precheck_flipbook(state, visible))
     git_ok, git_text = git_connection()
     checks.append(("gruen" if git_ok else "rot", git_text))
     try:
@@ -758,6 +807,7 @@ class Handler(BaseHTTPRequestHandler):
                 state["textDefaults"] = json.loads(TEXT_DEFAULTS_JSON.read_text(encoding="utf-8"))
             except Exception:
                 state["textDefaults"] = {"de": {}, "en": {}}
+            state["flipbooks"] = extras.load_flipbooks()
             analytics_config = load_analytics_config()
             state["analyticsConfig"] = {
                 "url": analytics_config.get("url", "") or state.get("site", {}).get("analyticsUrl", ""),
@@ -772,6 +822,15 @@ class Handler(BaseHTTPRequestHandler):
             self.send_json({"ok": True, "checks": precheck(load_state())})
         elif path == "/api/analytics":
             self.api_analytics()
+        elif path == "/api/backups":
+            self.send_json({"ok": True, "backups": extras.list_backups()})
+        elif path.startswith("/flipbook-file/"):
+            parts = path[len("/flipbook-file/"):].split("/")
+            f = extras.flipbook_file(*parts) if len(parts) == 3 else None
+            if f:
+                self.send_file(f, "image/jpeg", no_cache=True)
+            else:
+                self.send_error(404)
         elif path.startswith("/vorschau"):
             # Beim Öffnen/Neuladen der Vorschau immer frisch bauen. Dadurch
             # können gespeicherte Bücher nicht mehr in einem alten dist/ hängen.
@@ -842,6 +901,20 @@ class Handler(BaseHTTPRequestHandler):
                 self.api_move()
             elif path == "/api/visibility":
                 self.api_visibility()
+            elif path == "/api/reorder":
+                self.api_reorder()
+            elif path == "/api/flipbook":
+                self.api_flipbook()
+            elif path == "/api/flipbook/delete":
+                self.api_flipbook_delete()
+            elif path == "/api/flipbook/featured":
+                self.api_flipbook_featured()
+            elif path == "/api/linkcheck":
+                self.api_linkcheck()
+            elif path == "/api/backups/restore":
+                self.api_backup_restore()
+            elif path == "/api/undo-publish":
+                self.api_undo_publish()
             elif path == "/api/site":
                 self.api_site()
             elif path == "/api/analytics/config":
@@ -997,7 +1070,7 @@ class Handler(BaseHTTPRequestHandler):
         existing = next((b for b in state["books"] if b["id"] == book_id), None)
         if existing is None:
             book_id = unique_id(state, slugify(title.split("–")[0].split(":")[0]))
-            book = {"id": book_id, "samples": [], "highlights": []}
+            book = {"id": book_id, "samples": [], "highlights": [], "hidden": True}  # neue Bücher bleiben ausgeblendet, bis sie aktiviert werden
             state["books"].append(book)
         else:
             book = existing
@@ -1012,15 +1085,17 @@ class Handler(BaseHTTPRequestHandler):
         book["lang"] = lang if lang in ("de", "en") else "de"
         if fields.get("showInHero") == "1":
             for other in state["books"]:
-                if other is not book and other.get("lang", "de") == book["lang"]:
-                    other.pop("showInHero", None)
+                if other is not book:
+                    other.pop("showInHero", None)  # nur ein Buch wird in „Blick ins Buch" gezeigt
             book["showInHero"] = True
         else:
             book.pop("showInHero", None)
-        if fields.get("hidden") == "1":
-            book["hidden"] = True
-        else:
+        visible_field = fields.get("visible")
+        if visible_field == "1":
             book.pop("hidden", None)
+        elif visible_field == "0":
+            book["hidden"] = True
+        # fehlt das Feld, bleibt der bisherige Zustand (neue Bücher: ausgeblendet)
         book["title"] = title
         book["series"] = fields.get("series", "").strip()
         book["category"] = category
@@ -1406,6 +1481,175 @@ class Handler(BaseHTTPRequestHandler):
         save_state(state)
         self.send_json({"ok": True, "removedFiles": removed})
 
+    # ---------- Reihenfolge, Blätterbuch, Link-Prüfung, Sicherungen ----------
+    def api_reorder(self):
+        """Neue Reihenfolge der Bücher einer Sprache (per Ziehen in der Liste)."""
+        ids = self.read_json().get("ids", [])
+        state = load_state()
+        books = state["books"]
+        if not isinstance(ids, list) or len(set(ids)) != len(ids):
+            self.send_json({"ok": False, "error": "Ungültige Reihenfolge."})
+            return
+        by_id = {b["id"]: b for b in books}
+        if any(i not in by_id for i in ids):
+            self.send_json({"ok": False, "error": "Ein Buch wurde nicht gefunden."})
+            return
+        positions = [i for i, b in enumerate(books) if b["id"] in set(ids)]
+        for position, book_id in zip(positions, ids):
+            books[position] = by_id[book_id]
+        save_state(state)
+        self.send_json({"ok": True})
+
+    def api_flipbook(self):
+        """Blätterbuch einer Sprache anlegen/ersetzen: komplette Innen-PDF, Rückseite und Titelseite."""
+        ctype = self.headers.get("Content-Type", "")
+        m = re.search(r"boundary=([^;]+)", ctype)
+        if not m:
+            self.send_json({"ok": False, "error": "Ungültige Anfrage."}, 400)
+            return
+        fields, files = parse_multipart(self.read_body(MAX_SITE_UPLOAD_BYTES), m.group(1).strip('"'))
+        book_id = (fields.get("id") or "").strip()
+        lang = (fields.get("lang") or "").strip().lower()
+        state = load_state()
+        book = next((b for b in state["books"] if b["id"] == book_id), None)
+        if book is None:
+            self.send_json({"ok": False, "error": "Buch nicht gefunden."})
+            return
+        pdf = files["pdf"][1] if "pdf" in files else None
+        back = files["back"][1] if "back" in files else None
+        cover = files["cover"][1] if "cover" in files else None
+        if not (pdf or back or cover):
+            self.send_json({"ok": False, "error": "Bitte eine Datei auswählen."})
+            return
+        if pdf and len(pdf) > MAX_FLIPBOOK_PDF_BYTES:
+            self.send_json({"ok": False, "error": "Die PDF-Datei ist größer als 150 MB."})
+            return
+        if (back and len(back) > MAX_IMAGE_BYTES) or (cover and len(cover) > MAX_IMAGE_BYTES):
+            self.send_json({"ok": False, "error": "Ein Bild ist größer als 15 MB."})
+            return
+        try:
+            if pdf or back:
+                extras.set_flipbook(book_id, lang, pdf, back)
+            if cover:
+                self.save_edition_cover(state, book, lang, cover)
+        except extras.AdminError as exc:
+            self.send_json({"ok": False, "error": str(exc)})
+            return
+        self.send_json({"ok": True, "flipbooks": extras.load_flipbooks(), "books": load_state()["books"]})
+
+    def save_edition_cover(self, state: dict, book: dict, lang: str, data: bytes):
+        """Titelseite einer Sprach-Ausgabe speichern (Einzelseite oder kompletter Umschlag)."""
+        if not extras.LANG_RE.fullmatch(lang or ""):
+            raise extras.AdminError("Ungültiger Sprachcode.")
+        from PIL import Image as PILImage
+        try:
+            with PILImage.open(io.BytesIO(data)) as probe:
+                spread = probe.width > probe.height * 1.2
+            name = f"cover-{book['id']}-{lang}{'-spread' if spread else ''}.jpg"
+            save_image(data, IMAGES / name, width=2200 if spread else 760)
+        except Exception as exc:
+            raise extras.AdminError("Die Titelseite konnte nicht gelesen werden – bitte ein gültiges Bild (JPG/PNG) hochladen.") from exc
+        edition = next((e for e in book.setdefault("editions", []) if e.get("language") == lang), None)
+        if edition is None:
+            edition = {"language": lang, "amazon": ""}
+            book["editions"].append(edition)
+        edition["cover"] = f"images/{name}"
+        if spread:
+            edition["coverSpread"] = True
+        else:
+            edition.pop("coverSpread", None)
+        if lang == book.get("lang", "de"):  # Hauptsprache: gilt auch als Cover des Buches
+            book["cover"] = edition["cover"]
+            if spread:
+                book["coverSpread"] = True
+            else:
+                book.pop("coverSpread", None)
+        save_state(state)
+
+    def api_flipbook_delete(self):
+        d = self.read_json()
+        book_id, lang, part = str(d.get("id", "")), str(d.get("lang", "")), d.get("part", "all")
+        try:
+            if part == "back":
+                extras.remove_flipbook_back(book_id, lang)
+            else:
+                extras.remove_flipbook(book_id, lang)
+        except extras.AdminError as exc:
+            self.send_json({"ok": False, "error": str(exc)})
+            return
+        self.send_json({"ok": True, "flipbooks": extras.load_flipbooks()})
+
+    def api_flipbook_featured(self):
+        """Wählt das Buch für „Blick ins Buch" (leer = automatisch das neueste mit Blätterbuch)."""
+        book_id = str(self.read_json().get("id", ""))
+        state = load_state()
+        if book_id and not any(b["id"] == book_id for b in state["books"]):
+            self.send_json({"ok": False, "error": "Buch nicht gefunden."})
+            return
+        for book in state["books"]:
+            if book["id"] == book_id:
+                book["showInHero"] = True
+            else:
+                book.pop("showInHero", None)
+        save_state(state)
+        self.send_json({"ok": True})
+
+    def api_linkcheck(self):
+        results = extras.check_links(extras.collect_links(load_state()))
+        self.send_json({"ok": True, "results": results})
+
+    def api_backup_restore(self):
+        name = str(self.read_json().get("name", ""))
+        path = extras.backup_file(name)
+        if path is None:
+            self.send_json({"ok": False, "error": "Diese Sicherung gibt es nicht."})
+            return
+        try:
+            restored = json.loads(path.read_text(encoding="utf-8"))
+            if not isinstance(restored.get("books"), list) or not isinstance(restored.get("site"), dict):
+                raise ValueError("unvollständig")
+        except Exception:
+            self.send_json({"ok": False, "error": "Diese Sicherung ist beschädigt und wurde nicht eingespielt."})
+            return
+        save_state(restored)  # sichert vorher den aktuellen Stand und erzeugt books.ts neu
+        self.send_json({"ok": True})
+
+    def api_undo_publish(self):
+        """Letzte Veröffentlichung zurücknehmen (neuer Gegen-Commit, nichts wird gelöscht)."""
+        connected, error = git_connection()
+        if not connected:
+            self.send_json({"ok": False, "error": error})
+            return
+        if git("fetch", "-q", "origin", timeout=60).returncode != 0:
+            self.send_json({"ok": False, "error": "GitHub konnte nicht erreicht werden. Es wurde nichts verändert."})
+            return
+        if git("status", "--porcelain").stdout.strip():
+            self.send_json({"ok": False, "error": "Es gibt noch Änderungen, die nicht veröffentlicht sind. Bitte zuerst veröffentlichen oder verwerfen."})
+            return
+        head = git("rev-parse", "HEAD").stdout.strip()
+        remote = git("rev-parse", "origin/main").stdout.strip()
+        subject = git("log", "-1", "--format=%s").stdout.strip()
+        if head != remote:
+            self.send_json({"ok": False, "error": "Dieser Computer und GitHub sind nicht auf demselben Stand. Es wurde nichts verändert."})
+            return
+        if not subject.startswith("LambKing Inhalte aktualisiert"):
+            self.send_json({"ok": False, "error": "Die letzte Veröffentlichung stammt nicht aus dem Admin und wird deshalb nicht automatisch zurückgenommen."})
+            return
+        reverted = git("-c", "user.name=Anton Bernt", "-c", "user.email=antonb84@gmail.com", "revert", "--no-edit", "HEAD")
+        if reverted.returncode != 0:
+            git("revert", "--abort")
+            self.send_json({"ok": False, "error": "Das Zurücknehmen war nicht möglich. Es wurde nichts verändert."})
+            return
+        try:
+            render_books_ts(load_state())
+        except Exception:
+            pass
+        pushed = git("push", "origin", "main", timeout=180)
+        if pushed.returncode != 0:
+            self.send_json({"ok": False, "error": "Zurückgenommen, aber die Übertragung zu GitHub ist fehlgeschlagen. Bitte „Änderungen zur Live-Seite senden“ drücken."})
+            return
+        self.send_json({"ok": True, "message": "Die letzte Veröffentlichung wurde zurückgenommen. GitHub aktualisiert die Live-Seite jetzt automatisch."})
+
     def api_visibility(self):
         """Blendet ein Buch auf der Landingpage ein oder aus (bleibt im Admin erhalten)."""
         d = self.read_json()
@@ -1741,6 +1985,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_json({
             "ok": True, "configured": True,
             "unsaved": changed,
+            "groups": extras.summarize_changes(status.splitlines()),
             "unpublished": int(ahead or 0),
             "behind": int(behind or 0),
             "lastBackup": last,
@@ -1828,6 +2073,17 @@ class Handler(BaseHTTPRequestHandler):
         if added.returncode != 0:
             self.send_json({"ok": False, "stage": "git", "error": "Die lokalen Änderungen konnten nicht vorbereitet werden. Es wurde nichts übertragen.", "checks": checks})
             return
+        # Schutz: nur Dateien übertragen, die zur Landingpage gehören (keine Entwürfe, keine riesigen Dateien)
+        excluded = []
+        try:
+            blocked = extras.classify_new_paths(extras.staged_new_files())
+            if blocked:
+                excluded = sorted({extras.top_level_of(p) if reason.startswith("liegt außerhalb") else p for p, reason in blocked})
+                extras.exclude_locally(excluded)
+        except Exception:
+            git("reset", "-q")
+            self.send_json({"ok": False, "stage": "git", "error": "Die Dateien konnten nicht geprüft werden. Es wurde nichts übertragen.", "checks": checks})
+            return
         status = git("status", "--porcelain")
         if status.returncode != 0:
             self.send_json({"ok": False, "stage": "git", "error": "Der lokale Änderungsstand konnte nicht gelesen werden. Es wurde nichts übertragen.", "checks": checks})
@@ -1866,7 +2122,7 @@ class Handler(BaseHTTPRequestHandler):
             return
 
         head = git("rev-parse", "HEAD").stdout.strip()
-        self.send_json({"ok": True, "checks": checks, "commit": head,
+        self.send_json({"ok": True, "checks": checks, "commit": head, "excluded": excluded,
                         "message": "Die Änderungen wurden vollständig zu GitHub übertragen. GitHub aktualisiert jetzt automatisch die Live-Seite. Du musst nicht erneut klicken.",
                         "actionsUrl": f"https://github.com/{repo_slug()}/actions" if repo_slug() else ""})
 
