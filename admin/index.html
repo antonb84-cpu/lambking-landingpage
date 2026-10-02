@@ -180,6 +180,10 @@
   .media-item input[type=text]{margin-top:4px;}
   .section-toggle{display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--line); font-size:14.5px;}
   .section-toggle input{width:20px; height:20px; accent-color:var(--gold);}
+  /* Ergebnis-Fenster */
+  #resultModal{position:fixed; inset:0; z-index:60; display:flex; align-items:center; justify-content:center; padding:20px; background:rgba(20,30,50,.5);}
+  .modal-box{background:#fff; border-radius:16px; padding:22px 24px; max-width:620px; width:100%; max-height:85vh; overflow:auto; box-shadow:0 20px 50px rgba(0,0,0,.35);}
+  .modal-box h2{font-size:19px; color:var(--blue); margin-bottom:10px;}
   /* Links prüfen / Sicherungen */
   .link-list, .backup-list{list-style:none; margin-top:14px;}
   .link-list li, .backup-list li{display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--line); font-size:14px;}
@@ -250,6 +254,7 @@
     <small style="opacity:.8">Bücher zur Landingpage hinzufügen &amp; verwalten</small>
   </div>
   <div class="spacer"></div>
+  <button class="btn btn-white" id="ratingsBtn" onclick="updateRatings()" title="Prüft alle Bücher bei Amazon und holt die aktuellen Sterne">⭐ Bewertungen aktualisieren</button>
   <a href="/vorschau/" target="_blank"><button class="btn btn-white">👁 Vorschau aktualisieren</button></a>
   <a id="liveLink" href="#" target="_blank"><button class="btn btn-white">🌍 Live-Seite</button></a>
 </header>
@@ -329,11 +334,7 @@
       <button class="btn" id="langEnBtn" onclick="setLangFilter('en')">🇬🇧 Englische Bücher</button>
     </div>
     <div id="bookList"></div>
-    <div style="display:flex; gap:10px; flex-wrap:wrap;">
-      <button class="btn btn-blue" onclick="openForm()">＋ <span id="addBtnLabel">Neues Buch hinzufügen</span></button>
-      <button class="btn btn-ghost" id="ratingsBtn" onclick="updateRatings()">⭐ Amazon-Sterne aktualisieren</button>
-    </div>
-    <ul id="ratingsOut" class="link-list"></ul>
+    <button class="btn btn-blue" onclick="openForm()">＋ <span id="addBtnLabel">Neues Buch hinzufügen</span></button>
   </section>
 
   <!-- ═══ FORMULAR ═══ -->
@@ -766,6 +767,14 @@
   <span class="sb-spacer"></span>
   <a href="/vorschau/" target="_blank"><button class="btn btn-ghost sb-btn">👁 Vorschau ansehen</button></a>
   <button class="btn btn-gold sb-btn" onclick="showTab('veroeffentlichen')">🚀 Veröffentlichen</button>
+</div>
+
+<div id="resultModal" class="hidden" role="dialog" aria-modal="true" aria-labelledby="resultTitle">
+  <div class="modal-box">
+    <h2 id="resultTitle">Ergebnis</h2>
+    <div id="resultBody"></div>
+    <div class="form-actions"><button class="btn btn-blue" onclick="closeResult()">OK</button></div>
+  </div>
 </div>
 
 <div id="toast" role="status" aria-live="polite"></div>
@@ -2350,18 +2359,31 @@ async function saveAppScreen(i){
 async function moveMedia(action, index, dir){ await mediaCall(action, JSON.stringify({index, dir})); }
 async function deleteMedia(action, index, question){ if (confirm(question)) await mediaCall(action, JSON.stringify({index})); }
 
-/* ── Amazon-Sterne ── */
+/* ── Amazon-Sterne (Knopf oben in der Leiste) ── */
+function showResult(title, html){
+  $('resultTitle').textContent = title;
+  $('resultBody').innerHTML = html;
+  $('resultModal').classList.remove('hidden');
+}
+function closeResult(){ $('resultModal').classList.add('hidden'); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeResult(); });
+
 async function updateRatings(){
   const btn = $('ratingsBtn');
   btn.disabled = true; btn.innerHTML = '<span class="spinner" style="border-color:rgba(0,0,0,.2); border-top-color:var(--blue);"></span>Frage Amazon …';
   try{
     const d = await api('/api/ratings/update', {method:'POST', body:'{}'});
     const dot = {ok:'ok', unsure:'unsure', none:'unsure', skip:'unsure'};
-    $('ratingsOut').innerHTML = (d.report || []).map(r => `<li><span class="light ${dot[r.status] || 'unsure'}"></span><span style="flex:1;"><b>${esc(r.book)}</b></span><span>${esc(r.text)}</span></li>`).join('');
-    toast(d.changed ? '✓ ' + d.changed + ' Bewertung(en) aktualisiert (lokal – noch nicht veröffentlicht).' : 'Keine neuen Bewertungen gefunden.');
+    const rows = (d.report || []).map(r => `<li><span class="light ${dot[r.status] || 'unsure'}"></span><span style="flex:1;"><b>${esc(r.book)}</b></span><span>${esc(r.text)}</span></li>`).join('');
+    const headline = d.changed
+      ? `<p><b>✓ ${d.changed} Bewertung${d.changed === 1 ? '' : 'en'} aktualisiert.</b> Die neuen Sterne sind lokal gespeichert und gehen mit „Veröffentlichen“ live.</p>`
+      : '<p><b>Keine neuen Bewertungen gefunden.</b> Alles ist auf dem aktuellen Stand.</p>';
+    showResult('⭐ Amazon-Bewertungen', headline + '<ul class="link-list">' + rows + '</ul>');
     if (d.changed) await load();
+  } catch (e){
+    showResult('⭐ Amazon-Bewertungen', '<p style="color:var(--red)">Das hat nicht geklappt. Bitte später noch einmal versuchen.</p>');
   } finally {
-    btn.disabled = false; btn.innerHTML = '⭐ Amazon-Sterne aktualisieren';
+    btn.disabled = false; btn.innerHTML = '⭐ Bewertungen aktualisieren';
   }
 }
 
