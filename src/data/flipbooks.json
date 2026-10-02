@@ -1,6 +1,15 @@
 {
   "_hinweis": "Vollständige Blätterbücher: Buch-ID -> Sprache -> Bildordner mit p01.jpg, p02.jpg, … Erzeugt mit scripts/pdf-zu-blaetterbuch.py",
   "bibelgeschichten-zum-ausmalen": {
-    "de": { "dir": "images/buch-band01-de", "count": 70 }
+    "de": {
+      "dir": "images/buch-band01-de",
+      "count": 70
+    }
+  },
+  "david": {
+    "de": {
+      "dir": "images/buch-david-de",
+      "count": 70
+    }
   }
 }
