@@ -222,6 +222,20 @@ try {
       && atEnd === true && after === before && !(await evalJs(`!!document.querySelector('[role="dialog"]')`))
     console.log(`${ok ? '✓' : '✗'} Blick ins Buch: startet nicht automatisch, Sprung zur Rückseite funktioniert, kein Überlauf am Smartphone (Tabs ${before}→${after})`)
     if (!ok) fehler++
+    // Flaggen: Ein Klick auf eine Flagge zeigt das Buch in dieser Sprache (eigene Seiten und Titelseite)
+    const flags = JSON.parse(await evalJs(`JSON.stringify([...document.querySelectorAll('#ausprobieren [role="group"] [role="group"] button')].map(b => b.getAttribute('aria-label')))`) || '[]')
+    if (flags.length > 1) {
+      const target = flags[1]
+      await evalJs(`[...document.querySelectorAll('#ausprobieren [role="group"] [role="group"] button')].find(b => b.getAttribute('aria-label') === ${JSON.stringify(target)})?.click()`)
+      const switched = await waitForPageState(`(() => {
+        const group = document.querySelector('#ausprobieren [role="group"]')
+        const pressed = [...group.querySelectorAll('[role="group"] button')].find(b => b.getAttribute('aria-pressed') === 'true')?.getAttribute('aria-label')
+        const srcs = [...group.querySelectorAll('img')].map(i => i.getAttribute('src') || '')
+        return pressed === ${JSON.stringify(target)} && srcs.some(src => src.includes('/p01.jpg') && !src.includes('-de/'))
+      })()`, 8000)
+      console.log(`${switched ? '✓' : '✗'} Blick ins Buch: Flagge „${target}" zeigt das Buch in dieser Sprache`)
+      if (!switched) fehler++
+    }
     await send('Emulation.clearDeviceMetricsOverride')
     await send('Page.navigate', { url: `http://127.0.0.1:${HTTP_PORT}/` })
     await new Promise((r) => setTimeout(r, 1800))
