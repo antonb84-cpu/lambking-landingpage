@@ -310,7 +310,11 @@
       <button class="btn" id="langEnBtn" onclick="setLangFilter('en')">🇬🇧 Englische Bücher</button>
     </div>
     <div id="bookList"></div>
-    <button class="btn btn-blue" onclick="openForm()">＋ <span id="addBtnLabel">Neues Buch hinzufügen</span></button>
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <button class="btn btn-blue" onclick="openForm()">＋ <span id="addBtnLabel">Neues Buch hinzufügen</span></button>
+      <button class="btn btn-ghost" id="ratingsBtn" onclick="updateRatings()">⭐ Amazon-Sterne aktualisieren</button>
+    </div>
+    <ul id="ratingsOut" class="link-list"></ul>
   </section>
 
   <!-- ═══ FORMULAR ═══ -->
@@ -619,6 +623,7 @@
           <summary>⚖️ Impressum und Datenschutz</summary>
           <div class="settings-body">
             <label for="s_impressum">Impressum (eine Leerzeile = neuer Absatz)</label><textarea id="s_impressum" rows="8"></textarea>
+            <p class="hint" style="margin-top:10px; padding:10px 12px; background:#FFF8E5; border:1px solid #E7D39A; border-radius:10px;">⚠ Die App und die Stores verweisen auf diese Datenschutzerklärung. Änderungen wirken nach dem Veröffentlichen sofort für alle – bitte nur mit Bedacht ändern. Beim Speichern bleibt der Text unverändert, wenn nur Zeilenumbrüche anders sind.</p>
             <label for="s_datenschutz">Datenschutzerklärung</label><textarea id="s_datenschutz" rows="10"></textarea>
             <p class="hint" style="margin-top:6px;">Die Texte sind auf der Landingpage auch als eigene Seiten erreichbar.</p>
           </div>
@@ -705,27 +710,30 @@ let activeRichTextField = null;
 const $ = id => document.getElementById(id);
 
 const TEXT_SECTIONS = [
-  ['nav', '🧭 Navigation'],
-  ['contact', '✉️ Kontaktfenster'],
-  ['hero', '🏠 Willkommen und Startbereich'],
+  ['nav', '🧭 Menü oben'],
+  ['hero', '🏠 Startbereich (Titelbild-Text)'],
+  ['usp', '✅ Streifen unter dem Titelbild'],
   ['books', '📚 Buchübersicht und Buchfenster'],
-  ['trust', '🛡 Vertrauen, das trägt'],
-  ['how', '🪜 So funktioniert es'],
-  ['app', '📱 App-Bereich'],
-  ['about', '👤 Über das Projekt'],
-  ['mission', '💛 Band „Mit jedem Buch Hoffnung weitergeben“'],
-  ['languages', '🌍 Sprachen-Bereich'],
-  ['donate', '❤️ Spenden-Bereich (PayPal & Ko-fi)'],
-  ['supportedWorks', '🤝 Wen wir unterstützen'],
-  ['mascot', '🐑 Warum LambKing? (Maskottchen)'],
+  ['tryit', '📖 Blick ins Buch'],
   ['kids', '🎥 Kinder-Videos'],
-  ['tryit', '🖍️ Zum Ausprobieren (Buch & Gratis-Ausmalseite)'],
+  ['freebie', '🖍 Gratis-Ausmalbild'],
+  ['donate', '❤️ Spenden-Bereich (PayPal & Ko-fi)'],
   ['support', '❤️ Beschriftung der Spenden-Knöpfe'],
+  ['mascot', '👑 Unsere Vision / Warum LambKing?'],
+  ['about', '👤 Über das Projekt (Autor)'],
+  ['app', '📱 App-Bereich'],
+  ['supportedWorks', '🤝 Gemeinsam bauen wir am Reich Gottes'],
+  ['creatorPartner', '🤝 Creator-Hinweis und Creator-Seite'],
   ['faq', '❓ Häufige Fragen'],
+  ['contact', '✉️ Kontaktfenster'],
   ['footer', '📄 Fußzeile und Rechtstexte'],
 ];
+// Texte, die auf der Seite nicht mehr vorkommen, werden im Admin nicht angeboten
+const HIDDEN_TEXT_PATHS = new Set(['app.ctaWebApp', 'faq.webAppLink', 'tryit.lookInside']);
 
 const TEXT_LABELS = {
+  badge:'Abzeichen auf dem Bild', hint:'Hinweis unter dem Knopf', navLabel:'Menü-Eintrag', heroTitle:'Überschrift', heroText:'Einleitung', applyNow:'Knopf „Jetzt bewerben“', microCreatorNote:'Kurzer Hinweis im Balken',
+  bookLanguage:'Beschriftung der Sprach-Flaggen (für Screenreader)', backCover:'Anzeige am Ende des Buches', page:'Wort „Seite“', pages:'Wort „Seiten“', of:'Wort „von“',
   more:'Beschriftung „Mehr lesen“', less:'Beschriftung „Weniger“',
   lead:'Einleitungstext', nameTitle:'Überschrift „Was bedeutet LambKing?“',
   nameNote:'Hinweis zum Namen LambKing', ratingNone:'Sterne: noch keine Bewertung', ratingCta:'Sterne: Einladung zur Bewertung', ratingOf:'Sterne: „von 5 Sternen“',
@@ -869,7 +877,7 @@ function renderFrontendTextEditors(useDefaults=false){
   };
   $('frontendTextSections').innerHTML = TEXT_SECTIONS.map(([section, label]) => {
     const languages = [['de','🇩🇪 Deutsch'], ['en','🇬🇧 Englisch']].map(([lang, langLabel]) => {
-      const fields = flattenTextValues((effective[lang] || {})[section] || {});
+      const fields = flattenTextValues((effective[lang] || {})[section] || {}).filter(({path}) => !HIDDEN_TEXT_PATHS.has([section, ...path].join('.')));
       return `<div class="text-language"><h4>${langLabel}</h4>${fields.map(({path, value}) => {
         const fieldId = `text_${lang}_${section}_${path.join('_')}`;
         const fieldPath = [section, ...path].join('.');
@@ -2156,6 +2164,21 @@ async function saveAppScreen(i){
 
 async function moveMedia(action, index, dir){ await mediaCall(action, JSON.stringify({index, dir})); }
 async function deleteMedia(action, index, question){ if (confirm(question)) await mediaCall(action, JSON.stringify({index})); }
+
+/* ── Amazon-Sterne ── */
+async function updateRatings(){
+  const btn = $('ratingsBtn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner" style="border-color:rgba(0,0,0,.2); border-top-color:var(--blue);"></span>Frage Amazon …';
+  try{
+    const d = await api('/api/ratings/update', {method:'POST', body:'{}'});
+    const dot = {ok:'ok', unsure:'unsure', none:'unsure', skip:'unsure'};
+    $('ratingsOut').innerHTML = (d.report || []).map(r => `<li><span class="light ${dot[r.status] || 'unsure'}"></span><span style="flex:1;"><b>${esc(r.book)}</b></span><span>${esc(r.text)}</span></li>`).join('');
+    toast(d.changed ? '✓ ' + d.changed + ' Bewertung(en) aktualisiert (lokal – noch nicht veröffentlicht).' : 'Keine neuen Bewertungen gefunden.');
+    if (d.changed) await load();
+  } finally {
+    btn.disabled = false; btn.innerHTML = '⭐ Amazon-Sterne aktualisieren';
+  }
+}
 
 /* ── Links prüfen ── */
 async function runLinkCheck(){

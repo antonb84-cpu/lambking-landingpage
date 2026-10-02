@@ -407,3 +407,22 @@ def exclude_locally(paths: list[str]) -> None:
             if existing and not existing.endswith("\n"):
                 handle.write("\n")
             handle.write("\n".join(additions) + "\n")
+
+
+# ───────────────────────── Texte: nur Abweichungen speichern ─────────────────────────
+
+def prune_text_overrides(overrides, defaults):
+    """Entfernt alle Texte, die dem Standardtext entsprechen (rekursiv). Übrig bleiben nur echte Änderungen.
+    Listen werden als Ganzes verglichen (ersetzt wird immer die komplette Liste)."""
+    if not isinstance(overrides, dict):
+        return overrides
+    result = {}
+    for key, value in overrides.items():
+        default = defaults.get(key) if isinstance(defaults, dict) else None
+        if isinstance(value, dict):
+            pruned = prune_text_overrides(value, default if isinstance(default, dict) else {})
+            if pruned:
+                result[key] = pruned
+        elif default is None or value != default:
+            result[key] = value
+    return result

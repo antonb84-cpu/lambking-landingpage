@@ -445,5 +445,77 @@ class MediaTests(ServerTests):
                 urllib.request.urlopen(base + bad)
 
 
+
+def merge_texts(defaults, saved):
+    """Python-Nachbau von mergeTexts() aus src/data/texts.ts – zum Vergleichen der wirksamen Texte."""
+    if saved is None:
+        return defaults
+    if isinstance(defaults, list):
+        return saved if isinstance(saved, list) else defaults
+    if not isinstance(defaults, dict) or not isinstance(saved, dict):
+        return saved
+    result = dict(defaults)
+    for key, value in saved.items():
+        result[key] = merge_texts(defaults.get(key), value)
+    return result
+
+
+class TextOverrideTests(unittest.TestCase):
+    def test_nur_abweichungen_bleiben_und_wirksame_texte_aendern_sich_nicht(self):
+        site = json.loads((REAL_ROOT / "src" / "data" / "books.json").read_text(encoding="utf-8"))["site"]
+        defaults = json.loads((REAL_ROOT / "src" / "data" / "texts.defaults.json").read_text(encoding="utf-8"))
+        overrides = site.get("frontendTexts", {})
+        for lang in ("de", "en"):
+            pruned = extras.prune_text_overrides(overrides.get(lang, {}), defaults[lang])
+            self.assertEqual(merge_texts(defaults[lang], overrides.get(lang)), merge_texts(defaults[lang], pruned), f"Wirksame Texte ({lang}) ändern sich")
+            self.assertLessEqual(json.dumps(pruned), json.dumps(overrides.get(lang, {})))
+
+    def test_prune_einzelfaelle(self):
+        defaults = {"a": {"x": "1", "y": ["p", "q"]}, "b": "B"}
+        self.assertEqual(extras.prune_text_overrides({"a": {"x": "1", "y": ["p", "q"]}, "b": "B"}, defaults), {})
+        self.assertEqual(extras.prune_text_overrides({"a": {"x": "neu", "y": ["p", "q"]}, "b": "B"}, defaults), {"a": {"x": "neu"}})
+        self.assertEqual(extras.prune_text_overrides({"a": {"y": ["p"]}}, defaults), {"a": {"y": ["p"]}})
+        self.assertEqual(extras.prune_text_overrides({"neu": "k"}, defaults), {"neu": "k"})
+
+
+class LegalTextTests(ServerTests):
+    def test_speichern_aendert_den_datenschutztext_nicht_bei_anderen_zeilenumbruechen(self):
+        before = json.loads(server.DATA_JSON.read_text(encoding="utf-8"))["site"]["datenschutz"]
+        crlf = before.replace("\r\n", "\n").replace("\n", "\r\n")
+        self.post_multipart("/api/site", {"datenschutz": crlf}, {})
+        after = json.loads(server.DATA_JSON.read_text(encoding="utf-8"))["site"]["datenschutz"]
+        self.assertEqual(after, before, "Datenschutztext darf sich nicht verändern")
+        self.post_multipart("/api/site", {"datenschutz": before + "\nNeuer Absatz."}, {})
+        changed = json.loads(server.DATA_JSON.read_text(encoding="utf-8"))["site"]["datenschutz"]
+        self.assertTrue(changed.endswith("Neuer Absatz."))
+
+
+
+class RatingsTests(ServerTests):
+    def test_sterne_werden_uebernommen_und_fehler_abgefangen(self):
+        saved = (server.fetch_amazon_html, server.parse_amazon)
+        calls = {"n": 0}
+
+        def fake_fetch(asin):
+            calls["n"] += 1
+            if calls["n"] == 2:
+                raise OSError("blockiert")
+            return asin
+
+        server.fetch_amazon_html = fake_fetch
+        server.parse_amazon = lambda html: {"amazonRating": 4.8, "amazonRatingCount": 12}
+        try:
+            result = self.post_json("/api/ratings/update", {})
+        finally:
+            server.fetch_amazon_html, server.parse_amazon = saved
+        self.assertTrue(result["ok"])
+        self.assertGreaterEqual(result["changed"], 1)
+        states = {entry["status"] for entry in result["report"]}
+        self.assertIn("ok", states)
+        self.assertIn("unsure", states)  # ein Buch war nicht erreichbar, der Rest lief weiter
+        books = json.loads(server.DATA_JSON.read_text(encoding="utf-8"))["books"]
+        self.assertTrue(any(b.get("amazonRating") == 4.8 for b in books))
+
+
 if __name__ == "__main__":
     unittest.main()

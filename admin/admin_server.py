@@ -957,6 +957,8 @@ class Handler(BaseHTTPRequestHandler):
                 self.api_backup_restore()
             elif path == "/api/undo-publish":
                 self.api_undo_publish()
+            elif path == "/api/ratings/update":
+                self.api_ratings_update()
             elif path.startswith("/api/media/"):
                 self.api_media(path[len("/api/media/"):])
             elif path == "/api/site":
@@ -1763,6 +1765,34 @@ class Handler(BaseHTTPRequestHandler):
         save_state(state)
         self.send_json({"ok": True, "media": media.site_media(load_state()["site"])})
 
+    def api_ratings_update(self):
+        """Holt die öffentlichen Amazon-Sterne aller Bücher (wie scripts/amazon-bewertungen-aktualisieren.py)."""
+        state = load_state()
+        report, changed = [], 0
+        for book in state["books"]:
+            url = book.get("amazon") or next((e.get("amazon") for e in book.get("editions", []) if e.get("amazon")), "")
+            match = re.search(r"/dp/([A-Z0-9]{10})", url or "")
+            title = book.get("title", book["id"])[:60]
+            if not match:
+                report.append({"book": title, "status": "skip", "text": "kein Amazon-Link"})
+                continue
+            try:
+                info = parse_amazon(fetch_amazon_html(match.group(1)))
+            except Exception:
+                report.append({"book": title, "status": "unsure", "text": "Amazon nicht erreichbar"})
+                continue
+            rating, count = info.get("amazonRating"), info.get("amazonRatingCount")
+            if rating:
+                if (book.get("amazonRating"), book.get("amazonRatingCount")) != (rating, count):
+                    changed += 1
+                book["amazonRating"], book["amazonRatingCount"] = rating, count
+                report.append({"book": title, "status": "ok", "text": f"{rating} Sterne, {count} Bewertungen"})
+            else:
+                report.append({"book": title, "status": "none", "text": "noch keine öffentliche Bewertung"})
+        if changed:
+            save_state(state)
+        self.send_json({"ok": True, "changed": changed, "report": report})
+
     def api_visibility(self):
         """Blendet ein Buch auf der Landingpage ein oder aus (bleibt im Admin erhalten)."""
         d = self.read_json()
@@ -1866,8 +1896,13 @@ class Handler(BaseHTTPRequestHandler):
                 submitted_texts = json.loads(fields["frontendTexts"])
                 if not isinstance(submitted_texts, dict):
                     raise ValueError("TEXTS_INVALID")
+                try:
+                    text_defaults = json.loads(TEXT_DEFAULTS_JSON.read_text(encoding="utf-8"))
+                except Exception:
+                    text_defaults = {}
+                # Gespeichert werden nur Texte, die vom Standard abweichen – so bleiben Standardtexte änderbar
                 state["site"]["frontendTexts"] = {
-                    lang: sanitize_text_tree(submitted_texts.get(lang, {}))
+                    lang: extras.prune_text_overrides(sanitize_text_tree(submitted_texts.get(lang, {})), text_defaults.get(lang, {}))
                     for lang in ("de", "en")
                     if isinstance(submitted_texts.get(lang, {}), dict)
                 }
@@ -2004,7 +2039,12 @@ class Handler(BaseHTTPRequestHandler):
             state["site"]["supportedOrganizations"] = organizations
         for key in ("impressum", "datenschutz"):
             if key in fields:
-                state["site"][key] = fields[key].strip("\n")
+                submitted_text = fields[key].strip("\n")
+                current_text = state["site"].get(key, "")
+                # Nur andere Zeilenumbrüche (der Browser liefert CRLF)? Dann bleibt der Text Byte für Byte unverändert –
+                # wichtig für die Datenschutzerklärung, die gerade von den Stores geprüft wird.
+                if submitted_text.replace("\r\n", "\n").strip() != current_text.replace("\r\n", "\n").strip():
+                    state["site"][key] = submitted_text
         if fields.get("authorPhotoShape") in ("rund", "abgerundet", "eckig"):
             state["site"]["authorPhotoShape"] = fields["authorPhotoShape"]
         if fields.get("authorPhotoSize") in ("klein", "mittel", "gross"):
