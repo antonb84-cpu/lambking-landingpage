@@ -251,7 +251,7 @@
   <img src="/images/lambking-logo.png" alt="LambKing Logo" onerror="this.style.display='none'">
   <div>
     <h1>LambKing Admin</h1>
-    <small style="opacity:.8">Bücher zur Landingpage hinzufügen &amp; verwalten</small>
+    <small style="opacity:.8">Bücher zur Landingpage hinzufügen &amp; verwalten · Programm-Version <span id="adminVerLabel">…</span></small>
   </div>
   <div class="spacer"></div>
   <button class="btn btn-white" id="ratingsBtn" onclick="updateRatings()" title="Prüft alle Bücher bei Amazon und holt die aktuellen Sterne">⭐ Bewertungen aktualisieren</button>
@@ -1133,6 +1133,8 @@ async function api(path, opts){
 
 function checkAdminVersion(){
   const old = !state || state.adminVersion !== ADMIN_VERSION;
+  const label = $('adminVerLabel');
+  if (label) label.textContent = state && state.adminVersion ? state.adminVersion : 'alt (veraltet)';
   let bar = $('versionWarn');
   if (!old){ if (bar) bar.remove(); return; }
   if (!bar){
