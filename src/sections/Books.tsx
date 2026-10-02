@@ -290,7 +290,7 @@ function BuyButton({ book, size = 'md', preferredLanguage, label }: { book: Book
       href={edition.amazon}
       target="_blank"
       rel="noopener noreferrer"
-      onClick={() => trackAmazonClick(`${book.id}:${edition.language}`)}
+      onClick={() => trackAmazonClick(book.id, edition.language)}
       className={`block w-full ${width} transition-transform hover:scale-[1.03] focus-visible:rounded-full focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/60`}
       aria-label={`${book.title} – ${label ?? t.books.buyAmazon}`}
     >

@@ -472,7 +472,23 @@ test('Anonyme Statistik speichert keine Besucherkennungen', () => {
   const schema = readFileSync(join(ROOT, 'analytics-worker/schema.sql'), 'utf-8')
   const adminServer = readFileSync(join(ROOT, 'admin/admin_server.py'), 'utf-8')
   assert(app.includes('trackPageView()'), 'Seitenaufruf wird nicht gezählt')
-  assert(books.includes('trackAmazonClick(`${book.id}:${edition.language}`)'), 'Amazon-Klick je Buch und Sprach-Ausgabe wird nicht gezählt')
+  assert(books.includes('trackAmazonClick(book.id, edition.language)'), 'Amazon-Klick je Buch und Sprach-Ausgabe wird nicht gezählt')
+  // Jedes Klickziel muss vom Zähldienst akzeptiert werden (früher wurde „buch:de" verworfen – dadurch fehlten alle Klicks)
+  const pattern = new RegExp(worker.match(/const TARGET_PATTERN = \/(.*)\/\n/)[1])
+  const frontPattern = new RegExp(analytics.match(/const TARGET_PATTERN = \/(.*)\//)[1])
+  const books_ = JSON.parse(readFileSync(join(SRC, 'data/books.json'), 'utf-8')).books
+  for (const book of books_) {
+    for (const edition of book.editions ?? []) {
+      const target = `${book.id}-${edition.language}`
+      assert(pattern.test(target) && frontPattern.test(target), `Klickziel „${target}" wird vom Zähler abgelehnt`)
+    }
+  }
+  for (const link of ['paypal', 'kofi', 'playstore', 'appstore']) {
+    assert(pattern.test(`link-${link}`), `Klickziel link-${link} wird vom Zähler abgelehnt`)
+  }
+  for (const [file, name] of [['components/PaypalButton.tsx', 'paypal'], ['components/KofiButton.tsx', 'kofi'], ['sections/AppSection.tsx', 'playstore'], ['sections/AppSection.tsx', 'appstore']]) {
+    assert(readFileSync(join(SRC, file), 'utf-8').includes(`trackLinkClick('${name}')`), `Klicks auf ${name} werden nicht gezählt`)
+  }
   assert(!/localStorage|sessionStorage|document\.cookie|fingerprint/i.test(analytics), 'Frontend-Zähler verwendet eine Wiedererkennungstechnik')
   assert(!/user.agent|cf-connecting-ip|x-forwarded-for|referer|referrer/i.test(worker), 'Worker liest unnötige Besucherdaten')
   assert(schema.includes('PRIMARY KEY (day, event_type, target_id)'), 'Datenbank speichert keine reinen Tagessummen')

@@ -1060,7 +1060,7 @@ function renderAnalyticsTable(clicks){
       ? book.editions
       : ((book.amazon || '').startsWith('https://') ? [{language:book.lang || 'de', amazon:book.amazon}] : []);
     return editions.filter(edition => (edition.amazon || '').startsWith('https://')).map(edition => {
-      const count = byBook.get(`${book.id}:${edition.language}`)
+      const count = byBook.get(`${book.id}-${edition.language}`)
         || (edition.language === (book.lang || 'de') ? byBook.get(book.id) : null)
         || {};
       return `<tr><td>${esc(book.title)}<br><small>${esc(languageLabels.get(edition.language) || edition.language.toUpperCase())}</small></td><td>${formatCount(count.today)}</td><td>${formatCount(count.week)}</td><td><b>${formatCount(count.total)}</b></td></tr>`;
@@ -1086,6 +1086,8 @@ async function refreshAnalytics(){
     $('analyticsWeek').textContent = formatCount(pageviews.week);
     $('analyticsTotal').textContent = formatCount(pageviews.total);
     $('analyticsOut').innerHTML = `<b>Amazon-Klicks je Buch</b>${renderAnalyticsTable(d.amazonClicks)}` +
+      `<b style="display:block; margin-top:18px;">Klicks auf Spenden und App</b>${renderLinkTable(d.amazonClicks)}` +
+      `<p class="hint" style="margin:12px 0 0;">Hinweis: Die Amazon-Klicks wurden bis zum Update vom 2. Oktober 2026 wegen eines Fehlers nicht gezählt. Die Zahlen oben beginnen erst ab dem Veröffentlichen dieses Updates.</p>` +
       `<p class="hint" style="margin:12px 0 0;">Gezählt werden Aufrufe und Klicks, nicht unterschiedliche Personen. Neuladen, Bots oder wiederholte Klicks können die Zahlen erhöhen.</p>`;
   } catch {
     $('analyticsOut').textContent = 'Die Statistik konnte nicht geladen werden.';
@@ -2357,6 +2359,23 @@ async function saveAppScreen(i){
 
 async function moveMedia(action, index, dir){ await mediaCall(action, JSON.stringify({index, dir})); }
 async function deleteMedia(action, index, question){ if (confirm(question)) await mediaCall(action, JSON.stringify({index})); }
+
+/* Klicks auf Spenden- und App-Knöpfe (werden mit dem Ziel „link-…“ gezählt) */
+const LINK_STATS = [
+  ['link-paypal', '💛 PayPal (Spenden)', () => state.site.paypalUrl],
+  ['link-kofi', '☕ Ko-fi (Spenden)', () => state.site.kofiUrl],
+  ['link-playstore', '▶ Google Play (App)', () => state.site.playStoreUrl],
+  ['link-appstore', '🍎 App Store (App)', () => state.site.iosStoreUrl],
+];
+function renderLinkTable(clicks){
+  const byTarget = new Map((clicks || []).map(item => [item.bookId, item]));
+  const rows = LINK_STATS.map(([target, label, url]) => {
+    const count = byTarget.get(target) || {};
+    const note = (url() || '').startsWith('https://') ? '' : '<br><small>Link noch nicht eingetragen</small>';
+    return `<tr><td>${label}${note}</td><td>${formatCount(count.today)}</td><td>${formatCount(count.week)}</td><td><b>${formatCount(count.total)}</b></td></tr>`;
+  }).join('');
+  return `<div class="analytics-table-wrap"><table class="analytics-table"><thead><tr><th>Spenden und App</th><th>Heute</th><th>Woche</th><th>Gesamt</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
 
 /* ── Amazon-Sterne (Knopf oben in der Leiste) ── */
 function showResult(title, html){

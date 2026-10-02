@@ -1,3 +1,4 @@
+import { trackLinkClick } from '@/data/analytics'
 import { SITE } from '@/data/books'
 import { useLang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
@@ -29,6 +30,7 @@ export default function KofiButton({ compact = false }: { compact?: boolean }) {
   return (
     <a
       href={SITE.kofiUrl}
+      onClick={() => trackLinkClick('kofi')}
       target="_blank"
       rel="noopener noreferrer"
       aria-label={t.support.kofiAlt}

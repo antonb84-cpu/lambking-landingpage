@@ -1,3 +1,4 @@
+import { trackLinkClick } from '@/data/analytics'
 import { SITE } from '@/data/books'
 import { useLang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
@@ -12,6 +13,7 @@ export default function PaypalButton({ compact = false }: { compact?: boolean })
   return (
     <a
       href={SITE.paypalUrl}
+      onClick={() => trackLinkClick('paypal')}
       target="_blank"
       rel="noopener noreferrer"
       className={`inline-block shrink-0 transition-transform hover:scale-[1.05] ${compact ? '' : 'h-12 w-[264px]'}`}

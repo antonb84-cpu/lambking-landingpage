@@ -79,3 +79,21 @@ test('privacy notice is updated once and existing sections stay intact', () => {
   assert.match(updated, /Stand: September 2026/)
   assert.equal(withAnalyticsPrivacy(updated), updated)
 })
+
+test('click targets of books, languages, donations and app stores are accepted; the old colon format is not', async () => {
+  const stored = []
+  const env = {
+    ALLOWED_ORIGINS: 'https://lambking.store',
+    DB: { prepare() { return { bind(...values) { stored.push(values); return { run: async () => ({ success: true }) } } } } },
+  }
+  const send = (target) => worker.fetch(new Request('https://counter.example/event', {
+    method: 'POST',
+    headers: { Origin: 'https://lambking.store', 'Content-Type': 'text/plain' },
+    body: JSON.stringify({ event: 'amazon_click', target }),
+  }), env)
+  for (const target of ['david-de', 'bibelgeschichten-zum-ausmalen-4-es', 'link-paypal', 'link-kofi', 'link-playstore', 'link-appstore']) {
+    assert.equal((await send(target)).status, 204, target)
+  }
+  assert.equal((await send('david:de')).status, 400)
+  assert.equal(stored.length, 6)
+})

@@ -1,6 +1,7 @@
 import PhoneCarousel from '@/components/PhoneCarousel'
 import Reveal from '@/components/Reveal'
 import RichText from '@/components/RichText'
+import { trackLinkClick } from '@/data/analytics'
 import { SITE } from '@/data/books'
 import { useLang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
@@ -48,6 +49,7 @@ export default function AppSection() {
             {hasPlayStoreLink ? (
               <a
                 href={SITE.playStoreUrl}
+                onClick={() => trackLinkClick('playstore')}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-block transition-transform hover:scale-[1.04]"
@@ -64,6 +66,7 @@ export default function AppSection() {
             {hasAppStoreLink ? (
               <a
                 href={SITE.iosStoreUrl}
+                onClick={() => trackLinkClick('appstore')}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-block transition-transform hover:scale-[1.04]"
