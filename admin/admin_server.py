@@ -30,8 +30,9 @@ from pathlib import Path
 
 try:
     import extras  # normaler Start: python admin/admin_server.py
+    import media
 except ImportError:  # Import als Paket (Tests)
-    from admin import extras
+    from admin import extras, media
 
 # Alle Pfade werden relativ zum Speicherort dieses Skripts bestimmt –
 # das Projekt funktioniert dadurch in jedem Ordner / auf jedem Laufwerk.
@@ -162,6 +163,18 @@ def render_books_ts(state: dict):
     out.append("  // Impressum & Datenschutz – im Admin-Programm bearbeitbar.")
     out.append(f"  impressum: {ts_str(s.get('impressum', ''))},")
     out.append(f"  datenschutz: {ts_str(s.get('datenschutz', ''))},")
+    site_media = media.site_media(s)
+    out.append("  // Bereiche, die auf der Seite ausgeblendet sind (im Admin: Reiter „Seitenbereiche“).")
+    out.append(f"  hiddenSections: {json.dumps(site_media['hiddenSections'])} as string[],")
+    out.append(f"  kidsVideos: {json.dumps(site_media['kidsVideos'], ensure_ascii=False)} as { '{' } src: string; poster: string { '}' }[],")
+    out.append(f"  freebie: {json.dumps(site_media['freebie'], ensure_ascii=False)},")
+    out.append(f"  appScreens: {json.dumps(site_media['appScreens'], ensure_ascii=False)} as AppScreenDef[],")
+    out.append("}")
+    out.append("")
+    out.append("export interface AppScreenDef {")
+    out.append("  src: string")
+    out.append("  de: { title: string; text: string }")
+    out.append("  en: { title: string; text: string }")
     out.append("}")
     out.append("")
     out.append("export type Category = string")
@@ -661,6 +674,23 @@ def build_site(command="build", timeout=600):
     return proc.returncode == 0, (proc.stdout + "\n" + proc.stderr).strip()[-4000:]
 
 
+def precheck_media(state: dict) -> list:
+    """Alle Dateien der Startseiten-Medien (Videos, Gratis-Ausmalbild, App-Screenshots) müssen vorhanden sein."""
+    site_media = media.site_media(state.get("site", {}))
+    missing = []
+    for item in site_media["kidsVideos"]:
+        missing += [x for x in (item["src"], item["poster"]) if not (ROOT / "public" / x).is_file()]
+    missing += [x for x in site_media["freebie"].values() if not (ROOT / "public" / x).is_file()]
+    missing += [item["src"] for item in site_media["appScreens"] if not (ROOT / "public" / item["src"]).is_file()]
+    if missing:
+        return [("rot", "Dateien der Startseite fehlen: " + ", ".join(sorted(set(missing))))]
+    hidden = site_media["hiddenSections"]
+    if hidden:
+        names = [media.SECTION_LABELS[h].split(" (")[0] for h in hidden]
+        return [("gelb", "Auf der Seite ausgeblendet: " + ", ".join(names))]
+    return [("gruen", "Alle Bereiche der Startseite sind sichtbar")]
+
+
 def precheck_flipbook(state: dict, visible: list) -> list:
     """Prüfungen rund um „Blick ins Buch" und große Bilder (Hinweise; nur fehlende Dateien blockieren)."""
     checks = []
@@ -723,6 +753,7 @@ def precheck(state: dict) -> list:
     checks.append(("rot" if no_amazon else "gruen",
                    "Alle Amazon-Links gültig" if not no_amazon else f"Amazon-Link fehlt: {', '.join(no_amazon)}"))
     checks.extend(precheck_flipbook(state, visible))
+    checks.extend(precheck_media(state))
     git_ok, git_text = git_connection()
     checks.append(("gruen" if git_ok else "rot", git_text))
     try:
@@ -809,6 +840,8 @@ class Handler(BaseHTTPRequestHandler):
             except Exception:
                 state["textDefaults"] = {"de": {}, "en": {}}
             state["flipbooks"] = extras.load_flipbooks()
+            state["media"] = media.site_media(state.get("site", {}))
+            state["sectionLabels"] = media.SECTION_LABELS
             analytics_config = load_analytics_config()
             state["analyticsConfig"] = {
                 "url": analytics_config.get("url", "") or state.get("site", {}).get("analyticsUrl", ""),
@@ -825,6 +858,14 @@ class Handler(BaseHTTPRequestHandler):
             self.api_analytics()
         elif path == "/api/backups":
             self.send_json({"ok": True, "backups": extras.list_backups()})
+        elif path.startswith("/media/"):
+            rel = path[len("/media/"):]
+            f = (ROOT / "public" / rel).resolve() if re.fullmatch(r"(?:images|videos|downloads)/[A-Za-z0-9._/-]+", rel) and ".." not in rel else None
+            kinds = {".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png", ".webp": "image/webp", ".svg": "image/svg+xml", ".mp4": "video/mp4", ".pdf": "application/pdf"}
+            if f is not None and f.is_file() and f.suffix.lower() in kinds and str(f).startswith(str((ROOT / "public").resolve())):
+                self.send_file(f, kinds[f.suffix.lower()], no_cache=True)
+            else:
+                self.send_error(404)
         elif path.startswith("/flipbook-file/"):
             parts = path[len("/flipbook-file/"):].split("/")
             f = extras.flipbook_file(*parts) if len(parts) == 3 else None
@@ -916,6 +957,8 @@ class Handler(BaseHTTPRequestHandler):
                 self.api_backup_restore()
             elif path == "/api/undo-publish":
                 self.api_undo_publish()
+            elif path.startswith("/api/media/"):
+                self.api_media(path[len("/api/media/"):])
             elif path == "/api/site":
                 self.api_site()
             elif path == "/api/analytics/config":
@@ -1651,6 +1694,74 @@ class Handler(BaseHTTPRequestHandler):
             self.send_json({"ok": False, "error": "Zurückgenommen, aber die Übertragung zu GitHub ist fehlgeschlagen. Bitte „Änderungen zur Live-Seite senden“ drücken."})
             return
         self.send_json({"ok": True, "message": "Die letzte Veröffentlichung wurde zurückgenommen. GitHub aktualisiert die Live-Seite jetzt automatisch."})
+
+    def api_media(self, action: str):
+        """Seitenbereiche, Titelbild, Kinder-Videos, Gratis-Ausmalbild und App-Screenshots."""
+        ctype = self.headers.get("Content-Type", "")
+        fields, files = {}, {}
+        if ctype.startswith("multipart/"):
+            m = re.search(r"boundary=([^;]+)", ctype)
+            if not m:
+                self.send_json({"ok": False, "error": "Ungültige Anfrage."}, 400)
+                return
+            fields, files = parse_multipart(self.read_body(MAX_SITE_UPLOAD_BYTES), m.group(1).strip('"'))
+        else:
+            fields = self.read_json()
+        state = load_state()
+
+        def data(name):
+            return files[name][1] if name in files else None
+
+        def index():
+            try:
+                return int(fields.get("index", -1))
+            except (TypeError, ValueError):
+                return -1
+
+        try:
+            if action == "sections":
+                raw = fields.get("hidden", [])
+                if isinstance(raw, str):
+                    raw = json.loads(raw or "[]")
+                media.set_hidden_sections(state, raw)
+            elif action == "hero":
+                if data("image") is None:
+                    raise extras.AdminError("Bitte ein Bild auswählen.")
+                media.save_hero_image(data("image"))
+            elif action == "kids/add":
+                if data("video") is None or data("poster") is None:
+                    raise extras.AdminError("Bitte ein MP4-Video und ein Standbild auswählen.")
+                media.kids_add(state, data("video"), data("poster"), fields.get("title", "") or Path(files["video"][0]).stem)
+            elif action == "kids/delete":
+                media.kids_remove(state, index())
+            elif action == "kids/move":
+                media.move_item(state, "kidsVideos", index(), int(fields.get("dir", 0)))
+            elif action == "freebie":
+                if data("pdf") is None:
+                    raise extras.AdminError("Bitte eine PDF-Datei auswählen.")
+                media.freebie_set(state, data("pdf"), files["pdf"][0])
+            elif action == "appscreens/add":
+                if data("image") is None:
+                    raise extras.AdminError("Bitte ein Bild auswählen.")
+                captions = {"de": {"title": fields.get("titleDe", ""), "text": fields.get("textDe", "")},
+                            "en": {"title": fields.get("titleEn", ""), "text": fields.get("textEn", "")}}
+                media.appscreen_add(state, data("image"), captions, fields.get("titleDe", "") or Path(files["image"][0]).stem)
+            elif action == "appscreens/update":
+                captions = {"de": {"title": fields.get("titleDe", ""), "text": fields.get("textDe", "")},
+                            "en": {"title": fields.get("titleEn", ""), "text": fields.get("textEn", "")}}
+                media.appscreen_update(state, index(), captions)
+            elif action == "appscreens/delete":
+                media.appscreen_remove(state, index())
+            elif action == "appscreens/move":
+                media.move_item(state, "appScreens", index(), int(fields.get("dir", 0)))
+            else:
+                self.send_error(404)
+                return
+        except extras.AdminError as exc:
+            self.send_json({"ok": False, "error": str(exc)})
+            return
+        save_state(state)
+        self.send_json({"ok": True, "media": media.site_media(load_state()["site"])})
 
     def api_visibility(self):
         """Blendet ein Buch auf der Landingpage ein oder aus (bleibt im Admin erhalten)."""

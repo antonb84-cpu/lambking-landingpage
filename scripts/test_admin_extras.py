@@ -12,6 +12,7 @@ import sys
 import tempfile
 import threading
 import unittest
+import urllib.error
 import urllib.request
 from http.server import HTTPServer
 from pathlib import Path
@@ -21,6 +22,7 @@ sys.path.insert(0, str(REAL_ROOT / "admin"))
 
 import admin_server as server  # noqa: E402
 import extras  # noqa: E402
+import media  # noqa: E402
 
 
 def make_pdf(pages: int = 4) -> bytes:
@@ -325,6 +327,122 @@ class ServerTests(TempProject):
         self.post_multipart("/api/save", {"id": new["id"], "title": "Testbuch – Neu", "category": "malbuecher", "lang": "de", "editions": "[]", "visible": "1"}, {})
         new = next(b for b in json.loads(server.DATA_JSON.read_text(encoding="utf-8"))["books"] if b["id"] == new["id"])
         self.assertFalse(new.get("hidden"))
+
+
+FAKE_MP4 = b"\x00\x00\x00ftypmp42" + b"\x00" * 64
+
+
+class MediaTests(ServerTests):
+    """Startseiten-Medien: Bereiche, Titelbild, Kinder-Videos, Gratis-Ausmalbild, App-Screenshots."""
+
+    def state(self):
+        return json.loads(server.DATA_JSON.read_text(encoding="utf-8"))
+
+    def ts(self):
+        return server.BOOKS_TS.read_text(encoding="utf-8")
+
+    def test_bereiche_ausblenden_erscheint_in_den_seitendaten(self):
+        result = self.post_json("/api/media/sections", {"hidden": ["app", "kids", "gibtesnicht"]})
+        self.assertTrue(result["ok"])
+        self.assertEqual(self.state()["site"]["hiddenSections"], ["kids", "app"])
+        self.assertIn('hiddenSections: ["kids", "app"] as string[]', self.ts())
+
+    def test_ohne_felder_gelten_die_bisherigen_werte(self):
+        site = self.state()["site"]
+        self.assertNotIn("kidsVideos", site)  # noch nicht migriert → Standardwerte
+        self.assertIn('"src": "videos/kids/ausmalen-meer.mp4"', self.ts() if self.ts_exists() else "")
+
+    def ts_exists(self):
+        if not server.BOOKS_TS.exists():
+            server.render_books_ts(self.state())
+        return True
+
+    def test_titelbild_erzeugt_drei_groessen(self):
+        result = self.post_multipart("/api/media/hero", {}, {"image": ("t.jpg", make_image(2400, 1350))})
+        self.assertTrue(result["ok"], result)
+        from PIL import Image
+        folder = self.tmp / "public" / "images"
+        self.assertEqual(Image.open(folder / "hero-titel-breit.jpg").width, 2048)
+        self.assertEqual(Image.open(folder / "hero-titel.jpg").width, 1600)
+        self.assertEqual(Image.open(folder / "hero-titel-mobil.jpg").width, 1000)
+        self.assertFalse(list(folder.glob(".neu-*")))
+
+    def test_titelbild_hochformat_wird_abgelehnt_und_nichts_veraendert(self):
+        folder = self.tmp / "public" / "images"
+        (folder / "hero-titel.jpg").write_bytes(b"alt")
+        bad = self.post_multipart("/api/media/hero", {}, {"image": ("t.jpg", make_image(900, 1400))})
+        self.assertFalse(bad["ok"])
+        self.assertEqual((folder / "hero-titel.jpg").read_bytes(), b"alt")
+
+    def test_kinder_videos_hinzufuegen_sortieren_entfernen(self):
+        added = self.post_multipart("/api/media/kids/add", {}, {"video": ("Mein Video.mp4", FAKE_MP4), "poster": ("p.jpg", make_image(540, 960))})
+        self.assertTrue(added["ok"], added)
+        videos = added["media"]["kidsVideos"]
+        self.assertEqual(len(videos), 5)
+        new = videos[-1]
+        self.assertEqual(new["src"], "videos/kids/mein-video.mp4")
+        self.assertTrue((self.tmp / "public" / new["src"]).is_file())
+        self.assertTrue((self.tmp / "public" / new["poster"]).is_file())
+        moved = self.post_json("/api/media/kids/move", {"index": 4, "dir": -1})
+        self.assertEqual(moved["media"]["kidsVideos"][3]["src"], "videos/kids/mein-video.mp4")
+        removed = self.post_json("/api/media/kids/delete", {"index": 3})
+        self.assertTrue(removed["ok"])
+        self.assertFalse((self.tmp / "public" / new["src"]).exists())
+        self.assertFalse(self.post_json("/api/media/kids/delete", {"index": 99})["ok"])
+
+    def test_kein_mp4_oder_zu_grosses_video_wird_abgelehnt(self):
+        bad = self.post_multipart("/api/media/kids/add", {}, {"video": ("v.mp4", b"das ist kein video"), "poster": ("p.jpg", make_image(100, 100))})
+        self.assertFalse(bad["ok"])
+        self.assertEqual(len(self.state()["site"].get("kidsVideos", media.DEFAULT_KIDS_VIDEOS)), 4)
+        self.assertFalse(list((self.tmp / "public" / "videos" / "kids").glob("*"))) if (self.tmp / "public" / "videos" / "kids").exists() else None
+
+    def test_gratis_ausmalbild_ersetzen(self):
+        downloads = self.tmp / "public" / "downloads"
+        downloads.mkdir(parents=True)
+        (downloads / "LambKing-Ausmalbild-Kinder-Wiese.pdf").write_bytes(b"%PDF-alt")
+        (self.tmp / "public" / "images" / "ausmalbild-wiese-vorschau.jpg").write_bytes(b"alt")
+        result = self.post_multipart("/api/media/freebie", {}, {"pdf": ("Neues Bild.pdf", make_pdf(1))})
+        self.assertTrue(result["ok"], result)
+        freebie = result["media"]["freebie"]
+        self.assertEqual(freebie["pdf"], "downloads/neues-bild.pdf")
+        self.assertTrue((self.tmp / "public" / freebie["pdf"]).is_file())
+        self.assertTrue((self.tmp / "public" / freebie["preview"]).stat().st_size > 1000)
+        self.assertFalse((downloads / "LambKing-Ausmalbild-Kinder-Wiese.pdf").exists(), "alte Datei bleibt liegen")
+        bad = self.post_multipart("/api/media/freebie", {}, {"pdf": ("x.pdf", b"kein pdf")})
+        self.assertFalse(bad["ok"])
+
+    def test_app_screenshots(self):
+        (self.tmp / "public" / "images" / "app").mkdir(parents=True)
+        for item in media.DEFAULT_APP_SCREENS:
+            (self.tmp / "public" / item["src"]).write_bytes(b"x")
+        added = self.post_multipart("/api/media/appscreens/add", {"titleDe": "Neu", "textDe": "Satz", "titleEn": "New", "textEn": "Sentence"}, {"image": ("s.png", make_image(900, 1900))})
+        self.assertTrue(added["ok"], added)
+        screens = added["media"]["appScreens"]
+        self.assertEqual(len(screens), 7)
+        self.assertEqual(screens[-1]["en"]["title"], "New")
+        updated = self.post_json("/api/media/appscreens/update", {"index": 6, "titleDe": "Geändert", "textDe": "x", "titleEn": "Changed", "textEn": "y"})
+        self.assertEqual(updated["media"]["appScreens"][6]["de"]["title"], "Geändert")
+        self.post_json("/api/media/appscreens/move", {"index": 6, "dir": -1})
+        self.assertEqual(self.state()["site"]["appScreens"][5]["de"]["title"], "Geändert")
+        removed = self.post_json("/api/media/appscreens/delete", {"index": 5})
+        self.assertTrue(removed["ok"])
+        self.assertEqual(len(removed["media"]["appScreens"]), 6)
+        self.assertIn('"title": "Willkommen"', self.ts())
+
+    def test_letzten_screenshot_nicht_loeschbar(self):
+        state = self.state()
+        state["site"]["appScreens"] = media.DEFAULT_APP_SCREENS[:1]
+        server.save_state(state)
+        self.assertFalse(self.post_json("/api/media/appscreens/delete", {"index": 0})["ok"])
+
+    def test_medien_vorschau_route_ist_eng_begrenzt(self):
+        (self.tmp / "public" / "images" / "ok.jpg").write_bytes(b"jpgdaten")
+        (self.tmp / "geheim.txt").write_text("geheim", encoding="utf-8")
+        base = f"http://127.0.0.1:{self.port}"
+        self.assertEqual(urllib.request.urlopen(base + "/media/images/ok.jpg").read(), b"jpgdaten")
+        for bad in ("/media/../geheim.txt", "/media/images/../../geheim.txt", "/media/src/data/books.json", "/media/images/ok.txt"):
+            with self.assertRaises(urllib.error.HTTPError, msg=bad):
+                urllib.request.urlopen(base + bad)
 
 
 if __name__ == "__main__":

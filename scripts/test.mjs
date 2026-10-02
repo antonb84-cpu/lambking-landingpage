@@ -229,9 +229,10 @@ test('Vorschauseiten lassen sich ordnen und ein Hero-Buch auswählen', () => {
   const server = readFileSync(join(ROOT, 'admin/admin_server.py'), 'utf-8')
   const hero = readFileSync(join(SRC, 'components/FlipBook.tsx'), 'utf-8') + readFileSync(join(SRC, 'data/featured.ts'), 'utf-8')
   assert(admin.includes('sampleOrder') && admin.includes('moveSampleItem'), 'Sortierung der Vorschauseiten fehlt')
-  assert(admin.includes('f_showInHero'), 'Hero-Vorschau-Schalter fehlt im Backend')
+  assert(admin.includes('fbSetFeatured') && server.includes('/api/flipbook/featured'), 'Auswahl des Vorschaubuchs fehlt im Backend')
   assert(server.includes('MAX_SAMPLE_IMAGES = 10') && server.includes('sampleOrder'), 'Server begrenzt/sortiert Vorschauseiten nicht korrekt')
   assert(hero.includes('book.showInHero') && hero.includes('book.samples'), 'Vorschaubuch verwendet die gewählte Vorschau nicht')
+  assert(hero.includes('hasFlipbook'), 'Vorschaubuch bevorzugt kein Buch mit komplettem Blätterbuch')
 })
 
 test('Buchtypen/Kategorien sind lokalisiert und konsistent', () => {
@@ -335,6 +336,34 @@ test('Ausgeblendete Bücher bleiben im Admin, erscheinen aber nicht auf der Seit
     assert(inSite === !b.hidden, `${b.id}: ${b.hidden ? 'ausgeblendet, steht aber auf der Seite' : 'sichtbar, fehlt aber auf der Seite'}`)
   }
   assert(booksJson.books.some((b) => !b.hidden), 'Alle Bücher sind ausgeblendet')
+})
+
+test('Startseiten-Medien kommen aus den Seitendaten, sind vollständig vorhanden und Bereiche lassen sich ausblenden', () => {
+  const generated = readFileSync(join(SRC, 'data/books.ts'), 'utf-8')
+  const app = readFileSync(join(SRC, 'App.tsx'), 'utf-8')
+  const family = readFileSync(join(SRC, 'sections/Family.tsx'), 'utf-8')
+  const freebie = readFileSync(join(SRC, 'sections/Freebie.tsx'), 'utf-8')
+  const carousel = readFileSync(join(SRC, 'components/PhoneCarousel.tsx'), 'utf-8')
+  const server = readFileSync(join(ROOT, 'admin/admin_server.py'), 'utf-8')
+  const adminUi = readFileSync(join(ROOT, 'admin/index.html'), 'utf-8')
+  for (const id of ['tryit', 'app', 'supportedWorks']) assert(app.includes(`hiddenSections.includes('${id}')`), `Bereich „${id}" lässt sich nicht ausblenden`)
+  assert(family.includes('SITE.kidsVideos') && family.includes("hiddenSections.includes('kids')") && family.includes("hiddenSections.includes('freebie')"), 'Kinder-Videos/Gratis-Ausmalbild kommen nicht aus den Seitendaten')
+  assert(freebie.includes('SITE.freebie.pdf') && freebie.includes('SITE.freebie.preview'), 'Gratis-Ausmalbild nutzt feste Dateinamen')
+  assert(carousel.includes('SITE.appScreens'), 'App-Screenshots kommen nicht aus den Seitendaten')
+  assert(adminUi.includes('id="tab-medien"') && server.includes('/api/media/'), 'Medien-Bereich fehlt im Backend')
+  const grab = (key) => {
+    const match = generated.match(new RegExp(String.raw`${key}: (\[.*?\]|\{.*?\})(?: as [^\r\n]*)?,\r?\n`, 's'))
+    assert(match, `${key} fehlt in den Seitendaten`)
+    return JSON.parse(match[1])
+  }
+  const files = [
+    ...grab('kidsVideos').flatMap((item) => [item.src, item.poster]),
+    ...Object.values(grab('freebie')),
+    ...grab('appScreens').map((item) => item.src),
+  ]
+  assert(files.length >= 10, 'Medienlisten sind unerwartet leer')
+  for (const rel of files) assert(existsSync(join(ROOT, 'public', rel)), `Datei der Startseite fehlt: ${rel}`)
+  assert(['hero-titel-breit.jpg', 'hero-titel.jpg', 'hero-titel-mobil.jpg'].every((name) => existsSync(join(ROOT, 'public/images', name))), 'Titelbild-Dateien fehlen')
 })
 
 test('Alle Frontend-Texte sind zweisprachig und im Backend bearbeitbar', () => {

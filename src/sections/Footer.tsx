@@ -49,7 +49,7 @@ export default function Footer() {
 
   const NAV = [
     { label: t.nav.books, href: homeHref('#buecher') },
-    { label: t.nav.app, href: homeHref('#app') },
+    ...(SITE.hiddenSections.includes('app') ? [] : [{ label: t.nav.app, href: homeHref('#app') }]),
     { label: t.nav.about, href: homeHref('#ueber') },
     { label: t.nav.faq, href: homeHref('#faq') },
     ...(SITE.creatorPartnerEnabled

@@ -1,5 +1,6 @@
 import { Download, Sparkles } from 'lucide-react'
 import Reveal from '@/components/Reveal'
+import { SITE } from '@/data/books'
 import { useLang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
 
@@ -15,7 +16,7 @@ export default function Freebie({ embedded = false }: { embedded?: boolean }) {
                   {f.badge}
                 </span>
                 <img
-                  src="images/ausmalbild-wiese-vorschau.jpg"
+                  src={SITE.freebie.preview}
                   alt={f.title}
                   loading="lazy"
                   className="w-full -rotate-2 rounded-sm border border-border bg-white shadow-md transition-transform duration-300 hover:rotate-0"
@@ -29,7 +30,7 @@ export default function Freebie({ embedded = false }: { embedded?: boolean }) {
                 <h3 className="font-display text-xl font-semibold leading-tight sm:text-2xl">{f.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{f.text}</p>
                 <a
-                  href="downloads/LambKing-Ausmalbild-Kinder-Wiese.pdf"
+                  href={SITE.freebie.pdf}
                   download
                   className="mt-4 inline-flex items-center justify-center gap-2 rounded-full border-2 border-primary/25 bg-background px-5 py-2.5 text-sm font-bold text-primary transition-colors hover:border-primary/50"
                 >

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useLang } from '@/data/lang'
-import { APP_SCREENS } from '@/data/appScreens'
+import { SITE } from '@/data/books'
 
 // Wisch-Karussell mit Handy-Rahmen: nativer Scroll-Snap (Wischen am Handy, Trackpad/Maus am Desktop),
 // dazu Pfeile, Punkte und Tastatur (←/→). Das mittlere Handy ist das aktive.
@@ -9,6 +9,7 @@ export default function PhoneCarousel() {
   const lang = useLang()
   const trackRef = useRef<HTMLDivElement>(null)
   const [active, setActive] = useState(0)
+  const APP_SCREENS = SITE.appScreens
   const L = APP_SCREENS.length
   const label = lang === 'en' ? { prev: 'Previous screen', next: 'Next screen', go: 'Show screen', group: 'App screenshots' } : { prev: 'Vorheriger Screen', next: 'Nächster Screen', go: 'Screen anzeigen', group: 'App-Screenshots' }
 

@@ -44,12 +44,12 @@ export default function App() {
         <Hero />
         <UspBand />
         <Books />
-        <TryIt />
+        {!SITE.hiddenSections.includes('tryit') && <TryIt />}
         <Family />
         <Donate />
         <Mascot />
-        <AppSection />
-        <SupportedWorks />
+        {!SITE.hiddenSections.includes('app') && <AppSection />}
+        {!SITE.hiddenSections.includes('supportedWorks') && <SupportedWorks />}
         {SITE.creatorPartnerEnabled ? <CreatorPartnerTeaser /> : null}
         <Faq />
       </main>
