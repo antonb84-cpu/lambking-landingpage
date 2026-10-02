@@ -1,0 +1,17 @@
+lambking.store – alles an einem Ort
+
+ADMIN-STARTEN.bat        Admin starten (Bücher, Texte, Links, Veröffentlichen)
+SEITE-ANSEHEN.bat        Seite lokal ansehen (öffnet http://localhost:3000/)
+README.md                Beschreibung des Projekts und der Abläufe
+WIEDERHERSTELLUNG.md     Neu aufsetzen auf einem anderen PC
+
+src, public, admin, ... der eigentliche Projektordner (Landingpage + Admin)
+runtime                  mitgelieferte Programme (Python, Node, Git)
+analytics-worker         anonymer Zähldienst
+
+_Entwuerfe-und-Material  Bilder, Videos, Maskottchen, Entwürfe, Textvorschläge
+                         (nicht Teil der Webseite). Wichtig darin:
+                         - Datenschutz-Textvorschlag-Kunstwerke.md  (zurückgestellt, nirgends eingebaut)
+                         - bilder-auswahl\fertig  (9 fertige Szenen-Bilder)
+                         - maskottchen, szenen, video
+Stand: Zweig redesign-2026-09 (Redesign, noch nicht veröffentlicht, noch nicht gepusht).

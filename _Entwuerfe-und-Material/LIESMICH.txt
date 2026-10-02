@@ -1,0 +1,8 @@
+LambKing-Neu – Vorschlag für eine verbesserte Landingpage (Deine echte Seite C:\LambKing.de wurde NICHT verändert)
+
+mockup\            Komplette neue Seite. Ansehen: mockup\MOCKUP-ANSEHEN.bat (Browser öffnet http://localhost:8765)
+mockup\assets\     Hero-Bild/-Video, Maskottchen (transparent), Cover, Freebie-PDF
+maskottchen\       Alle Entwürfe (A-G, E1-E4, Referenzblatt mit Posen, Ausmalversion)
+szenen\            Marken-Szene (quadratisch + Breitbild)
+video\             Kling-Videos (Hero-Szene, Winken-Test)
+Kosten MuAPI gesamt bisher ca. 2,0 USD (Guthaben 5,06 auf 3,06 USD).
