@@ -54,6 +54,12 @@ DEFAULT_APP_SCREENS = [
      "de": {"title": "Mein Bereich", "text": "Merkliste und Einstellungen – alles bleibt nur auf deinem Gerät."},
      "en": {"title": "My area", "text": "Favorites and settings – everything stays on your device only."}},
 ]
+DEFAULT_HERO = {
+    "textTone": "dark",                      # Schrift auf dem Titelbild: dark (dunkel) oder light (weiß)
+    "scrim": 80,                             # Stärke der Abdunklung/Aufhellung links hinter der Schrift (0–100)
+    "focusDesktop": {"x": 50, "y": 35},      # Bildausschnitt am Computer (Prozent)
+    "focusMobile": {"x": 70, "y": 50},       # Bildausschnitt am Handy (Prozent)
+}
 MAX_VIDEO_BYTES = 30 * 1024 * 1024
 MAX_PDF_BYTES = 25 * 1024 * 1024
 MAX_KIDS_VIDEOS = 12
@@ -65,9 +71,63 @@ def root() -> Path:
     return extras.ROOT
 
 
+def _percent(value, default: int) -> int:
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return default
+    if number != number:  # NaN
+        return default
+    return int(round(max(0, min(100, number))))
+
+
+def hero_settings(site: dict) -> dict:
+    """Einstellungen des Titelbilds (immer vollständig und im gültigen Bereich)."""
+    raw = site.get("hero") if isinstance(site.get("hero"), dict) else {}
+    d = DEFAULT_HERO
+    desktop = raw.get("focusDesktop") if isinstance(raw.get("focusDesktop"), dict) else {}
+    mobile = raw.get("focusMobile") if isinstance(raw.get("focusMobile"), dict) else {}
+    return {
+        "textTone": raw.get("textTone") if raw.get("textTone") in ("dark", "light") else d["textTone"],
+        "scrim": _percent(raw.get("scrim"), d["scrim"]),
+        "focusDesktop": {"x": _percent(desktop.get("x"), d["focusDesktop"]["x"]), "y": _percent(desktop.get("y"), d["focusDesktop"]["y"])},
+        "focusMobile": {"x": _percent(mobile.get("x"), d["focusMobile"]["x"]), "y": _percent(mobile.get("y"), d["focusMobile"]["y"])},
+    }
+
+
+def set_hero_settings(state: dict, data: dict) -> dict:
+    if not isinstance(data, dict):
+        raise AdminError("Ungültige Einstellungen.")
+    tone = data.get("textTone")
+    if tone not in ("dark", "light"):
+        raise AdminError("Bitte „dunkle“ oder „helle“ Schrift wählen.")
+    state["site"]["hero"] = hero_settings({"hero": {
+        "textTone": tone,
+        "scrim": data.get("scrim"),
+        "focusDesktop": {"x": data.get("focusDesktopX"), "y": data.get("focusDesktopY")},
+        "focusMobile": {"x": data.get("focusMobileX"), "y": data.get("focusMobileY")},
+    }})
+    return state["site"]["hero"]
+
+
+def hero_info() -> dict:
+    """Pixelgrößen der aktuell veröffentlichten Titelbild-Dateien (für die Anzeige im Admin)."""
+    from PIL import Image
+    info = {}
+    for name, _ in HERO_FILES:
+        path = root() / "public" / "images" / name
+        try:
+            with Image.open(path) as image:
+                info[name] = {"width": image.width, "height": image.height, "kb": path.stat().st_size // 1024}
+        except Exception:
+            info[name] = None
+    return info
+
+
 def site_media(site: dict) -> dict:
     """Aktuelle Medienlisten der Seite (mit Standardwerten für fehlende Felder)."""
     return {
+        "hero": hero_settings(site),
         "kidsVideos": [dict(x) for x in (site.get("kidsVideos") or DEFAULT_KIDS_VIDEOS)],
         "freebie": dict(site.get("freebie") or DEFAULT_FREEBIE),
         "appScreens": [dict(x) for x in (site.get("appScreens") or DEFAULT_APP_SCREENS)],
@@ -133,13 +193,18 @@ def set_hidden_sections(state: dict, ids) -> list:
 
 
 # --- Titelbild der Startseite
-HERO_FILES = (("hero-titel-breit.jpg", 2048), ("hero-titel.jpg", 1600), ("hero-titel-mobil.jpg", 1000))
+HERO_FILES = (("hero-titel-breit.jpg", 2560), ("hero-titel.jpg", 1600), ("hero-titel-mobil.jpg", 1000))
+HERO_MIN_WIDTH = 1600
+HERO_RATIO_RANGE = (1.5, 2.6)     # Breite : Höhe
 
 
 def save_hero_image(data: bytes) -> None:
     image = _open_image(data, "Das Titelbild")
-    if image.width < 1200 or image.width / image.height < 1.3:
-        raise AdminError("Das Titelbild muss ein Querformat-Bild sein (mindestens 1200 Pixel breit, etwa 16:9).")
+    if image.width < HERO_MIN_WIDTH:
+        raise AdminError(f"Das Titelbild ist zu klein ({image.width} Pixel breit). Es muss mindestens {HERO_MIN_WIDTH} Pixel breit sein, empfohlen sind 2560 × 1440.")
+    ratio = image.width / image.height
+    if not HERO_RATIO_RANGE[0] <= ratio <= HERO_RATIO_RANGE[1]:
+        raise AdminError(f"Das Format passt nicht ({image.width} × {image.height}). Bitte ein Querformat zwischen 3:2 und 2,6:1 verwenden, am besten 16:9 (2560 × 1440).")
     out_dir = root() / "public" / "images"
     temp = {name: out_dir / f".neu-{name}" for name, _ in HERO_FILES}
     try:

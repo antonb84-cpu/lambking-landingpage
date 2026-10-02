@@ -358,11 +358,11 @@ class MediaTests(ServerTests):
         return True
 
     def test_titelbild_erzeugt_drei_groessen(self):
-        result = self.post_multipart("/api/media/hero", {}, {"image": ("t.jpg", make_image(2400, 1350))})
+        result = self.post_multipart("/api/media/hero", {}, {"image": ("t.jpg", make_image(2800, 1575))})
         self.assertTrue(result["ok"], result)
         from PIL import Image
         folder = self.tmp / "public" / "images"
-        self.assertEqual(Image.open(folder / "hero-titel-breit.jpg").width, 2048)
+        self.assertEqual(Image.open(folder / "hero-titel-breit.jpg").width, 2560)
         self.assertEqual(Image.open(folder / "hero-titel.jpg").width, 1600)
         self.assertEqual(Image.open(folder / "hero-titel-mobil.jpg").width, 1000)
         self.assertFalse(list(folder.glob(".neu-*")))
@@ -605,6 +605,42 @@ class PublishFlowTests(unittest.TestCase):
         self.assertTrue(result["ok"], result)
         self.assertEqual(result["excluded"], ["public/videos/riesig.mp4"])
         self.assertNotIn("public/videos/riesig.mp4", self.git(self.origin, "ls-tree", "-r", "--name-only", "main").stdout.split())
+
+
+
+class HeroTests(MediaTests):
+    """Titelbild: genaue Vorgaben (Größe/Format) und Einstellungen für Schrift und Ausschnitt."""
+
+    def test_zu_kleines_oder_falsches_format_wird_abgelehnt(self):
+        folder = self.tmp / "public" / "images"
+        (folder / "hero-titel.jpg").write_bytes(b"alt")
+        for width, height in ((1200, 675), (1599, 900), (2000, 2000), (3000, 1000)):
+            bad = self.post_multipart("/api/media/hero", {}, {"image": ("t.jpg", make_image(width, height))})
+            self.assertFalse(bad["ok"], (width, height))
+        self.assertEqual((folder / "hero-titel.jpg").read_bytes(), b"alt")
+        ok = self.post_multipart("/api/media/hero", {}, {"image": ("t.jpg", make_image(1600, 900))})
+        self.assertTrue(ok["ok"], ok)
+        also_ok = self.post_multipart("/api/media/hero", {}, {"image": ("t.jpg", make_image(2600, 1000))})
+        self.assertTrue(also_ok["ok"], also_ok)
+
+    def test_standardwerte_entsprechen_dem_bisherigen_aussehen(self):
+        self.assertEqual(media.hero_settings({}), {"textTone": "dark", "scrim": 80, "focusDesktop": {"x": 50, "y": 35}, "focusMobile": {"x": 70, "y": 50}})
+
+    def test_einstellungen_speichern_und_in_seitendaten(self):
+        result = self.post_json("/api/media/hero-settings", {"textTone": "light", "scrim": 55, "focusDesktopX": 60, "focusDesktopY": 20, "focusMobileX": 80, "focusMobileY": 40})
+        self.assertTrue(result["ok"], result)
+        self.assertEqual(result["media"]["hero"], {"textTone": "light", "scrim": 55, "focusDesktop": {"x": 60, "y": 20}, "focusMobile": {"x": 80, "y": 40}})
+        self.assertIn('"textTone": "light"', self.ts())
+        self.assertIn("as HeroSettings", self.ts())
+
+    def test_ungueltige_einstellungen_werden_begrenzt_oder_abgelehnt(self):
+        self.assertFalse(self.post_json("/api/media/hero-settings", {"textTone": "rot", "scrim": 50})["ok"])
+        clamped = self.post_json("/api/media/hero-settings", {"textTone": "dark", "scrim": 999, "focusDesktopX": -50, "focusDesktopY": "abc", "focusMobileX": None, "focusMobileY": 100.4})
+        self.assertTrue(clamped["ok"])
+        hero = clamped["media"]["hero"]
+        self.assertEqual(hero["scrim"], 100)
+        self.assertEqual(hero["focusDesktop"], {"x": 0, "y": 35})
+        self.assertEqual(hero["focusMobile"], {"x": 70, "y": 100})
 
 
 if __name__ == "__main__":

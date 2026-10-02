@@ -350,6 +350,8 @@ test('Startseiten-Medien kommen aus den Seitendaten, sind vollständig vorhanden
   assert(family.includes('SITE.kidsVideos') && family.includes("hiddenSections.includes('kids')") && family.includes("hiddenSections.includes('freebie')"), 'Kinder-Videos/Gratis-Ausmalbild kommen nicht aus den Seitendaten')
   assert(freebie.includes('SITE.freebie.pdf') && freebie.includes('SITE.freebie.preview'), 'Gratis-Ausmalbild nutzt feste Dateinamen')
   assert(carousel.includes('SITE.appScreens'), 'App-Screenshots kommen nicht aus den Seitendaten')
+  const heroSrc = readFileSync(join(SRC, 'sections/Hero.tsx'), 'utf-8')
+  assert(heroSrc.includes('SITE.hero') && heroSrc.includes('--hero-pos-d') && heroSrc.includes("textTone === 'light'"), 'Titelbild-Einstellungen (Schrift, Ausschnitt) werden nicht verwendet')
   assert(adminUi.includes('id="tab-medien"') && server.includes('/api/media/'), 'Medien-Bereich fehlt im Backend')
   const grab = (key) => {
     const match = generated.match(new RegExp(String.raw`${key}: (\[.*?\]|\{.*?\})(?: as [^\r\n]*)?,\r?\n`, 's'))

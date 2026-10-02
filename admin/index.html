@@ -153,6 +153,24 @@
   .fb-actions{display:flex; gap:8px; flex-wrap:wrap; margin-top:6px;}
   .fb-actions .btn{padding:8px 14px; font-size:13px;}
   .fb-busy{margin-top:10px; padding:10px 12px; border-radius:10px; background:#FFF8E5; border:1px solid #E7D39A; font-size:13.5px;}
+  /* Titelbild */
+  .spec-box{border:1px solid #E7D39A; background:#FFF8E5; border-radius:12px; padding:14px 16px; font-size:13.5px; line-height:1.5;}
+  .spec-box ul{margin:8px 0 6px 20px;}
+  .spec-box li{margin-bottom:4px;}
+  .spec-box small{display:block; color:var(--muted); margin-top:6px;}
+  .hero-sims{display:grid; grid-template-columns:2fr 1fr; gap:14px; margin-top:16px; align-items:start;}
+  @media (max-width:760px){ .hero-sims{grid-template-columns:1fr;} }
+  .sim-title{display:block; font-size:13px; color:var(--blue); margin-bottom:6px;}
+  .hero-sim{position:relative; width:100%; aspect-ratio:2.2/1; border-radius:10px; overflow:hidden; border:1px solid var(--line); background-color:#f5f1e8; background-size:cover; container-type:inline-size;}
+  .hero-sim.mobile{aspect-ratio:16/10;}
+  .sim-scrim{position:absolute; inset:0;}
+  .sim-zone{position:absolute; left:7%; top:8%; width:41%; height:52%; border:2px dashed rgba(180,60,40,.85); border-radius:6px; padding:2cqw; overflow:hidden;}
+  .sim-h1{font-family:Georgia,serif; font-weight:700; font-size:3.4cqw; line-height:1.15;}
+  .sim-h1 i{color:#B58A12;}
+  .sim-p{font-size:1.5cqw; margin-top:1.6cqw; opacity:.85;}
+  .sim-btns{display:flex; gap:1cqw; margin-top:1.8cqw;}
+  .sim-btns span{display:block; width:9cqw; height:2.6cqw; border-radius:999px; background:#1B3A5C;}
+  .sim-btns span.gold{background:#C9A227;}
   /* Startseite & Medien */
   .media-preview{margin-bottom:12px;}
   .media-preview img{max-width:100%; max-height:200px; border-radius:10px; border:1px solid var(--line);}
@@ -482,11 +500,71 @@
 
     <section>
       <h2>🖼 Titelbild der Startseite</h2>
-      <p class="hint">Das große Bild ganz oben (am besten Querformat 16:9, mindestens 1600 Pixel breit). Es wird automatisch für Computer, Tablet und Handy in drei Größen erzeugt.</p>
-      <div id="heroPreview" class="media-preview"></div>
-      <input type="file" id="heroFile" accept="image/jpeg,image/png,image/webp" class="hidden" onchange="uploadMedia('hero', {image:this.files[0]}, this)">
-      <button class="btn btn-blue" onclick="document.getElementById('heroFile').click()">Neues Titelbild auswählen</button>
-      <p class="hint" style="margin-top:10px;">Tipp: Links im Bild sollte Platz für die Überschrift sein (Himmel, Wasser, Wiese).</p>
+      <p class="hint">Das große Bild ganz oben mit der Überschrift. Hier siehst du genau, was das Bild können muss, und kannst Schriftfarbe und Bildausschnitt einstellen.</p>
+
+      <div class="spec-box">
+        <b>📐 Genaue Vorgaben für das Bild</b>
+        <ul>
+          <li><b>Format:</b> Querformat, am besten <b>16:9</b>. Erlaubt ist alles zwischen 3:2 und 2,6:1.</li>
+          <li><b>Größe:</b> empfohlen <b>2560 × 1440 Pixel</b>. Mindestens <b>1600 Pixel</b> Breite (kleiner wird abgelehnt). Unter 2048 Pixel wirkt es auf großen Bildschirmen etwas weich.</li>
+          <li><b>Datei:</b> JPG, PNG oder WebP, bis 15 MB. Daraus entstehen automatisch drei Größen: 2560 px (Computer), 1600 px (Tablet), 1000 px (Handy).</li>
+          <li><b>Hier liegt die Schrift (Computer):</b> links, etwa von <b>5 % bis 50 % der Breite</b> und von <b>8 % bis 60 % der Höhe</b> (gestrichelter Kasten unten). Dort sollte das Bild ruhig sein – Himmel, Wasser, Wiese – <b>ohne Gesichter</b>.</li>
+          <li><b>Hauptmotiv</b> (Personen, Tiere) in die <b>rechte Hälfte</b> und zwischen <b>15 % und 85 % der Höhe</b>: Auf breiten Bildschirmen werden oben und unten bis zu 25 % abgeschnitten.</li>
+          <li><b>Handy und Tablet:</b> Das Bild steht über der Schrift, die Schrift liegt nicht darauf. Dort werden links und rechts bis zu 10 % abgeschnitten – wichtige Motive zwischen 15 % und 90 % der Breite.</li>
+          <li><b>Schrift:</b> Überschrift Fraunces, am Computer etwa <b>50 px</b> (Handy 36–48 px), darunter der Satz mit 18 px. Die zweite Überschriftzeile ist golden. Die Texte änderst du im Reiter „Texte“ (Startbereich).</li>
+        </ul>
+        <small id="heroCurrent"></small>
+      </div>
+
+      <div class="hero-sims">
+        <div>
+          <b class="sim-title">Vorschau Computer</b>
+          <div class="hero-sim" id="heroSimD">
+            <div class="sim-scrim" id="heroScrim"></div>
+            <div class="sim-zone" id="heroZone">
+              <div class="sim-h1">Kleine Helden. Starke Geschichten. <i>Ein großer Gott.</i></div>
+              <div class="sim-p">Kindgerechte Bibelgeschichten zum Ausmalen und Entdecken …</div>
+              <div class="sim-btns"><span></span><span class="gold"></span></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <b class="sim-title">Vorschau Handy</b>
+          <div class="hero-sim mobile" id="heroSimM"></div>
+        </div>
+      </div>
+
+      <div class="grid2" style="margin-top:14px;">
+        <div>
+          <label for="hero_tone">Schriftfarbe auf dem Bild (Computer)</label>
+          <select id="hero_tone" onchange="heroSimUpdate()"><option value="dark">Dunkel (auf hellem Bild)</option><option value="light">Weiß (auf dunklem Bild)</option></select>
+        </div>
+        <div>
+          <label for="hero_scrim">Abdunklung/Aufhellung hinter der Schrift: <b id="hero_scrimVal"></b> %</label>
+          <input type="range" id="hero_scrim" min="0" max="100" step="5" oninput="heroSimUpdate()">
+        </div>
+        <div>
+          <label for="hero_fdx">Bildausschnitt Computer – waagerecht: <b id="hero_fdxVal"></b> %</label>
+          <input type="range" id="hero_fdx" min="0" max="100" step="1" oninput="heroSimUpdate()">
+        </div>
+        <div>
+          <label for="hero_fdy">Bildausschnitt Computer – senkrecht: <b id="hero_fdyVal"></b> %</label>
+          <input type="range" id="hero_fdy" min="0" max="100" step="1" oninput="heroSimUpdate()">
+        </div>
+        <div>
+          <label for="hero_fmx">Bildausschnitt Handy – waagerecht: <b id="hero_fmxVal"></b> %</label>
+          <input type="range" id="hero_fmx" min="0" max="100" step="1" oninput="heroSimUpdate()">
+        </div>
+        <div>
+          <label for="hero_fmy">Bildausschnitt Handy – senkrecht: <b id="hero_fmyVal"></b> %</label>
+          <input type="range" id="hero_fmy" min="0" max="100" step="1" oninput="heroSimUpdate()">
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-blue" onclick="saveHeroSettings()">💾 Schrift- und Ausschnitt-Einstellungen speichern</button>
+        <input type="file" id="heroFile" accept="image/jpeg,image/png,image/webp" class="hidden" onchange="uploadHero(this)">
+        <button class="btn btn-gold" onclick="document.getElementById('heroFile').click()">🖼 Neues Titelbild auswählen</button>
+      </div>
     </section>
 
     <section>
@@ -2091,7 +2169,7 @@ function renderMediaTab(){
   const m = state.media;
   $('mediaSections').innerHTML = Object.entries(state.sectionLabels || {}).map(([id, label]) =>
     `<label class="section-toggle"><input type="checkbox" data-section="${id}" ${m.hiddenSections.includes(id) ? '' : 'checked'}> <span>${esc(label)}</span></label>`).join('');
-  $('heroPreview').innerHTML = `<img src="/media/images/hero-titel.jpg${stamp()}" alt="Aktuelles Titelbild">`;
+  renderHeroPanel();
   $('mediaKids').innerHTML = m.kidsVideos.map((v, i) => `
     <div class="media-item">
       <img src="/media/${esc(v.poster)}${stamp()}" alt="Standbild ${i + 1}">
@@ -2117,6 +2195,62 @@ function renderMediaTab(){
       <button class="icon-btn" title="Nach unten" ${i === m.appScreens.length - 1 ? 'disabled' : ''} onclick="moveMedia('appscreens/move', ${i}, 1)">▼</button>
       <button class="icon-btn" title="Entfernen" onclick="deleteMedia('appscreens/delete', ${i}, 'Diesen Screenshot entfernen?')">🗑</button>
     </div>`).join('');
+}
+
+
+/* ── Titelbild: Einstellungen, Vorschau, Upload ── */
+function renderHeroPanel(){
+  const h = state.media.hero;
+  $('hero_tone').value = h.textTone;
+  $('hero_scrim').value = h.scrim;
+  $('hero_fdx').value = h.focusDesktop.x; $('hero_fdy').value = h.focusDesktop.y;
+  $('hero_fmx').value = h.focusMobile.x; $('hero_fmy').value = h.focusMobile.y;
+  const info = state.heroInfo || {};
+  const dim = f => info[f] ? `${info[f].width} × ${info[f].height} px (${info[f].kb} KB)` : 'nicht gefunden';
+  $('heroCurrent').textContent = 'Aktuell: Computer ' + dim('hero-titel-breit.jpg') + ' · Tablet ' + dim('hero-titel.jpg') + ' · Handy ' + dim('hero-titel-mobil.jpg');
+  const src = `/media/images/hero-titel-breit.jpg${stamp()}`;
+  $('heroSimD').style.backgroundImage = `url(${src})`;
+  $('heroSimM').style.backgroundImage = `url(/media/images/hero-titel-mobil.jpg${stamp()})`;
+  heroSimUpdate();
+}
+
+function heroSimUpdate(){
+  const v = id => Number($(id).value);
+  [['hero_scrim','hero_scrimVal'],['hero_fdx','hero_fdxVal'],['hero_fdy','hero_fdyVal'],['hero_fmx','hero_fmxVal'],['hero_fmy','hero_fmyVal']].forEach(([i, o]) => $(o).textContent = v(i));
+  const light = $('hero_tone').value === 'light';
+  const a = v('hero_scrim') / 100;
+  const c = light ? '27,50,100' : '250,245,234';
+  $('heroScrim').style.background = `linear-gradient(90deg, rgba(${c},${a}) 0%, rgba(${c},${(a * 0.775).toFixed(3)}) 26%, rgba(${c},${(a * 0.25).toFixed(3)}) 44%, rgba(${c},0) 58%)`;
+  $('heroZone').style.color = light ? '#fff' : '#192643';
+  $('heroSimD').style.backgroundPosition = `${v('hero_fdx')}% ${v('hero_fdy')}%`;
+  $('heroSimM').style.backgroundPosition = `${v('hero_fmx')}% ${v('hero_fmy')}%`;
+}
+
+async function saveHeroSettings(){
+  await mediaCall('hero-settings', JSON.stringify({
+    textTone: $('hero_tone').value, scrim: Number($('hero_scrim').value),
+    focusDesktopX: Number($('hero_fdx').value), focusDesktopY: Number($('hero_fdy').value),
+    focusMobileX: Number($('hero_fmx').value), focusMobileY: Number($('hero_fmy').value),
+  }));
+}
+
+function uploadHero(input){
+  const file = input.files && input.files[0];
+  if (!file) return;
+  const url = URL.createObjectURL(file);
+  const probe = new Image();
+  probe.onload = async () => {
+    URL.revokeObjectURL(url);
+    const w = probe.naturalWidth, h = probe.naturalHeight, ratio = w / h;
+    let problem = '';
+    if (w < 1600) problem = `Das Bild ist nur ${w} Pixel breit – mindestens 1600, empfohlen 2560 × 1440.`;
+    else if (ratio < 1.5 || ratio > 2.6) problem = `Das Format passt nicht (${w} × ${h}). Bitte Querformat zwischen 3:2 und 2,6:1, am besten 16:9.`;
+    if (problem){ toast(problem, true); input.value = ''; return; }
+    if (w < 2048 && !confirm(`Das Bild hat ${w} × ${h} Pixel. Empfohlen sind 2560 × 1440 – auf großen Bildschirmen kann es etwas weich wirken.\n\nTrotzdem verwenden?`)){ input.value = ''; return; }
+    await uploadMedia('hero', {image: file}, input);
+  };
+  probe.onerror = () => { URL.revokeObjectURL(url); toast('Das Bild konnte nicht gelesen werden.', true); input.value = ''; };
+  probe.src = url;
 }
 
 async function mediaCall(action, body){

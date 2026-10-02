@@ -166,9 +166,17 @@ def render_books_ts(state: dict):
     site_media = media.site_media(s)
     out.append("  // Bereiche, die auf der Seite ausgeblendet sind (im Admin: Reiter „Seitenbereiche“).")
     out.append(f"  hiddenSections: {json.dumps(site_media['hiddenSections'])} as string[],")
+    out.append(f"  hero: {json.dumps(site_media['hero'])} as HeroSettings,")
     out.append(f"  kidsVideos: {json.dumps(site_media['kidsVideos'], ensure_ascii=False)} as { '{' } src: string; poster: string { '}' }[],")
     out.append(f"  freebie: {json.dumps(site_media['freebie'], ensure_ascii=False)},")
     out.append(f"  appScreens: {json.dumps(site_media['appScreens'], ensure_ascii=False)} as AppScreenDef[],")
+    out.append("}")
+    out.append("")
+    out.append("export interface HeroSettings {")
+    out.append("  textTone: 'dark' | 'light'")
+    out.append("  scrim: number")
+    out.append("  focusDesktop: { x: number; y: number }")
+    out.append("  focusMobile: { x: number; y: number }")
     out.append("}")
     out.append("")
     out.append("export interface AppScreenDef {")
@@ -841,6 +849,7 @@ class Handler(BaseHTTPRequestHandler):
                 state["textDefaults"] = {"de": {}, "en": {}}
             state["flipbooks"] = extras.load_flipbooks()
             state["media"] = media.site_media(state.get("site", {}))
+            state["heroInfo"] = media.hero_info()
             state["sectionLabels"] = media.SECTION_LABELS
             analytics_config = load_analytics_config()
             state["analyticsConfig"] = {
@@ -1726,6 +1735,8 @@ class Handler(BaseHTTPRequestHandler):
                 if isinstance(raw, str):
                     raw = json.loads(raw or "[]")
                 media.set_hidden_sections(state, raw)
+            elif action == "hero-settings":
+                media.set_hero_settings(state, fields)
             elif action == "hero":
                 if data("image") is None:
                     raise extras.AdminError("Bitte ein Bild auswählen.")
