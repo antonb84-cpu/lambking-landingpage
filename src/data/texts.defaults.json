@@ -453,23 +453,6 @@
       "badge": "Gratis",
       "download": "Ausmalbild herunterladen (PDF)",
       "hint": "DIN A4 · zum Ausdrucken"
-    },
-    "artwork": {
-      "eyebrow": "Eure Kunstwerke",
-      "title": "Eure ausgemalten Bilder",
-      "text": "So bunt malen Kinder mit LambKing. Schick uns dein ausgemaltes Bild – wir zeigen eine Auswahl hier auf der Seite.",
-      "empty": "Hier könnte dein Bild hängen",
-      "send": "Mein Bild einsenden",
-      "howTitle": "So geht's",
-      "steps": [
-        "Ausmalen und fotografieren – das Blatt gut sichtbar, ohne Kindergesicht und ohne Namen im Bild.",
-        "Per E-Mail an uns senden. Ein Elternteil schreibt dazu: „Ich bin einverstanden, dass das Bild auf lambking.store gezeigt wird.“",
-        "Wir wählen eine Auswahl aus und zeigen sie hier – nur mit eurer Zustimmung, jederzeit auf Wunsch wieder entfernt."
-      ],
-      "mailSubject": "Mein LambKing-Kunstwerk",
-      "mailBody": "Hallo LambKing-Team,\n\nhier ist unser ausgemaltes Bild (im Anhang).\n\nIch bin der/die Erziehungsberechtigte und einverstanden, dass das Bild auf lambking.store gezeigt werden darf (ohne Namen).\n\nViele Grüße",
-      "byline": "ausgemalt von einem Kind",
-      "enlarge": "Vergrößern"
     }
   },
   "en": {
@@ -926,23 +909,6 @@
       "badge": "Free",
       "download": "Download coloring page (PDF)",
       "hint": "A4 · ready to print"
-    },
-    "artwork": {
-      "eyebrow": "Your artwork",
-      "title": "Your colored pictures",
-      "text": "This is how colorful children color with LambKing. Send us your colored picture – we show a selection here on the site.",
-      "empty": "Your picture could hang here",
-      "send": "Send my picture",
-      "howTitle": "How it works",
-      "steps": [
-        "Color it and take a photo – the page clearly visible, no child's face and no names in the picture.",
-        "Email it to us. A parent adds: “I agree that the picture may be shown on lambking.store.”",
-        "We choose a selection and show it here – only with your consent, and removed again on request."
-      ],
-      "mailSubject": "My LambKing artwork",
-      "mailBody": "Hello LambKing team,\n\nhere is our colored picture (attached).\n\nI am the parent/guardian and agree that the picture may be shown on lambking.store (without names).\n\nKind regards",
-      "byline": "colored by a child",
-      "enlarge": "Enlarge"
     }
   }
 }

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ExternalLink, HandHeart, Landmark } from 'lucide-react'
+import { ExternalLink, HandHeart, Landmark, Sprout } from 'lucide-react'
 import Reveal from '@/components/Reveal'
 import RichText from '@/components/RichText'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -46,6 +46,23 @@ function DescriptionText({ text, more, less }: { text: string; more: string; les
   )
 }
 
+// Hebt die Prozentzahl („10 %") im Satz farbig und größer hervor.
+function Emphasis({ text }: { text: string }) {
+  return (
+    <>
+      {text.split(/(\d+\s?%)/).map((part, i) =>
+        /^\d+\s?%$/.test(part) ? (
+          <span key={i} className="whitespace-nowrap font-display text-[1.25em] font-bold text-accent">
+            {part}
+          </span>
+        ) : (
+          <RichText key={i} text={part} />
+        ),
+      )}
+    </>
+  )
+}
+
 export default function SupportedWorks() {
   const lang = useLang()
   const t = textsFor(lang).supportedWorks
@@ -55,18 +72,20 @@ export default function SupportedWorks() {
   )
 
   return (
-    <section id="unterstuetzte-werke" className="scroll-mt-40 border-y border-accent/20 bg-accent/[0.045] py-14 lg:scroll-mt-32 lg:py-16">
+    <section id="unterstuetzte-werke" className="scroll-mt-40 border-y-2 border-accent/30 bg-gradient-to-b from-accent/[0.14] via-accent/[0.07] to-accent/[0.03] py-16 lg:scroll-mt-32 lg:py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <Reveal className="mx-auto max-w-3xl text-center">
-          <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-accent">{t.eyebrow}</p>
-          <h2 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">{t.title}</h2>
+          <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-accent text-accent-foreground shadow-lg shadow-accent/30">
+            <Sprout className="h-7 w-7" aria-hidden />
+          </span>
+          <p className="mb-3 text-xs font-bold uppercase tracking-[0.22em] text-accent">{t.eyebrow}</p>
+          <h2 className="font-display text-balance text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">{t.title}</h2>
+          <div className="mx-auto mt-5 h-1 w-20 rounded-full bg-accent" aria-hidden />
           {t.firstBefore || t.firstStrong || t.firstAfter ? (
-            <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
-              <RichText text={t.firstBefore} />
-              {t.firstStrong ? (
-                <> {' '}<strong className="font-bold text-foreground"><RichText text={t.firstStrong} /></strong></>
-              ) : null}
-              {t.firstAfter ? <> {' '}<RichText text={t.firstAfter} /></> : null}
+            <p className="mt-5 text-lg font-semibold leading-relaxed text-foreground sm:text-xl">
+              <Emphasis text={t.firstBefore} />
+              {t.firstStrong ? <> {' '}<Emphasis text={t.firstStrong} /></> : null}
+              {t.firstAfter ? <> {' '}<Emphasis text={t.firstAfter} /></> : null}
             </p>
           ) : null}
           {t.second ? <p className="mt-3 text-base leading-relaxed text-muted-foreground sm:text-lg"><RichText text={t.second} /></p> : null}
@@ -74,7 +93,7 @@ export default function SupportedWorks() {
         </Reveal>
 
         {organizations.length > 0 ? (
-          <div className="mt-9 grid items-stretch gap-5 md:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-6 grid items-stretch gap-5 md:grid-cols-2 lg:grid-cols-3">
             {organizations.map((organization, index) => {
               const description =
                 lang === 'en'
@@ -85,7 +104,7 @@ export default function SupportedWorks() {
                 : organization.flyerDe || organization.flyerEn
               return (
                 <Reveal key={organization.id || `${organization.name}-${index}`} delay={index * 100}>
-                  <article className="flex h-full flex-col rounded-2xl border border-accent/25 bg-background p-5 text-center shadow-sm sm:p-6">
+                  <article className="flex h-full flex-col rounded-2xl border-2 border-accent/35 bg-background p-5 text-center shadow-md shadow-accent/10 sm:p-6">
                     <div
                       className={`flex h-20 w-full items-center justify-center rounded-xl px-5 ${
                         organization.logoBackground === 'dark' ? 'bg-primary' : 'bg-card'

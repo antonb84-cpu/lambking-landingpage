@@ -15,7 +15,7 @@ export default function Donate() {
   if (!SITE.paypalUrl && !SITE.kofiUrl) return null
 
   return (
-    <section id="unterstuetzen" className="scroll-mt-28 py-16 lg:py-24">
+    <section id="unterstuetzen" className="scroll-mt-28 pb-16 pt-14 lg:pb-24 lg:pt-20">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <Reveal>
           <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary to-[hsl(222_58%_22%)] text-primary-foreground shadow-xl shadow-primary/25">

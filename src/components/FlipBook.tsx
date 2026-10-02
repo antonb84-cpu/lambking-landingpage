@@ -157,7 +157,7 @@ export default function FlipBook({ book }: { book: Book }) {
   const thickLeft = Math.min(7, Math.ceil(f / 5))
 
   return (
-    <div ref={rootRef} className="mx-auto w-full max-w-[560px]" role="group" aria-label={book.title}>
+    <div ref={rootRef} className="mx-auto w-full max-w-[680px]" role="group" aria-label={book.title}>
       <div
         className="relative w-full select-none"
         style={{ aspectRatio: `${PAGE_RATIO * 2}`, perspective: '2600px', opacity: fading ? 0 : 1, transition: 'opacity 500ms ease' }}

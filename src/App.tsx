@@ -48,8 +48,8 @@ export default function App() {
         <Family />
         <Donate />
         <Mascot />
-        <SupportedWorks />
         <AppSection />
+        <SupportedWorks />
         {SITE.creatorPartnerEnabled ? <CreatorPartnerTeaser /> : null}
         <Faq />
       </main>

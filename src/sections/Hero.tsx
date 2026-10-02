@@ -19,7 +19,7 @@ export default function Hero() {
             alt={t.hero.videoAlt}
             fetchPriority="high"
             decoding="async"
-            className="h-full w-full object-cover object-[72%_50%] xl:absolute xl:inset-0 xl:object-[100%_60%]"
+            className="h-full w-full object-cover object-[70%_50%] xl:absolute xl:inset-0 xl:object-[50%_35%]"
           />
         </picture>
         <div
@@ -31,7 +31,7 @@ export default function Hero() {
         />
       </div>
 
-      <div className="relative mx-auto flex max-w-6xl px-4 pb-10 pt-8 sm:px-6 xl:min-h-[700px] xl:items-start xl:pb-24 xl:pt-14">
+      <div className="relative mx-auto flex max-w-6xl px-4 pb-10 pt-8 sm:px-6 xl:min-h-[max(700px,min(54vw,800px))] xl:items-start xl:pb-24 xl:pt-14">
         <Reveal className="max-w-[32rem]">
           <h1 className="font-display text-4xl font-semibold leading-[1.14] tracking-tight sm:text-5xl xl:text-[3.1rem]">
             <span className="xl:block">{t.hero.title1}</span>{' '}
