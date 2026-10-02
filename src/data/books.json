@@ -653,7 +653,9 @@
             "Pasaje bíblico: Génesis 1–2"
           ]
         }
-      ]
+      ],
+      "amazonRating": 5.0,
+      "amazonRatingCount": 1
     },
     {
       "id": "bibelgeschichten-zum-ausmalen-4",
@@ -840,7 +842,9 @@
           ]
         }
       ],
-      "showInHero": true
+      "showInHero": true,
+      "amazonRating": 5.0,
+      "amazonRatingCount": 1
     },
     {
       "id": "bibelgeschichten-zum-ausmalen-3",
@@ -1025,7 +1029,9 @@
             "Impreso por una sola cara"
           ]
         }
-      ]
+      ],
+      "amazonRating": 5.0,
+      "amazonRatingCount": 1
     },
     {
       "id": "zachaeus",
