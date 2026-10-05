@@ -63,7 +63,7 @@ export default function Footer() {
         <div className="flex flex-col items-center gap-8 md:flex-row md:justify-between">
           <div className="text-center md:text-left">
             <img
-              src="images/lambking-logo-2026.png"
+              src="images/lambking-stories-logo.png"
               alt="LambKing Stories"
               className="mx-auto h-28 w-28 rounded-2xl bg-background p-2 object-contain shadow-md md:mx-0"
             />

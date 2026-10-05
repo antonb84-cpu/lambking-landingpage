@@ -37,7 +37,7 @@ export function legalHtml(title, text, assetPrefix = '', canonical = '') {
 <title>${esc(title)} – LambKing Stories</title>
 <meta name="description" content="${esc(title)} von LambKing Stories.">
 ${canonical ? `<link rel="canonical" href="${esc(canonical)}">` : ''}
-<link rel="icon" type="image/png" href="${assetPrefix}images/lambking-logo-2026.png">
+<link rel="icon" type="image/png" href="${assetPrefix}images/lambking-stories-logo.png">
 <style>
   @font-face { font-family: 'Fraunces'; font-weight: 400 700; font-display: swap;
     src: url('${assetPrefix}fonts/Fraunces-var-latin.woff2') format('woff2'); }
@@ -57,7 +57,7 @@ ${canonical ? `<link rel="canonical" href="${esc(canonical)}">` : ''}
 </head>
 <body>
 <header>
-  <a href="${assetPrefix}index.html"><img src="${assetPrefix}images/lambking-logo-2026.png" alt="LambKing Stories"></a>
+  <a href="${assetPrefix}index.html"><img src="${assetPrefix}images/lambking-stories-logo.png" alt="LambKing Stories"></a>
   <a href="${assetPrefix}index.html">← Zurück zur Startseite</a>
 </header>
 <main>

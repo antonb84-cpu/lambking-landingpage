@@ -598,7 +598,7 @@ test('Creator-Partner-Route erhält eigene SEO-Daten ohne alte GitHub-Canonical'
 })
 
 test('Alle LambKing-Logos verwenden die neue gemeinsame Bilddatei', () => {
-  const asset = 'images/lambking-logo-2026.png'
+  const asset = 'images/lambking-stories-logo.png'
   const files = [
     'src/sections/Header.tsx',
     'src/sections/Footer.tsx',
@@ -610,7 +610,7 @@ test('Alle LambKing-Logos verwenden die neue gemeinsame Bilddatei', () => {
   for (const file of files) {
     const source = readFileSync(join(ROOT, file), 'utf-8')
     assert(source.includes(asset), `Neues Logo fehlt in ${file}`)
-    assert(!/images\/(?:logo\.webp|lambking-logo\.png|app-logo\.png|lamm-kopf\.png)/.test(source), `Alte Logo-Datei wird noch in ${file} verwendet`)
+    assert(!/images\/(?:logo\.webp|lambking-logo(?:-2026)?\.png|app-logo\.png|lamm-kopf\.png)/.test(source), `Alte Logo-Datei wird noch in ${file} verwendet`)
   }
 })
 
