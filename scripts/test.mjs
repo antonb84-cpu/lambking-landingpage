@@ -597,6 +597,23 @@ test('Creator-Partner-Route erhält eigene SEO-Daten ohne alte GitHub-Canonical'
   assert(booksJson.site.publicUrl === 'https://lambking.store/', 'Öffentliche Projekt-URL zeigt nicht auf lambking.store')
 })
 
+test('Alle LambKing-Logos verwenden die neue gemeinsame Bilddatei', () => {
+  const asset = 'images/lambking-logo-2026.png'
+  const files = [
+    'src/sections/Header.tsx',
+    'src/sections/Footer.tsx',
+    'index.html',
+    'scripts/gen-legal.mjs',
+    'admin/index.html',
+  ]
+  assert(existsSync(join(ROOT, 'public', asset)), 'Neue Logo-Datei fehlt')
+  for (const file of files) {
+    const source = readFileSync(join(ROOT, file), 'utf-8')
+    assert(source.includes(asset), `Neues Logo fehlt in ${file}`)
+    assert(!/images\/(?:logo\.webp|lambking-logo\.png|app-logo\.png|lamm-kopf\.png)/.test(source), `Alte Logo-Datei wird noch in ${file} verwendet`)
+  }
+})
+
 test('Creator-Bewerbungsseite ist im portablen Backend vollständig schaltbar', () => {
   const admin = readFileSync(join(ROOT, 'admin/index.html'), 'utf-8')
   const server = readFileSync(join(ROOT, 'admin/admin_server.py'), 'utf-8')

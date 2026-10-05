@@ -63,9 +63,9 @@ export default function Footer() {
         <div className="flex flex-col items-center gap-8 md:flex-row md:justify-between">
           <div className="text-center md:text-left">
             <img
-              src="images/logo.webp"
+              src="images/lambking-logo-2026.png"
               alt="LambKing Stories"
-              className="mx-auto h-14 w-auto rounded-md bg-background px-3 py-2 shadow-md md:mx-0"
+              className="mx-auto h-28 w-28 rounded-2xl bg-background p-2 object-contain shadow-md md:mx-0"
             />
             <p className="mt-3 max-w-xs text-sm text-primary-foreground/70">
               <RichText text={t.footer.tagline} />

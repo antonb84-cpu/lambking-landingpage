@@ -95,17 +95,11 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/90 backdrop-blur-md">
       <div className="mx-auto flex h-24 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6">
-        <a href={homeHref()} className="flex items-center gap-1.5" aria-label={t.a11y.brandHome}>
+        <a href={homeHref()} className="flex items-center" aria-label={t.a11y.brandHome}>
           <img
-            src="images/lambking-logo.png"
+            src="images/lambking-logo-2026.png"
             alt="LambKing Stories"
-            className="h-14 w-auto transition-transform hover:scale-[1.04] sm:h-16"
-          />
-          <img
-            src="images/lamm-kopf.png"
-            alt=""
-            aria-hidden
-            className="hidden h-12 w-auto transition-transform hover:rotate-3 sm:block sm:h-14"
+            className="h-20 w-20 object-contain transition-transform hover:scale-[1.04] sm:h-[88px] sm:w-[88px]"
           />
         </a>
         {/* Desktop: Navigation, dann Abstand, dann DE/EN */}
