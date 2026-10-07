@@ -6,6 +6,7 @@
 // ─────────────────────────────────────────────────────────────
 
 import { useEffect, useState } from 'react'
+import { isBookPath } from './bookLink'
 import { isCreatorPartnerPath } from './routes'
 import { SITE } from './books'
 
@@ -52,6 +53,7 @@ function initialLang(): Lang {
 
 function applyDocumentMeta(l: Lang) {
   if (typeof document === 'undefined') return
+  if (isBookPath()) return // Buchseiten behalten ihren eigenen Titel, ihre Beschreibung und ihren Canonical aus dem Build
   const page = SITE.creatorPartnerEnabled && isCreatorPartnerPath() ? 'creatorPartner' : 'home'
   const meta = META[page][l]
   document.documentElement.lang = l

@@ -16,6 +16,7 @@ import { coverFor } from '@/data/covers'
 import { editionsOf } from '@/data/editions'
 import { hasFlipbook } from '@/data/flipbooks'
 import { splitTitle, volumeLabel } from '@/data/titles'
+import { bookIdFromLocation, bookPath, isBookPath } from '@/data/bookLink'
 
 // Kategorie-Helfer (Labels/Typen kommen aus den Buchdaten, sprachabhängig)
 const catDefOf = (id: string) => CATEGORIES.find((c) => c.id === id)
@@ -585,6 +586,12 @@ function Lightbox({
 
 function setBookParam(id: string | null) {
   const url = new URL(window.location.href)
+  if (isBookPath()) {
+    // Auf einer Buchseite (/buch/<name>/) bleibt die Adresse, solange das Fenster offen ist; beim Schließen geht es zur Startseite
+    if (id) return
+    window.history.replaceState(null, '', new URL('.', document.baseURI))
+    return
+  }
   if (id) url.searchParams.set('buch', id)
   else url.searchParams.delete('buch')
   window.history.replaceState(null, '', url)
@@ -596,12 +603,9 @@ export default function Books() {
 
   // Deep-Link beim ersten Laden direkt als Startzustand lesen (?buch=david).
   // Ungültige IDs werden ignoriert – die Seite bleibt benutzbar.
-  const [active, setActive] = useState<Book | null>(() => {
-    const params = new URLSearchParams(window.location.search)
-    return BOOKS.find((b) => b.id === params.get('buch')) ?? null
-  })
+  const [active, setActive] = useState<Book | null>(() => BOOKS.find((b) => b.id === bookIdFromLocation()) ?? null)
   const [activeEdition, setActiveEdition] = useState<string | null>(() => {
-    const found = BOOKS.find((b) => b.id === new URLSearchParams(window.location.search).get('buch'))
+    const found = BOOKS.find((b) => b.id === bookIdFromLocation())
     if (!found) return null
     const editions = editionsOf(found)
     return editions.find((item) => item.language === lang)?.language
@@ -718,7 +722,20 @@ export default function Books() {
                                   {volumeLabel(cardBook) ? (
                                     <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-accent">{volumeLabel(cardBook)}</p>
                                   ) : null}
-                                  <h3 className="book-card-title font-display text-base font-semibold leading-tight sm:mt-1 sm:text-2xl">{main}</h3>
+                                  <h3 className="book-card-title font-display text-base font-semibold leading-tight sm:mt-1 sm:text-2xl">
+                                    <a
+                                      href={bookPath(b)}
+                                      onClick={(event) => {
+                                        // normaler Klick öffnet das Fenster; Strg/Mittelklick öffnet die eigene Buchseite
+                                        if (event.ctrlKey || event.metaKey || event.shiftKey || event.button !== 0) return
+                                        event.preventDefault()
+                                        openBook(b)
+                                      }}
+                                      className="hover:underline"
+                                    >
+                                      {main}
+                                    </a>
+                                  </h3>
                                   {sub ? <p className="mt-1 text-xs leading-snug text-muted-foreground sm:text-sm">{sub}</p> : null}
                                   {cardBook.detail ? <p className="mt-2 text-xs font-semibold text-muted-foreground">{cardBook.detail}</p> : null}
                                 </>

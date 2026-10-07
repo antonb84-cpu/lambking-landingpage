@@ -495,7 +495,8 @@ def _front_source(rel: str, spread: bool, out_path: Path) -> bool:
     src = ROOT / "public" / rel
     if not src.is_file():
         return False
-    if out_path.is_file() and out_path.stat().st_mtime >= src.stat().st_mtime:
+    jpg_path = out_path.with_suffix(".jpg")  # JPG-Fassung für Vorschaubilder beim Teilen (WhatsApp, Facebook)
+    if out_path.is_file() and jpg_path.is_file() and min(out_path.stat().st_mtime, jpg_path.stat().st_mtime) >= src.stat().st_mtime:
         return False
     Image.MAX_IMAGE_PIXELS = 60_000_000
     with Image.open(src) as image:
@@ -508,6 +509,7 @@ def _front_source(rel: str, spread: bool, out_path: Path) -> bool:
             image = image.resize((FRONT_WIDTH, round(image.height * FRONT_WIDTH / image.width)), Image.LANCZOS)
         out_path.parent.mkdir(parents=True, exist_ok=True)
         image.save(out_path, "WEBP", quality=78, method=6)
+        image.save(jpg_path, "JPEG", quality=84, optimize=True, progressive=True)
     return True
 
 

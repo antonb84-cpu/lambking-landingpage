@@ -267,6 +267,20 @@ try {
     await new Promise((r) => setTimeout(r, 1500))
   }
 
+  // Buchtitel ist ein echter Link auf die Buchseite (für Suchmaschinen); ein normaler Klick öffnet nur das Buchfenster
+  {
+    const before = await targetCount()
+    const href = await evalJs(`document.querySelector('#buecher h3 a')?.getAttribute('href') || ''`)
+    await evalJs(`document.querySelector('#buecher h3 a')?.click()`)
+    const opened = await waitForPageState(`!!document.querySelector('[role="dialog"]') && location.pathname.indexOf('/buch/') === -1`, 8000)
+    const after = await targetCount()
+    const ok = /^buch\/[a-z0-9-]+\/$/.test(href) && opened === true && after === before
+    console.log(`${ok ? '✓' : '✗'} Buchtitel: echter Link (${href}), Klick öffnet das Buchfenster ohne neuen Tab`)
+    if (!ok) fehler++
+    await send('Page.navigate', { url: `http://127.0.0.1:${HTTP_PORT}/` })
+    await new Promise((r) => setTimeout(r, 1500))
+  }
+
   {
     await evalJs(`[...document.querySelectorAll('button')].find(b => /^EN(English)?$/.test(b.textContent.trim()))?.click()`)
     await new Promise((r) => setTimeout(r, 1500))

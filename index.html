@@ -5,9 +5,9 @@
     <!-- Lokale Vorschau: Auf /creator-partner/ müssen relative Pfade (Bilder, Schriften) eine Ebene höher
          gesucht werden. Der Produktions-Build setzt dieses <base> selbst (scripts/postbuild.mjs). -->
     <script>
-      if (!document.querySelector('base') && /\/creator-partner\/?$/.test(location.pathname)) {
+      if (!document.querySelector('base') && /\/(creator-partner|buch\/[a-z0-9-]+)\/?$/.test(location.pathname)) {
         var b = document.createElement('base')
-        b.setAttribute('href', location.pathname.replace(/creator-partner\/?$/, ''))
+        b.setAttribute('href', location.pathname.replace(/(creator-partner|buch\/[a-z0-9-]+)\/?$/, ''))
         document.head.appendChild(b)
       }
     </script>

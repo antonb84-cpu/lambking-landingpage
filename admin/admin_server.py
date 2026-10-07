@@ -46,7 +46,7 @@ BOOKS_TS = ROOT / "src" / "data" / "books.ts"
 TEXT_DEFAULTS_JSON = ROOT / "src" / "data" / "texts.defaults.json"
 ANALYTICS_LOCAL_JSON = ADMIN / "analytics.local.json"
 
-ADMIN_VERSION = "2026-10-02-8"  # muss mit ADMIN_VERSION in index.html übereinstimmen (Test prüft das)
+ADMIN_VERSION = "2026-10-07-1"  # muss mit ADMIN_VERSION in index.html übereinstimmen (Test prüft das)
 PORT = int(os.environ.get("LAMBKING_ADMIN_PORT", "8123"))  # nur für Tests anders
 MAX_IMAGE_BYTES = 15 * 1024 * 1024    # 15 MB für Cover/Fotos
 MAX_VIDEO_BYTES = 30 * 1024 * 1024    # kurze, portable MP4-Vorschau
