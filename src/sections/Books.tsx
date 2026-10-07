@@ -11,6 +11,7 @@ import { LANGUAGE_META } from '@/data/languageMeta'
 import { textsFor } from '@/data/texts'
 import { OPEN_BOOK_EVENT } from '@/data/openBook'
 import { isMiddleClick, trackAmazonClick } from '@/data/analytics'
+import { coverFor } from '@/data/covers'
 
 // Kategorie-Helfer (Labels/Typen kommen aus den Buchdaten, sprachabhängig)
 const catDefOf = (id: string) => CATEGORIES.find((c) => c.id === id)
@@ -76,8 +77,9 @@ const localizedBook = (book: Book, language: string): Book => {
     highlights: edition.highlights?.length ? edition.highlights : book.highlights,
     samples: edition.samples?.length ? edition.samples : book.samples,
     amazon: edition.amazon,
-    cover: edition.cover || book.cover,
-    coverSpread: edition.cover ? Boolean(edition.coverSpread) : book.coverSpread,
+    cover: coverFor(book, edition).src,
+    coverFront: undefined,
+    coverSpread: coverFor(book, edition).spread,
     lifestyleImages: edition.lifestyleImages ?? (edition.language === book.lang ? book.lifestyleImages : []),
     previewVideo: edition.previewVideo ?? (edition.language === book.lang ? book.previewVideo : undefined),
   }
@@ -112,6 +114,7 @@ function highlightIcon(text: string) {
 }
 
 function BookCover({ book, variant }: { book: Book; variant: 'card' | 'dialog' }) {
+  const { src: coverSrc, spread: coverIsSpread } = coverFor(book)
   const shared = variant === 'card'
     ? 'max-h-full w-auto max-w-full rounded-[3px] shadow-[0_14px_26px_-10px_rgba(21,49,103,0.55)] transition-transform duration-300 group-hover:-rotate-1 group-hover:scale-[1.03]'
     : 'mx-auto w-full max-w-[320px] rounded-[3px] shadow-2xl shadow-primary/25 lg:sticky lg:top-10'
@@ -123,10 +126,10 @@ function BookCover({ book, variant }: { book: Book; variant: 'card' | 'dialog' }
     />
   )
 
-  if (!book.coverSpread) {
+  if (!coverIsSpread) {
     return (
       <span className="relative inline-flex max-h-full max-w-full">
-        <img src={book.cover} alt={book.title} loading={variant === 'card' ? 'lazy' : undefined} className={shared} />
+        <img src={coverSrc} alt={book.title} loading={variant === 'card' ? 'lazy' : undefined} className={shared} />
         {crease}
       </span>
     )
@@ -139,7 +142,7 @@ function BookCover({ book, variant }: { book: Book; variant: 'card' | 'dialog' }
       aria-label={book.title}
     >
       <img
-        src={book.cover}
+        src={coverSrc}
         alt=""
         aria-hidden
         loading={variant === 'card' ? 'lazy' : undefined}
@@ -154,7 +157,7 @@ function BookMediaGallery({ book, onZoom, copy }: { book: Book; onZoom: (src: st
   const [index, setIndex] = useState(0)
   const touchStart = useRef<{ x: number; y: number } | null>(null)
   const slides = [
-    { kind: 'cover' as const, src: book.cover, label: copy.mediaCover },
+    { kind: 'cover' as const, src: coverFor(book).src, label: copy.mediaCover },
     ...(book.lifestyleImages ?? []).map((src) => ({ kind: 'lifestyle' as const, src, label: copy.mediaLifestyle })),
     ...book.samples.map((src, sampleIndex) => ({ kind: 'sample' as const, src, label: `${copy.samplePage} ${sampleIndex + 1}` })),
     ...(book.previewVideo ? [{ kind: 'video' as const, src: book.previewVideo, label: copy.mediaVideo }] : []),
@@ -295,7 +298,7 @@ function BuyButton({ book, size = 'md', preferredLanguage, label }: { book: Book
       className={`block w-full ${width} transition-transform hover:scale-[1.03] focus-visible:rounded-full focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/60`}
       aria-label={`${book.title} – ${label ?? t.books.buyAmazon}`}
     >
-      <img src="images/buttons/amazon.png" alt={label ?? t.books.buyAmazon} className="h-auto w-full" />
+      <img src="images/buttons/amazon.webp" alt={label ?? t.books.buyAmazon} className="h-auto w-full" />
     </a>
   )
 }

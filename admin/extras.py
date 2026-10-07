@@ -426,3 +426,62 @@ def prune_text_overrides(overrides, defaults):
         elif default is None or value != default:
             result[key] = value
     return result
+
+
+# ───────────────────────── Bildoptimierung: kleine Vorderseiten der Cover ─────────────────────────
+# Die Cover-Dateien sind oft komplette Druck-Umschläge (Vorder- und Rückseite, bis zu 3 MB). Auf der Seite wird nur
+# die Vorderseite gezeigt. Beim Speichern werden deshalb kleine WebP-Vorderseiten erzeugt (images/front/…) und als
+# „coverFront" eingetragen. Die Originale bleiben unverändert.
+
+FRONT_DIR = "images/front"
+FRONT_WIDTH = 640           # Breite der Vorderseite in Pixel (Karte, Fenster, Blätterbuch)
+FRONT_ASPECT = 8.5 / 11     # Seitenverhältnis einer Buchvorderseite
+
+
+def _front_source(rel: str, spread: bool, out_path: Path) -> bool:
+    """Erzeugt die Vorderseite zu einem Cover. Gibt True zurück, wenn neu geschrieben wurde."""
+    from PIL import Image
+    src = ROOT / "public" / rel
+    if not src.is_file():
+        return False
+    if out_path.is_file() and out_path.stat().st_mtime >= src.stat().st_mtime:
+        return False
+    Image.MAX_IMAGE_PIXELS = 60_000_000
+    with Image.open(src) as image:
+        image = image.convert("RGB")
+        if spread:
+            # Umschlag: Die Vorderseite liegt rechts und ist so breit wie die Höhe × Buchformat
+            width = min(image.width, round(image.height * FRONT_ASPECT))
+            image = image.crop((image.width - width, 0, image.width, image.height))
+        if image.width > FRONT_WIDTH:
+            image = image.resize((FRONT_WIDTH, round(image.height * FRONT_WIDTH / image.width)), Image.LANCZOS)
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        image.save(out_path, "WEBP", quality=78, method=6)
+    return True
+
+
+def ensure_front_covers(state: dict) -> int:
+    """Stellt für alle Bücher und Sprach-Ausgaben die kleinen Vorderseiten bereit und trägt „coverFront" ein."""
+    changed = 0
+    for book in state.get("books", []):
+        holders = [book] + [e for e in book.get("editions", []) if isinstance(e, dict)]
+        for holder in holders:
+            rel = str(holder.get("cover", "")).replace("\\", "/")
+            if not rel or not re.fullmatch(r"images/[A-Za-z0-9._/-]+", rel):
+                holder.pop("coverFront", None)
+                continue
+            stem = Path(rel).stem
+            for suffix in ("-spread",):
+                if stem.endswith(suffix):
+                    stem = stem[: -len(suffix)]
+            front_rel = f"{FRONT_DIR}/{stem}.webp"
+            try:
+                if _front_source(rel, bool(holder.get("coverSpread")), ROOT / "public" / front_rel):
+                    changed += 1
+                if (ROOT / "public" / front_rel).is_file():
+                    holder["coverFront"] = front_rel
+                else:
+                    holder.pop("coverFront", None)
+            except Exception:
+                holder.pop("coverFront", None)  # nie das Speichern verhindern
+    return changed

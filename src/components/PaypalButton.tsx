@@ -21,7 +21,7 @@ export default function PaypalButton({ compact = false }: { compact?: boolean })
       aria-label={t.support.paypalAlt}
     >
       <img
-        src={`images/buttons/paypal-${lang}-trim.png`}
+        src={`images/buttons/paypal-${lang}-trim.webp`}
         alt={t.support.paypalAlt}
         className={`block ${compact ? 'h-9 w-auto' : 'h-full w-full'}`}
       />

@@ -30,8 +30,11 @@ export default function Hero() {
       {/* Titelbild: mobil oben, ab xl als Hintergrund hinter dem Text */}
       <div className="relative aspect-[16/10] w-full sm:aspect-[16/8] xl:absolute xl:inset-0 xl:aspect-auto">
         <picture>
+          <source media="(min-width: 1280px)" srcSet="images/hero-titel-breit.webp" type="image/webp" />
           <source media="(min-width: 1280px)" srcSet="images/hero-titel-breit.jpg" />
+          <source media="(min-width: 768px)" srcSet="images/hero-titel.webp" type="image/webp" />
           <source media="(min-width: 768px)" srcSet="images/hero-titel.jpg" />
+          <source srcSet="images/hero-titel-mobil.webp" type="image/webp" />
           <img
             src="images/hero-titel-mobil.jpg"
             alt={t.hero.videoAlt}

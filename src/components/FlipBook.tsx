@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Pause, Play } from 'lucide-react'
 import type { Book } from '@/data/books'
+import { coverFor } from '@/data/covers'
 import { flipBackFor, flipLanguagesFor, flipPagesFor } from '@/data/flipbooks'
 import { useLang } from '@/data/lang'
 import { LANGUAGE_META } from '@/data/languageMeta'
@@ -54,8 +55,7 @@ export default function FlipBook({ book }: { book: Book }) {
     flipLangs.includes(lang) ? lang : flipLangs.includes(book.lang) ? book.lang : flipLangs[0] ?? book.lang,
   )
   const edition = useMemo(() => book.editions.find((item) => item.language === sel), [book, sel])
-  const cover = edition?.cover ?? book.cover
-  const coverSpread = edition?.cover ? edition.coverSpread : book.coverSpread
+  const { src: cover, spread: coverSpread } = coverFor(book, edition)
   const pages = useMemo(() => flipPagesFor(book.id, sel) ?? (edition?.samples?.length ? edition.samples : book.samples), [book, sel, edition])
   const backCover = useMemo(() => flipBackFor(book.id, sel), [book.id, sel])
   const leaves = useMemo<Leaf[]>(() => {

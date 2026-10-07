@@ -81,7 +81,7 @@ test('Blätterbuch: bedienbar per Tippen/Tastatur, ohne Bildmenü, respektiert r
 
 test('Blätterbuch zeigt Titelseite (auch Druckbogen-Cover) und alle Seiten des Buches', () => {
   const flip = readFileSync(join(SRC, 'components/FlipBook.tsx'), 'utf-8')
-  assert(flip.includes('book.coverSpread') && flip.includes('flipPagesFor(book.id, sel)'), 'Cover/Seiten kommen nicht aus den Buchdaten')
+  assert(flip.includes('coverFor(book, edition)') && flip.includes('flipPagesFor(book.id, sel)'), 'Cover/Seiten kommen nicht aus den Buchdaten')
   assert(flip.includes('flipLanguagesFor(book.id)') && flip.includes('aria-pressed={active}') && flip.includes('switchLang'), 'Sprach-Flaggen im Blätterbuch fehlen')
   assert(flip.includes('book.samples'), 'Fallback auf Vorschauseiten fehlt')
   const manifest = JSON.parse(readFileSync(join(SRC, 'data/flipbooks.json'), 'utf-8'))
@@ -141,7 +141,7 @@ test('Mehrsprachige Bücher besitzen ein eigenes, korrekt verknüpftes Cover je 
   const booksView = readFileSync(join(SRC, 'sections/Books.tsx'), 'utf-8')
   const admin = readFileSync(join(ROOT, 'admin/index.html'), 'utf-8')
   const server = readFileSync(join(ROOT, 'admin/admin_server.py'), 'utf-8')
-  assert(booksView.includes('cover: edition.cover || book.cover'), 'Sprachcover werden im Frontend nicht übernommen')
+  assert(booksView.includes('cover: coverFor(book, edition).src'), 'Sprachcover werden im Frontend nicht übernommen')
   assert(booksView.includes('<BookMediaGallery key=') && booksView.includes('book={displayBook}') && booksView.includes('<BookCover book={book}'), 'Buchgalerie verwendet nicht das gewählte Sprachcover')
   assert(admin.includes('Cover dieser Sprach-Ausgabe') && admin.includes("'coverSpread'"), 'Sprachcover sind im Backend nicht bearbeitbar')
   assert(server.includes('cleaned_edition["cover"]') && server.includes('cleaned_edition["coverSpread"]'), 'Server bewahrt Sprachcover beim Speichern nicht auf')
@@ -474,7 +474,7 @@ test('Anonyme Statistik speichert keine Besucherkennungen', () => {
   assert(app.includes('trackPageView()'), 'Seitenaufruf wird nicht gezählt')
   assert(books.includes('trackAmazonClick(book.id, edition.language)'), 'Amazon-Klick je Buch und Sprach-Ausgabe wird nicht gezählt')
   // Jedes Klickziel muss vom Zähldienst akzeptiert werden (früher wurde „buch:de" verworfen – dadurch fehlten alle Klicks)
-  const pattern = new RegExp(worker.match(/const TARGET_PATTERN = \/(.*)\/\n/)[1])
+  const pattern = new RegExp(worker.match(/const TARGET_PATTERN = \/(.*)\/\r?\n/)[1])
   const frontPattern = new RegExp(analytics.match(/const TARGET_PATTERN = \/(.*)\//)[1])
   const books_ = JSON.parse(readFileSync(join(SRC, 'data/books.json'), 'utf-8')).books
   for (const book of books_) {
@@ -599,6 +599,8 @@ test('Creator-Partner-Route erhält eigene SEO-Daten ohne alte GitHub-Canonical'
 
 test('Alle LambKing-Logos verwenden die neue gemeinsame Bilddatei', () => {
   const asset = 'images/lambking-stories-logo-v2.png'
+  // Kopf- und Fußzeile nutzen die kleine WebP-Fassung, das Original-PNG bleibt für Rechtsseiten und Admin
+  const variants = ['lambking-stories-logo-v2', 'logo-icon-96']
   const files = [
     'src/sections/Header.tsx',
     'src/sections/Footer.tsx',
@@ -606,10 +608,10 @@ test('Alle LambKing-Logos verwenden die neue gemeinsame Bilddatei', () => {
     'scripts/gen-legal.mjs',
     'admin/index.html',
   ]
-  assert(existsSync(join(ROOT, 'public', asset)), 'Neue Logo-Datei fehlt')
+  assert(existsSync(join(ROOT, 'public', asset)) && existsSync(join(ROOT, 'public/images/lambking-stories-logo-v2-256.webp')) && existsSync(join(ROOT, 'public/images/logo-icon-96.png')), 'Neue Logo-Dateien fehlen')
   for (const file of files) {
     const source = readFileSync(join(ROOT, file), 'utf-8')
-    assert(source.includes(asset), `Neues Logo fehlt in ${file}`)
+    assert(variants.some((name) => source.includes(`images/${name}`)), `Neues Logo fehlt in ${file}`)
     assert(!/images\/(?:logo\.webp|lambking-logo(?:-2026)?\.png|lambking-stories-logo\.png|app-logo\.png|lamm-kopf\.png)/.test(source), `Alte Logo-Datei wird noch in ${file} verwendet`)
   }
 })

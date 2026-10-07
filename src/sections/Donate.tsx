@@ -23,7 +23,7 @@ export default function Donate() {
             <div className="relative grid items-center gap-8 px-6 py-10 sm:px-10 lg:grid-cols-[0.75fr_1.25fr] lg:gap-12 lg:py-14">
               <div className="mx-auto w-48 sm:w-60 lg:w-full lg:max-w-xs">
                 <img
-                  src="images/lamm-freisteller.png"
+                  src="images/lamm-freisteller.webp"
                   alt=""
                   aria-hidden
                   className="w-full drop-shadow-[0_18px_24px_rgba(0,0,0,0.35)]"

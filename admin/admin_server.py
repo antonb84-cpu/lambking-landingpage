@@ -78,6 +78,10 @@ def load_state() -> dict:
 
 def save_state(state: dict):
     try:
+        extras.ensure_front_covers(state)  # kleine Vorderseiten der Cover (Ladezeit)
+    except Exception:
+        pass
+    try:
         extras.backup_state_file(DATA_JSON)  # Sicherung des bisherigen Stands (rotierend)
     except Exception:
         pass  # eine fehlgeschlagene Sicherung darf das Speichern nie verhindern
@@ -233,6 +237,8 @@ def render_books_ts(state: dict):
     out.append("  previewVideo?: string")
     out.append("  /** Optionales Cover nur für diese Sprach-Ausgabe. */")
     out.append("  cover?: string")
+    out.append("  /** Kleine Vorderseite (WebP) – wird automatisch aus dem Cover erzeugt. */")
+    out.append("  coverFront?: string")
     out.append("  /** true, wenn die Datei ein kompletter KDP-Umschlag ist; die Vorderseite liegt rechts. */")
     out.append("  coverSpread?: boolean")
     out.append("  /** Vorschauseiten dieser Ausgabe in festgelegter Reihenfolge. */")
@@ -249,6 +255,7 @@ def render_books_ts(state: dict):
     out.append("  age: string")
     out.append("  detail: string")
     out.append("  cover: string")
+    out.append("  coverFront?: string")
     out.append("  coverSpread?: boolean")
     out.append("  description: string")
     out.append("  highlights: string[]")
@@ -290,6 +297,8 @@ def render_books_ts(state: dict):
         out.append(f"    age: {ts_str(b.get('age', ''))},")
         out.append(f"    detail: {ts_str(b.get('detail', ''))},")
         out.append(f"    cover: '{b['cover']}',")
+        if b.get("coverFront"):
+            out.append(f"    coverFront: '{b['coverFront']}',")
         if b.get("coverSpread"):
             out.append("    coverSpread: true,")
         out.append(f"    description: {ts_str(b.get('description', ''))},")

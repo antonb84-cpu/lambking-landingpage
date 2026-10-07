@@ -621,7 +621,8 @@
           "language": "de",
           "amazon": "https://www.amazon.de/dp/B0HFWX8DH5",
           "cover": "images/cover-band01-de-spread.png",
-          "coverSpread": true
+          "coverSpread": true,
+          "coverFront": "images/front/cover-band01-de.webp"
         },
         {
           "language": "en",
@@ -636,7 +637,8 @@
           "highlights": [
             "30 large coloring pictures",
             "Bible passage: Genesis 1–2"
-          ]
+          ],
+          "coverFront": "images/front/cover-band01-en.webp"
         },
         {
           "language": "es",
@@ -651,11 +653,13 @@
           "highlights": [
             "30 grandes dibujos para colorear",
             "Pasaje bíblico: Génesis 1–2"
-          ]
+          ],
+          "coverFront": "images/front/cover-band01-es.webp"
         }
       ],
       "amazonRating": 5.0,
-      "amazonRatingCount": 1
+      "amazonRatingCount": 1,
+      "coverFront": "images/front/cover-band01-de.webp"
     },
     {
       "id": "bibelgeschichten-zum-ausmalen-4",
@@ -691,7 +695,8 @@
           "amazon": "https://www.amazon.de/dp/B0HH8GRWZS"
         }
       ],
-      "hidden": true
+      "hidden": true,
+      "coverFront": "images/front/cover-bibelgeschichten-zum-ausmalen-4.webp"
     },
     {
       "id": "bibelgeschichten-zum-ausmalen-5",
@@ -727,7 +732,8 @@
           "amazon": "https://www.amazon.de/dp/B0HH6HXFC9"
         }
       ],
-      "hidden": true
+      "hidden": true,
+      "coverFront": "images/front/cover-bibelgeschichten-zum-ausmalen-5.webp"
     },
     {
       "id": "david",
@@ -770,7 +776,8 @@
             "images/david-de-preview-4.jpg",
             "images/david-de-preview-5.jpg",
             "images/david-de-preview-6.jpg"
-          ]
+          ],
+          "coverFront": "images/front/cover-david-de.webp"
         },
         {
           "language": "en",
@@ -793,7 +800,8 @@
             "images/david-en-preview-4.jpg",
             "images/david-en-preview-5.jpg",
             "images/david-en-preview-6.jpg"
-          ]
+          ],
+          "coverFront": "images/front/cover-david-en.webp"
         },
         {
           "language": "es",
@@ -816,7 +824,8 @@
             "images/david-es-preview-4.jpg",
             "images/david-es-preview-5.jpg",
             "images/david-es-preview-6.jpg"
-          ]
+          ],
+          "coverFront": "images/front/cover-david-es.webp"
         },
         {
           "language": "ro",
@@ -839,12 +848,14 @@
             "images/david-ro-preview-4.jpg",
             "images/david-ro-preview-5.jpg",
             "images/david-ro-preview-6.jpg"
-          ]
+          ],
+          "coverFront": "images/front/cover-david-ro.webp"
         }
       ],
       "showInHero": true,
       "amazonRating": 5.0,
-      "amazonRatingCount": 1
+      "amazonRatingCount": 1,
+      "coverFront": "images/front/cover-david-de.webp"
     },
     {
       "id": "bibelgeschichten-zum-ausmalen-3",
@@ -888,7 +899,8 @@
             "images/christmas-de-preview-4.jpg",
             "images/christmas-de-preview-5.jpg",
             "images/christmas-de-preview-6.jpg"
-          ]
+          ],
+          "coverFront": "images/front/cover-band09-de.webp"
         },
         {
           "language": "en",
@@ -912,7 +924,8 @@
             "The Christmas story to color",
             "Bible passages: Luke 1–2; Matthew 2",
             "Clear lines for young hands"
-          ]
+          ],
+          "coverFront": "images/front/cover-band09-en.webp"
         },
         {
           "language": "es",
@@ -936,9 +949,11 @@
             "La historia de Navidad para colorear",
             "Pasajes bíblicos: Lucas 1–2; Mateo 2",
             "Líneas claras para manos pequeñas"
-          ]
+          ],
+          "coverFront": "images/front/cover-band09-es.webp"
         }
-      ]
+      ],
+      "coverFront": "images/front/cover-band09-de.webp"
     },
     {
       "id": "bibelgeschichten-zum-ausmalen-2",
@@ -979,7 +994,8 @@
             "images/band10-de-preview-75.jpg",
             "images/band10-de-preview-76.jpg",
             "images/band10-de-preview-79.jpg"
-          ]
+          ],
+          "coverFront": "images/front/cover-band10-de.webp"
         },
         {
           "language": "en",
@@ -1003,7 +1019,8 @@
             "35 large coloring pictures",
             "Bible passages: Luke 19–24; John 13 and 20",
             "Printed on one side"
-          ]
+          ],
+          "coverFront": "images/front/cover-band10-en.webp"
         },
         {
           "language": "es",
@@ -1027,11 +1044,13 @@
             "35 dibujos grandes para colorear",
             "Pasajes bíblicos: Lucas 19–24; Juan 13 y 20",
             "Impreso por una sola cara"
-          ]
+          ],
+          "coverFront": "images/front/cover-band10-es.webp"
         }
       ],
       "amazonRating": 5.0,
-      "amazonRatingCount": 1
+      "amazonRatingCount": 1,
+      "coverFront": "images/front/cover-band10-de.webp"
     },
     {
       "id": "zachaeus",
@@ -1068,7 +1087,8 @@
         }
       ],
       "amazonRating": 5.0,
-      "amazonRatingCount": 3
+      "amazonRatingCount": 3,
+      "coverFront": "images/front/cover-zachaeus.webp"
     },
     {
       "id": "the-man-in-the-tree",
@@ -1103,7 +1123,8 @@
           "language": "en",
           "amazon": "https://www.amazon.com/dp/B0G4XFDCXQ"
         }
-      ]
+      ],
+      "coverFront": "images/front/cover-the-man-in-the-tree.webp"
     }
   ],
   "categories": [
