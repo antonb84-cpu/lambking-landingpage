@@ -18,6 +18,10 @@ import { hasFlipbook } from '@/data/flipbooks'
 import { splitTitle, volumeLabel } from '@/data/titles'
 import { bookIdFromLocation, bookPath, isBookPath } from '@/data/bookLink'
 
+// Bücherregal: warme Holztöne passend zu Gold und Creme der Seite
+const WOOD_PLANK = 'repeating-linear-gradient(90deg, rgba(60,35,10,0.07) 0 2px, transparent 2px 9px), linear-gradient(180deg, #c9985e 0%, #a97a43 55%, #8d6234 100%)'
+const WOOD_EDGE = 'inset 0 2px 0 rgba(255,236,200,0.55), inset 0 -2px 0 rgba(60,35,10,0.35)'
+
 // Kategorie-Helfer (Labels/Typen kommen aus den Buchdaten, sprachabhängig)
 const catDefOf = (id: string) => CATEGORIES.find((c) => c.id === id)
 const typeLabelOf = (b: Book, lang: 'de' | 'en'): string => {
@@ -676,20 +680,19 @@ export default function Books() {
           <div className="mt-10 grid gap-5">
             {groups.map((group, gi) => (
               <Reveal key={group.id} delay={gi * 80}>
-                <details open={gi === 0} className="group/cat overflow-hidden rounded-3xl border-2 bg-card/50 shadow-md" style={{ borderColor: `${group.color}66` }}>
+                <details open={gi === 0} className="group/cat overflow-hidden rounded-2xl shadow-[0_18px_40px_-26px_rgba(60,35,10,0.7)]" style={{ border: '5px solid #8d6234', background: '#f3e9d6' }}>
                   <summary
-                    className="flex cursor-pointer list-none items-center gap-4 px-5 py-5 transition-[filter] hover:brightness-95 sm:px-7 sm:py-6 [&::-webkit-details-marker]:hidden"
-                    style={{ background: `linear-gradient(90deg, ${group.color}33, ${group.color}0d 70%, transparent)` }}
+                    className="flex cursor-pointer list-none items-center gap-4 px-5 py-4 text-[#fff6e3] transition-[filter] hover:brightness-105 sm:px-7 sm:py-5 [&::-webkit-details-marker]:hidden"
+                    style={{ background: WOOD_PLANK, boxShadow: WOOD_EDGE }}
                   >
-                    <span className="h-14 w-2 shrink-0 rounded-full" style={{ backgroundColor: group.color }} aria-hidden />
                     <span className="flex-1">
-                      <span className="block font-display text-2xl font-bold leading-tight sm:text-3xl">{group.label}</span>
-                      <span className="mt-1 inline-block rounded-full px-3 py-0.5 text-xs font-bold text-white sm:text-sm" style={{ backgroundColor: group.color }}>
+                      <span className="block font-display text-2xl font-semibold leading-tight sm:text-3xl" style={{ textShadow: '0 1px 0 rgba(60,35,10,0.45)' }}>{group.label}</span>
+                      <span className="text-sm font-semibold text-[#fbe7bd]">
                         {group.items.length} {group.items.length === 1 ? t.books.titleOne : t.books.titleMany}
                       </span>
                     </span>
-                    <span className="flex h-11 w-11 items-center justify-center rounded-full border-2 bg-background text-primary shadow-sm transition-transform duration-300 group-open/cat:rotate-180" style={{ borderColor: group.color }} aria-hidden>
-                      <ChevronDown className="h-6 w-6" />
+                    <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#fff6e3] text-[#6b4423] shadow transition-transform duration-300 group-open/cat:rotate-180" aria-hidden>
+                      <ChevronDown className="h-5 w-5" />
                     </span>
                   </summary>
                   <div className="px-3 pb-6 sm:px-7">
@@ -703,9 +706,11 @@ export default function Books() {
                           <button
                             type="button"
                             onClick={() => openBook(b)}
-                            className="relative flex aspect-[4/5] items-center justify-center bg-secondary/45 p-2.5 text-left sm:p-5"
+                            className="relative flex aspect-[4/5] items-end justify-center overflow-hidden px-2.5 pb-6 pt-3 text-left sm:px-5 sm:pb-9 sm:pt-5"
+                            style={{ background: 'linear-gradient(180deg, #e3d4b6 0%, #efe3ca 60%, #f3e9d6 100%)', boxShadow: 'inset 0 10px 14px -10px rgba(60,35,10,0.35)' }}
                             aria-label={`${t.books.lookInside}: ${b.title}`}
                           >
+                            <span aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-5 sm:h-7" style={{ background: WOOD_PLANK, boxShadow: `${WOOD_EDGE}, 0 -6px 10px -6px rgba(60,35,10,0.35)` }} />
                             {isNew(b) && (
                               <span className="absolute left-2 top-2 z-10 rounded-full bg-accent px-2 py-1 text-[10px] font-bold text-accent-foreground shadow sm:left-4 sm:top-4 sm:px-3 sm:text-xs">
                                 {t.books.newBadge}
