@@ -97,7 +97,7 @@ function highlightIcon(text: string) {
 function BookCover({ book, variant }: { book: Book; variant: 'card' | 'dialog' }) {
   const { src: coverSrc, spread: coverIsSpread } = coverFor(book)
   const shared = variant === 'card'
-    ? 'max-h-full w-auto max-w-full rounded-[3px] shadow-[0_14px_26px_-10px_rgba(21,49,103,0.55)] transition-transform duration-300 group-hover:-rotate-1 group-hover:scale-[1.03]'
+    ? 'max-h-full w-auto max-w-full rounded-[3px] shadow-[0_1px_2px_rgba(21,30,60,0.35),0_10px_14px_-6px_rgba(21,49,103,0.45),0_26px_30px_-14px_rgba(21,49,103,0.4)] transition-[transform,box-shadow] duration-300 group-hover:-translate-y-1 group-hover:-rotate-1 group-hover:scale-[1.03] group-hover:shadow-[0_2px_3px_rgba(21,30,60,0.35),0_16px_20px_-6px_rgba(21,49,103,0.5),0_38px_40px_-14px_rgba(21,49,103,0.45)]'
     : 'mx-auto w-full max-w-[320px] rounded-[3px] shadow-2xl shadow-primary/25 lg:sticky lg:top-10'
   // Softcover: heller Falz am Buchrücken und leichter Glanz, keine harte Hardcover-Kante
   const crease = (
@@ -676,20 +676,20 @@ export default function Books() {
           <div className="mt-10 grid gap-14">
             {groups.map((group, gi) => (
               <Reveal key={group.id} delay={gi * 80}>
-                <details open={gi === 0} className="group/cat overflow-hidden rounded-[18px] border border-[#d6deec] bg-white shadow-[0_18px_40px_-26px_rgba(21,49,103,0.6)]">
-                  <summary
-                    className="flex cursor-pointer list-none items-center gap-4 px-5 py-5 text-white transition-[filter] hover:brightness-110 sm:px-7 [&::-webkit-details-marker]:hidden"
-                    style={{ background: 'linear-gradient(110deg, #1f3a6e, #2a55a6)' }}
-                  >
-                    <span className="flex-1 font-display text-2xl font-semibold leading-tight sm:text-3xl">{group.label}</span>
-                    <span className="rounded-full bg-[#d4a017] px-3.5 py-1 text-xs font-extrabold text-[#3a2a00] sm:text-sm">
+                <details open={gi === 0} className="group/cat">
+                  <summary className="flex cursor-pointer list-none items-end gap-4 border-b border-[#d9cdb0] pb-4 shadow-[0_12px_14px_-12px_rgba(21,49,103,0.35)] [&::-webkit-details-marker]:hidden">
+                    <span className="block">
+                      <span className="block font-display text-3xl font-semibold leading-none sm:text-4xl" style={{ textShadow: '0 1px 0 rgba(255,255,255,0.9), 0 6px 14px rgba(21,49,103,0.16)' }}>{group.label}</span>
+                      <span className="mt-3 block h-1 w-14 rounded-full bg-accent shadow-[0_3px_6px_-1px_rgba(180,130,10,0.55)]" aria-hidden />
+                    </span>
+                    <span className="mb-1 flex-1 text-sm font-semibold text-muted-foreground">
                       {group.items.length} {group.items.length === 1 ? t.books.titleOne : t.books.titleMany}
                     </span>
-                    <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 text-white transition-transform duration-300 group-open/cat:rotate-180" aria-hidden>
+                    <span className="mb-0.5 flex h-10 w-10 items-center justify-center rounded-full border border-[#d9cdb0] bg-background text-primary shadow-[0_6px_12px_-6px_rgba(21,49,103,0.45)] transition-transform duration-300 group-open/cat:rotate-180" aria-hidden>
                       <ChevronDown className="h-5 w-5" />
                     </span>
                   </summary>
-                  <div className="px-3 pb-8 pt-6 sm:px-7" style={{ background: 'linear-gradient(180deg, #eef2f9, #f8fafd)' }}>
+                  <div className="pb-4 pt-8">
                     {group.id === 'malbuecher' && group.items.some(isColoringBook) ? <ColoringBookFacts /> : null}
           <div className="mt-6 grid grid-cols-2 gap-2.5 sm:gap-6 lg:grid-cols-3">
                     {group.items.map((b, i) => {
@@ -700,14 +700,12 @@ export default function Books() {
                           <button
                             type="button"
                             onClick={() => openBook(b)}
-                            className="relative flex aspect-[4/5] items-end justify-center px-3 pb-3.5 pt-2 text-left sm:px-6 sm:pb-4"
+                            className="relative flex aspect-[4/5] items-end justify-center px-3 pb-[19px] pt-3 text-left sm:px-6 sm:pb-[23px]"
                             aria-label={`${t.books.lookInside}: ${b.title}`}
                           >
-                            <span
-                              aria-hidden
-                              className="pointer-events-none absolute inset-x-0 bottom-0 h-3.5 rounded-[3px] sm:h-4"
-                              style={{ background: 'linear-gradient(180deg, #fdfcf9 0, #e6e1d4 40%, #cfc8b6 100%)', boxShadow: '0 10px 14px -8px rgba(21,49,103,0.4)' }}
-                            />
+                            <span aria-hidden className="pointer-events-none absolute inset-0" style={{ background: 'radial-gradient(ellipse 70% 55% at 50% 38%, rgba(255,255,255,0.85), rgba(255,255,255,0) 70%)' }} />
+                            <span aria-hidden className="pointer-events-none absolute inset-x-[4%] bottom-3 h-[7px] rounded-full sm:bottom-4" style={{ background: 'linear-gradient(180deg, #ffffff, #e6dcc3)', boxShadow: '0 1px 0 rgba(120,95,40,0.25), 0 14px 16px -8px rgba(21,49,103,0.4), 0 28px 26px -16px rgba(21,49,103,0.3)' }} />
+                            <span aria-hidden className="pointer-events-none absolute inset-x-[12%] bottom-[7px] h-5 sm:bottom-2" style={{ background: 'radial-gradient(ellipse at center, rgba(21,49,103,0.22), transparent 70%)' }} />
                             {isNew(b) && (
                               <span className="absolute left-2 top-2 z-10 rounded-full bg-accent px-2 py-1 text-[10px] font-bold text-accent-foreground shadow sm:left-4 sm:top-4 sm:px-3 sm:text-xs">
                                 {t.books.newBadge}
