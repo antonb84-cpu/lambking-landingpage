@@ -826,30 +826,6 @@
             "images/david-es-preview-6.jpg"
           ],
           "coverFront": "images/front/cover-david-es.webp"
-        },
-        {
-          "language": "ro",
-          "amazon": "",
-          "cover": "images/cover-david-ro-spread.jpg",
-          "coverSpread": true,
-          "title": "David și Goliat – Curajos cu Dumnezeu",
-          "series": "Povești biblice de colorat · Volumul 6",
-          "age": "De la 6 ani",
-          "detail": "70 de pagini · format mare",
-          "description": "David păzește oile tatălui său când Samuel îl unge ca viitor rege. Mai târziu, uriașul Goliat provoacă poporul Israel. David se încrede în Dumnezeu, îl înfruntă cu o praștie și îl învinge.",
-          "highlights": [
-            "30 de ilustrații mari de colorat",
-            "Pasaj biblic: 1 Samuel 16–17"
-          ],
-          "samples": [
-            "images/david-ro-preview-1.jpg",
-            "images/david-ro-preview-2.jpg",
-            "images/david-ro-preview-3.jpg",
-            "images/david-ro-preview-4.jpg",
-            "images/david-ro-preview-5.jpg",
-            "images/david-ro-preview-6.jpg"
-          ],
-          "coverFront": "images/front/cover-david-ro.webp"
         }
       ],
       "showInHero": true,

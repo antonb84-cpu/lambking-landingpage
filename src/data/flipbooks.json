@@ -41,13 +41,6 @@
       "back": "images/buch-david-es/rueckseite.jpg",
       "total": 70,
       "ext": "webp"
-    },
-    "ro": {
-      "dir": "images/buch-david-ro",
-      "count": 27,
-      "back": "images/buch-david-ro/rueckseite.jpg",
-      "total": 70,
-      "ext": "webp"
     }
   },
   "bibelgeschichten-zum-ausmalen-3": {

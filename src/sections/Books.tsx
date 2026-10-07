@@ -676,17 +676,20 @@ export default function Books() {
           <div className="mt-10 grid gap-5">
             {groups.map((group, gi) => (
               <Reveal key={group.id} delay={gi * 80}>
-                <details open={gi === 0} className="group/cat overflow-hidden rounded-3xl border border-border bg-card/50 shadow-sm">
-                  <summary className="flex cursor-pointer list-none items-center gap-4 px-5 py-4 transition-colors hover:bg-secondary/50 sm:px-7 sm:py-5 [&::-webkit-details-marker]:hidden">
-                    <span className="h-10 w-1.5 shrink-0 rounded-full" style={{ backgroundColor: group.color }} aria-hidden />
+                <details open={gi === 0} className="group/cat overflow-hidden rounded-3xl border-2 bg-card/50 shadow-md" style={{ borderColor: `${group.color}66` }}>
+                  <summary
+                    className="flex cursor-pointer list-none items-center gap-4 px-5 py-5 transition-[filter] hover:brightness-95 sm:px-7 sm:py-6 [&::-webkit-details-marker]:hidden"
+                    style={{ background: `linear-gradient(90deg, ${group.color}33, ${group.color}0d 70%, transparent)` }}
+                  >
+                    <span className="h-14 w-2 shrink-0 rounded-full" style={{ backgroundColor: group.color }} aria-hidden />
                     <span className="flex-1">
-                      <span className="block font-display text-xl font-semibold sm:text-2xl">{group.label}</span>
-                      <span className="text-sm font-semibold text-muted-foreground">
+                      <span className="block font-display text-2xl font-bold leading-tight sm:text-3xl">{group.label}</span>
+                      <span className="mt-1 inline-block rounded-full px-3 py-0.5 text-xs font-bold text-white sm:text-sm" style={{ backgroundColor: group.color }}>
                         {group.items.length} {group.items.length === 1 ? t.books.titleOne : t.books.titleMany}
                       </span>
                     </span>
-                    <span className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background text-primary transition-transform duration-300 group-open/cat:rotate-180" aria-hidden>
-                      <ChevronDown className="h-5 w-5" />
+                    <span className="flex h-11 w-11 items-center justify-center rounded-full border-2 bg-background text-primary shadow-sm transition-transform duration-300 group-open/cat:rotate-180" style={{ borderColor: group.color }} aria-hidden>
+                      <ChevronDown className="h-6 w-6" />
                     </span>
                   </summary>
                   <div className="px-3 pb-6 sm:px-7">

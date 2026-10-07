@@ -222,7 +222,7 @@ test('David und Weihnachten verwenden sprachrichtige Cover und PDF-Vorschauseite
   assert(admin.includes('Vorschauseiten dieser Sprache') && admin.includes("['ro','🇷🇴 Rumänisch']"), 'Sprach-Vorschauseiten oder Rumänisch fehlen im Backend')
   assert(server.includes('cleaned_edition["samples"]'), 'Backend verwirft Sprach-Vorschauseiten beim Speichern')
   for (const [id, languages] of [
-    ['david', ['de', 'en', 'es', 'ro']],
+    ['david', ['de', 'en', 'es']], // Rumänisch ist (noch) nicht bei Amazon eingestellt
     ['bibelgeschichten-zum-ausmalen-3', ['de', 'en', 'es']],
   ]) {
     const book = booksJson.books.find((item) => item.id === id)
