@@ -96,6 +96,15 @@ class FlipbookTests(TempProject):
         with self.assertRaises(extras.AdminError):
             extras.shrink_flipbook("testbuch", "de", 0)
 
+    def test_vorabpruefung_kennt_webp_seiten_und_warnt_vor_ganzem_buch(self):
+        extras.set_flipbook("testbuch", "de", pdf_bytes=make_pdf(12))
+        checks = server.precheck_flipbook({"books": []}, [])
+        self.assertFalse([c for c in checks if c[0] == "rot"], checks)
+        self.assertFalse([c for c in checks if "ganze Buch" in c[1]], checks)
+        extras.set_flipbook("testbuch", "de", pdf_bytes=make_pdf(12), limit=12)
+        checks = server.precheck_flipbook({"books": []}, [])
+        self.assertTrue([c for c in checks if c[0] == "gelb" and "ganze Buch" in c[1]], checks)
+
     def test_standardlimit_ist_vierzig_prozent(self):
         self.assertEqual(extras.default_preview_limit(70), 27)
         self.assertEqual(extras.default_preview_limit(300), extras.FLIP_PREVIEW_MAX - 1)

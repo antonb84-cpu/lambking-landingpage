@@ -714,6 +714,7 @@ def precheck_flipbook(state: dict, visible: list) -> list:
     checks = []
     flipbooks = extras.load_flipbooks()
     broken = []
+    whole = []
     for book_id, langs in flipbooks.items():
         if book_id.startswith("_") or not isinstance(langs, dict):
             continue  # z. B. der Hinweistext „_hinweis“ in flipbooks.json
@@ -721,12 +722,17 @@ def precheck_flipbook(state: dict, visible: list) -> list:
             if not isinstance(entry, dict):
                 continue
             d = ROOT / "public" / entry.get("dir", "")
-            if not (d / "p01.jpg").is_file() or not (d / f"p{int(entry.get('count', 0)):02d}.jpg").is_file():
+            ext = entry.get("ext") or "jpg"
+            if not (d / f"p01.{ext}").is_file() or not (d / f"p{int(entry.get('count', 0)):02d}.{ext}").is_file():
                 broken.append(f"{book_id} ({lang.upper()})")
+            elif int(entry.get("total") or 0) <= int(entry.get("count", 0)) and int(entry.get("count", 0)) > 8:
+                whole.append(f"{book_id} ({lang.upper()})")
             if entry.get("back") and not (ROOT / "public" / entry["back"]).is_file():
                 broken.append(f"{book_id} ({lang.upper()}) Rückseite")
     if broken:
         checks.append(("rot", "Blätterbuch-Dateien fehlen: " + ", ".join(broken)))
+    if whole:
+        checks.append(("gelb", "Die Leseprobe zeigt das ganze Buch (nicht nur einen Teil): " + ", ".join(whole)))
     featured = next((b for b in state["books"] if b.get("showInHero")), None)
     if featured is not None and featured.get("hidden"):
         checks.append(("gelb", "Das Buch für „Blick ins Buch“ ist ausgeblendet – es wird ein anderes gezeigt"))
