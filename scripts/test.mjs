@@ -346,7 +346,7 @@ test('Startseiten-Medien kommen aus den Seitendaten, sind vollständig vorhanden
   const carousel = readFileSync(join(SRC, 'components/PhoneCarousel.tsx'), 'utf-8')
   const server = readFileSync(join(ROOT, 'admin/admin_server.py'), 'utf-8')
   const adminUi = readFileSync(join(ROOT, 'admin/index.html'), 'utf-8')
-  for (const id of ['tryit', 'app', 'supportedWorks']) assert(app.includes(`hiddenSections.includes('${id}')`), `Bereich „${id}" lässt sich nicht ausblenden`)
+  for (const id of ['tryit', 'groups', 'app', 'supportedWorks']) assert(app.includes(`hiddenSections.includes('${id}')`), `Bereich „${id}" lässt sich nicht ausblenden`)
   assert(family.includes('SITE.kidsVideos') && family.includes("hiddenSections.includes('kids')") && family.includes("hiddenSections.includes('freebie')"), 'Kinder-Videos/Gratis-Ausmalbild kommen nicht aus den Seitendaten')
   assert(freebie.includes('SITE.freebie.pdf') && freebie.includes('SITE.freebie.preview'), 'Gratis-Ausmalbild nutzt feste Dateinamen')
   assert(carousel.includes('SITE.appScreens'), 'App-Screenshots kommen nicht aus den Seitendaten')
@@ -425,7 +425,7 @@ test('Buchfenster bietet einen barrierearmen Mengenrabatt mit E-Mail-Kontakt an'
     assert(texts.bulkDiscountContactButton && texts.bulkDiscountCopying && texts.bulkDiscountCopied && texts.bulkDiscountOpenMail, `${lang}: Mengenrabatt-Kontakttexte fehlen`)
   }
   for (const value of ['quantity: 10, discount: 15', 'quantity: 25, discount: 25', 'quantity: 50, discount: 35', 'quantity: 100, discount: 40']) {
-    assert(books.includes(value), `Rabattstaffel fehlt: ${value}`)
+    assert(readFileSync(join(SRC, 'data/bulk.ts'), 'utf-8').includes(value), `Rabattstaffel fehlt: ${value}`)
   }
   assert(books.includes('<table') && books.includes('scope="col"'), 'Barrierearme Rabatttabelle fehlt')
   assert(books.includes('navigator.clipboard?.writeText') && books.includes("document.execCommand('copy')"), 'Zuverlässiges Kopieren der E-Mail-Adresse fehlt')

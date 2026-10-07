@@ -11,6 +11,7 @@ import { LANGUAGE_META } from '@/data/languageMeta'
 import { textsFor } from '@/data/texts'
 import { OPEN_BOOK_EVENT } from '@/data/openBook'
 import { isMiddleClick, trackAmazonClick } from '@/data/analytics'
+import { BULK_DISCOUNT_TIERS } from '@/data/bulk'
 import { coverFor } from '@/data/covers'
 
 // Kategorie-Helfer (Labels/Typen kommen aus den Buchdaten, sprachabhängig)
@@ -201,13 +202,6 @@ function BookMediaGallery({ book, onZoom, copy }: { book: Book; onZoom: (src: st
 }
 
 const isColoringBook = (book: Book) => book.category === 'malbuecher'
-
-const BULK_DISCOUNT_TIERS = [
-  { quantity: 10, discount: 15 },
-  { quantity: 25, discount: 25 },
-  { quantity: 50, discount: 35 },
-  { quantity: 100, discount: 40 },
-] as const
 
 function ColoringBookFacts() {
   const siteCopy = textsFor(useLang()).books

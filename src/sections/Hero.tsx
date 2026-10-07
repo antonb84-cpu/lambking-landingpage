@@ -1,8 +1,8 @@
 import type { CSSProperties } from 'react'
-import { BookOpen, HandHeart } from 'lucide-react'
+import { BookOpen, HandHeart, Star } from 'lucide-react'
 import Reveal from '@/components/Reveal'
 import RichText from '@/components/RichText'
-import { SITE } from '@/data/books'
+import { BOOKS, SITE } from '@/data/books'
 import { useLang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
 
@@ -10,9 +10,21 @@ import { textsFor } from '@/data/texts'
 // Schriftfarbe auf dem Bild, Stärke der Abdunklung links und der Bildausschnitt.
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, Number.isFinite(value) ? value : min))
 
+// Echte Amazon-Bewertungen über alle sichtbaren Bücher (gewichteter Durchschnitt) – nie erfunden.
+function amazonSummary(): { rating: number; count: number } | null {
+  if (!SITE.showRatings) return null
+  const rated = BOOKS.filter((book) => typeof book.amazonRating === 'number' && (book.amazonRatingCount ?? 0) > 0)
+  const count = rated.reduce((sum, book) => sum + (book.amazonRatingCount ?? 0), 0)
+  if (!count) return null
+  const rating = rated.reduce((sum, book) => sum + (book.amazonRating ?? 0) * (book.amazonRatingCount ?? 0), 0) / count
+  return { rating, count }
+}
+
 export default function Hero() {
   const lang = useLang()
   const t = textsFor(lang)
+  const summary = amazonSummary()
+  const locale = lang === 'de' ? 'de-DE' : 'en-US'
   const h = SITE.hero
   const light = h.textTone === 'light'
   const scrim = clamp(h.scrim, 0, 100) / 100
@@ -72,6 +84,23 @@ export default function Hero() {
               {t.hero.ctaSupport}
             </a>
           </div>
+          {summary ? (
+            <a
+              href="#buecher"
+              className={`mt-5 inline-flex items-center gap-2 text-sm font-semibold ${light ? 'text-foreground/80 xl:text-white/95' : 'text-foreground/80'}`}
+            >
+              <span className="flex items-center gap-0.5 text-accent" aria-hidden>
+                {[1, 2, 3, 4, 5].map((value) => (
+                  <Star key={value} className="h-4 w-4" fill={value <= Math.round(summary.rating) ? 'currentColor' : 'none'} />
+                ))}
+              </span>
+              <span>
+                {t.hero.ratingLine
+                  .replace('{rating}', summary.rating.toLocaleString(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 }))
+                  .replace('{count}', summary.count.toLocaleString(locale))}
+              </span>
+            </a>
+          ) : null}
         </Reveal>
       </div>
     </section>

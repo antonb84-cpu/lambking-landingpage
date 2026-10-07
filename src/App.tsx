@@ -4,6 +4,8 @@ import Hero from '@/sections/Hero'
 import UspBand from '@/sections/UspBand'
 import Mascot from '@/sections/Mascot'
 import TryIt from '@/sections/TryIt'
+import Groups from '@/sections/Groups'
+import MobileCta from '@/components/MobileCta'
 import Family from '@/sections/Family'
 import Books from '@/sections/Books'
 import AppSection from '@/sections/AppSection'
@@ -46,6 +48,7 @@ export default function App() {
         <UspBand />
         <Books />
         {!SITE.hiddenSections.includes('tryit') && <TryIt />}
+        {!SITE.hiddenSections.includes('groups') && <Groups />}
         <Family />
         <Donate />
         <Mascot />
@@ -55,6 +58,7 @@ export default function App() {
         <Faq />
       </main>
       <Footer />
+      <MobileCta />
       {typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('zaehler-test') ? <CounterSelfTest /> : null}
     </div>
   )

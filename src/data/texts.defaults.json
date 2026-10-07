@@ -177,7 +177,8 @@
       "bookHint": "Mit der Maus drüberfahren – das Buch blättert sich selbstständig auf",
       "mobileBookHint": "Antippen zum Öffnen oder Schließen",
       "ctaSupport": "Projekt unterstützen",
-      "videoAlt": "Jesus erzählt Kindern am See unter einem Olivenbaum; im Vordergrund steht ein gekröntes Lamm neben einer Bibel"
+      "videoAlt": "Jesus erzählt Kindern am See unter einem Olivenbaum; im Vordergrund steht ein gekröntes Lamm neben einer Bibel",
+      "ratingLine": "{rating} von 5 Sternen · {count} Bewertungen bei Amazon"
     },
     "books": {
       "eyebrow": "Unsere Bücher",
@@ -456,6 +457,14 @@
       "badge": "Gratis",
       "download": "Ausmalbild herunterladen (PDF)",
       "hint": "DIN A4 · zum Ausdrucken"
+    },
+    "groups": {
+      "eyebrow": "Für Gruppen",
+      "title": "Für Kinderstunde, Schule und Gemeinde",
+      "text": "Ihr braucht mehrere Exemplare? Ab 10 Büchern gibt es Mengenrabatt – für Kinderstunde, Sonntagsschule, Schulklasse oder Familienkreis. Schreibt uns, welche Titel, Sprachen und Stückzahlen ihr braucht.",
+      "cta": "Mengenrabatt anfragen",
+      "freebie": "Gratis-Ausmalbild ansehen",
+      "tiersTitle": "Ihr spart"
     }
   },
   "en": {
@@ -636,7 +645,8 @@
       "bookHint": "Hover over the book – it opens and flips through automatically",
       "mobileBookHint": "Tap the book to open or close it",
       "ctaSupport": "Support the project",
-      "videoAlt": "Jesus speaks with children by a lake beneath an olive tree; a crowned lamb stands beside a Bible in the foreground"
+      "videoAlt": "Jesus speaks with children by a lake beneath an olive tree; a crowned lamb stands beside a Bible in the foreground",
+      "ratingLine": "{rating} out of 5 stars · {count} reviews on Amazon"
     },
     "books": {
       "eyebrow": "Our books",
@@ -915,6 +925,14 @@
       "badge": "Free",
       "download": "Download coloring page (PDF)",
       "hint": "A4 · ready to print"
+    },
+    "groups": {
+      "eyebrow": "For groups",
+      "title": "For children’s ministry, schools and churches",
+      "text": "Need several copies? From 10 books there is a bulk discount – for Sunday school, classrooms or family groups. Tell us which titles, languages and quantities you need.",
+      "cta": "Request bulk discount",
+      "freebie": "See the free coloring page",
+      "tiersTitle": "You save"
     }
   }
 }

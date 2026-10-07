@@ -18,9 +18,10 @@ except ImportError:  # Import als Paket (Tests)
 
 AdminError = extras.AdminError
 
-SECTION_IDS = ("tryit", "kids", "freebie", "app", "supportedWorks")
+SECTION_IDS = ("tryit", "groups", "kids", "freebie", "app", "supportedWorks")
 SECTION_LABELS = {
     "tryit": "Blick ins Buch (Buch zum Durchblättern)",
+    "groups": "Für Kinderstunde, Schule und Gemeinde (Mengenrabatt)",
     "kids": "So malen Kinder mit LambKing (Videos)",
     "freebie": "Gratis-Ausmalbild",
     "app": "App-Bereich (mit Screenshots)",
