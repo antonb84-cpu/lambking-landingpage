@@ -319,9 +319,4 @@ export const BOOKS: Book[] = [
 ]
 
 export const COMING_SOON = [
-  "Josef und seine Brüder",
-  "Mose",
-  "Daniel in der Löwengrube",
-  "Jona und der große Fisch",
-  "Die Wunder von Jesus",
 ]

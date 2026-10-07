@@ -676,20 +676,20 @@ export default function Books() {
           <div className="mt-10 grid gap-14">
             {groups.map((group, gi) => (
               <Reveal key={group.id} delay={gi * 80}>
-                <details open={gi === 0} className="group/cat">
-                  <summary className="flex cursor-pointer list-none items-end gap-4 border-b border-[#d9cdb0] pb-4 [&::-webkit-details-marker]:hidden">
-                    <span className="block">
-                      <span className="block font-display text-3xl font-semibold leading-none sm:text-4xl">{group.label}</span>
-                      <span className="mt-3 block h-1 w-14 rounded-full bg-accent" aria-hidden />
-                    </span>
-                    <span className="mb-1 flex-1 text-sm font-semibold text-muted-foreground">
+                <details open={gi === 0} className="group/cat overflow-hidden rounded-[18px] border border-[#d6deec] bg-white shadow-[0_18px_40px_-26px_rgba(21,49,103,0.6)]">
+                  <summary
+                    className="flex cursor-pointer list-none items-center gap-4 px-5 py-5 text-white transition-[filter] hover:brightness-110 sm:px-7 [&::-webkit-details-marker]:hidden"
+                    style={{ background: 'linear-gradient(110deg, #1f3a6e, #2a55a6)' }}
+                  >
+                    <span className="flex-1 font-display text-2xl font-semibold leading-tight sm:text-3xl">{group.label}</span>
+                    <span className="rounded-full bg-[#d4a017] px-3.5 py-1 text-xs font-extrabold text-[#3a2a00] sm:text-sm">
                       {group.items.length} {group.items.length === 1 ? t.books.titleOne : t.books.titleMany}
                     </span>
-                    <span className="mb-0.5 flex h-10 w-10 items-center justify-center rounded-full border border-[#d9cdb0] bg-background text-primary transition-transform duration-300 group-open/cat:rotate-180" aria-hidden>
+                    <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 text-white transition-transform duration-300 group-open/cat:rotate-180" aria-hidden>
                       <ChevronDown className="h-5 w-5" />
                     </span>
                   </summary>
-                  <div className="pb-4 pt-8">
+                  <div className="px-3 pb-8 pt-6 sm:px-7" style={{ background: 'linear-gradient(180deg, #eef2f9, #f8fafd)' }}>
                     {group.id === 'malbuecher' && group.items.some(isColoringBook) ? <ColoringBookFacts /> : null}
           <div className="mt-6 grid grid-cols-2 gap-2.5 sm:gap-6 lg:grid-cols-3">
                     {group.items.map((b, i) => {
@@ -700,10 +700,14 @@ export default function Books() {
                           <button
                             type="button"
                             onClick={() => openBook(b)}
-                            className="relative flex aspect-[4/5] items-center justify-center px-2.5 pb-3 pt-1 text-left sm:px-5"
+                            className="relative flex aspect-[4/5] items-end justify-center px-3 pb-3.5 pt-2 text-left sm:px-6 sm:pb-4"
                             aria-label={`${t.books.lookInside}: ${b.title}`}
                           >
-                            <span aria-hidden className="pointer-events-none absolute inset-x-[10%] bottom-1 h-4 sm:bottom-2" style={{ background: 'radial-gradient(ellipse at center, rgba(21,49,103,0.28), transparent 70%)' }} />
+                            <span
+                              aria-hidden
+                              className="pointer-events-none absolute inset-x-0 bottom-0 h-3.5 rounded-[3px] sm:h-4"
+                              style={{ background: 'linear-gradient(180deg, #fdfcf9 0, #e6e1d4 40%, #cfc8b6 100%)', boxShadow: '0 10px 14px -8px rgba(21,49,103,0.4)' }}
+                            />
                             {isNew(b) && (
                               <span className="absolute left-2 top-2 z-10 rounded-full bg-accent px-2 py-1 text-[10px] font-bold text-accent-foreground shadow sm:left-4 sm:top-4 sm:px-3 sm:text-xs">
                                 {t.books.newBadge}
