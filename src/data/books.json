@@ -573,7 +573,10 @@
           "nameTitle": "What does LambKing mean?"
         }
       }
-    }
+    },
+    "hiddenSections": [
+      "tryit"
+    ]
   },
   "comingSoon": [],
   "books": [

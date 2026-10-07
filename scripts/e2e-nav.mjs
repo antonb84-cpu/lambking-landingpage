@@ -205,8 +205,8 @@ try {
   }
 
   // Blick ins Buch: Das Softcover startet nicht von selbst, alle Seiten sind abrufbar
-  // und die Sprungtasten funktionieren – ohne neuen Tab oder Dialog.
-  {
+  // und die Sprungtasten funktionieren – ohne neuen Tab oder Dialog. (Nur wenn der Bereich eingeblendet ist.)
+  if (await evalJs(`!!document.querySelector('#ausprobieren')`)) {
     await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: true })
     const before = await targetCount()
     const state = JSON.parse(await evalJs(`(() => {
