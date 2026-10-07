@@ -67,24 +67,55 @@ class TempProject(unittest.TestCase):
 
 class FlipbookTests(TempProject):
     def test_pdf_wird_zu_seitenbildern(self):
-        entry = extras.set_flipbook("testbuch", "de", pdf_bytes=make_pdf(5))
+        entry = extras.set_flipbook("testbuch", "de", pdf_bytes=make_pdf(5), limit=99)
         self.assertEqual(entry["count"], 5)
+        self.assertEqual(entry["total"], 5)
+        self.assertEqual(entry["ext"], "webp")
         folder = self.tmp / "public" / "images" / "buch-testbuch-de"
-        self.assertEqual(sorted(p.name for p in folder.iterdir()), [f"p0{i}.jpg" for i in range(1, 6)])
+        self.assertEqual(sorted(p.name for p in folder.iterdir()), [f"p0{i}.webp" for i in range(1, 6)])
         self.assertEqual(extras.load_flipbooks()["testbuch"]["de"]["count"], 5)
 
-    def test_neue_pdf_ersetzt_alte_seiten(self):
-        extras.set_flipbook("testbuch", "de", pdf_bytes=make_pdf(6))
-        extras.set_flipbook("testbuch", "de", pdf_bytes=make_pdf(2))
+    def test_nur_ein_teil_des_buches_wird_gespeichert(self):
+        entry = extras.set_flipbook("testbuch", "de", pdf_bytes=make_pdf(10))
+        self.assertEqual(entry["total"], 10)
+        self.assertEqual(entry["count"], extras.default_preview_limit(10))
+        self.assertLess(entry["count"], 10, "die Leseprobe darf nicht das ganze Buch enthalten")
         folder = self.tmp / "public" / "images" / "buch-testbuch-de"
-        self.assertEqual(sorted(p.name for p in folder.iterdir()), ["p01.jpg", "p02.jpg"])
+        self.assertEqual(len(list(folder.glob("p*.webp"))), entry["count"])
+        self.assertFalse((folder / f"p{entry['count'] + 1:02d}.webp").exists())
+
+    def test_eigene_seitenzahl_und_kuerzen(self):
+        entry = extras.set_flipbook("testbuch", "de", pdf_bytes=make_pdf(10), limit=6)
+        self.assertEqual((entry["count"], entry["total"]), (6, 10))
+        entry = extras.shrink_flipbook("testbuch", "de", 3)
+        self.assertEqual((entry["count"], entry["total"]), (3, 10))
+        folder = self.tmp / "public" / "images" / "buch-testbuch-de"
+        self.assertEqual(sorted(p.name for p in folder.glob("p*.webp")), ["p01.webp", "p02.webp", "p03.webp"])
+        with self.assertRaises(extras.AdminError):
+            extras.shrink_flipbook("testbuch", "de", 5)  # mehr geht nur mit erneutem Upload
+        with self.assertRaises(extras.AdminError):
+            extras.shrink_flipbook("testbuch", "de", 0)
+
+    def test_standardlimit_ist_vierzig_prozent(self):
+        self.assertEqual(extras.default_preview_limit(70), 27)
+        self.assertEqual(extras.default_preview_limit(300), extras.FLIP_PREVIEW_MAX - 1)
+        for total in range(1, 301):
+            limit = extras.default_preview_limit(total)
+            self.assertTrue(limit == total or limit % 2 == 1, f"{total}: gerade Vorschau {limit}")
+        self.assertEqual(extras.default_preview_limit(3), 3)
+
+    def test_neue_pdf_ersetzt_alte_seiten(self):
+        extras.set_flipbook("testbuch", "de", pdf_bytes=make_pdf(6), limit=6)
+        extras.set_flipbook("testbuch", "de", pdf_bytes=make_pdf(2), limit=2)
+        folder = self.tmp / "public" / "images" / "buch-testbuch-de"
+        self.assertEqual(sorted(p.name for p in folder.iterdir()), ["p01.webp", "p02.webp"])
 
     def test_kaputte_pdf_laesst_alten_stand_unveraendert(self):
-        extras.set_flipbook("testbuch", "de", pdf_bytes=make_pdf(3))
+        extras.set_flipbook("testbuch", "de", pdf_bytes=make_pdf(3), limit=3)
         with self.assertRaises(extras.AdminError):
             extras.set_flipbook("testbuch", "de", pdf_bytes=b"%PDF-1.4 kaputt")
         self.assertEqual(extras.load_flipbooks()["testbuch"]["de"]["count"], 3)
-        self.assertTrue((self.tmp / "public" / "images" / "buch-testbuch-de" / "p03.jpg").is_file())
+        self.assertTrue((self.tmp / "public" / "images" / "buch-testbuch-de" / "p03.webp").is_file())
         self.assertFalse(list((self.tmp / "public" / "images").glob(".neu-*")), "temporärer Ordner bleibt liegen")
 
     def test_keine_pdf_wird_abgelehnt(self):
@@ -109,7 +140,7 @@ class FlipbookTests(TempProject):
         (folder / "fremd.txt").write_text("nicht löschen", encoding="utf-8")
         extras.remove_flipbook("testbuch", "de")
         self.assertTrue((folder / "fremd.txt").is_file())
-        self.assertFalse((folder / "p01.jpg").exists())
+        self.assertFalse((folder / "p01.webp").exists())
         self.assertNotIn("testbuch", extras.load_flipbooks())
 
     def test_ungueltige_ids_werden_abgelehnt(self):
@@ -119,7 +150,7 @@ class FlipbookTests(TempProject):
 
     def test_vorschau_datei_nur_fuer_eigene_namen(self):
         extras.set_flipbook("testbuch", "de", pdf_bytes=make_pdf(2))
-        self.assertIsNotNone(extras.flipbook_file("testbuch", "de", "p01.jpg"))
+        self.assertIsNotNone(extras.flipbook_file("testbuch", "de", "p01.webp"))
         self.assertIsNone(extras.flipbook_file("testbuch", "de", "../../../books.json"))
         self.assertIsNone(extras.flipbook_file("testbuch", "de", "passwoerter.txt"))
 
@@ -264,6 +295,7 @@ class ServerTests(TempProject):
         book_id = self.book_ids()[0]
         result = self.post_multipart("/api/flipbook", {"id": book_id, "lang": "de"}, {"pdf": ("b.pdf", make_pdf(4)), "back": ("r.jpg", make_image(600, 800))})
         self.assertTrue(result["ok"], result)
+        self.assertEqual(result["flipbooks"][book_id]["de"]["total"], 4)
         self.assertEqual(result["flipbooks"][book_id]["de"]["count"], 4)
         self.assertIn("back", result["flipbooks"][book_id]["de"])
         bad = self.post_multipart("/api/flipbook", {"id": book_id, "lang": "de"}, {"pdf": ("b.pdf", b"kaputt")})

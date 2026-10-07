@@ -9,10 +9,13 @@ import { BOOKS, CATEGORIES, COMING_SOON, SITE, isNew, type Book } from '@/data/b
 import { useLang } from '@/data/lang'
 import { LANGUAGE_META } from '@/data/languageMeta'
 import { textsFor } from '@/data/texts'
-import { OPEN_BOOK_EVENT } from '@/data/openBook'
-import { isMiddleClick, trackAmazonClick } from '@/data/analytics'
+import { OPEN_BOOK_EVENT, openFlipBookById } from '@/data/openBook'
 import { BULK_DISCOUNT_TIERS } from '@/data/bulk'
+import BuyButton from '@/components/BuyButton'
 import { coverFor } from '@/data/covers'
+import { editionsOf } from '@/data/editions'
+import { hasFlipbook } from '@/data/flipbooks'
+import { splitTitle, volumeLabel } from '@/data/titles'
 
 // Kategorie-Helfer (Labels/Typen kommen aus den Buchdaten, sprachabhängig)
 const catDefOf = (id: string) => CATEGORIES.find((c) => c.id === id)
@@ -61,10 +64,6 @@ const booksCopyForEdition = (siteLanguage: 'de' | 'en', editionLanguage: string 
   return { ...textsFor(siteLanguage).books, ...(editionLanguage ? editionCopyOverrides[editionLanguage] : {}) }
 }
 
-const editionsOf = (book: Book) => book.editions?.length
-  ? book.editions.filter((edition) => edition.language)
-  : (book.amazon.startsWith('https://') ? [{ language: book.lang, amazon: book.amazon }] : [])
-
 const localizedBook = (book: Book, language: string): Book => {
   const edition = editionsOf(book).find((item) => item.language === language)
   if (!edition) return book
@@ -84,26 +83,6 @@ const localizedBook = (book: Book, language: string): Book => {
     lifestyleImages: edition.lifestyleImages ?? (edition.language === book.lang ? book.lifestyleImages : []),
     previewVideo: edition.previewVideo ?? (edition.language === book.lang ? book.previewVideo : undefined),
   }
-}
-
-// Kartentitel: „Bibelgeschichten zum Ausmalen: Band 1 - Die Schöpfung - Gott macht die Welt"
-// wird zu Haupttitel „Die Schöpfung" und Untertitel „Gott macht die Welt"; die Reihe steht darüber.
-function splitTitle(book: Book): { main: string; sub?: string } {
-  let title = book.title
-  const series = (book.series ?? '').split('·')[0].trim()
-  if (series && title.toLowerCase().startsWith(series.toLowerCase())) {
-    title = title.slice(series.length).replace(/^[\s:–-]+/, '')
-  }
-  title = title.replace(/^(Band|Volume|Vol\.|Tomo|Volumen)\s*\d+\s*[-–:]\s*/i, '')
-  const parts = title.split(/\s[–-]\s/)
-  if (parts.length > 1) return { main: parts[0].trim(), sub: parts.slice(1).join(' – ').trim() }
-  return { main: title.trim() }
-}
-
-// „Bibelgeschichten zum Ausmalen · Band 1" -> „Band 1" (die Reihe steht schon in der Überschrift des Abschnitts)
-function volumeLabel(book: Book): string {
-  const parts = (book.series ?? '').split('·')
-  return parts.length > 1 ? parts.slice(1).join('·').trim() : ''
 }
 
 function highlightIcon(text: string) {
@@ -270,33 +249,6 @@ function LanguageEditions({
   )
 }
 
-function BuyButton({ book, size = 'md', preferredLanguage, label }: { book: Book; size?: 'md' | 'lg'; preferredLanguage?: string; label?: string }) {
-  const lang = useLang()
-  const t = textsFor(lang)
-  const width = size === 'lg' ? 'max-w-[305px]' : 'max-w-[240px]'
-  const editions = editionsOf(book).filter((item) => item.amazon.startsWith('https://'))
-  const edition = preferredLanguage
-    ? editions.find((item) => item.language === preferredLanguage)
-    : editions.find((item) => item.language === lang)
-      ?? editions.find((item) => item.language === book.lang)
-      ?? editions[0]
-  // Kein gültiger Amazon-Link → kein kaputter Button
-  if (!edition) return null
-  return (
-    <a
-      href={edition.amazon}
-      target="_blank"
-      rel="noopener noreferrer"
-      onClick={() => trackAmazonClick(book.id, edition.language)}
-      onAuxClick={(event) => isMiddleClick(event) && trackAmazonClick(book.id, edition.language)}
-      className={`block w-full ${width} transition-transform hover:scale-[1.03] focus-visible:rounded-full focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/60`}
-      aria-label={`${book.title} – ${label ?? t.books.buyAmazon}`}
-    >
-      <img src="images/buttons/amazon.webp" alt={label ?? t.books.buyAmazon} className="h-auto w-full" />
-    </a>
-  )
-}
-
 function BulkDiscountDialog({
   open,
   onOpenChange,
@@ -458,6 +410,16 @@ function BookDialog({
               <DialogDescription className="mt-6 max-w-2xl whitespace-pre-line text-lg leading-loose text-muted-foreground">
                 <RichText text={displayBook?.description || ''} />
               </DialogDescription>
+              {book && hasFlipbook(book.id) ? (
+                <button
+                  type="button"
+                  onClick={() => { onClose(); openFlipBookById(book.id) }}
+                  className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-full border-2 border-primary/25 bg-card px-6 py-3 font-bold text-primary transition-colors hover:border-primary/50"
+                >
+                  <BookOpen className="h-5 w-5" aria-hidden />
+                  {siteCopy.flipInside}
+                </button>
+              ) : null}
               {(displayBook?.highlights?.length ?? 0) > 0 && <p className="mt-6 font-display text-lg font-semibold text-foreground">{dialogCopy.bookInfoTitle}</p>}
               <ul className="mt-3 grid max-w-2xl gap-3 sm:grid-cols-2">
                 {(displayBook?.highlights || []).map((h) => {
@@ -767,10 +729,11 @@ export default function Books() {
                             <div className="mt-3 flex flex-1 flex-col items-center justify-end sm:mt-4">
                               <button
                                 type="button"
-                                onClick={() => openBook(b)}
-                                className="flex min-h-11 w-full max-w-[240px] items-center justify-center rounded-full bg-primary px-2 py-2 text-xs font-bold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 sm:aspect-[900/165] sm:text-sm"
+                                onClick={() => (hasFlipbook(b.id) ? openFlipBookById(b.id) : openBook(b))}
+                                className="flex min-h-11 w-full max-w-[240px] items-center justify-center gap-2 rounded-full bg-primary px-2 py-2 text-xs font-bold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 sm:aspect-[900/165] sm:text-sm"
                               >
-                                {t.books.lookInside}
+                                {hasFlipbook(b.id) ? <BookOpen className="h-4 w-4" aria-hidden /> : null}
+                                {hasFlipbook(b.id) ? t.books.flipInside : t.books.lookInside}
                               </button>
                             </div>
                           </div>

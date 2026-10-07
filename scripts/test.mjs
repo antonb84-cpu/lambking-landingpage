@@ -79,6 +79,17 @@ test('Blätterbuch: bedienbar per Tippen/Tastatur, ohne Bildmenü, respektiert r
   assert(!/<a[^>]*flip/i.test(flip), 'Blätterbuch ist ein Link')
 })
 
+test('Blätterbuch ist für jedes Buch aufrufbar: Knopf an der Karte, Fenster, Buchauswahl, Vollbild', () => {
+  const books = readFileSync(join(SRC, 'sections/Books.tsx'), 'utf-8')
+  const app = readFileSync(join(SRC, 'App.tsx'), 'utf-8')
+  const tryit = readFileSync(join(SRC, 'sections/TryIt.tsx'), 'utf-8')
+  const dialog = readFileSync(join(SRC, 'components/FlipBookDialog.tsx'), 'utf-8')
+  assert(books.includes('hasFlipbook(b.id)') && books.includes('openFlipBookById'), 'Karte hat keinen Reinblättern-Knopf')
+  assert(app.includes('<FlipBookDialog />'), 'Blätterbuch-Fenster ist nicht eingebunden')
+  assert(tryit.includes('hasFlipbook(item.id)') === false && tryit.includes('candidates') && tryit.includes('onFullscreen'), 'Buchauswahl/Vollbild im Blätterbuch-Bereich fehlt')
+  assert(dialog.includes('size="dialog"') && dialog.includes('previewOnly'), 'Fenster zeigt keinen Hinweis auf die Teil-Vorschau')
+})
+
 test('Blätterbuch zeigt Titelseite (auch Druckbogen-Cover) und alle Seiten des Buches', () => {
   const flip = readFileSync(join(SRC, 'components/FlipBook.tsx'), 'utf-8')
   assert(flip.includes('coverFor(book, edition)') && flip.includes('flipPagesFor(book.id, sel)'), 'Cover/Seiten kommen nicht aus den Buchdaten')
@@ -88,8 +99,12 @@ test('Blätterbuch zeigt Titelseite (auch Druckbogen-Cover) und alle Seiten des 
   for (const [id, langs] of Object.entries(manifest)) {
     if (id.startsWith('_')) continue
     for (const [lang, entry] of Object.entries(langs)) {
-      assert(existsSync(join(ROOT, 'public', entry.dir, 'p01.jpg')), `Blätterbuch ${id}/${lang}: Seite 1 fehlt`)
-      assert(existsSync(join(ROOT, 'public', entry.dir, `p${String(entry.count).padStart(2, '0')}.jpg`)), `Blätterbuch ${id}/${lang}: letzte Seite fehlt`)
+      const ext = entry.ext || 'jpg'
+      assert(existsSync(join(ROOT, 'public', entry.dir, `p01.${ext}`)), `Blätterbuch ${id}/${lang}: Seite 1 fehlt`)
+      assert(existsSync(join(ROOT, 'public', entry.dir, `p${String(entry.count).padStart(2, '0')}.${ext}`)), `Blätterbuch ${id}/${lang}: letzte Seite fehlt`)
+      assert(!existsSync(join(ROOT, 'public', entry.dir, `p${String(entry.count + 1).padStart(2, '0')}.${ext}`)), `Blätterbuch ${id}/${lang}: Seiten über der Vorschaugrenze liegen im Ordner`)
+      assert(!entry.total || entry.total >= entry.count, `Blätterbuch ${id}/${lang}: total kleiner als count`)
+      assert(!entry.total || entry.count < entry.total || entry.count <= 8, `Blätterbuch ${id}/${lang}: die Vorschau zeigt das ganze Buch`)
       if (entry.back) assert(existsSync(join(ROOT, 'public', entry.back)), `Blätterbuch ${id}/${lang}: Rückseite fehlt`)
     }
   }
@@ -472,7 +487,7 @@ test('Anonyme Statistik speichert keine Besucherkennungen', () => {
   const schema = readFileSync(join(ROOT, 'analytics-worker/schema.sql'), 'utf-8')
   const adminServer = readFileSync(join(ROOT, 'admin/admin_server.py'), 'utf-8')
   assert(app.includes('trackPageView()'), 'Seitenaufruf wird nicht gezählt')
-  assert(books.includes('trackAmazonClick(book.id, edition.language)'), 'Amazon-Klick je Buch und Sprach-Ausgabe wird nicht gezählt')
+  assert(readFileSync(join(SRC, 'components/BuyButton.tsx'), 'utf-8').includes('trackAmazonClick(book.id, edition.language)') && books.includes('<BuyButton'), 'Amazon-Klick je Buch und Sprach-Ausgabe wird nicht gezählt')
   // Jedes Klickziel muss vom Zähldienst akzeptiert werden (früher wurde „buch:de" verworfen – dadurch fehlten alle Klicks)
   const pattern = new RegExp(worker.match(/const TARGET_PATTERN = \/(.*)\/\r?\n/)[1])
   const frontPattern = new RegExp(analytics.match(/const TARGET_PATTERN = \/(.*)\//)[1])
@@ -487,7 +502,7 @@ test('Anonyme Statistik speichert keine Besucherkennungen', () => {
   assert(analytics.includes('counterSelfTest') && readFileSync(join(SRC, 'App.tsx'), 'utf-8').includes("has('zaehler-test')"), 'Zähler-Selbsttest fehlt')
   const ratingSrc = readFileSync(join(SRC, 'components/AmazonRating.tsx'), 'utf-8')
   assert(ratingSrc.includes('trackAmazonClick(book.id, book.lang)'), 'Klick auf die Sterne (führt zu Amazon) wird nicht gezählt')
-  for (const file of ['sections/Books.tsx', 'components/PaypalButton.tsx', 'components/KofiButton.tsx', 'sections/AppSection.tsx', 'components/AmazonRating.tsx']) {
+  for (const file of ['components/BuyButton.tsx', 'components/PaypalButton.tsx', 'components/KofiButton.tsx', 'sections/AppSection.tsx', 'components/AmazonRating.tsx']) {
     assert(readFileSync(join(SRC, file), 'utf-8').includes('onAuxClick'), `${file}: Klick mit der mittleren Maustaste wird nicht gezählt`)
   }
   // Admin-Programm und Oberfläche müssen dieselbe Version haben, sonst läuft noch ein altes Programm

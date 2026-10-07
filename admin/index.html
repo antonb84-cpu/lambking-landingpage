@@ -150,6 +150,7 @@
   .fb-thumb .box img{width:100%; height:100%; object-fit:cover;}
   .fb-thumb .box img.spread{width:200%; max-width:none; height:100%; object-fit:cover; object-position:right; transform:translateX(-25%);}
   .fb-thumb .box .none{font-size:11px; padding:6px;}
+  .fb-limit{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:8px 0;}
   .fb-actions{display:flex; gap:8px; flex-wrap:wrap; margin-top:6px;}
   .fb-actions .btn{padding:8px 14px; font-size:13px;}
   .fb-busy{margin-top:10px; padding:10px 12px; border-radius:10px; background:#FFF8E5; border:1px solid #E7D39A; font-size:13.5px;}
@@ -824,6 +825,7 @@ const TEXT_SECTIONS = [
 const HIDDEN_TEXT_PATHS = new Set(['app.ctaWebApp', 'faq.webAppLink', 'tryit.lookInside']);
 
 const TEXT_LABELS = {
+  previewEndTitle:'Endseite der Leseprobe: Überschrift', previewEndText:'Endseite der Leseprobe: Text ({count} und {total} bleiben stehen)', previewEnd:'Seitenanzeige am Ende der Leseprobe', fullscreen:'Knopf „Groß ansehen“', details:'Link „Alle Infos zum Buch“', choose:'Frage über der Buchauswahl', previewOnly:'Hinweis „Leseprobe“ im großen Fenster ({count} und {total} bleiben stehen)', flipInside:'Knopf „Reinblättern“',
   ratingLine:'Sterne-Zeile unter den Knöpfen (Platzhalter {rating} und {count} bleiben stehen)', tiersTitle:'Überschrift über den Rabatten', freebie:'Knopf „Gratis-Ausmalbild“',
   badge:'Abzeichen auf dem Bild', hint:'Hinweis unter dem Knopf', navLabel:'Menü-Eintrag', heroTitle:'Überschrift', heroText:'Einleitung', applyNow:'Knopf „Jetzt bewerben“', microCreatorNote:'Kurzer Hinweis im Balken',
   bookLanguage:'Beschriftung der Sprach-Flaggen (für Screenreader)', backCover:'Anzeige am Ende des Buches', page:'Wort „Seite“', pages:'Wort „Seiten“', of:'Wort „von“',
@@ -2131,15 +2133,21 @@ function fbCard(book, code, entry){
   const coverSrc = cover ? '/' + cover.replace(/^\/+/, '') : '';
   const base = `/flipbook-file/${encodeURIComponent(book.id)}/${encodeURIComponent(code)}/`;
   const chips = [
-    entry ? `<span class="fb-chip">📄 ${entry.count} Seiten</span>` : '<span class="fb-chip no">📄 noch keine PDF</span>',
+    entry ? `<span class="fb-chip">📄 ${entry.count} von ${entry.total || entry.count} Seiten sichtbar</span>` : '<span class="fb-chip no">📄 noch keine PDF</span>',
     entry && entry.back ? '<span class="fb-chip">✓ Rückseite</span>' : '<span class="fb-chip no">keine Rückseite</span>',
     edition && edition.cover ? '<span class="fb-chip">✓ eigene Titelseite</span>' : '<span class="fb-chip no">Titelseite vom Buch</span>',
   ].join(' ');
-  const thumbs = fbThumb('Titelseite', coverSrc, spread) + fbThumb('Seite 1', entry ? base + 'p01.jpg' : '', false) + fbThumb('Rückseite', entry && entry.back ? base + 'rueckseite.jpg' : '', false);
+  const thumbs = fbThumb('Titelseite', coverSrc, spread) + fbThumb('Seite 1', entry ? base + 'p01.' + (entry.ext || 'jpg') : '', false) + fbThumb('Rückseite', entry && entry.back ? base + 'rueckseite.jpg' : '', false);
   const idp = `fb_${code}`;
   return `<div class="fb-card" id="${idp}_card">
     <div class="fb-head"><b>${esc(fbLangLabel(code))}</b>${chips}</div>
     <div class="fb-thumbs">${thumbs}</div>
+    <div class="fb-limit">
+      <label for="${idp}_limit"><b>Sichtbare Seiten (Leseprobe):</b></label>
+      <input type="number" id="${idp}_limit" min="1" max="300" value="${entry ? entry.count : ''}" placeholder="automatisch" style="width:110px;">
+      ${entry ? `<button class="btn btn-ghost" onclick="fbShrink('${code}')">Auf diese Zahl kürzen</button>` : ''}
+      <small style="color:var(--muted);">Leer = automatisch etwa 40 % des Buches. Es wird nur dieser Teil veröffentlicht, der Rest bleibt auf deinem Rechner.</small>
+    </div>
     <div class="fb-actions">
       <button class="btn btn-blue" onclick="document.getElementById('${idp}_pdf').click()">📄 ${entry ? 'PDF ersetzen' : 'Komplette PDF hochladen'}</button>
       <button class="btn btn-ghost" onclick="document.getElementById('${idp}_cover').click()">📗 Titelseite hochladen</button>
@@ -2183,6 +2191,8 @@ async function fbUpload(code, kind, input){
     : 'Bild wird gespeichert …');
   const fd = new FormData();
   fd.append('id', fbBookId); fd.append('lang', code); fd.append(kind, file);
+  const limitInput = $('fb_' + code + '_limit');
+  if (kind === 'pdf' && limitInput && limitInput.value) fd.append('limit', limitInput.value);
   try{
     const d = await api('/api/flipbook', {method:'POST', body: fd});
     if (d.ok === false){ busy.innerHTML = '<span style="color:var(--red)">✗ ' + esc(d.error || 'Das hat nicht geklappt.') + '</span>'; toast(d.error || 'Das hat nicht geklappt.', true); return; }
@@ -2191,6 +2201,15 @@ async function fbUpload(code, kind, input){
   } catch (e){
     busy.innerHTML = '<span style="color:var(--red)">✗ Die Übertragung ist fehlgeschlagen. Bitte erneut versuchen.</span>';
   }
+}
+
+async function fbShrink(code){
+  const value = parseInt($('fb_' + code + '_limit').value, 10);
+  if (!value || value < 1){ toast('Bitte eine Seitenzahl eintragen.', true); return; }
+  const d = await api('/api/flipbook/limit', {method:'POST', body: JSON.stringify({id: fbBookId, lang: code, limit: value})});
+  if (d.ok === false){ toast(d.error || 'Das hat nicht geklappt.', true); return; }
+  toast('✓ Die Leseprobe zeigt jetzt ' + value + ' Seiten (lokal – noch nicht veröffentlicht).');
+  await load();
 }
 
 async function fbDelete(code, part){

@@ -215,7 +215,7 @@ try {
       const play = label(/Automatisch blättern|Pause/)
       return JSON.stringify({
         found: !!group,
-        paused: play?.getAttribute('aria-pressed') === 'false',
+        paused: !play || play.getAttribute('aria-pressed') === 'false', // am Handy gibt es keinen Selbstablauf
         lastEnabled: label(/Rückseite/)?.disabled === false,
         firstDisabled: label(/Titelseite/)?.disabled === true,
         images: group ? group.querySelectorAll('img').length : 0,
@@ -233,12 +233,13 @@ try {
     const flags = JSON.parse(await evalJs(`JSON.stringify([...document.querySelectorAll('#ausprobieren [role="group"] [role="group"] button')].map(b => b.getAttribute('aria-label')))`) || '[]')
     if (flags.length > 1) {
       const target = flags[1]
+      const beforeSrc = await evalJs(`document.querySelector('#ausprobieren [role="group"] img')?.getAttribute('src') || ''`)
       await evalJs(`[...document.querySelectorAll('#ausprobieren [role="group"] [role="group"] button')].find(b => b.getAttribute('aria-label') === ${JSON.stringify(target)})?.click()`)
       const switched = await waitForPageState(`(() => {
         const group = document.querySelector('#ausprobieren [role="group"]')
         const pressed = [...group.querySelectorAll('[role="group"] button')].find(b => b.getAttribute('aria-pressed') === 'true')?.getAttribute('aria-label')
-        const srcs = [...group.querySelectorAll('img')].map(i => i.getAttribute('src') || '')
-        return pressed === ${JSON.stringify(target)} && srcs.some(src => src.includes('/p01.jpg') && !src.includes('-de/'))
+        const shown = group.querySelector('img')?.getAttribute('src') || ''
+        return pressed === ${JSON.stringify(target)} && shown !== '' && shown !== ${JSON.stringify(beforeSrc)}
       })()`, 8000)
       console.log(`${switched ? '✓' : '✗'} Blick ins Buch: Flagge „${target}" zeigt das Buch in dieser Sprache`)
       if (!switched) fehler++
@@ -246,6 +247,24 @@ try {
     await send('Emulation.clearDeviceMetricsOverride')
     await send('Page.navigate', { url: `http://127.0.0.1:${HTTP_PORT}/` })
     await new Promise((r) => setTimeout(r, 1800))
+  }
+
+  // Großes Blätterbuch: Knopf an der Buchkarte öffnet ein Fenster mit Teil-Vorschau, das Ende verweist auf Amazon
+  {
+    const before = await targetCount()
+    await evalJs(`[...document.querySelectorAll('#buecher button')].find(b => /Reinblättern/.test(b.textContent))?.click()`)
+    const opened = await waitForPageState(`/Leseprobe: \\d+ von \\d+ Seiten/.test(document.querySelector('[role="dialog"]')?.textContent || '')`, 8000)
+    await evalJs(`[...document.querySelectorAll('[role="dialog"] button')].find(b => /Rückseite/.test(b.getAttribute('aria-label') || ''))?.click()`)
+    await new Promise((r) => setTimeout(r, 1800))
+    await evalJs(`[...document.querySelectorAll('[role="dialog"] button')].filter(b => /Zurückblättern/.test(b.getAttribute('aria-label') || '')).at(-1)?.click()`)
+    const endShown = await waitForPageState(`/Das ganze Buch gibt es bei Amazon/.test(document.querySelector('[role="dialog"]')?.textContent || '') && !!document.querySelector('[role="dialog"] a[href*="amazon"]')`, 8000)
+    const after = await targetCount()
+    if (process.env.E2E_DEBUG) console.log({ opened, endShown })
+    const ok = opened === true && endShown === true && after === before
+    console.log(`${ok ? '✓' : '✗'} Großes Blätterbuch: Fenster mit Teil-Vorschau, Endseite mit Amazon-Weg (Tabs ${before}→${after})`)
+    if (!ok) fehler++
+    await send('Page.navigate', { url: `http://127.0.0.1:${HTTP_PORT}/` })
+    await new Promise((r) => setTimeout(r, 1500))
   }
 
   {

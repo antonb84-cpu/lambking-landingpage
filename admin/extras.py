@@ -28,9 +28,13 @@ UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
 
 BOOK_ID_RE = re.compile(r"^[a-z0-9][a-z0-9-]{0,80}$")
 LANG_RE = re.compile(r"^[a-z]{2,3}$")
-PAGE_FILE_RE = re.compile(r"^p\d{2,3}\.jpg$")
-FLIP_PAGE_WIDTH = 640           # Breite einer Buchseite im Blätterbuch (Pixel)
+PAGE_FILE_RE = re.compile(r"^p\d{2,3}\.(?:jpg|webp)$")
+FLIP_PAGE_WIDTH = 1000          # Breite einer Buchseite im Blätterbuch (Pixel) – reicht für das große Fenster
+FLIP_PAGE_QUALITY = 74          # WebP-Qualität der Seitenbilder
 FLIP_MAX_PAGES = 300
+FLIP_PREVIEW_SHARE = 0.4        # Standard: so viel vom Buch ist in der Leseprobe sichtbar
+FLIP_PREVIEW_MIN = 5
+FLIP_PREVIEW_MAX = 30
 FLIP_BACK_NAME = "rueckseite.jpg"
 
 
@@ -70,29 +74,47 @@ def _check_ids(book_id: str, lang: str) -> None:
         raise AdminError("Ungültiger Sprachcode.")
 
 
-def render_pdf_pages(pdf_bytes: bytes, out_dir: Path) -> int:
-    """Rendert jede PDF-Seite als p01.jpg, p02.jpg … in out_dir. Gibt die Seitenzahl zurück."""
+def default_preview_limit(total: int) -> int:
+    """Wie viele Seiten die Leseprobe standardmäßig zeigt: etwa 40 % des Buches, ungerade Zahl, höchstens 30.
+
+    Ungerade, damit die Hinweisseite „Ende der Vorschau" beim Umblättern links liegt und rechts direkt die
+    Rückseite folgt (statt einer leeren Doppelseite)."""
+    wanted = min(FLIP_PREVIEW_MAX, max(FLIP_PREVIEW_MIN, round(total * FLIP_PREVIEW_SHARE)))
+    if wanted % 2 == 0:
+        wanted -= 1
+    return min(total, wanted)
+
+
+def render_pdf_pages(pdf_bytes: bytes, out_dir: Path, limit: int | None = None) -> tuple[int, int]:
+    """Rendert die ersten Seiten der PDF als p01.webp, p02.webp … in out_dir.
+
+    Gibt (gezeigte Seiten, Seiten des ganzen Buches) zurück. Ohne limit gilt default_preview_limit.
+    Der Rest des Buches wird bewusst nicht gespeichert – die Leseprobe zeigt nur einen Teil.
+    """
     try:
         import pymupdf as fitz  # neuere Paketbezeichnung
     except ImportError:  # pragma: no cover - ältere Installationen
         import fitz  # type: ignore
+    from PIL import Image
     try:
         doc = fitz.open(stream=pdf_bytes, filetype="pdf")
     except Exception as exc:
         raise AdminError("Die PDF-Datei konnte nicht gelesen werden.") from exc
     try:
-        count = doc.page_count
-        if count < 1:
+        total = doc.page_count
+        if total < 1:
             raise AdminError("Die PDF-Datei enthält keine Seiten.")
-        if count > FLIP_MAX_PAGES:
-            raise AdminError(f"Die PDF-Datei hat {count} Seiten – erlaubt sind höchstens {FLIP_MAX_PAGES}.")
+        if total > FLIP_MAX_PAGES:
+            raise AdminError(f"Die PDF-Datei hat {total} Seiten – erlaubt sind höchstens {FLIP_MAX_PAGES}.")
+        shown = default_preview_limit(total) if limit is None else max(1, min(int(limit), total))
         out_dir.mkdir(parents=True, exist_ok=True)
-        for index in range(count):
+        for index in range(shown):
             page = doc[index]
             zoom = FLIP_PAGE_WIDTH / page.rect.width
             pixmap = page.get_pixmap(matrix=fitz.Matrix(zoom, zoom), alpha=False)
-            pixmap.save(str(out_dir / f"p{index + 1:02d}.jpg"), jpg_quality=72)
-        return count
+            image = Image.frombytes("RGB", (pixmap.width, pixmap.height), pixmap.samples)
+            image.save(out_dir / f"p{index + 1:02d}.webp", "WEBP", quality=FLIP_PAGE_QUALITY, method=6)
+        return shown, total
     finally:
         doc.close()
 
@@ -114,10 +136,10 @@ def _save_back_cover(data: bytes, dest: Path) -> None:
     image.save(dest, quality=80, optimize=True, progressive=True)
 
 
-def set_flipbook(book_id: str, lang: str, pdf_bytes: bytes | None = None, back_bytes: bytes | None = None) -> dict:
+def set_flipbook(book_id: str, lang: str, pdf_bytes: bytes | None = None, back_bytes: bytes | None = None, limit: int | None = None) -> dict:
     """Legt das Blätterbuch eines Buches in einer Sprache an oder aktualisiert es.
 
-    * pdf_bytes  – komplette Innen-PDF → alle Seiten werden neu erzeugt (alte Seiten ersetzt)
+    * pdf_bytes  – komplette Innen-PDF → nur die ersten Seiten (limit, Standard ≈ 40 %) werden als Leseprobe gespeichert
     * back_bytes – Rückseite als Bild
     Ein Fehler lässt den bisherigen Stand unverändert.
     """
@@ -138,7 +160,7 @@ def set_flipbook(book_id: str, lang: str, pdf_bytes: bytes | None = None, back_b
         if tmp_dir.exists():
             shutil.rmtree(tmp_dir)
         try:
-            count = render_pdf_pages(pdf_bytes, tmp_dir)
+            count, total = render_pdf_pages(pdf_bytes, tmp_dir, limit)
             final_dir.mkdir(parents=True, exist_ok=True)
             for old in final_dir.iterdir():  # nur eigene Seitenbilder entfernen
                 if old.is_file() and PAGE_FILE_RE.fullmatch(old.name):
@@ -150,6 +172,8 @@ def set_flipbook(book_id: str, lang: str, pdf_bytes: bytes | None = None, back_b
                 shutil.rmtree(tmp_dir, ignore_errors=True)
         entry["dir"] = rel_dir
         entry["count"] = count
+        entry["total"] = total
+        entry["ext"] = "webp"
 
     if back_bytes:
         final_dir.mkdir(parents=True, exist_ok=True)
@@ -157,6 +181,33 @@ def set_flipbook(book_id: str, lang: str, pdf_bytes: bytes | None = None, back_b
         entry["back"] = f"{rel_dir}/{FLIP_BACK_NAME}"
 
     manifest.setdefault(book_id, {})[lang] = entry
+    save_flipbooks(manifest)
+    return entry
+
+
+def shrink_flipbook(book_id: str, lang: str, limit: int) -> dict:
+    """Verkleinert die Leseprobe auf die ersten `limit` Seiten (mehr Seiten gehen nur mit erneutem PDF-Upload)."""
+    _check_ids(book_id, lang)
+    manifest = load_flipbooks()
+    entry = manifest.get(book_id, {}).get(lang)
+    if not isinstance(entry, dict) or not entry.get("count"):
+        raise AdminError("Für diese Sprache gibt es kein Blätterbuch.")
+    try:
+        limit = int(limit)
+    except (TypeError, ValueError):
+        raise AdminError("Bitte eine Seitenzahl angeben.")
+    if limit < 1:
+        raise AdminError("Mindestens eine Seite muss sichtbar sein.")
+    if limit > entry["count"]:
+        raise AdminError(f"Es sind nur {entry['count']} Seiten gespeichert. Für mehr Seiten bitte die PDF erneut hochladen.")
+    folder = ROOT / "public" / flipbook_rel_dir(book_id, lang)
+    ext = entry.get("ext") or "jpg"
+    for number in range(limit + 1, entry["count"] + 1):
+        path = folder / f"p{number:02d}.{ext}"
+        if path.is_file():
+            path.unlink()
+    entry["total"] = max(entry.get("total") or 0, entry["count"])
+    entry["count"] = limit
     save_flipbooks(manifest)
     return entry
 

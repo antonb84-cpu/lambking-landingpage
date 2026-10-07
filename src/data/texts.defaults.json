@@ -239,7 +239,8 @@
       "ratingCta": "Jetzt auf Amazon bewerten",
       "ratingOf": "von 5 Sternen",
       "titleOne": "Titel",
-      "titleMany": "Titel"
+      "titleMany": "Titel",
+      "flipInside": "Reinblättern"
     },
     "trust": {
       "title": "Darauf können Familien vertrauen.",
@@ -428,7 +429,14 @@
       "prev": "Zurückblättern",
       "next": "Weiterblättern",
       "first": "Zur Titelseite",
-      "last": "Zur Rückseite"
+      "last": "Zur Rückseite",
+      "previewEndTitle": "Gefällt dir das Buch?",
+      "previewEndText": "Du hast {count} von {total} Seiten gesehen. Das ganze Buch gibt es bei Amazon.",
+      "previewEnd": "Ende der Vorschau",
+      "fullscreen": "Groß ansehen",
+      "details": "Alle Infos zum Buch",
+      "choose": "Welches Buch möchtest du ansehen?",
+      "previewOnly": "Leseprobe: {count} von {total} Seiten"
     },
     "usp": {
       "items": [
@@ -707,7 +715,8 @@
       "ratingCta": "Rate it on Amazon",
       "ratingOf": "out of 5 stars",
       "titleOne": "title",
-      "titleMany": "titles"
+      "titleMany": "titles",
+      "flipInside": "Flip through"
     },
     "trust": {
       "title": "What families can trust.",
@@ -896,7 +905,14 @@
       "prev": "Previous page",
       "next": "Next page",
       "first": "To the front cover",
-      "last": "To the back"
+      "last": "To the back",
+      "previewEndTitle": "Do you like the book?",
+      "previewEndText": "You have seen {count} of {total} pages. The whole book is available on Amazon.",
+      "previewEnd": "End of preview",
+      "fullscreen": "View larger",
+      "details": "All about this book",
+      "choose": "Which book would you like to look at?",
+      "previewOnly": "Preview: {count} of {total} pages"
     },
     "usp": {
       "items": [

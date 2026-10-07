@@ -894,7 +894,7 @@ class Handler(BaseHTTPRequestHandler):
             parts = path[len("/flipbook-file/"):].split("/")
             f = extras.flipbook_file(*parts) if len(parts) == 3 else None
             if f:
-                self.send_file(f, "image/jpeg", no_cache=True)
+                self.send_file(f, "image/webp" if f.suffix == ".webp" else "image/jpeg", no_cache=True)
             else:
                 self.send_error(404)
         elif path.startswith("/vorschau"):
@@ -973,6 +973,8 @@ class Handler(BaseHTTPRequestHandler):
                 self.api_flipbook()
             elif path == "/api/flipbook/delete":
                 self.api_flipbook_delete()
+            elif path == "/api/flipbook/limit":
+                self.api_flipbook_limit()
             elif path == "/api/flipbook/featured":
                 self.api_flipbook_featured()
             elif path == "/api/linkcheck":
@@ -1589,6 +1591,8 @@ class Handler(BaseHTTPRequestHandler):
         pdf = files["pdf"][1] if "pdf" in files else None
         back = files["back"][1] if "back" in files else None
         cover = files["cover"][1] if "cover" in files else None
+        limit_text = (fields.get("limit") or "").strip()
+        limit = int(limit_text) if limit_text.isdigit() else None
         if not (pdf or back or cover):
             self.send_json({"ok": False, "error": "Bitte eine Datei auswählen."})
             return
@@ -1600,7 +1604,7 @@ class Handler(BaseHTTPRequestHandler):
             return
         try:
             if pdf or back:
-                extras.set_flipbook(book_id, lang, pdf, back)
+                extras.set_flipbook(book_id, lang, pdf, back, limit)
             if cover:
                 self.save_edition_cover(state, book, lang, cover)
         except extras.AdminError as exc:
@@ -1645,6 +1649,16 @@ class Handler(BaseHTTPRequestHandler):
                 extras.remove_flipbook_back(book_id, lang)
             else:
                 extras.remove_flipbook(book_id, lang)
+        except extras.AdminError as exc:
+            self.send_json({"ok": False, "error": str(exc)})
+            return
+        self.send_json({"ok": True, "flipbooks": extras.load_flipbooks()})
+
+    def api_flipbook_limit(self):
+        """Leseprobe auf weniger Seiten verkleinern."""
+        d = self.read_json()
+        try:
+            extras.shrink_flipbook(str(d.get("id", "")), str(d.get("lang", "")), d.get("limit"))
         except extras.AdminError as exc:
             self.send_json({"ok": False, "error": str(exc)})
             return

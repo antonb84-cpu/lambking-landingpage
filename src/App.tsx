@@ -6,6 +6,7 @@ import Mascot from '@/sections/Mascot'
 import TryIt from '@/sections/TryIt'
 import Groups from '@/sections/Groups'
 import MobileCta from '@/components/MobileCta'
+import FlipBookDialog from '@/components/FlipBookDialog'
 import Family from '@/sections/Family'
 import Books from '@/sections/Books'
 import AppSection from '@/sections/AppSection'
@@ -59,6 +60,7 @@ export default function App() {
       </main>
       <Footer />
       <MobileCta />
+      <FlipBookDialog />
       {typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('zaehler-test') ? <CounterSelfTest /> : null}
     </div>
   )

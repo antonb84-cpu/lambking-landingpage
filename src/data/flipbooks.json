@@ -1,31 +1,93 @@
 {
-  "_hinweis": "Vollständige Blätterbücher: Buch-ID -> Sprache -> Bildordner mit p01.jpg, p02.jpg, … Erzeugt mit scripts/pdf-zu-blaetterbuch.py Optional: \"back\" = Rückseite des Buches (Datei im selben Ordner).",
+  "_hinweis": "Blätterbücher (Leseprobe): Buch-ID -> Sprache -> Bildordner mit p01.webp, p02.webp, … count = gezeigte Seiten, total = Seiten des ganzen Buches, ext = Dateiendung, back = Rückseite. Wird über den Admin (Reiter „Blick ins Buch“) erzeugt.",
   "bibelgeschichten-zum-ausmalen": {
     "de": {
-      "dir": "images/buch-band01-de",
-      "count": 70
+      "dir": "images/buch-bibelgeschichten-zum-ausmalen-de",
+      "count": 27,
+      "total": 70,
+      "ext": "webp"
+    },
+    "en": {
+      "dir": "images/buch-bibelgeschichten-zum-ausmalen-en",
+      "count": 27,
+      "total": 70,
+      "ext": "webp"
+    },
+    "es": {
+      "dir": "images/buch-bibelgeschichten-zum-ausmalen-es",
+      "count": 27,
+      "total": 70,
+      "ext": "webp"
     }
   },
   "david": {
     "de": {
       "dir": "images/buch-david-de",
-      "count": 70,
-      "back": "images/buch-david-de/rueckseite.jpg"
+      "count": 27,
+      "back": "images/buch-david-de/rueckseite.jpg",
+      "total": 70,
+      "ext": "webp"
     },
     "en": {
       "dir": "images/buch-david-en",
-      "count": 70,
-      "back": "images/buch-david-en/rueckseite.jpg"
+      "count": 27,
+      "back": "images/buch-david-en/rueckseite.jpg",
+      "total": 70,
+      "ext": "webp"
     },
     "es": {
       "dir": "images/buch-david-es",
-      "count": 70,
-      "back": "images/buch-david-es/rueckseite.jpg"
+      "count": 27,
+      "back": "images/buch-david-es/rueckseite.jpg",
+      "total": 70,
+      "ext": "webp"
     },
     "ro": {
       "dir": "images/buch-david-ro",
-      "count": 70,
-      "back": "images/buch-david-ro/rueckseite.jpg"
+      "count": 27,
+      "back": "images/buch-david-ro/rueckseite.jpg",
+      "total": 70,
+      "ext": "webp"
+    }
+  },
+  "bibelgeschichten-zum-ausmalen-3": {
+    "de": {
+      "dir": "images/buch-bibelgeschichten-zum-ausmalen-3-de",
+      "count": 27,
+      "total": 70,
+      "ext": "webp"
+    },
+    "en": {
+      "dir": "images/buch-bibelgeschichten-zum-ausmalen-3-en",
+      "count": 27,
+      "total": 70,
+      "ext": "webp"
+    },
+    "es": {
+      "dir": "images/buch-bibelgeschichten-zum-ausmalen-3-es",
+      "count": 27,
+      "total": 70,
+      "ext": "webp"
+    }
+  },
+  "bibelgeschichten-zum-ausmalen-2": {
+    "de": {
+      "dir": "images/buch-bibelgeschichten-zum-ausmalen-2-de",
+      "count": 29,
+      "total": 80,
+      "ext": "webp"
+    },
+    "en": {
+      "dir": "images/buch-bibelgeschichten-zum-ausmalen-2-en",
+      "count": 29,
+      "total": 80,
+      "ext": "webp"
+    },
+    "es": {
+      "dir": "images/buch-bibelgeschichten-zum-ausmalen-2-es",
+      "count": 29,
+      "total": 80,
+      "ext": "webp"
     }
   }
 }
