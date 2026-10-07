@@ -18,10 +18,6 @@ import { hasFlipbook } from '@/data/flipbooks'
 import { splitTitle, volumeLabel } from '@/data/titles'
 import { bookIdFromLocation, bookPath, isBookPath } from '@/data/bookLink'
 
-// Bücherregal: warme Holztöne passend zu Gold und Creme der Seite
-const WOOD_PLANK = 'repeating-linear-gradient(90deg, rgba(60,35,10,0.07) 0 2px, transparent 2px 9px), linear-gradient(180deg, #c9985e 0%, #a97a43 55%, #8d6234 100%)'
-const WOOD_EDGE = 'inset 0 2px 0 rgba(255,236,200,0.55), inset 0 -2px 0 rgba(60,35,10,0.35)'
-
 // Kategorie-Helfer (Labels/Typen kommen aus den Buchdaten, sprachabhängig)
 const catDefOf = (id: string) => CATEGORIES.find((c) => c.id === id)
 const typeLabelOf = (b: Book, lang: 'de' | 'en'): string => {
@@ -677,40 +673,37 @@ export default function Books() {
 
         {/* Kategorien als auf- und zuklappbare Bereiche (Kategorien kommen aus dem Admin) */}
         {groups.length > 0 ? (
-          <div className="mt-10 grid gap-5">
+          <div className="mt-10 grid gap-14">
             {groups.map((group, gi) => (
               <Reveal key={group.id} delay={gi * 80}>
-                <details open={gi === 0} className="group/cat overflow-hidden rounded-2xl shadow-[0_18px_40px_-26px_rgba(60,35,10,0.7)]" style={{ border: '5px solid #8d6234', background: '#f3e9d6' }}>
-                  <summary
-                    className="flex cursor-pointer list-none items-center gap-4 px-5 py-4 text-[#fff6e3] transition-[filter] hover:brightness-105 sm:px-7 sm:py-5 [&::-webkit-details-marker]:hidden"
-                    style={{ background: WOOD_PLANK, boxShadow: WOOD_EDGE }}
-                  >
-                    <span className="flex-1">
-                      <span className="block font-display text-2xl font-semibold leading-tight sm:text-3xl" style={{ textShadow: '0 1px 0 rgba(60,35,10,0.45)' }}>{group.label}</span>
-                      <span className="text-sm font-semibold text-[#fbe7bd]">
-                        {group.items.length} {group.items.length === 1 ? t.books.titleOne : t.books.titleMany}
-                      </span>
+                <details open={gi === 0} className="group/cat">
+                  <summary className="flex cursor-pointer list-none items-end gap-4 border-b border-[#d9cdb0] pb-4 [&::-webkit-details-marker]:hidden">
+                    <span className="block">
+                      <span className="block font-display text-3xl font-semibold leading-none sm:text-4xl">{group.label}</span>
+                      <span className="mt-3 block h-1 w-14 rounded-full bg-accent" aria-hidden />
                     </span>
-                    <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#fff6e3] text-[#6b4423] shadow transition-transform duration-300 group-open/cat:rotate-180" aria-hidden>
+                    <span className="mb-1 flex-1 text-sm font-semibold text-muted-foreground">
+                      {group.items.length} {group.items.length === 1 ? t.books.titleOne : t.books.titleMany}
+                    </span>
+                    <span className="mb-0.5 flex h-10 w-10 items-center justify-center rounded-full border border-[#d9cdb0] bg-background text-primary transition-transform duration-300 group-open/cat:rotate-180" aria-hidden>
                       <ChevronDown className="h-5 w-5" />
                     </span>
                   </summary>
-                  <div className="px-3 pb-6 sm:px-7">
+                  <div className="pb-4 pt-8">
                     {group.id === 'malbuecher' && group.items.some(isColoringBook) ? <ColoringBookFacts /> : null}
           <div className="mt-6 grid grid-cols-2 gap-2.5 sm:gap-6 lg:grid-cols-3">
                     {group.items.map((b, i) => {
                       const cardBook = localizedBook(b, lang)
                       return (
                       <Reveal key={b.id} delay={i * 100}>
-                        <article className="book-card group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-[0_10px_32px_-26px_rgba(21,49,103,0.8)] transition-all duration-200 hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_18px_38px_-24px_rgba(21,49,103,0.45)]">
+                        <article className="book-card group flex h-full flex-col rounded-2xl transition-transform duration-200 hover:-translate-y-1">
                           <button
                             type="button"
                             onClick={() => openBook(b)}
-                            className="relative flex aspect-[4/5] items-end justify-center overflow-hidden px-2.5 pb-6 pt-3 text-left sm:px-5 sm:pb-9 sm:pt-5"
-                            style={{ background: 'linear-gradient(180deg, #e3d4b6 0%, #efe3ca 60%, #f3e9d6 100%)', boxShadow: 'inset 0 10px 14px -10px rgba(60,35,10,0.35)' }}
+                            className="relative flex aspect-[4/5] items-center justify-center px-2.5 pb-3 pt-1 text-left sm:px-5"
                             aria-label={`${t.books.lookInside}: ${b.title}`}
                           >
-                            <span aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-5 sm:h-7" style={{ background: WOOD_PLANK, boxShadow: `${WOOD_EDGE}, 0 -6px 10px -6px rgba(60,35,10,0.35)` }} />
+                            <span aria-hidden className="pointer-events-none absolute inset-x-[10%] bottom-1 h-4 sm:bottom-2" style={{ background: 'radial-gradient(ellipse at center, rgba(21,49,103,0.28), transparent 70%)' }} />
                             {isNew(b) && (
                               <span className="absolute left-2 top-2 z-10 rounded-full bg-accent px-2 py-1 text-[10px] font-bold text-accent-foreground shadow sm:left-4 sm:top-4 sm:px-3 sm:text-xs">
                                 {t.books.newBadge}
@@ -722,7 +715,7 @@ export default function Books() {
                               {t.books.lookInside}
                             </span>
                           </button>
-                          <div className="flex flex-1 flex-col p-2.5 sm:p-5">
+                          <div className="flex flex-1 flex-col items-center p-2.5 text-center sm:p-4">
                             {(() => {
                               const { main, sub } = splitTitle(cardBook)
                               return (
