@@ -365,6 +365,10 @@ class MediaTests(ServerTests):
         self.assertEqual(Image.open(folder / "hero-titel-breit.jpg").width, 2560)
         self.assertEqual(Image.open(folder / "hero-titel.jpg").width, 1600)
         self.assertEqual(Image.open(folder / "hero-titel-mobil.jpg").width, 1000)
+        for stem, width in (("hero-titel-breit", 2560), ("hero-titel", 1600), ("hero-titel-mobil", 1000)):
+            self.assertEqual(Image.open(folder / f"{stem}.webp").width, width, f"{stem}.webp passt nicht zum JPG")
+        og = Image.open(folder / "og-lambking.jpg")
+        self.assertEqual(og.size, (1200, 630))
         self.assertFalse(list(folder.glob(".neu-*")))
 
     def test_titelbild_hochformat_wird_abgelehnt_und_nichts_veraendert(self):

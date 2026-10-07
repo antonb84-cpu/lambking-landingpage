@@ -198,6 +198,27 @@ HERO_MIN_WIDTH = 1600
 HERO_RATIO_RANGE = (1.5, 2.6)     # Breite : Höhe
 
 
+def _make_og_image(hero, out_dir: Path) -> None:
+    """Vorschaubild für WhatsApp, Facebook & Co. (1200 x 630): Ausschnitt des Titelbilds, Logo klein unten links."""
+    from PIL import Image
+    ratio = 1200 / 630
+    height = hero.height
+    width = round(height * ratio)
+    if width > hero.width:
+        width = hero.width
+        height = round(width / ratio)
+    left = hero.width - width  # das Motiv liegt rechts
+    top = max(0, round((hero.height - height) * 0.35))
+    base = hero.crop((left, top, left + width, top + height)).resize((1200, 630), Image.LANCZOS).convert("RGBA")
+    logo_path = out_dir / "lambking-stories-logo-v2.png"
+    if logo_path.is_file():
+        with Image.open(logo_path) as logo:
+            logo = logo.convert("RGBA").resize((200, 200), Image.LANCZOS)
+        base.alpha_composite(Image.new("RGBA", (232, 232), (251, 247, 239, 235)), (28, 630 - 232 - 24))
+        base.alpha_composite(logo, (44, 630 - 232 - 8))
+    base.convert("RGB").save(out_dir / "og-lambking.jpg", quality=84, optimize=True, progressive=True)
+
+
 def save_hero_image(data: bytes) -> None:
     image = _open_image(data, "Das Titelbild")
     if image.width < HERO_MIN_WIDTH:
@@ -205,16 +226,23 @@ def save_hero_image(data: bytes) -> None:
     ratio = image.width / image.height
     if not HERO_RATIO_RANGE[0] <= ratio <= HERO_RATIO_RANGE[1]:
         raise AdminError(f"Das Format passt nicht ({image.width} × {image.height}). Bitte ein Querformat zwischen 3:2 und 2,6:1 verwenden, am besten 16:9 (2560 × 1440).")
+    from PIL import Image
     out_dir = root() / "public" / "images"
-    temp = {name: out_dir / f".neu-{name}" for name, _ in HERO_FILES}
+    written = []  # (temporär, endgültig)
     try:
         for name, width in HERO_FILES:
-            _save_jpg(image, temp[name], width, 88 if width > 1000 else 86)
-        for name, _ in HERO_FILES:  # erst wenn alle drei fertig sind, ersetzen
-            temp[name].replace(out_dir / name)
+            resized = image if image.width <= width else image.resize((width, round(image.height * width / image.width)), Image.LANCZOS)
+            stem = name[:-4]
+            tmp_jpg, tmp_webp = out_dir / f".neu-{stem}.jpg", out_dir / f".neu-{stem}.webp"
+            resized.save(tmp_jpg, quality=88 if width > 1000 else 86, optimize=True, progressive=True)
+            resized.save(tmp_webp, "WEBP", quality=80, method=6)
+            written += [(tmp_jpg, out_dir / name), (tmp_webp, out_dir / f"{stem}.webp")]
+        _make_og_image(image, out_dir.parent / "images")  # überschreibt nur das Vorschaubild
+        for tmp, final in written:  # erst wenn alles fertig ist, ersetzen
+            tmp.replace(final)
     finally:
-        for path in temp.values():
-            path.unlink(missing_ok=True)
+        for tmp, _ in written:
+            tmp.unlink(missing_ok=True)
 
 
 # --- Kinder-Videos

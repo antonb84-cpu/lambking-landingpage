@@ -16,6 +16,27 @@ const BASE = (site.publicUrl || '').replace(/\/$/, '')
 const creatorPartnerEnabled = site.creatorPartnerEnabled !== false
 
 // ── JSON-LD Structured Data (nur reale Daten) ─────────────────
+const defaultTexts = JSON.parse(readFileSync(join(ROOT, 'src/data/texts.defaults.json'), 'utf-8'))
+const plain = (text) => String(text ?? '').replace(/\*\*/g, '').replace(/\s+/g, ' ').trim()
+const faqItems = (site.frontendTexts?.de?.faq?.items ?? defaultTexts.de.faq.items).filter((item) => item.q && item.a)
+const visibleBooks = data.books.filter((b) => !b.hidden)
+const coverImage = (b) => BASE + '/' + (b.coverFront || b.cover)
+
+function bookJsonLd(b) {
+  const rated = typeof b.amazonRating === 'number' && b.amazonRating >= 1 && (b.amazonRatingCount ?? 0) > 0
+  return {
+    '@type': 'Book',
+    name: b.title,
+    author: { '@type': 'Person', name: site.authorName },
+    publisher: { '@type': 'Organization', name: site.brand },
+    inLanguage: b.lang === 'en' ? 'en' : 'de',
+    image: coverImage(b),
+    url: b.amazon,
+    ...(b.description ? { description: plain(b.description) } : {}),
+    ...(rated ? { aggregateRating: { '@type': 'AggregateRating', ratingValue: b.amazonRating, ratingCount: b.amazonRatingCount, bestRating: 5, worstRating: 1 } } : {}),
+  }
+}
+
 const jsonLd = {
   '@context': 'https://schema.org',
   '@graph': [
@@ -25,15 +46,21 @@ const jsonLd = {
       url: BASE + '/',
       inLanguage: ['de', 'en'],
     },
-    ...data.books.filter((b) => !b.hidden).map((b) => ({
-      '@type': 'Book',
-      name: b.title,
-      author: { '@type': 'Person', name: site.authorName },
-      inLanguage: b.lang === 'en' ? 'en' : 'de',
-      image: BASE + '/' + b.cover,
-      url: b.amazon,
-      ...(b.description ? { description: b.description } : {}),
-    })),
+    {
+      '@type': 'Organization',
+      name: site.brand,
+      url: BASE + '/',
+      logo: BASE + '/images/lambking-stories-logo-v2-256.webp',
+      founder: { '@type': 'Person', name: site.authorName },
+      ...(site.contactEmail ? { email: site.contactEmail } : {}),
+    },
+    ...visibleBooks.map(bookJsonLd),
+    ...(faqItems.length
+      ? [{
+          '@type': 'FAQPage',
+          mainEntity: faqItems.map((item) => ({ '@type': 'Question', name: plain(item.q), acceptedAnswer: { '@type': 'Answer', text: plain(item.a) } })),
+        }]
+      : []),
   ],
 }
 
