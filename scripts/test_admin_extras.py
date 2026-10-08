@@ -118,9 +118,10 @@ class FlipbookTests(TempProject):
         normal = extras.set_flipbook("anderes", "de", pdf_bytes=make_pdf(3))
         self.assertAlmostEqual(normal["ratio"], 621 / 810, places=3)
 
-    def test_standardlimit_ist_vierzig_prozent(self):
-        self.assertEqual(extras.default_preview_limit(70), 27)
-        self.assertEqual(extras.default_preview_limit(300), extras.FLIP_PREVIEW_MAX - 1)
+    def test_standardlimit_ist_hoechstens_fuenfzehn_innenseiten(self):
+        self.assertEqual(extras.default_preview_limit(70), 15)
+        self.assertEqual(extras.default_preview_limit(300), extras.FLIP_PREVIEW_MAX)
+        self.assertEqual(extras.default_preview_limit(12), 5)
         for total in range(1, 301):
             limit = extras.default_preview_limit(total)
             self.assertTrue(limit == total or limit % 2 == 1, f"{total}: gerade Vorschau {limit}")

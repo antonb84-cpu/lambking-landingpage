@@ -851,7 +851,7 @@
       ],
       "lang": "de",
       "title": "Bibelgeschichten zum Ausmalen: Band 9 - Die Weihnachtsgeschichte - Jesus ist geboren",
-      "series": "Bibelgeschichten zum Ausmalen",
+      "series": "Bibelgeschichten zum Ausmalen · Band 9",
       "category": "malbuecher",
       "age": "Ab 6 Jahren",
       "detail": "70 Seiten",
@@ -1109,16 +1109,16 @@
   "categories": [
     {
       "id": "geschichten",
-      "labelDe": "Geschichten",
-      "labelEn": "Stories",
+      "labelDe": "Mal und Vorlese Bücher von 5 bis 8 Jahre",
+      "labelEn": "Coloring & Read-Aloud Books for Ages 5 to 8",
       "typeDe": "Kinderbuch",
       "typeEn": "Children's Book",
       "color": "#2E7D4F"
     },
     {
       "id": "malbuecher",
-      "labelDe": "Malbücher",
-      "labelEn": "Coloring Books",
+      "labelDe": "Mal und Vorlese Bücher von 9 bis 12 Jahre",
+      "labelEn": "Coloring & Read-Aloud Books for Ages 9 to 12",
       "typeDe": "Malbuch",
       "typeEn": "Coloring Book",
       "color": "#1B3A5C"

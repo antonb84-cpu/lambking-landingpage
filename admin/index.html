@@ -1130,7 +1130,7 @@ async function clearAnalyticsConfig(){
   await saveAnalyticsConfig();
 }
 
-const ADMIN_VERSION = '2026-10-07-1'; // muss mit dem Server übereinstimmen (sonst läuft noch das alte Programm)
+const ADMIN_VERSION = '2026-10-08-1'; // muss mit dem Server übereinstimmen (sonst läuft noch das alte Programm)
 const RESTART_HINT = 'Der Admin läuft noch mit dem alten Programm und kennt diese Funktion nicht. Bitte das schwarze Admin-Fenster schließen und ADMIN-STARTEN.bat neu starten.';
 
 async function api(path, opts){
@@ -2157,7 +2157,7 @@ function fbCard(book, code, entry){
       <label for="${idp}_limit"><b>Sichtbare Seiten (Leseprobe):</b></label>
       <input type="number" id="${idp}_limit" min="1" max="300" value="${entry ? entry.count : ''}" placeholder="automatisch" style="width:110px;">
       ${entry ? `<button class="btn btn-ghost" onclick="fbShrink('${code}')">Auf diese Zahl kürzen</button>` : ''}
-      <small style="color:var(--muted);">Leer = automatisch etwa 40 % des Buches. Es wird nur dieser Teil veröffentlicht, der Rest bleibt auf deinem Rechner.</small>
+      <small style="color:var(--muted);">Leer = automatisch höchstens 15 Innenseiten (mit der Titelseite 16 Seiten). Es wird nur dieser Teil veröffentlicht, der Rest bleibt auf deinem Rechner.</small>
     </div>
     <div class="fb-actions">
       <button class="btn btn-blue" onclick="document.getElementById('${idp}_pdf').click()">📄 ${entry ? 'PDF ersetzen' : 'Komplette PDF hochladen'}</button>

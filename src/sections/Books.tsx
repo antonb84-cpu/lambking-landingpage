@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { ArrowLeft, ArrowRight, BookOpen, CheckCircle2, Copy, HelpCircle, Languages, Mail, PackageCheck, Palette, Play, Ruler, ShieldCheck, ChevronDown, X, ScrollText } from 'lucide-react'
@@ -98,7 +98,7 @@ function BookCover({ book, variant }: { book: Book; variant: 'card' | 'dialog' }
   const { src: coverSrc, spread: coverIsSpread } = coverFor(book)
   const shared = variant === 'card'
     ? 'max-h-full w-auto max-w-full rounded-[3px] shadow-[0_1px_2px_rgba(21,30,60,0.35),0_10px_14px_-6px_rgba(21,49,103,0.45),0_26px_30px_-14px_rgba(21,49,103,0.4)] transition-[transform,box-shadow] duration-300 group-hover:-translate-y-1 group-hover:-rotate-1 group-hover:scale-[1.03] group-hover:shadow-[0_2px_3px_rgba(21,30,60,0.35),0_16px_20px_-6px_rgba(21,49,103,0.5),0_38px_40px_-14px_rgba(21,49,103,0.45)]'
-    : 'mx-auto w-full max-w-[320px] rounded-[3px] shadow-2xl shadow-primary/25 lg:sticky lg:top-10'
+    : 'mx-auto h-full w-auto max-w-full rounded-[3px] shadow-2xl shadow-primary/25'
   // Softcover: heller Falz am Buchrücken und leichter Glanz, keine harte Hardcover-Kante
   const crease = (
     <span
@@ -109,7 +109,7 @@ function BookCover({ book, variant }: { book: Book; variant: 'card' | 'dialog' }
 
   if (!coverIsSpread) {
     return (
-      <span className="relative inline-flex max-h-full max-w-full">
+      <span className={`relative inline-flex max-h-full max-w-full ${variant === 'dialog' ? 'h-full' : ''}`}>
         <img src={coverSrc} alt={book.title} loading={variant === 'card' ? 'lazy' : undefined} className={shared} />
         {crease}
       </span>
@@ -118,7 +118,7 @@ function BookCover({ book, variant }: { book: Book; variant: 'card' | 'dialog' }
 
   return (
     <div
-      className={`${shared} relative aspect-[8.5/11] overflow-hidden ${variant === 'card' ? 'h-full' : ''}`}
+      className={`${shared} relative aspect-[8.5/11] overflow-hidden h-full`}
       role="img"
       aria-label={book.title}
     >
@@ -149,7 +149,7 @@ function BookMediaGallery({ book, onZoom, copy }: { book: Book; onZoom: (src: st
   return (
     <div className="min-w-0 bg-secondary/60 px-5 pb-5 pt-8 lg:sticky lg:top-0 lg:self-start lg:px-7 lg:pt-10" aria-label={`${book.title} – ${copy.mediaGallery}`}>
       <div
-        className="relative flex min-h-[260px] items-center justify-center sm:min-h-[390px]"
+        className="relative flex h-[320px] items-center justify-center sm:h-[460px]"
         onTouchStart={(event) => { touchStart.current = event.touches[0] ? { x: event.touches[0].clientX, y: event.touches[0].clientY } : null }}
         onTouchEnd={(event) => {
           if (!touchStart.current || !event.changedTouches[0]) return
@@ -160,18 +160,18 @@ function BookMediaGallery({ book, onZoom, copy }: { book: Book; onZoom: (src: st
         }}
       >
         {current.kind === 'cover' && <BookCover book={book} variant="dialog" />}
-        {current.kind === 'lifestyle' && <img src={current.src} alt={`${book.title} – ${current.label}`} className="max-h-[440px] w-auto max-w-full rounded-md object-contain shadow-xl" loading="lazy" />}
+        {current.kind === 'lifestyle' && <img src={current.src} alt={`${book.title} – ${current.label}`} className="max-h-full w-auto max-w-full rounded-md object-contain shadow-xl" loading="lazy" />}
         {current.kind === 'sample' && (
-          <button type="button" onClick={() => onZoom(current.src)} className="max-w-[320px] focus-visible:rounded-md focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/60" aria-label={`${current.label} – ${copy.zoom}`}>
-            <img src={current.src} alt={`${book.title} – ${current.label}`} className="max-h-[440px] w-auto rounded-md bg-white object-contain shadow-xl" loading="lazy" />
+          <button type="button" onClick={() => onZoom(current.src)} className="flex h-full max-w-full items-center justify-center focus-visible:rounded-md focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/60" aria-label={`${current.label} – ${copy.zoom}`}>
+            <img src={current.src} alt={`${book.title} – ${current.label}`} className="max-h-full w-auto max-w-full rounded-md bg-white object-contain shadow-xl" loading="lazy" />
           </button>
         )}
-        {current.kind === 'video' && <video key={current.src} controls playsInline preload="none" poster={book.lifestyleImages?.[0] ?? (book.coverSpread ? undefined : book.cover)} className="max-h-[440px] w-full rounded-md bg-black" aria-label={`${book.title} – ${copy.mediaVideo}`}><source src={current.src} />{copy.mediaVideo}</video>}
+        {current.kind === 'video' && <video key={current.src} controls playsInline preload="none" poster={book.lifestyleImages?.[0] ?? (book.coverSpread ? undefined : book.cover)} className="max-h-full w-full rounded-md bg-black" aria-label={`${book.title} – ${copy.mediaVideo}`}><source src={current.src} />{copy.mediaVideo}</video>}
       </div>
       {slides.length > 1 && (
-        <div className="mt-4 flex items-center justify-center gap-3">
+        <div className="mt-4 grid grid-cols-[2.75rem_minmax(0,1fr)_2.75rem] items-center gap-3">
           <button type="button" onClick={() => move(-1)} aria-label={copy.previousImage} className="flex size-11 shrink-0 items-center justify-center rounded-full border border-primary/20 bg-white text-primary focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/60"><ArrowLeft className="size-5" aria-hidden /></button>
-          <span className="min-w-0 text-center text-xs font-semibold text-muted-foreground" aria-live="polite">{current.label} · {index + 1}/{slides.length}</span>
+          <span className="min-w-0 text-center text-xs font-semibold leading-snug text-muted-foreground" aria-live="polite">{current.label} · {index + 1}/{slides.length}</span>
           <button type="button" onClick={() => move(1)} aria-label={copy.nextImage} className="flex size-11 shrink-0 items-center justify-center rounded-full border border-primary/20 bg-white text-primary focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/60"><ArrowRight className="size-5" aria-hidden /></button>
         </div>
       )}
@@ -183,22 +183,19 @@ function BookMediaGallery({ book, onZoom, copy }: { book: Book; onZoom: (src: st
 
 const isColoringBook = (book: Book) => book.category === 'malbuecher'
 
+// Schmale Chips unter der Überschrift der Rubrik
 function ColoringBookFacts() {
   const siteCopy = textsFor(useLang()).books
   const icons = [BookOpen, Ruler, ShieldCheck, HelpCircle, Languages]
   return (
-    <div className="rounded-2xl border border-accent/30 bg-gradient-to-r from-accent/[0.09] via-card to-accent/[0.06] px-5 py-5 shadow-sm sm:px-7">
-      <p className="text-center font-display text-xl font-semibold text-foreground sm:text-2xl">
-        {siteCopy.coloringFactsTitle}
-      </p>
-      <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+    <div className="border-b border-[#eadfc2] bg-[#f8f1de] px-5 py-3 sm:px-7">
+      <p className="sr-only">{siteCopy.coloringFactsTitle}</p>
+      <ul className="flex flex-wrap gap-x-6 gap-y-1.5">
         {siteCopy.coloringFacts.map((fact, index) => {
           const Icon = icons[index] ?? CheckCircle2
           return (
-            <li key={fact} className="flex items-center gap-2.5 text-sm font-bold leading-snug text-foreground">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
-                <Icon className="h-4.5 w-4.5" strokeWidth={2} aria-hidden />
-              </span>
+            <li key={fact} className="flex items-center gap-2 text-[13.5px] font-bold leading-snug text-foreground">
+              <Icon className="h-4 w-4 shrink-0 text-primary" strokeWidth={2} aria-hidden />
               <RichText text={fact} />
             </li>
           )
@@ -213,9 +210,11 @@ function LanguageEditions({
   compact = false,
   label,
   onSelect,
+  left = false,
 }: {
   book: Book
   compact?: boolean
+  left?: boolean
   label?: string
   onSelect: (language: string) => void
 }) {
@@ -224,9 +223,9 @@ function LanguageEditions({
   const editions = editionsOf(book)
   if (!editions.length) return null
   return (
-    <div className={`${compact ? 'mt-2.5' : 'mt-5'} text-center`}>
+    <div className={`${compact ? 'mt-2.5' : 'mt-5'} ${left ? 'text-left' : 'text-center'}`}>
       {label === '' ? null : <p className={`mb-1.5 font-semibold text-muted-foreground ${compact ? 'text-[10px] sm:text-xs' : 'text-xs'}`}>{label ?? t.books.availableLanguages}</p>}
-      <div className="flex flex-wrap justify-center gap-1">
+      <div className={`flex flex-wrap gap-1 ${left ? 'justify-start' : 'justify-center'}`}>
         {editions.map((edition) => {
           const meta = LANGUAGE_META[edition.language]
           const name = meta ? meta[lang] : edition.language.toUpperCase()
@@ -235,7 +234,7 @@ function LanguageEditions({
               type="button"
               key={edition.language}
               onClick={() => onSelect(edition.language)}
-              className="relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-primary/20 bg-white p-1.5 shadow-sm transition before:absolute before:-inset-1 before:content-[''] hover:scale-105 hover:border-primary/50 hover:bg-primary/5 hover:shadow"
+              className="relative inline-flex h-8 w-8 items-center justify-center rounded-full border border-primary/20 bg-white p-1 sm:h-9 sm:w-9 sm:p-1.5 shadow-sm transition before:absolute before:-inset-1 before:content-[''] hover:scale-105 hover:border-primary/50 hover:bg-primary/5 hover:shadow"
               title={`${name} – ${t.books.lookInside}`}
               aria-label={`${book.title}, ${name} – ${t.books.lookInside}`}
             >
@@ -412,14 +411,16 @@ function BookDialog({
                 <RichText text={displayBook?.description || ''} />
               </DialogDescription>
               {book && hasFlipbook(book.id) ? (
-                <button
-                  type="button"
-                  onClick={() => { onClose(); openFlipBookById(book.id) }}
-                  className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-full border-2 border-primary/25 bg-card px-6 py-3 font-bold text-primary transition-colors hover:border-primary/50"
-                >
-                  <BookOpen className="h-5 w-5" aria-hidden />
-                  {siteCopy.flipInside}
-                </button>
+                <div className="mt-6 flex max-w-2xl justify-center">
+                  <button
+                    type="button"
+                    onClick={() => { onClose(); openFlipBookById(book.id) }}
+                    className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-primary px-8 py-3 font-bold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/60"
+                  >
+                    <BookOpen className="h-5 w-5" aria-hidden />
+                    {siteCopy.flipInside}
+                  </button>
+                </div>
               ) : null}
               {(displayBook?.highlights?.length ?? 0) > 0 && <p className="mt-6 font-display text-lg font-semibold text-foreground">{dialogCopy.bookInfoTitle}</p>}
               <ul className="mt-3 grid max-w-2xl gap-3 sm:grid-cols-2">
@@ -597,16 +598,6 @@ function setBookParam(id: string | null) {
   window.history.replaceState(null, '', url)
 }
 
-// ── Marktstand: je Buchart ein eigener Stand; die Bücher stehen auf dem Tisch ──────────────
-type StallScene = { src: string; base: string; x0: string; x1: string }
-const STALL_SCENES: Record<string, StallScene> = {
-  malbuecher: { src: 'images/markt/stand-malbuecher.webp', base: '79%', x0: '12%', x1: '12%' },
-  geschichten: { src: 'images/markt/stand-bilderbuecher.webp', base: '70%', x0: '15%', x1: '17%' },
-  komics: { src: 'images/markt/stand-comics.webp', base: '66%', x0: '12%', x1: '11%' },
-  historisch: { src: 'images/markt/stand-geschichte.webp', base: '77%', x0: '11%', x1: '11%' },
-}
-const sceneFor = (categoryId: string): StallScene => STALL_SCENES[categoryId] ?? STALL_SCENES.malbuecher
-
 // Altersgruppen innerhalb einer Buchart (Feld „Altersgruppe" im Admin)
 const AGE_GROUPS: Record<string, { de: [string, string]; en: [string, string]; color: string }> = {
   '3+': { de: ['ab 3 Jahren', 'Zum Vorlesen'], en: ['ages 3+', 'Read-aloud'], color: '#c9712b' },
@@ -621,101 +612,86 @@ function splitByAge(items: Book[]): { key: string; items: Book[] }[] {
   return keys.map((key) => ({ key, items: items.filter((b) => (b.ageGroup ?? '') === key) }))
 }
 
-const stallColumns = () => (typeof window === 'undefined' ? 4 : window.innerWidth >= 1024 ? 4 : window.innerWidth >= 640 ? 3 : 2)
-
-function useStallColumns() {
-  const [cols, setCols] = useState(stallColumns)
-  useEffect(() => {
-    const onResize = () => setCols(stallColumns())
-    window.addEventListener('resize', onResize)
-    return () => window.removeEventListener('resize', onResize)
-  }, [])
-  return cols
-}
-
-function BookStall({ items, categoryId, onOpen }: { items: Book[]; categoryId: string; onOpen: (book: Book, language?: string) => void }) {
+// Darstellung der Bücher: Cover links auf heller Kachel, Text rechts („Zeitschrift“)
+function CoverButton({ b, onOpen }: { b: Book; onOpen: (book: Book, language?: string) => void }) {
   const lang = useLang()
   const t = textsFor(lang)
-  const cols = useStallColumns()
-  const scene = sceneFor(categoryId)
-  const rows: Book[][] = []
-  for (let i = 0; i < items.length; i += cols) rows.push(items.slice(i, i + cols))
-
+  const cardBook = localizedBook(b, lang)
+  const cover = coverFor(cardBook)
   return (
-    <div className="grid gap-8">
-      {rows.map((row, rowIndex) => (
-        <Reveal key={row[0].id} delay={rowIndex * 80}>
-          <div
-            className="stall-block"
-            style={{ '--cols': cols, '--scene': `url(${scene.src})`, '--base': scene.base, '--x0': scene.x0, '--x1': scene.x1 } as CSSProperties}
+    <button type="button" onClick={() => onOpen(b)} className="stall-cover group" aria-label={`${t.books.lookInside}: ${b.title}`}>
+      {isNew(b) ? (
+        <span className="absolute -top-2 left-0 z-10 rounded-full bg-accent px-2.5 py-1 text-[10px] font-bold leading-none text-accent-foreground shadow sm:text-xs">{t.books.newBadge}</span>
+      ) : null}
+      {cover.spread ? (
+        <span className="stall-cover-spread block"><BookCover book={cardBook} variant="card" /></span>
+      ) : (
+        <img src={cover.src} alt={cardBook.title} loading="lazy" draggable={false} />
+      )}
+    </button>
+  )
+}
+
+function BookInfo({ b, onOpen, left = false }: { b: Book; onOpen: (book: Book, language?: string) => void; left?: boolean }) {
+  const lang = useLang()
+  const t = textsFor(lang)
+  const cardBook = localizedBook(b, lang)
+  const { main, sub } = splitTitle(cardBook)
+  const side = left ? 'justify-start' : 'justify-center'
+  return (
+    <>
+      <p className="min-h-[15px] text-[11px] font-bold uppercase tracking-[0.14em] text-accent">{volumeLabel(cardBook) || '\u00a0'}</p>
+      <div className={`mt-1 flex w-full items-center ${left ? '' : 'min-h-[2.5em]'} ${side}`}>
+        <h3 className="book-card-title font-display text-base font-semibold leading-tight sm:text-[1.05rem] lg:text-base" style={{ WebkitLineClamp: 3, minHeight: 0 }}>
+          <a
+            href={bookPath(b)}
+            onClick={(event) => {
+              // normaler Klick öffnet das Fenster; Strg/Mittelklick öffnet die eigene Buchseite
+              if (event.ctrlKey || event.metaKey || event.shiftKey || event.button !== 0) return
+              event.preventDefault()
+              onOpen(b)
+            }}
+            className="hover:underline"
           >
-            <div className="stall">
-              <div className="stall-slots">
-                {row.map((b) => {
-                  const cardBook = localizedBook(b, lang)
-                  const cover = coverFor(cardBook)
-                  return (
-                    <div className="stall-slot" key={b.id}>
-                      <button type="button" onClick={() => onOpen(b)} className="stall-cover group" aria-label={`${t.books.lookInside}: ${b.title}`}>
-                        {isNew(b) ? (
-                          <span className="absolute -top-2 left-0 z-10 rounded-full bg-accent px-2.5 py-1 text-[10px] font-bold leading-none text-accent-foreground shadow sm:text-xs">{t.books.newBadge}</span>
-                        ) : null}
-                        {cover.spread ? (
-                          <span className="stall-cover-spread block"><BookCover book={cardBook} variant="card" /></span>
-                        ) : (
-                          <img src={cover.src} alt={cardBook.title} loading="lazy" draggable={false} />
-                        )}
-                      </button>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-            <div className="stall-info">
-              {row.map((b) => {
-                const cardBook = localizedBook(b, lang)
-                const { main, sub } = splitTitle(cardBook)
-                return (
-                  <article key={b.id} className="flex flex-col items-center text-center">
-                    {volumeLabel(cardBook) ? <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-accent">{volumeLabel(cardBook)}</p> : null}
-                    <h3 className="book-card-title font-display text-base font-semibold leading-tight sm:mt-1 sm:text-[1.05rem] lg:text-[1.1rem]" style={{ WebkitLineClamp: 3 }}>
-                      <a
-                        href={bookPath(b)}
-                        onClick={(event) => {
-                          // normaler Klick öffnet das Fenster; Strg/Mittelklick öffnet die eigene Buchseite
-                          if (event.ctrlKey || event.metaKey || event.shiftKey || event.button !== 0) return
-                          event.preventDefault()
-                          onOpen(b)
-                        }}
-                        className="hover:underline"
-                      >
-                        {main}
-                      </a>
-                    </h3>
-                    {sub ? <p className="mt-1 text-xs leading-snug text-muted-foreground sm:text-sm">{sub}</p> : null}
-                    {cardBook.detail ? <p className="mt-1.5 text-xs font-semibold text-muted-foreground">{cardBook.detail}</p> : null}
-                    <LanguageEditions book={b} compact label="" onSelect={(language) => onOpen(b, language)} />
-                    <div className="flex justify-center"><AmazonRating book={b} /></div>
-                    <button
-                      type="button"
-                      onClick={() => (hasFlipbook(b.id) ? openFlipBookById(b.id) : onOpen(b))}
-                      className="mt-3 flex min-h-11 w-full max-w-[220px] items-center justify-center gap-2 rounded-full bg-primary px-2 py-2 text-xs font-bold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 sm:text-sm"
-                    >
-                      {hasFlipbook(b.id) ? <BookOpen className="h-4 w-4" aria-hidden /> : null}
-                      {hasFlipbook(b.id) ? t.books.flipInside : t.books.lookInside}
-                    </button>
-                  </article>
-                )
-              })}
-            </div>
-          </div>
+            {main}
+          </a>
+        </h3>
+      </div>
+      <p className="mt-1 min-h-[1.25rem] text-xs leading-snug text-muted-foreground sm:text-sm">{sub}</p>
+      {/* Seitenzahl und Format stehen bei Malbüchern schon im Kasten über den Büchern */}
+      {cardBook.detail && !isColoringBook(b) ? <p className="mt-1.5 text-xs font-semibold text-muted-foreground">{cardBook.detail}</p> : null}
+      <LanguageEditions book={b} compact left={left} label="" onSelect={(language) => onOpen(b, language)} />
+      <div className={`flex w-full ${side}`}><AmazonRating book={b} /></div>
+      <div className={`mt-auto flex w-full pt-3 ${side}`}>
+        <button
+          type="button"
+          onClick={() => (hasFlipbook(b.id) ? openFlipBookById(b.id) : onOpen(b))}
+          className="flex min-h-11 w-full max-w-[220px] items-center justify-center gap-2 rounded-full bg-primary px-2 py-2 text-xs font-bold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 sm:text-sm"
+        >
+          {hasFlipbook(b.id) ? <BookOpen className="h-4 w-4" aria-hidden /> : null}
+          {hasFlipbook(b.id) ? t.books.flipInside : t.books.lookInside}
+        </button>
+      </div>
+    </>
+  )
+}
+
+function BookStall({ items, onOpen }: { items: Book[]; onOpen: (book: Book, language?: string) => void }) {
+  return (
+    <div className="mag-grid">
+      {items.map((b, index) => (
+        <Reveal key={b.id} delay={index * 60}>
+          <article className="mag-card">
+            <div className="mag-side"><CoverButton b={b} onOpen={onOpen} /></div>
+            <div className="mag-info"><BookInfo b={b} onOpen={onOpen} left /></div>
+          </article>
         </Reveal>
       ))}
     </div>
   )
 }
 
-function BookStalls({ items, categoryId, onOpen }: { items: Book[]; categoryId: string; onOpen: (book: Book, language?: string) => void }) {
+function BookStalls({ items, onOpen }: { items: Book[]; onOpen: (book: Book, language?: string) => void }) {
   const lang = useLang()
   const parts = splitByAge(items)
   // Altersüberschriften nur, wenn die Buchart mehrere Altersgruppen enthält
@@ -727,12 +703,12 @@ function BookStalls({ items, categoryId, onOpen }: { items: Book[]; categoryId: 
         return (
           <div key={part.key || 'alle'}>
             {showAge && age ? (
-              <div className="mb-6 flex flex-wrap items-center gap-3 border-b border-[#e6dcc3] pb-3 shadow-[0_10px_12px_-12px_rgba(21,49,103,0.35)]">
+              <div className="mx-5 mb-2 mt-6 flex flex-wrap items-center gap-3 border-b border-[#e6dcc3] pb-3 shadow-[0_10px_12px_-12px_rgba(21,49,103,0.35)] sm:mx-7">
                 <span className="rounded-full px-3.5 py-1 text-sm font-extrabold text-white shadow" style={{ backgroundColor: age.color }}>{age[lang][0]}</span>
                 <h3 className="font-display text-2xl font-semibold">{age[lang][1]}</h3>
               </div>
             ) : null}
-            <BookStall items={part.items} categoryId={categoryId} onOpen={onOpen} />
+            <BookStall items={part.items} onOpen={onOpen} />
           </div>
         )
       })}
@@ -819,22 +795,25 @@ export default function Books() {
           <div className="mt-10 grid gap-14">
             {groups.map((group, gi) => (
               <Reveal key={group.id} delay={gi * 80}>
-                <details open={gi === 0} className="group/cat">
-                  <summary className="flex cursor-pointer list-none items-end gap-4 border-b border-[#d9cdb0] pb-4 shadow-[0_12px_14px_-12px_rgba(21,49,103,0.35)] [&::-webkit-details-marker]:hidden">
+                {/* Rubrik: Überschrift links, Titelzahl und Pfeil rechts, Hinweise als Chips, darunter die Bücher */}
+                <details open={gi === 0} className="group/cat overflow-hidden rounded-[22px] border border-[#e1d5b8] bg-[#fffdf8] shadow-[0_18px_30px_-22px_rgba(21,49,103,0.55)]">
+                  <summary className="flex cursor-pointer list-none items-center gap-4 px-5 py-5 group-open/cat:border-b group-open/cat:border-[#eadfc2] sm:px-7 [&::-webkit-details-marker]:hidden">
                     <span className="block">
-                      <span className="block font-display text-3xl font-semibold leading-none sm:text-4xl" style={{ textShadow: '0 1px 0 rgba(255,255,255,0.9), 0 6px 14px rgba(21,49,103,0.16)' }}>{group.label}</span>
+                      <span className="block font-display text-3xl font-semibold leading-none sm:text-4xl">{group.label}</span>
                       <span className="mt-3 block h-1 w-14 rounded-full bg-accent shadow-[0_3px_6px_-1px_rgba(180,130,10,0.55)]" aria-hidden />
                     </span>
-                    <span className="mb-1 flex-1 text-sm font-semibold text-muted-foreground">
+                    <span className="mr-auto self-end pb-1 text-sm font-semibold text-muted-foreground">
                       {group.items.length} {group.items.length === 1 ? t.books.titleOne : t.books.titleMany}
                     </span>
-                    <span className="mb-0.5 flex h-10 w-10 items-center justify-center rounded-full border border-[#d9cdb0] bg-background text-primary shadow-[0_6px_12px_-6px_rgba(21,49,103,0.45)] transition-transform duration-300 group-open/cat:rotate-180" aria-hidden>
+                    <span className="flex h-10 w-10 items-center justify-center rounded-full border border-[#d9cdb0] bg-background text-primary shadow-[0_6px_12px_-6px_rgba(21,49,103,0.45)] transition-transform duration-300 group-open/cat:rotate-180" aria-hidden>
                       <ChevronDown className="h-5 w-5" />
                     </span>
                   </summary>
-                  <div className="pb-4 pt-8">
+                  <div>
                     {group.id === 'malbuecher' && group.items.some(isColoringBook) ? <ColoringBookFacts /> : null}
-                    <div className="mt-6"><BookStalls items={group.items} categoryId={group.id} onOpen={openBook} /></div>
+                    <div className="bg-[#f6f2e8] px-4 py-5 sm:px-7 sm:py-6">
+                      <BookStalls items={group.items} onOpen={openBook} />
+                    </div>
                   </div>
                 </details>
               </Reveal>

@@ -32,9 +32,9 @@ PAGE_FILE_RE = re.compile(r"^p\d{2,3}\.(?:jpg|webp)$")
 FLIP_PAGE_WIDTH = 1000          # Breite einer Buchseite im Blätterbuch (Pixel) – reicht für das große Fenster
 FLIP_PAGE_QUALITY = 74          # WebP-Qualität der Seitenbilder
 FLIP_MAX_PAGES = 300
-FLIP_PREVIEW_SHARE = 0.4        # Standard: so viel vom Buch ist in der Leseprobe sichtbar
+FLIP_PREVIEW_SHARE = 0.4        # Anteil des Buches – wird aber durch FLIP_PREVIEW_MAX gedeckelt
 FLIP_PREVIEW_MIN = 5
-FLIP_PREVIEW_MAX = 30
+FLIP_PREVIEW_MAX = 15          # höchstens 15 Innenseiten; mit der Titelseite sind das 16 gezeigte Seiten
 FLIP_BACK_NAME = "rueckseite.jpg"
 
 
@@ -75,7 +75,8 @@ def _check_ids(book_id: str, lang: str) -> None:
 
 
 def default_preview_limit(total: int) -> int:
-    """Wie viele Seiten die Leseprobe standardmäßig zeigt: etwa 40 % des Buches, ungerade Zahl, höchstens 30.
+    """Wie viele Seiten die Leseprobe standardmäßig zeigt: etwa 40 % des Buches, ungerade Zahl, höchstens 15 Innenseiten
+    (mit der Titelseite also 16 Seiten).
 
     Ungerade, damit die Hinweisseite „Ende der Vorschau" beim Umblättern links liegt und rechts direkt die
     Rückseite folgt (statt einer leeren Doppelseite)."""
@@ -141,7 +142,7 @@ def _save_back_cover(data: bytes, dest: Path) -> None:
 def set_flipbook(book_id: str, lang: str, pdf_bytes: bytes | None = None, back_bytes: bytes | None = None, limit: int | None = None, skip: int = 0) -> dict:
     """Legt das Blätterbuch eines Buches in einer Sprache an oder aktualisiert es.
 
-    * pdf_bytes  – komplette Innen-PDF → nur die ersten Seiten (limit, Standard ≈ 40 %) werden als Leseprobe gespeichert
+    * pdf_bytes  – komplette Innen-PDF → nur die ersten Seiten (limit, Standard höchstens 15 Innenseiten) werden als Leseprobe gespeichert
     * back_bytes – Rückseite als Bild
     Ein Fehler lässt den bisherigen Stand unverändert.
     """

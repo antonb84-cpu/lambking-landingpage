@@ -403,11 +403,12 @@ test('Fettschrift ist im Backend auswählbar und wird sicher gerendert', () => {
   assert(!richText.includes('dangerouslySetInnerHTML'), 'Rich-Text darf kein frei ausführbares HTML verwenden')
 })
 
-test('Auf Smartphones stehen zwei Bücher nebeneinander', () => {
-  const books = readFileSync(join(SRC, 'sections/Books.tsx'), 'utf-8')
-  assert(books.includes('const stallColumns') && books.includes('window.innerWidth >= 640 ? 3 : 2'), 'Mobile Buchübersicht hat keine zwei Spalten')
+test('Bücherkarten: Cover links, Text rechts; am Handy eine Karte pro Zeile, Cover-Spalte bleibt schmal', () => {
   const css = readFileSync(join(SRC, 'index.css'), 'utf-8')
-  assert(/\.stall-block \{[^}]*--cols: 2/.test(css), 'Marktstand: am Handy fehlen die zwei Spalten')
+  assert(/\.mag-card \{[^}]*grid-template-columns: 42% 1fr/.test(css), 'Zeitschrift: Cover-Spalte fehlt')
+  assert(css.includes('@media (max-width: 767px) { .mag-grid { grid-template-columns: 1fr; }'), 'Zeitschrift: am Handy fehlt die einspaltige Liste')
+  const books = readFileSync(join(SRC, 'sections/Books.tsx'), 'utf-8')
+  assert(books.includes('className="mag-card"'), 'Zeitschrift: Karte fehlt in Books.tsx')
 })
 
 test('Alle Malbücher zeigen einheitlich Umfang (mindestens 70 Seiten), Format und Rätselseiten', () => {

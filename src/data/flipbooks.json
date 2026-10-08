@@ -3,19 +3,19 @@
   "bibelgeschichten-zum-ausmalen": {
     "de": {
       "dir": "images/buch-bibelgeschichten-zum-ausmalen-de",
-      "count": 27,
+      "count": 15,
       "total": 70,
       "ext": "webp"
     },
     "en": {
       "dir": "images/buch-bibelgeschichten-zum-ausmalen-en",
-      "count": 27,
+      "count": 15,
       "total": 70,
       "ext": "webp"
     },
     "es": {
       "dir": "images/buch-bibelgeschichten-zum-ausmalen-es",
-      "count": 27,
+      "count": 15,
       "total": 70,
       "ext": "webp"
     }
@@ -23,21 +23,21 @@
   "david": {
     "de": {
       "dir": "images/buch-david-de",
-      "count": 27,
+      "count": 15,
       "back": "images/buch-david-de/rueckseite.jpg",
       "total": 70,
       "ext": "webp"
     },
     "en": {
       "dir": "images/buch-david-en",
-      "count": 27,
+      "count": 15,
       "back": "images/buch-david-en/rueckseite.jpg",
       "total": 70,
       "ext": "webp"
     },
     "es": {
       "dir": "images/buch-david-es",
-      "count": 27,
+      "count": 15,
       "back": "images/buch-david-es/rueckseite.jpg",
       "total": 70,
       "ext": "webp"
@@ -46,19 +46,19 @@
   "bibelgeschichten-zum-ausmalen-3": {
     "de": {
       "dir": "images/buch-bibelgeschichten-zum-ausmalen-3-de",
-      "count": 27,
+      "count": 15,
       "total": 70,
       "ext": "webp"
     },
     "en": {
       "dir": "images/buch-bibelgeschichten-zum-ausmalen-3-en",
-      "count": 27,
+      "count": 15,
       "total": 70,
       "ext": "webp"
     },
     "es": {
       "dir": "images/buch-bibelgeschichten-zum-ausmalen-3-es",
-      "count": 27,
+      "count": 15,
       "total": 70,
       "ext": "webp"
     }
@@ -66,19 +66,19 @@
   "bibelgeschichten-zum-ausmalen-2": {
     "de": {
       "dir": "images/buch-bibelgeschichten-zum-ausmalen-2-de",
-      "count": 29,
+      "count": 15,
       "total": 80,
       "ext": "webp"
     },
     "en": {
       "dir": "images/buch-bibelgeschichten-zum-ausmalen-2-en",
-      "count": 29,
+      "count": 15,
       "total": 80,
       "ext": "webp"
     },
     "es": {
       "dir": "images/buch-bibelgeschichten-zum-ausmalen-2-es",
-      "count": 29,
+      "count": 15,
       "total": 80,
       "ext": "webp"
     }
