@@ -85,11 +85,12 @@ def default_preview_limit(total: int) -> int:
     return min(total, wanted)
 
 
-def render_pdf_pages(pdf_bytes: bytes, out_dir: Path, limit: int | None = None) -> tuple[int, int]:
+def render_pdf_pages(pdf_bytes: bytes, out_dir: Path, limit: int | None = None, skip: int = 0) -> tuple[int, int, float]:
     """Rendert die ersten Seiten der PDF als p01.webp, p02.webp … in out_dir.
 
-    Gibt (gezeigte Seiten, Seiten des ganzen Buches) zurück. Ohne limit gilt default_preview_limit.
+    Gibt (gezeigte Seiten, Seiten des ganzen Buches, Seitenverhältnis Breite/Höhe) zurück. Ohne limit gilt default_preview_limit.
     Der Rest des Buches wird bewusst nicht gespeichert – die Leseprobe zeigt nur einen Teil.
+    skip = so viele Seiten am Anfang überspringen (z. B. 1, wenn die PDF-Seite 1 schon das Titelbild ist).
     """
     try:
         import pymupdf as fitz  # neuere Paketbezeichnung
@@ -101,7 +102,7 @@ def render_pdf_pages(pdf_bytes: bytes, out_dir: Path, limit: int | None = None) 
     except Exception as exc:
         raise AdminError("Die PDF-Datei konnte nicht gelesen werden.") from exc
     try:
-        total = doc.page_count
+        total = doc.page_count - max(0, skip)
         if total < 1:
             raise AdminError("Die PDF-Datei enthält keine Seiten.")
         if total > FLIP_MAX_PAGES:
@@ -109,12 +110,13 @@ def render_pdf_pages(pdf_bytes: bytes, out_dir: Path, limit: int | None = None) 
         shown = default_preview_limit(total) if limit is None else max(1, min(int(limit), total))
         out_dir.mkdir(parents=True, exist_ok=True)
         for index in range(shown):
-            page = doc[index]
+            page = doc[index + max(0, skip)]
             zoom = FLIP_PAGE_WIDTH / page.rect.width
             pixmap = page.get_pixmap(matrix=fitz.Matrix(zoom, zoom), alpha=False)
             image = Image.frombytes("RGB", (pixmap.width, pixmap.height), pixmap.samples)
             image.save(out_dir / f"p{index + 1:02d}.webp", "WEBP", quality=FLIP_PAGE_QUALITY, method=6)
-        return shown, total
+        first = doc[max(0, skip)].rect
+        return shown, total, round(first.width / first.height, 4)
     finally:
         doc.close()
 
@@ -136,7 +138,7 @@ def _save_back_cover(data: bytes, dest: Path) -> None:
     image.save(dest, quality=80, optimize=True, progressive=True)
 
 
-def set_flipbook(book_id: str, lang: str, pdf_bytes: bytes | None = None, back_bytes: bytes | None = None, limit: int | None = None) -> dict:
+def set_flipbook(book_id: str, lang: str, pdf_bytes: bytes | None = None, back_bytes: bytes | None = None, limit: int | None = None, skip: int = 0) -> dict:
     """Legt das Blätterbuch eines Buches in einer Sprache an oder aktualisiert es.
 
     * pdf_bytes  – komplette Innen-PDF → nur die ersten Seiten (limit, Standard ≈ 40 %) werden als Leseprobe gespeichert
@@ -160,7 +162,7 @@ def set_flipbook(book_id: str, lang: str, pdf_bytes: bytes | None = None, back_b
         if tmp_dir.exists():
             shutil.rmtree(tmp_dir)
         try:
-            count, total = render_pdf_pages(pdf_bytes, tmp_dir, limit)
+            count, total, ratio = render_pdf_pages(pdf_bytes, tmp_dir, limit, skip)
             final_dir.mkdir(parents=True, exist_ok=True)
             for old in final_dir.iterdir():  # nur eigene Seitenbilder entfernen
                 if old.is_file() and PAGE_FILE_RE.fullmatch(old.name):
@@ -174,6 +176,7 @@ def set_flipbook(book_id: str, lang: str, pdf_bytes: bytes | None = None, back_b
         entry["count"] = count
         entry["total"] = total
         entry["ext"] = "webp"
+        entry["ratio"] = ratio
 
     if back_bytes:
         final_dir.mkdir(parents=True, exist_ok=True)

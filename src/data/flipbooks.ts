@@ -2,7 +2,7 @@ import flipbooks from './flipbooks.json'
 
 // Eintrag je Buch und Sprache (flipbooks.json): Ordner der Seitenbilder, wie viele Seiten zur Vorschau gehören (count),
 // wie viele Seiten das ganze Buch hat (total), Dateiendung der Seitenbilder (ext, Standard jpg) und die Rückseite.
-type Entry = { dir: string; count: number; back?: string; total?: number; ext?: string }
+type Entry = { dir: string; count: number; back?: string; total?: number; ext?: string; ratio?: number }
 
 const entryFor = (bookId: string, lang: string): Entry | undefined =>
   (flipbooks as unknown as Record<string, Record<string, Entry> | undefined>)[bookId]?.[lang]
@@ -21,6 +21,12 @@ export function flipTotalFor(bookId: string, lang: string): number | null {
   const entry = entryFor(bookId, lang)
   if (!entry || !entry.count) return null
   return Math.max(entry.total || 0, entry.count)
+}
+
+// Seitenverhältnis (Breite / Höhe) einer Buchseite: Malbuch hochformatig, Bilderbuch quadratisch
+export function flipRatioFor(bookId: string, lang: string): number {
+  const ratio = entryFor(bookId, lang)?.ratio
+  return ratio && ratio > 0.4 && ratio < 2 ? ratio : 621 / 810
 }
 
 // Rückseite des Buches (Bild), falls vorhanden – wird als letztes Blatt gezeigt.

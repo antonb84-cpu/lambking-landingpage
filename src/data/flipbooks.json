@@ -82,5 +82,14 @@
       "total": 80,
       "ext": "webp"
     }
+  },
+  "zachaeus": {
+    "de": {
+      "dir": "images/buch-zachaeus-de",
+      "count": 11,
+      "total": 28,
+      "ext": "webp",
+      "ratio": 1.0
+    }
   }
 }

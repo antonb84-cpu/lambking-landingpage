@@ -105,6 +105,19 @@ class FlipbookTests(TempProject):
         checks = server.precheck_flipbook({"books": []}, [])
         self.assertTrue([c for c in checks if c[0] == "gelb" and "ganze Buch" in c[1]], checks)
 
+    def test_quadratisches_bilderbuch_merkt_seitenverhaeltnis_und_ueberspringt_titelseite(self):
+        import pymupdf
+        doc = pymupdf.open()
+        for number in range(12):
+            doc.new_page(width=842, height=842).insert_text((72, 100), f"Seite {number}", fontsize=30)
+        data = doc.tobytes()
+        doc.close()
+        entry = extras.set_flipbook("testbuch", "de", pdf_bytes=data, skip=1)
+        self.assertEqual(entry["ratio"], 1.0)
+        self.assertEqual(entry["total"], 11)  # PDF-Seite 1 ist das Titelbild
+        normal = extras.set_flipbook("anderes", "de", pdf_bytes=make_pdf(3))
+        self.assertAlmostEqual(normal["ratio"], 621 / 810, places=3)
+
     def test_standardlimit_ist_vierzig_prozent(self):
         self.assertEqual(extras.default_preview_limit(70), 27)
         self.assertEqual(extras.default_preview_limit(300), extras.FLIP_PREVIEW_MAX - 1)

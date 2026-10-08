@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Maximize2, Paus
 import BuyButton from '@/components/BuyButton'
 import type { Book } from '@/data/books'
 import { coverFor } from '@/data/covers'
-import { flipBackFor, flipLanguagesFor, flipPagesFor, flipTotalFor } from '@/data/flipbooks'
+import { flipBackFor, flipLanguagesFor, flipPagesFor, flipRatioFor, flipTotalFor } from '@/data/flipbooks'
 import { useLang } from '@/data/lang'
 import { LANGUAGE_META } from '@/data/languageMeta'
 import { textsFor } from '@/data/texts'
@@ -11,7 +11,6 @@ import { textsFor } from '@/data/texts'
 // Durchblätterbares Softcover-Vorschaubuch (Leseprobe). Am Computer blättert es als aufgeschlagenes Buch mit zwei
 // Seiten, am Handy zeigt es immer eine Seite zum Wischen. Es zeigt nur einen Teil des Buches (siehe flipbooks.json:
 // count von total); am Ende steht eine Hinweisseite mit dem Weg zu Amazon, danach die Rückseite.
-const PAGE_RATIO = 621 / 810 // Breite / Höhe einer Seite
 const FLIP_MS = 950
 const STEP_MS = 1250
 const PAPER = '#fdfbf4'
@@ -80,6 +79,7 @@ export default function FlipBook({ book, size = 'section', onFullscreen }: { boo
   const pages = useMemo(() => flipPagesFor(book.id, sel) ?? (edition?.samples?.length ? edition.samples : book.samples), [book, sel, edition])
   const count = pages.length
   const total = flipTotalFor(book.id, sel) ?? count
+  const pageRatio = flipRatioFor(book.id, sel) // Breite / Höhe einer Seite
   const backCover = useMemo(() => flipBackFor(book.id, sel), [book.id, sel])
   // Wird nur ein Teil des Buches gezeigt, steht am Ende eine Hinweisseite
   // (Bei gerader Seitenzahl steht eine leere Seite davor, damit die Hinweisseite links liegt.)
@@ -121,8 +121,9 @@ export default function FlipBook({ book, size = 'section', onFullscreen }: { boo
     if (!el) return
     const io = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), { threshold: 0.35 })
     io.observe(el)
+    // Breite des umgebenden Bereichs messen (nicht die des Buches selbst, die bei schmaler Ansicht begrenzt wird)
     const ro = new ResizeObserver(([entry]) => setNarrow(entry.contentRect.width < NARROW_PX))
-    ro.observe(el)
+    ro.observe(el.parentElement ?? el)
     return () => {
       io.disconnect()
       ro.disconnect()
@@ -273,7 +274,7 @@ export default function FlipBook({ book, size = 'section', onFullscreen }: { boo
   const thickRight = Math.min(7, Math.ceil((L - f) / 5))
   const thickLeft = Math.min(7, Math.ceil(f / 5))
   const dialog = size === 'dialog'
-  const maxWidth = dialog ? 'min(100%, 1080px, calc((100svh - 300px) * 1.53))' : 'min(100%, 960px)'
+  const maxWidth = dialog ? `min(100%, 1080px, calc((100svh - 300px) * ${pageRatio * 2}))` : 'min(100%, 960px)'
   const altOf = (item?: Item, side?: 'front' | 'back', leafIndex?: number) => {
     if (!item || item === END) return ''
     if (item === cover || item === backCover) return `${book.title} – ${item === cover ? t.cover : t.backCover}`
@@ -286,7 +287,7 @@ export default function FlipBook({ book, size = 'section', onFullscreen }: { boo
       {narrow ? (
         <div
           className="relative mx-auto w-full select-none overflow-hidden rounded-[4px] bg-[#fdfbf4] shadow-xl shadow-black/25"
-          style={{ aspectRatio: `${PAGE_RATIO}`, containerType: 'inline-size', touchAction: 'pan-y' }}
+          style={{ aspectRatio: `${pageRatio}`, containerType: 'inline-size', touchAction: 'pan-y' }}
           onPointerDown={onPointerDown}
           onPointerUp={onPointerUp}
         >
@@ -312,7 +313,7 @@ export default function FlipBook({ book, size = 'section', onFullscreen }: { boo
         <>
           <div
             className="relative w-full select-none [@media(hover:hover)]:hover:-translate-y-1 [@media(hover:hover)]:hover:-rotate-1 [@media(hover:hover)]:hover:scale-[1.025]"
-            style={{ aspectRatio: `${PAGE_RATIO * 2}`, perspective: '2600px', containerType: 'inline-size', opacity: fading ? 0 : 1, transition: 'opacity 500ms ease, transform 300ms ease' }}
+            style={{ aspectRatio: `${pageRatio * 2}`, perspective: '2600px', containerType: 'inline-size', opacity: fading ? 0 : 1, transition: 'opacity 500ms ease, transform 300ms ease' }}
           >
             <div
               className="absolute inset-0"
