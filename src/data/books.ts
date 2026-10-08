@@ -119,6 +119,8 @@ export interface Book {
   series?: string
   category: Category
   age: string
+  /** Altersgruppe für die Trennung im Bücherbereich: '3+', '5-8' oder '9-12' */
+  ageGroup?: string
   detail: string
   cover: string
   coverFront?: string
@@ -158,6 +160,7 @@ export const BOOKS: Book[] = [
     series: "Bibelgeschichten zum Ausmalen · Band 1",
     category: 'malbuecher',
     age: "Ab 6 Jahren",
+    ageGroup: '9-12',
     detail: "70 Seiten · Großformat",
     cover: 'images/cover-band01-de-spread.png',
     coverFront: 'images/front/cover-band01-de.webp',
@@ -190,6 +193,7 @@ export const BOOKS: Book[] = [
     series: "Bibelgeschichten zum Ausmalen · Band 6",
     category: 'malbuecher',
     age: "Ab 6 Jahren",
+    ageGroup: '9-12',
     detail: "70 Seiten · Großformat",
     cover: 'images/cover-david-de-spread.jpg',
     coverFront: 'images/front/cover-david-de.webp',
@@ -219,6 +223,7 @@ export const BOOKS: Book[] = [
     series: "Bibelgeschichten zum Ausmalen",
     category: 'malbuecher',
     age: "Ab 6 Jahren",
+    ageGroup: '9-12',
     detail: "70 Seiten",
     cover: 'images/cover-band09-de-spread.jpg',
     coverFront: 'images/front/cover-band09-de.webp',
@@ -245,6 +250,7 @@ export const BOOKS: Book[] = [
     series: "Bibelgeschichten zum Ausmalen · Band 10",
     category: 'malbuecher',
     age: "Ab 6 Jahren",
+    ageGroup: '9-12',
     detail: "80 Seiten · ca. DIN A4",
     cover: 'images/cover-band10-de-spread.jpg',
     coverFront: 'images/front/cover-band10-de.webp',

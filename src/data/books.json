@@ -656,7 +656,8 @@
       ],
       "amazonRating": 5.0,
       "amazonRatingCount": 1,
-      "coverFront": "images/front/cover-band01-de.webp"
+      "coverFront": "images/front/cover-band01-de.webp",
+      "ageGroup": "9-12"
     },
     {
       "id": "bibelgeschichten-zum-ausmalen-4",
@@ -693,7 +694,8 @@
         }
       ],
       "hidden": true,
-      "coverFront": "images/front/cover-bibelgeschichten-zum-ausmalen-4.webp"
+      "coverFront": "images/front/cover-bibelgeschichten-zum-ausmalen-4.webp",
+      "ageGroup": "9-12"
     },
     {
       "id": "bibelgeschichten-zum-ausmalen-5",
@@ -730,7 +732,8 @@
         }
       ],
       "hidden": true,
-      "coverFront": "images/front/cover-bibelgeschichten-zum-ausmalen-5.webp"
+      "coverFront": "images/front/cover-bibelgeschichten-zum-ausmalen-5.webp",
+      "ageGroup": "9-12"
     },
     {
       "id": "david",
@@ -828,7 +831,8 @@
       "showInHero": true,
       "amazonRating": 5.0,
       "amazonRatingCount": 1,
-      "coverFront": "images/front/cover-david-de.webp"
+      "coverFront": "images/front/cover-david-de.webp",
+      "ageGroup": "9-12"
     },
     {
       "id": "bibelgeschichten-zum-ausmalen-3",
@@ -926,7 +930,8 @@
           "coverFront": "images/front/cover-band09-es.webp"
         }
       ],
-      "coverFront": "images/front/cover-band09-de.webp"
+      "coverFront": "images/front/cover-band09-de.webp",
+      "ageGroup": "9-12"
     },
     {
       "id": "bibelgeschichten-zum-ausmalen-2",
@@ -1023,7 +1028,8 @@
       ],
       "amazonRating": 5.0,
       "amazonRatingCount": 1,
-      "coverFront": "images/front/cover-band10-de.webp"
+      "coverFront": "images/front/cover-band10-de.webp",
+      "ageGroup": "9-12"
     },
     {
       "id": "zachaeus",

@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { ArrowLeft, ArrowRight, BookOpen, CheckCircle2, Copy, Eye, HelpCircle, Languages, Mail, PackageCheck, Palette, Play, Ruler, ShieldCheck, ChevronDown, X, ScrollText } from 'lucide-react'
+import { ArrowLeft, ArrowRight, BookOpen, CheckCircle2, Copy, HelpCircle, Languages, Mail, PackageCheck, Palette, Play, Ruler, ShieldCheck, ChevronDown, X, ScrollText } from 'lucide-react'
 import Reveal from '@/components/Reveal'
 import RichText from '@/components/RichText'
 import AmazonRating from '@/components/AmazonRating'
@@ -597,6 +597,149 @@ function setBookParam(id: string | null) {
   window.history.replaceState(null, '', url)
 }
 
+// ── Marktstand: je Buchart ein eigener Stand; die Bücher stehen auf dem Tisch ──────────────
+type StallScene = { src: string; base: string; x0: string; x1: string }
+const STALL_SCENES: Record<string, StallScene> = {
+  malbuecher: { src: 'images/markt/stand-malbuecher.webp', base: '79%', x0: '12%', x1: '12%' },
+  geschichten: { src: 'images/markt/stand-bilderbuecher.webp', base: '70%', x0: '15%', x1: '17%' },
+  komics: { src: 'images/markt/stand-comics.webp', base: '66%', x0: '12%', x1: '11%' },
+  historisch: { src: 'images/markt/stand-geschichte.webp', base: '77%', x0: '11%', x1: '11%' },
+}
+const sceneFor = (categoryId: string): StallScene => STALL_SCENES[categoryId] ?? STALL_SCENES.malbuecher
+
+// Altersgruppen innerhalb einer Buchart (Feld „Altersgruppe" im Admin)
+const AGE_GROUPS: Record<string, { de: [string, string]; en: [string, string]; color: string }> = {
+  '3+': { de: ['ab 3 Jahren', 'Zum Vorlesen'], en: ['ages 3+', 'Read-aloud'], color: '#c9712b' },
+  '5-8': { de: ['5–8 Jahre', 'Kleine Entdecker'], en: ['ages 5–8', 'Little explorers'], color: '#4f9a3d' },
+  '9-12': { de: ['9–12 Jahre', 'Bibelforscher'], en: ['ages 9–12', 'Bible explorers'], color: '#2a55a6' },
+}
+const AGE_ORDER = ['3+', '5-8', '9-12']
+
+function splitByAge(items: Book[]): { key: string; items: Book[] }[] {
+  const keys = [...new Set(items.map((b) => b.ageGroup ?? ''))]
+  keys.sort((a, b) => (AGE_ORDER.indexOf(a) === -1 ? 99 : AGE_ORDER.indexOf(a)) - (AGE_ORDER.indexOf(b) === -1 ? 99 : AGE_ORDER.indexOf(b)))
+  return keys.map((key) => ({ key, items: items.filter((b) => (b.ageGroup ?? '') === key) }))
+}
+
+const stallColumns = () => (typeof window === 'undefined' ? 4 : window.innerWidth >= 1024 ? 4 : window.innerWidth >= 640 ? 3 : 2)
+
+function useStallColumns() {
+  const [cols, setCols] = useState(stallColumns)
+  useEffect(() => {
+    const onResize = () => setCols(stallColumns())
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+  return cols
+}
+
+function BookStall({ items, categoryId, onOpen }: { items: Book[]; categoryId: string; onOpen: (book: Book, language?: string) => void }) {
+  const lang = useLang()
+  const t = textsFor(lang)
+  const cols = useStallColumns()
+  const scene = sceneFor(categoryId)
+  const rows: Book[][] = []
+  for (let i = 0; i < items.length; i += cols) rows.push(items.slice(i, i + cols))
+
+  return (
+    <div className="grid gap-8">
+      {rows.map((row, rowIndex) => (
+        <Reveal key={row[0].id} delay={rowIndex * 80}>
+          <div
+            className="stall-block"
+            style={{ '--cols': cols, '--scene': `url(${scene.src})`, '--base': scene.base, '--x0': scene.x0, '--x1': scene.x1 } as CSSProperties}
+          >
+            <div className="stall">
+              <div className="stall-slots">
+                {row.map((b) => {
+                  const cardBook = localizedBook(b, lang)
+                  const cover = coverFor(cardBook)
+                  return (
+                    <div className="stall-slot" key={b.id}>
+                      <button type="button" onClick={() => onOpen(b)} className="stall-cover group" aria-label={`${t.books.lookInside}: ${b.title}`}>
+                        {isNew(b) ? (
+                          <span className="absolute -top-2 left-0 z-10 rounded-full bg-accent px-2.5 py-1 text-[10px] font-bold leading-none text-accent-foreground shadow sm:text-xs">{t.books.newBadge}</span>
+                        ) : null}
+                        {cover.spread ? (
+                          <span className="stall-cover-spread block"><BookCover book={cardBook} variant="card" /></span>
+                        ) : (
+                          <img src={cover.src} alt={cardBook.title} loading="lazy" draggable={false} />
+                        )}
+                      </button>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+            <div className="stall-info">
+              {row.map((b) => {
+                const cardBook = localizedBook(b, lang)
+                const { main, sub } = splitTitle(cardBook)
+                return (
+                  <article key={b.id} className="flex flex-col items-center text-center">
+                    {volumeLabel(cardBook) ? <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-accent">{volumeLabel(cardBook)}</p> : null}
+                    <h3 className="book-card-title font-display text-base font-semibold leading-tight sm:mt-1 sm:text-[1.05rem] lg:text-[1.1rem]" style={{ WebkitLineClamp: 3 }}>
+                      <a
+                        href={bookPath(b)}
+                        onClick={(event) => {
+                          // normaler Klick öffnet das Fenster; Strg/Mittelklick öffnet die eigene Buchseite
+                          if (event.ctrlKey || event.metaKey || event.shiftKey || event.button !== 0) return
+                          event.preventDefault()
+                          onOpen(b)
+                        }}
+                        className="hover:underline"
+                      >
+                        {main}
+                      </a>
+                    </h3>
+                    {sub ? <p className="mt-1 text-xs leading-snug text-muted-foreground sm:text-sm">{sub}</p> : null}
+                    {cardBook.detail ? <p className="mt-1.5 text-xs font-semibold text-muted-foreground">{cardBook.detail}</p> : null}
+                    <LanguageEditions book={b} compact label="" onSelect={(language) => onOpen(b, language)} />
+                    <div className="flex justify-center"><AmazonRating book={b} /></div>
+                    <button
+                      type="button"
+                      onClick={() => (hasFlipbook(b.id) ? openFlipBookById(b.id) : onOpen(b))}
+                      className="mt-3 flex min-h-11 w-full max-w-[220px] items-center justify-center gap-2 rounded-full bg-primary px-2 py-2 text-xs font-bold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 sm:text-sm"
+                    >
+                      {hasFlipbook(b.id) ? <BookOpen className="h-4 w-4" aria-hidden /> : null}
+                      {hasFlipbook(b.id) ? t.books.flipInside : t.books.lookInside}
+                    </button>
+                  </article>
+                )
+              })}
+            </div>
+          </div>
+        </Reveal>
+      ))}
+    </div>
+  )
+}
+
+function BookStalls({ items, categoryId, onOpen }: { items: Book[]; categoryId: string; onOpen: (book: Book, language?: string) => void }) {
+  const lang = useLang()
+  const parts = splitByAge(items)
+  // Altersüberschriften nur, wenn die Buchart mehrere Altersgruppen enthält
+  const showAge = parts.filter((part) => AGE_GROUPS[part.key]).length > 1
+  return (
+    <div className="grid gap-12">
+      {parts.map((part) => {
+        const age = AGE_GROUPS[part.key]
+        return (
+          <div key={part.key || 'alle'}>
+            {showAge && age ? (
+              <div className="mb-6 flex flex-wrap items-center gap-3 border-b border-[#e6dcc3] pb-3 shadow-[0_10px_12px_-12px_rgba(21,49,103,0.35)]">
+                <span className="rounded-full px-3.5 py-1 text-sm font-extrabold text-white shadow" style={{ backgroundColor: age.color }}>{age[lang][0]}</span>
+                <h3 className="font-display text-2xl font-semibold">{age[lang][1]}</h3>
+              </div>
+            ) : null}
+            <BookStall items={part.items} categoryId={categoryId} onOpen={onOpen} />
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
 export default function Books() {
   const lang = useLang()
   const t = textsFor(lang)
@@ -691,78 +834,8 @@ export default function Books() {
                   </summary>
                   <div className="pb-4 pt-8">
                     {group.id === 'malbuecher' && group.items.some(isColoringBook) ? <ColoringBookFacts /> : null}
-          <div className="mt-6 grid grid-cols-2 gap-2.5 sm:gap-6 lg:grid-cols-3">
-                    {group.items.map((b, i) => {
-                      const cardBook = localizedBook(b, lang)
-                      return (
-                      <Reveal key={b.id} delay={i * 100}>
-                        <article className="book-card group flex h-full flex-col rounded-2xl transition-transform duration-200 hover:-translate-y-1">
-                          <button
-                            type="button"
-                            onClick={() => openBook(b)}
-                            className="relative flex aspect-[4/5] items-end justify-center px-3 pb-[19px] pt-3 text-left sm:px-6 sm:pb-[23px]"
-                            aria-label={`${t.books.lookInside}: ${b.title}`}
-                          >
-                            <span aria-hidden className="pointer-events-none absolute inset-0" style={{ background: 'radial-gradient(ellipse 70% 55% at 50% 38%, rgba(255,255,255,0.85), rgba(255,255,255,0) 70%)' }} />
-                            <span aria-hidden className="pointer-events-none absolute inset-x-[4%] bottom-3 h-[7px] rounded-full sm:bottom-4" style={{ background: 'linear-gradient(180deg, #ffffff, #e6dcc3)', boxShadow: '0 1px 0 rgba(120,95,40,0.25), 0 14px 16px -8px rgba(21,49,103,0.4), 0 28px 26px -16px rgba(21,49,103,0.3)' }} />
-                            <span aria-hidden className="pointer-events-none absolute inset-x-[12%] bottom-[7px] h-5 sm:bottom-2" style={{ background: 'radial-gradient(ellipse at center, rgba(21,49,103,0.22), transparent 70%)' }} />
-                            {isNew(b) && (
-                              <span className="absolute left-2 top-2 z-10 rounded-full bg-accent px-2 py-1 text-[10px] font-bold text-accent-foreground shadow sm:left-4 sm:top-4 sm:px-3 sm:text-xs">
-                                {t.books.newBadge}
-                              </span>
-                            )}
-                            <BookCover book={cardBook} variant="card" />
-                            <span className="absolute bottom-4 right-4 inline-flex items-center gap-1.5 rounded-full bg-foreground/85 px-3 py-1.5 text-xs font-bold text-background opacity-0 backdrop-blur transition-opacity group-hover:opacity-100">
-                              <Eye className="h-3.5 w-3.5" aria-hidden />
-                              {t.books.lookInside}
-                            </span>
-                          </button>
-                          <div className="flex flex-1 flex-col items-center p-2.5 text-center sm:p-4">
-                            {(() => {
-                              const { main, sub } = splitTitle(cardBook)
-                              return (
-                                <>
-                                  {volumeLabel(cardBook) ? (
-                                    <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-accent">{volumeLabel(cardBook)}</p>
-                                  ) : null}
-                                  <h3 className="book-card-title font-display text-base font-semibold leading-tight sm:mt-1 sm:text-2xl">
-                                    <a
-                                      href={bookPath(b)}
-                                      onClick={(event) => {
-                                        // normaler Klick öffnet das Fenster; Strg/Mittelklick öffnet die eigene Buchseite
-                                        if (event.ctrlKey || event.metaKey || event.shiftKey || event.button !== 0) return
-                                        event.preventDefault()
-                                        openBook(b)
-                                      }}
-                                      className="hover:underline"
-                                    >
-                                      {main}
-                                    </a>
-                                  </h3>
-                                  {sub ? <p className="mt-1 text-xs leading-snug text-muted-foreground sm:text-sm">{sub}</p> : null}
-                                  {cardBook.detail ? <p className="mt-2 text-xs font-semibold text-muted-foreground">{cardBook.detail}</p> : null}
-                                </>
-                              )
-                            })()}
-                            <LanguageEditions book={b} compact label="" onSelect={(language) => openBook(b, language)} />
-                            <div className="flex justify-center"><AmazonRating book={b} /></div>
-                            <div className="mt-3 flex flex-1 flex-col items-center justify-end sm:mt-4">
-                              <button
-                                type="button"
-                                onClick={() => (hasFlipbook(b.id) ? openFlipBookById(b.id) : openBook(b))}
-                                className="flex min-h-11 w-full max-w-[240px] items-center justify-center gap-2 rounded-full bg-primary px-2 py-2 text-xs font-bold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 sm:aspect-[900/165] sm:text-sm"
-                              >
-                                {hasFlipbook(b.id) ? <BookOpen className="h-4 w-4" aria-hidden /> : null}
-                                {hasFlipbook(b.id) ? t.books.flipInside : t.books.lookInside}
-                              </button>
-                            </div>
-                          </div>
-                        </article>
-                      </Reveal>
-                      )
-                    })}
+                    <div className="mt-6"><BookStalls items={group.items} categoryId={group.id} onOpen={openBook} /></div>
                   </div>
-                          </div>
                 </details>
               </Reveal>
             ))}

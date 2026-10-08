@@ -405,7 +405,9 @@ test('Fettschrift ist im Backend auswählbar und wird sicher gerendert', () => {
 
 test('Auf Smartphones stehen zwei Bücher nebeneinander', () => {
   const books = readFileSync(join(SRC, 'sections/Books.tsx'), 'utf-8')
-  assert(books.includes('grid grid-cols-2'), 'Mobile Buchübersicht hat keine zwei Spalten')
+  assert(books.includes('const stallColumns') && books.includes('window.innerWidth >= 640 ? 3 : 2'), 'Mobile Buchübersicht hat keine zwei Spalten')
+  const css = readFileSync(join(SRC, 'index.css'), 'utf-8')
+  assert(/\.stall-block \{[^}]*--cols: 2/.test(css), 'Marktstand: am Handy fehlen die zwei Spalten')
 })
 
 test('Alle Malbücher zeigen einheitlich Umfang (mindestens 70 Seiten), Format und Rätselseiten', () => {
@@ -530,7 +532,7 @@ test('Sprach-Ausgaben öffnen erst ihre Infobox und verknüpfen dort Amazon', ()
   assert(books.includes('LanguageEditions') && books.includes('LANGUAGE_META'), 'Sprachflaggen fehlen auf der Landingpage')
   assert(
     books.includes('onClick={() => onSelect(edition.language)}')
-      && books.includes('onSelect={(language) => openBook(b, language)}')
+      && books.includes('onSelect={(language) => onOpen(b, language)}')
       && books.includes('type="button"'),
     'Sprachflagge öffnet nicht zuerst die passende Buch-Infobox',
   )

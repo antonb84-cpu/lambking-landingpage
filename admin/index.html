@@ -407,6 +407,15 @@
           <input type="text" id="f_age" class="draft" placeholder="z. B. Ab 5 Jahren">
         </div>
         <div>
+          <label for="f_ageGroup">Altersgruppe (Trennung auf der Seite)</label>
+          <select id="f_ageGroup" class="draft">
+            <option value="">– keine –</option>
+            <option value="3+">ab 3 Jahren (Zum Vorlesen)</option>
+            <option value="5-8">5–8 Jahre (Kleine Entdecker)</option>
+            <option value="9-12">9–12 Jahre (Bibelforscher)</option>
+          </select>
+        </div>
+        <div>
           <label for="f_detail">Umfang / Detail</label>
           <input type="text" id="f_detail" class="draft" placeholder="z. B. 35 Seiten">
         </div>
@@ -1653,6 +1662,7 @@ function openForm(id){
   $('f_category').value = b ? b.category : ((state.categories||[])[0]?.id || 'malbuecher');
   $('f_series').value = b ? (b.series||'') : '';
   $('f_age').value = b ? (b.age||'') : '';
+  $('f_ageGroup').value = b ? (b.ageGroup||'') : '';
   $('f_detail').value = b ? (b.detail||'') : '';
   $('f_description').value = b ? (b.description||'') : '';
   $('f_highlights').value = b ? (b.highlights||[]).join('\n') : '';
@@ -1818,6 +1828,7 @@ async function saveBook(){
     fd.append('category', $('f_category').value);
     fd.append('series', $('f_series').value);
     fd.append('age', $('f_age').value);
+    fd.append('ageGroup', $('f_ageGroup').value);
     fd.append('detail', $('f_detail').value);
     fd.append('description', $('f_description').value);
     fd.append('highlights', $('f_highlights').value);

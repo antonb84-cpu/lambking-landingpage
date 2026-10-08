@@ -247,3 +247,29 @@
     animation: none;
   }
 }
+
+/* Marktstand: Bücher stehen auf dem Tisch eines Standes, darunter die Angaben in denselben Spalten */
+.stall-block {
+  --cols: 2; --cw: 36cqw; --ch: 47cqw; --ratio: 4 / 5;
+  container-type: inline-size;
+  border-radius: 22px;
+  overflow: hidden;
+  background: #fffdf8;
+  border: 1px solid #e6dcc3;
+  box-shadow: 0 18px 30px -22px rgba(21, 49, 103, 0.55);
+}
+.stall { position: relative; aspect-ratio: var(--ratio); background: #e8dcc0 var(--scene) center / cover no-repeat; }
+.stall::after { content: ''; position: absolute; inset: auto 0 0 0; height: 16%; background: linear-gradient(180deg, transparent, rgba(60, 40, 15, 0.2)); pointer-events: none; }
+.stall-slots { position: absolute; left: var(--x0); right: var(--x1); top: 0; bottom: 0; display: flex; justify-content: center; }
+.stall-slot { flex: 0 0 calc(100% / var(--cols)); position: relative; }
+.stall-cover { position: absolute; left: 50%; bottom: calc(100% - var(--base)); transform: translateX(-50%); display: block; line-height: 0; transition: transform 0.25s ease, filter 0.25s ease; }
+.stall-cover:hover, .stall-cover:focus-visible { transform: translateX(-50%) translateY(-7px) rotate(-1deg); filter: brightness(1.04); }
+.stall-cover img {
+  display: block; width: auto; height: auto; max-width: var(--cw); max-height: var(--ch); border-radius: 3px;
+  box-shadow: 0 1px 2px rgba(21, 30, 60, 0.4), 0 10px 14px -6px rgba(40, 25, 10, 0.55), 0 22px 24px -12px rgba(40, 25, 10, 0.45);
+}
+.stall-cover-spread { height: var(--ch); }
+.stall-info { display: flex; justify-content: center; padding: 20px var(--x1) 28px var(--x0); }
+.stall-info > * { flex: 0 0 calc(100% / var(--cols)); padding: 0 6px; min-width: 0; }
+@media (min-width: 640px) { .stall-block { --cols: 3; --cw: 23cqw; --ch: 29.8cqw; --ratio: 4 / 3; } }
+@media (min-width: 1024px) { .stall-block { --cols: 4; --cw: 17cqw; --ch: 22cqw; --ratio: 16 / 9; } }

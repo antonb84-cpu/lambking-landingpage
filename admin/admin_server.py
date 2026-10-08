@@ -253,6 +253,8 @@ def render_books_ts(state: dict):
     out.append("  series?: string")
     out.append("  category: Category")
     out.append("  age: string")
+    out.append("  /** Altersgruppe für die Trennung im Bücherbereich: '3+', '5-8' oder '9-12' */")
+    out.append("  ageGroup?: string")
     out.append("  detail: string")
     out.append("  cover: string")
     out.append("  coverFront?: string")
@@ -295,6 +297,8 @@ def render_books_ts(state: dict):
             out.append(f"    series: {ts_str(b['series'])},")
         out.append(f"    category: '{b['category']}',")
         out.append(f"    age: {ts_str(b.get('age', ''))},")
+        if b.get("ageGroup") in ("3+", "5-8", "9-12"):
+            out.append(f"    ageGroup: '{b['ageGroup']}',")
         out.append(f"    detail: {ts_str(b.get('detail', ''))},")
         out.append(f"    cover: '{b['cover']}',")
         if b.get("coverFront"):
@@ -1179,6 +1183,11 @@ class Handler(BaseHTTPRequestHandler):
         book["series"] = fields.get("series", "").strip()
         book["category"] = category
         book["age"] = fields.get("age", "").strip()
+        age_group = fields.get("ageGroup", "").strip()
+        if age_group in ("3+", "5-8", "9-12"):
+            book["ageGroup"] = age_group
+        else:
+            book.pop("ageGroup", None)
         book["detail"] = fields.get("detail", "").strip()
         book["description"] = fields.get("description", "").strip()
         editions_raw = fields.get("editions", "").strip()
