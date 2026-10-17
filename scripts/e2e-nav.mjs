@@ -252,7 +252,10 @@ try {
   // Großes Blätterbuch: Knopf an der Buchkarte öffnet ein Fenster mit Teil-Vorschau, das Ende verweist auf Amazon
   {
     const before = await targetCount()
-    await evalJs(`[...document.querySelectorAll('#buecher button')].find(b => /Reinblättern/.test(b.textContent))?.click()`)
+    // „Reinblättern“ liegt im Buchfenster: erst das Cover anklicken, dann den Knopf im Fenster
+    await evalJs(`document.querySelector('#buecher .stall-cover')?.click()`)
+    await waitForPageState(`!!document.querySelector('[role="dialog"]')`, 8000)
+    await evalJs(`[...document.querySelectorAll('[role="dialog"] button')].find(b => /Reinblättern/.test(b.textContent))?.click()`)
     const opened = await waitForPageState(`/Leseprobe: \\d+ von \\d+ Seiten/.test(document.querySelector('[role="dialog"]')?.textContent || '')`, 8000)
     await evalJs(`[...document.querySelectorAll('[role="dialog"] button')].find(b => /Rückseite/.test(b.getAttribute('aria-label') || ''))?.click()`)
     await new Promise((r) => setTimeout(r, 1800))

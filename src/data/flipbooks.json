@@ -91,5 +91,23 @@
       "ext": "webp",
       "ratio": 1.0
     }
+  },
+  "buntstift-01": {
+    "de": {
+      "dir": "images/buch-buntstift-01-de",
+      "count": 15,
+      "total": 74,
+      "ext": "webp",
+      "ratio": 0.7667
+    }
+  },
+  "buntstift-02": {
+    "de": {
+      "dir": "images/buch-buntstift-02-de",
+      "count": 15,
+      "total": 82,
+      "ext": "webp",
+      "ratio": 0.7667
+    }
   }
 }

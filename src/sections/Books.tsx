@@ -598,6 +598,8 @@ function setBookParam(id: string | null) {
   window.history.replaceState(null, '', url)
 }
 
+const RUBRIC_ORDER = ['malbuecher', 'geschichten', 'komics', 'weitere']
+
 // Altersgruppen innerhalb einer Buchart (Feld „Altersgruppe" im Admin)
 const AGE_GROUPS: Record<string, { de: [string, string]; en: [string, string]; color: string }> = {
   '3+': { de: ['ab 3 Jahren', 'Zum Vorlesen'], en: ['ages 3+', 'Read-aloud'], color: '#c9712b' },
@@ -638,6 +640,7 @@ function BookInfo({ b, onOpen, left = false }: { b: Book; onOpen: (book: Book, l
   const cardBook = localizedBook(b, lang)
   const { main, sub } = splitTitle(cardBook)
   const side = left ? 'justify-start' : 'justify-center'
+  const hasAmazonLink = editionsOf(cardBook).some((edition) => edition.amazon.startsWith('https://'))
   return (
     <>
       <p className="min-h-[15px] text-[11px] font-bold uppercase tracking-[0.14em] text-accent">{volumeLabel(cardBook) || '\u00a0'}</p>
@@ -662,31 +665,46 @@ function BookInfo({ b, onOpen, left = false }: { b: Book; onOpen: (book: Book, l
       {cardBook.detail && !isColoringBook(b) ? <p className="mt-1.5 text-xs font-semibold text-muted-foreground">{cardBook.detail}</p> : null}
       <LanguageEditions book={b} compact left={left} label="" onSelect={(language) => onOpen(b, language)} />
       <div className={`flex w-full ${side}`}><AmazonRating book={b} /></div>
+      {/* Auf der Karte steht der Amazon-Knopf; „Reinblättern“ gibt es im Buchfenster (Klick auf Cover oder Titel) */}
       <div className={`mt-auto flex w-full pt-3 ${side}`}>
-        <button
-          type="button"
-          onClick={() => (hasFlipbook(b.id) ? openFlipBookById(b.id) : onOpen(b))}
-          className="flex min-h-11 w-full max-w-[220px] items-center justify-center gap-2 rounded-full bg-primary px-2 py-2 text-xs font-bold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 sm:text-sm"
-        >
-          {hasFlipbook(b.id) ? <BookOpen className="h-4 w-4" aria-hidden /> : null}
-          {hasFlipbook(b.id) ? t.books.flipInside : t.books.lookInside}
-        </button>
+        {hasAmazonLink ? (
+          <BuyButton book={cardBook} />
+        ) : (
+          <button
+            type="button"
+            onClick={() => onOpen(b)}
+            className="flex min-h-11 w-full max-w-[220px] items-center justify-center gap-2 rounded-full bg-primary px-2 py-2 text-xs font-bold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 sm:text-sm"
+          >
+            {t.books.lookInside}
+          </button>
+        )}
       </div>
     </>
   )
 }
 
 function BookStall({ items, onOpen }: { items: Book[]; onOpen: (book: Book, language?: string) => void }) {
+  const lang = useLang()
   return (
     <div className="mag-grid">
-      {items.map((b, index) => (
+      {items.map((b, index) => {
+        const cover = coverFor(localizedBook(b, lang))
+        return (
         <Reveal key={b.id} delay={index * 60}>
           <article className="mag-card">
-            <div className="mag-side"><CoverButton b={b} onOpen={onOpen} /></div>
+            <div className="mag-side">
+              <span
+                className="mag-glow"
+                style={{ backgroundImage: `url(${cover.src})`, ...(cover.spread ? { backgroundSize: 'auto 100%', backgroundPosition: 'right center' } : null) }}
+                aria-hidden
+              />
+              <CoverButton b={b} onOpen={onOpen} />
+            </div>
             <div className="mag-info"><BookInfo b={b} onOpen={onOpen} left /></div>
           </article>
         </Reveal>
-      ))}
+        )
+      })}
     </div>
   )
 }
@@ -777,7 +795,8 @@ export default function Books() {
     { id: 'weitere', label: lang === 'en' ? 'More' : 'Weitere', color: '#64748b', items: books.filter((b) => !catDefOf(b.category)) },
   ]
     .filter((g) => g.items.length > 0)
-    .sort((a, b) => b.items.length - a.items.length)
+    // feste Reihenfolge: erst 9–12 Jahre (Malbücher), dann 5–8 Jahre (Geschichten), dann der Rest
+    .sort((a, b) => RUBRIC_ORDER.indexOf(a.id) - RUBRIC_ORDER.indexOf(b.id))
 
   return (
     <section id="buecher" className="scroll-mt-28 py-14 lg:py-24">
