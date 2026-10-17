@@ -184,7 +184,11 @@ function BookMediaGallery({ book, onZoom, copy }: { book: Book; onZoom: (src: st
 const isColoringBook = (book: Book) => book.category === 'malbuecher'
 
 // Schmale Chips unter der Überschrift der Rubrik
-function ColoringBookFacts() {
+// Hinweis-Chips gelten nur, wenn sie für ALLE Bücher der Rubrik stimmen:
+// „Fragen und Rätsel“ (Index 3) steht nur in der Reihe „Bibelgeschichten zum Ausmalen“, „mehrere Sprachen“ (Index 4) nur bei Büchern mit mindestens zwei Ausgaben
+function ColoringBookFacts({ items }: { items: Book[] }) {
+  const allRiddles = items.every((b) => !(b.series ?? '').startsWith('Mit Buntstift'))
+  const allLanguages = items.every((b) => editionsOf(b).length > 1)
   const siteCopy = textsFor(useLang()).books
   const icons = [BookOpen, Ruler, ShieldCheck, HelpCircle, Languages]
   return (
@@ -192,6 +196,7 @@ function ColoringBookFacts() {
       <p className="sr-only">{siteCopy.coloringFactsTitle}</p>
       <ul className="flex flex-wrap gap-x-6 gap-y-1.5">
         {siteCopy.coloringFacts.map((fact, index) => {
+          if ((index === 3 && !allRiddles) || (index === 4 && !allLanguages)) return null
           const Icon = icons[index] ?? CheckCircle2
           return (
             <li key={fact} className="flex items-center gap-2 text-[13.5px] font-bold leading-snug text-foreground">
@@ -684,27 +689,16 @@ function BookInfo({ b, onOpen, left = false }: { b: Book; onOpen: (book: Book, l
 }
 
 function BookStall({ items, onOpen }: { items: Book[]; onOpen: (book: Book, language?: string) => void }) {
-  const lang = useLang()
   return (
     <div className="mag-grid">
-      {items.map((b, index) => {
-        const cover = coverFor(localizedBook(b, lang))
-        return (
+      {items.map((b, index) => (
         <Reveal key={b.id} delay={index * 60}>
           <article className="mag-card">
-            <div className="mag-side">
-              <span
-                className="mag-glow"
-                style={{ backgroundImage: `url(${cover.src})`, ...(cover.spread ? { backgroundSize: 'auto 100%', backgroundPosition: 'right center' } : null) }}
-                aria-hidden
-              />
-              <CoverButton b={b} onOpen={onOpen} />
-            </div>
+            <div className="mag-side"><CoverButton b={b} onOpen={onOpen} /></div>
             <div className="mag-info"><BookInfo b={b} onOpen={onOpen} left /></div>
           </article>
         </Reveal>
-        )
-      })}
+      ))}
     </div>
   )
 }
@@ -829,7 +823,7 @@ export default function Books() {
                     </span>
                   </summary>
                   <div>
-                    {group.id === 'malbuecher' && group.items.some(isColoringBook) ? <ColoringBookFacts /> : null}
+                    {group.id === 'malbuecher' && group.items.some(isColoringBook) ? <ColoringBookFacts items={group.items} /> : null}
                     <div className="bg-[#f6f2e8] px-4 py-5 sm:px-7 sm:py-6">
                       <BookStalls items={group.items} onOpen={openBook} />
                     </div>

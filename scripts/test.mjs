@@ -421,6 +421,12 @@ test('Alle Malbücher zeigen einheitlich Umfang (mindestens 70 Seiten), Format u
   const coloringBooks = booksJson.books.filter((book) => book.category === 'malbuecher')
   assert(coloringBooks.length > 0, 'Keine Malbücher zum Prüfen gefunden')
   for (const book of coloringBooks) {
+    // Reihe „Mit Buntstift durch die Bibel“: 5–8 Jahre, Band 1 hat 74, Band 2 hat 82 Seiten (Amazon)
+    if (book.id.startsWith('buntstift-')) {
+      assert(book.age === '5–8 Jahre', `${book.title}: Altersangabe passt nicht zum Cover`)
+      assert(book.detail.includes(book.id === 'buntstift-01' ? '74 Seiten' : '82 Seiten'), `${book.title}: Seitenzahl passt nicht zur Ausgabe`)
+      continue
+    }
     const coverAge = ['bibelgeschichten-zum-ausmalen-4', 'bibelgeschichten-zum-ausmalen-5'].includes(book.id) ? 'Ab 5 Jahren' : 'Ab 6 Jahren'
     assert(book.age === coverAge, `${book.title}: Altersangabe passt nicht zum aktuellen Cover`)
     assert(book.detail.includes(book.id === 'bibelgeschichten-zum-ausmalen-2' ? '80 Seiten' : '70 Seiten'), `${book.title}: Seitenzahl passt nicht zur Ausgabe`)

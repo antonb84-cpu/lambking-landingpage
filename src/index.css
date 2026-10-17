@@ -253,7 +253,6 @@
 @media (max-width: 767px) { .mag-grid { grid-template-columns: 1fr; } .mag-card { grid-template-columns: 38% 1fr; } .mag-side { padding: 18px 10px; } .mag-info { padding-right: 12px; } .mag-info .book-card-title { font-size: 0.85rem; } }
 .mag-card { display: grid; grid-template-columns: 42% 1fr; height: 100%; overflow: hidden; background: #fff; border: 1px solid #e6dcc3; border-radius: 20px; box-shadow: 0 14px 26px -20px rgba(21, 49, 103, 0.5); }
 .mag-side { position: relative; overflow: hidden; display: grid; place-items: center; padding: 22px 16px; background: radial-gradient(120% 90% at 50% 0%, #fff, #efe6d0); }
-.mag-glow { position: absolute; left: 14%; right: 14%; top: 16%; bottom: 10%; background-size: cover; background-position: center; border-radius: 28px; filter: blur(24px) saturate(1.35); opacity: 0.75; transform: scale(1.1); pointer-events: none; }
 .mag-side .stall-cover { width: 100%; }
 .mag-side .stall-cover img { width: 100%; max-width: 100%; max-height: none; }
 .mag-side .stall-cover-spread { height: 260px; }
