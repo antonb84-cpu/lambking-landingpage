@@ -138,6 +138,8 @@ export interface Book {
   amazonRatingCount?: number
   /** Dieses Buch wird im Startbereich als bewegbares Vorschaubuch gezeigt. */
   showInHero?: boolean
+  /** Angekündigtes Buch: „Bald erhältlich“ statt Kaufknopf, mit Vorschauseiten (Blick ins Buch). */
+  comingSoon?: boolean
   /** ISO-Datum 'YYYY-MM-DD' – das „Neu"-Badge erscheint 30 Tage. */
   releaseDate?: string
 }
@@ -389,6 +391,31 @@ export const BOOKS: Book[] = [
     amazon: "https://www.amazon.de/dp/B0HNMPLWNN",
     editions: [{"language": "de", "amazon": "https://www.amazon.de/dp/B0HNMPLWNN"}],
     releaseDate: '2026-10-19',
+  },
+  {
+    id: 'voelker-der-bibel-band-1',
+    lang: 'de',
+    title: "Völker der Bibel – Eine Zeitreise zu den ersten Zivilisationen",
+    series: "Sachbuch · Band 1",
+    category: 'geschichten',
+    age: "ab 10 Jahren",
+    detail: "Bildsachbuch · 88 Seiten",
+    cover: 'images/cover-voelker-band-1.jpg',
+    coverFront: 'images/front/cover-voelker-band-1.webp',
+    description: "Eine Zeitreise zu den ersten Zivilisationen: Dieses Bildsachbuch erzählt von den Ägyptern, Kanaanitern, Philistern, Israel und den Aramäern. Große Bilder, Karten, ein Zeitstrahl, Glossar und Quiz helfen, die Welt der Bibel zu entdecken. Alle Bibelstellen stehen nach der Lutherbibel von 1912.",
+    highlights: ["Fünf Völker der Bibel", "Große Bilder, Karten und Zeitstrahl", "Mit Glossar und Quiz", "Bibelstellen nach Luther 1912"],
+    samples: [
+      'images/voelker-band-1-seite-1.jpg',
+      'images/voelker-band-1-seite-2.jpg',
+      'images/voelker-band-1-seite-3.jpg',
+      'images/voelker-band-1-seite-4.jpg',
+      'images/voelker-band-1-seite-5.jpg',
+      'images/voelker-band-1-seite-6.jpg',
+    ],
+    amazon: "",
+    editions: [],
+    comingSoon: true,
+    releaseDate: '2026-10-22',
   },
   {
     id: 'zachaeus',

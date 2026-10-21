@@ -443,25 +443,32 @@ function BookDialog({
               </ul>
               {displayBook && <AmazonRating book={displayBook} />}
               <LanguageEditions book={book} label={dialogCopy.availableLanguages} onSelect={onEditionChange} />
-              {edition && !edition.amazon.startsWith('https://') && (
+              {book?.comingSoon ? (
+                <p className="mx-auto mt-5 max-w-md rounded-xl border border-primary/35 bg-primary/10 px-4 py-3 text-center text-sm font-semibold text-foreground">
+                  <span className="mr-2 inline-block rounded-full bg-primary px-2.5 py-0.5 text-xs font-bold uppercase tracking-wide text-primary-foreground">{dialogCopy.comingSoonBadge}</span>
+                  {dialogCopy.comingSoonText}
+                </p>
+              ) : edition && !edition.amazon.startsWith('https://') && (
                 <p className="mx-auto mt-5 max-w-md rounded-xl border border-accent/35 bg-accent/10 px-4 py-3 text-center text-sm font-semibold text-foreground">
                   {dialogCopy.amazonPending}
                 </p>
               )}
-              <div className="sticky bottom-0 z-10 -mx-8 mt-9 border-t-2 border-border bg-background/95 px-8 py-5 shadow-[0_-8px_20px_-16px_rgba(30,42,74,0.35)] backdrop-blur lg:-mx-12 lg:px-12">
-                {edition?.amazon.startsWith('https://') && <p className="mb-3 text-center font-semibold text-muted-foreground sm:text-left">{dialogCopy.seePrice}</p>}
-                <div className="mx-auto flex w-full flex-col items-center gap-3">
-                  {displayBook && <BuyButton book={displayBook} size="lg" preferredLanguage={editionLanguage || undefined} label={dialogCopy.buyAmazon} />}
-                  <button
-                    type="button"
-                    onClick={() => setBulkDiscountOpen(true)}
-                    className="inline-flex min-h-12 aspect-[900/165] w-full max-w-[305px] items-center justify-center gap-2 rounded-full border-2 border-accent bg-accent/10 px-5 py-3 text-center text-sm font-bold text-primary shadow-sm transition-colors hover:bg-accent/20 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/60"
-                  >
-                    <PackageCheck className="h-5 w-5" aria-hidden />
-                    {siteCopy.bulkDiscountButton}
-                  </button>
+              {!book?.comingSoon && (
+                <div className="sticky bottom-0 z-10 -mx-8 mt-9 border-t-2 border-border bg-background/95 px-8 py-5 shadow-[0_-8px_20px_-16px_rgba(30,42,74,0.35)] backdrop-blur lg:-mx-12 lg:px-12">
+                  {edition?.amazon.startsWith('https://') && <p className="mb-3 text-center font-semibold text-muted-foreground sm:text-left">{dialogCopy.seePrice}</p>}
+                  <div className="mx-auto flex w-full flex-col items-center gap-3">
+                    {displayBook && <BuyButton book={displayBook} size="lg" preferredLanguage={editionLanguage || undefined} label={dialogCopy.buyAmazon} />}
+                    <button
+                      type="button"
+                      onClick={() => setBulkDiscountOpen(true)}
+                      className="inline-flex min-h-12 aspect-[900/165] w-full max-w-[305px] items-center justify-center gap-2 rounded-full border-2 border-accent bg-accent/10 px-5 py-3 text-center text-sm font-bold text-primary shadow-sm transition-colors hover:bg-accent/20 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/60"
+                    >
+                      <PackageCheck className="h-5 w-5" aria-hidden />
+                      {siteCopy.bulkDiscountButton}
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         )}
@@ -627,7 +634,9 @@ function CoverButton({ b, onOpen }: { b: Book; onOpen: (book: Book, language?: s
   const cover = coverFor(cardBook)
   return (
     <button type="button" onClick={() => onOpen(b)} className="stall-cover group" aria-label={`${t.books.lookInside}: ${b.title}`}>
-      {isNew(b) ? (
+      {b.comingSoon ? (
+        <span className="absolute -bottom-2 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-full bg-primary px-3 py-1 text-[10px] font-bold leading-none text-primary-foreground shadow sm:text-xs">{t.books.comingSoonBadge}</span>
+      ) : isNew(b) ? (
         <span className="absolute -top-2 left-0 z-10 rounded-full bg-accent px-2.5 py-1 text-[10px] font-bold leading-none text-accent-foreground shadow sm:text-xs">{t.books.newBadge}</span>
       ) : null}
       {cover.spread ? (

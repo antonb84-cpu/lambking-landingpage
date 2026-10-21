@@ -272,6 +272,8 @@ def render_books_ts(state: dict):
     out.append("  amazonRatingCount?: number")
     out.append("  /** Dieses Buch wird im Startbereich als bewegbares Vorschaubuch gezeigt. */")
     out.append("  showInHero?: boolean")
+    out.append("  /** Angekündigtes Buch: „Bald erhältlich“ statt Kaufknopf, mit Vorschauseiten (Blick ins Buch). */")
+    out.append("  comingSoon?: boolean")
     out.append("  /** ISO-Datum 'YYYY-MM-DD' – das „Neu\"-Badge erscheint 30 Tage. */")
     out.append("  releaseDate?: string")
     out.append("}")
@@ -333,6 +335,8 @@ def render_books_ts(state: dict):
             out.append(f"    amazonRatingCount: {rating_count},")
         if b.get("showInHero"):
             out.append("    showInHero: true,")
+        if b.get("comingSoon"):
+            out.append("    comingSoon: true,")
         if b.get("releaseDate"):
             out.append(f"    releaseDate: '{b['releaseDate']}',")
         out.append("  },")

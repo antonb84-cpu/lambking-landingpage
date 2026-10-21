@@ -123,7 +123,8 @@ test('Buchdaten: Pflichtfelder und gültige Links', () => {
     assert(['de', 'en'].includes(b.lang), `${b.id}: ungültige Sprache`)
     assert(catIds.includes(b.category), `${b.id}: ungültige Kategorie`)
     assert(!b.amazon || b.amazon.startsWith('https://'), `${b.id}: Amazon-Link ungültig`)
-    assert(Array.isArray(b.editions) && b.editions.length > 0, `${b.id}: keine Sprach-Ausgabe eingetragen`)
+    // ein angekündigtes Buch („Bald erhältlich“) hat noch keine Ausgabe bei Amazon
+    assert(Array.isArray(b.editions) && (b.editions.length > 0 || b.comingSoon === true), `${b.id}: keine Sprach-Ausgabe eingetragen`)
     const editionLanguages = new Set()
     for (const edition of b.editions) {
       assert(/^[a-z]{2,3}(-[a-z]{2})?$/.test(edition.language), `${b.id}: ungültiger Sprachcode`)
@@ -201,7 +202,7 @@ test('Buchgalerie und kurze Inhaltsangaben sind pro Buch gepflegt', () => {
     assert(book.description?.length > 50, `${book.id}: kurze Inhaltsangabe fehlt`)
     assert(!/70 Seiten|70 pages|70 páginas|DIN A4|21,6 × 27,9/.test(book.description), `${book.id}: allgemeine Buchfakten stehen in der Geschichte`)
     // Die Bände der Reihe „Mit Buntstift durch die Bibel“ haben noch kein Buchfoto (folgt mit den Probeexemplaren); Cover und Vorschauseiten genügen bis dahin
-    if (book.id !== 'bibelgeschichten-zum-ausmalen-2' && !book.id.startsWith('buntstift-')) assert(book.lifestyleImages?.length, `${book.id}: Buchfoto fehlt`)
+    if (book.id !== 'bibelgeschichten-zum-ausmalen-2' && !book.id.startsWith('buntstift-') && !book.comingSoon) assert(book.lifestyleImages?.length, `${book.id}: Buchfoto fehlt`)
     for (const image of book.lifestyleImages) {
       const path = join(ROOT, 'public', image)
       assert(existsSync(path), `${book.id}: Buchfoto fehlt (${image})`)
