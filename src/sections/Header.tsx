@@ -97,7 +97,7 @@ export default function Header() {
       <div className="mx-auto flex h-[100px] max-w-7xl sm:h-28 items-center justify-between gap-3 px-4 sm:px-6">
         <a href={homeHref()} className="flex items-center" aria-label={t.a11y.brandHome}>
           <img
-            src="images/lambking-stories-logo-v2-256.webp"
+            src="images/lambking-stories-logo-v2-256.webp?v=2"
             alt="LambKing Stories"
             className="h-[92px] w-[92px] object-contain transition-transform hover:scale-[1.04] sm:h-[104px] sm:w-[104px]"
           />
