@@ -4,7 +4,6 @@ import Hero from '@/sections/Hero'
 import UspBand from '@/sections/UspBand'
 import Mascot from '@/sections/Mascot'
 import TryIt from '@/sections/TryIt'
-import Groups from '@/sections/Groups'
 import MobileCta from '@/components/MobileCta'
 import FlipBookDialog from '@/components/FlipBookDialog'
 import Family from '@/sections/Family'
@@ -49,7 +48,6 @@ export default function App() {
         <UspBand />
         <Books />
         {!SITE.hiddenSections.includes('tryit') && <TryIt />}
-        {!SITE.hiddenSections.includes('groups') && <Groups />}
         <Family />
         <Donate />
         <Mascot />

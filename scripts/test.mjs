@@ -364,7 +364,7 @@ test('Startseiten-Medien kommen aus den Seitendaten, sind vollständig vorhanden
   const carousel = readFileSync(join(SRC, 'components/PhoneCarousel.tsx'), 'utf-8')
   const server = readFileSync(join(ROOT, 'admin/admin_server.py'), 'utf-8')
   const adminUi = readFileSync(join(ROOT, 'admin/index.html'), 'utf-8')
-  for (const id of ['tryit', 'groups', 'app', 'supportedWorks']) assert(app.includes(`hiddenSections.includes('${id}')`), `Bereich „${id}" lässt sich nicht ausblenden`)
+  for (const id of ['tryit', 'app', 'supportedWorks']) assert(app.includes(`hiddenSections.includes('${id}')`), `Bereich „${id}" lässt sich nicht ausblenden`)
   assert(family.includes('SITE.kidsVideos') && family.includes("hiddenSections.includes('kids')") && family.includes("hiddenSections.includes('freebie')"), 'Kinder-Videos/Gratis-Ausmalbild kommen nicht aus den Seitendaten')
   assert(freebie.includes('SITE.freebie.pdf') && freebie.includes('SITE.freebie.preview'), 'Gratis-Ausmalbild nutzt feste Dateinamen')
   assert(carousel.includes('SITE.appScreens'), 'App-Screenshots kommen nicht aus den Seitendaten')
@@ -421,10 +421,11 @@ test('Alle Malbücher zeigen einheitlich Umfang (mindestens 70 Seiten), Format u
   const coloringBooks = booksJson.books.filter((book) => book.category === 'malbuecher')
   assert(coloringBooks.length > 0, 'Keine Malbücher zum Prüfen gefunden')
   for (const book of coloringBooks) {
-    // Reihe „Mit Buntstift durch die Bibel“: 5–8 Jahre, Band 1 hat 74, Band 2 hat 82 Seiten (Amazon)
+    // Reihe „Mit Buntstift durch die Bibel“: 5–8 Jahre, Seitenzahlen laut Amazon
     if (book.id.startsWith('buntstift-')) {
       assert(book.age === '5–8 Jahre', `${book.title}: Altersangabe passt nicht zum Cover`)
-      assert(book.detail.includes(book.id === 'buntstift-01' ? '74 Seiten' : '82 Seiten'), `${book.title}: Seitenzahl passt nicht zur Ausgabe`)
+      const pagesOf = { 'buntstift-01': '74', 'buntstift-02': '82', 'buntstift-03': '70', 'buntstift-05': '70', 'buntstift-09': '90' }
+      assert(book.detail.includes(`${pagesOf[book.id]} Seiten`), `${book.title}: Seitenzahl passt nicht zur Ausgabe`)
       continue
     }
     const coverAge = ['bibelgeschichten-zum-ausmalen-4', 'bibelgeschichten-zum-ausmalen-5'].includes(book.id) ? 'Ab 5 Jahren' : 'Ab 6 Jahren'
