@@ -425,7 +425,7 @@ test('Alle Malbücher zeigen einheitlich Umfang (mindestens 70 Seiten), Format u
     // Reihe „Mit Buntstift durch die Bibel“: 5–8 Jahre, Seitenzahlen laut Amazon
     if (book.id.startsWith('buntstift-')) {
       assert(book.age === '5–8 Jahre', `${book.title}: Altersangabe passt nicht zum Cover`)
-      const pagesOf = { 'buntstift-01': '74', 'buntstift-02': '82', 'buntstift-03': '70', 'buntstift-05': '70', 'buntstift-09': '90' }
+      const pagesOf = { 'buntstift-01': '74', 'buntstift-02': '82', 'buntstift-03': '70', 'buntstift-05': '70', 'buntstift-08': '72', 'buntstift-09': '90' }
       assert(book.detail.includes(`${pagesOf[book.id]} Seiten`), `${book.title}: Seitenzahl passt nicht zur Ausgabe`)
       continue
     }

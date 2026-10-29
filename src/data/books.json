@@ -1168,6 +1168,40 @@
       "coverFront": "images/front/cover-buntstift-band05.webp"
     },
     {
+      "id": "buntstift-08",
+      "title": "Mit Buntstift durch die Bibel: Jesus wird geboren – Das Wunder von Bethlehem",
+      "series": "Mit Buntstift durch die Bibel · Band 8",
+      "category": "malbuecher",
+      "age": "5–8 Jahre",
+      "detail": "72 Seiten · Großformat",
+      "cover": "images/cover-buntstift-band08.jpg",
+      "description": "Ein Engel besucht Maria und kündigt ihr die Geburt Jesu an. Maria und Josef reisen nach Bethlehem, wo Jesus zur Welt kommt. Hirten hören die frohe Botschaft, und Weise folgen dem Stern. Die Geschichte begleitet die Familie bis zu ihrer Rückkehr nach Nazareth.",
+      "lifestyleImages": [],
+      "highlights": [
+        "35 kurze Geschichten mit Bibelstellen",
+        "35 passende Schwarz-Weiß-Ausmalbilder",
+        "Geschichte links, Ausmalbild rechts"
+      ],
+      "samples": [
+        "images/buntstift-band08-seite-3.jpg",
+        "images/buntstift-band08-seite-13.jpg",
+        "images/buntstift-band08-seite-27.jpg",
+        "images/buntstift-band08-seite-41.jpg",
+        "images/buntstift-band08-seite-55.jpg",
+        "images/buntstift-band08-seite-69.jpg"
+      ],
+      "amazon": "https://www.amazon.de/dp/B0HPMG85DB",
+      "releaseDate": "2026-10-28",
+      "lang": "de",
+      "editions": [
+        {
+          "language": "de",
+          "amazon": "https://www.amazon.de/dp/B0HPMG85DB"
+        }
+      ],
+      "coverFront": "images/front/cover-buntstift-band08.webp"
+    },
+    {
       "id": "buntstift-09",
       "title": "Mit Buntstift durch die Bibel: Mit Jesus unterwegs – Wunder und Begegnungen",
       "series": "Mit Buntstift durch die Bibel · Band 9",
