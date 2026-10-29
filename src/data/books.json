@@ -623,7 +623,7 @@
         },
         {
           "language": "en",
-          "amazon": "",
+          "amazon": "https://www.amazon.de/dp/B0HKR4QXP4",
           "cover": "images/cover-band01-en-spread.png",
           "coverSpread": true,
           "title": "Bible Stories to Color: Volume 1 - The Creation - God Makes the World",
@@ -679,7 +679,7 @@
       "series": "Bibelgeschichten zum Ausmalen · Band 2",
       "category": "malbuecher",
       "age": "Ab 5 Jahren",
-      "detail": "70 Seiten · Großformat",
+      "detail": "48 Seiten · Großformat",
       "description": "Gott gibt Noah einen ungewöhnlichen Auftrag: Er soll eine Arche bauen und seine Familie und die Tiere hineinbringen. Als die Flut kommt, sind sie darin sicher. Nach der Flut zeigt Gott mit dem Regenbogen, dass er sein Versprechen nicht vergisst.",
       "lifestyleImages": [
         "images/lifestyle/noah-de.png"
@@ -717,7 +717,7 @@
       "series": "Bibelgeschichten zum Ausmalen · Band 3",
       "category": "malbuecher",
       "age": "Ab 5 Jahren",
-      "detail": "70 Seiten · Großformat",
+      "detail": "60 Seiten · Großformat",
       "description": "Gott ruft Abraham auf, seine Heimat zu verlassen und in ein unbekanntes Land zu ziehen. Abraham vertraut ihm und macht sich auf den Weg. Unter dem Sternenhimmel verspricht Gott ihm eine große Familie und zeigt: Er begleitet Abraham auch dann, wenn der Weg noch ungewiss ist.",
       "lifestyleImages": [
         "images/lifestyle/abraham-de.png"
@@ -781,7 +781,7 @@
         },
         {
           "language": "en",
-          "amazon": "",
+          "amazon": "https://www.amazon.de/dp/B0HLRPT6JF",
           "cover": "images/cover-david-en-spread.jpg",
           "coverSpread": true,
           "title": "David and Goliath – Courageous with God",
@@ -805,7 +805,7 @@
         },
         {
           "language": "es",
-          "amazon": "",
+          "amazon": "https://www.amazon.de/dp/B0HKJB9X6R",
           "cover": "images/cover-david-es-spread.jpg",
           "coverSpread": true,
           "title": "David y Goliat – Valiente con Dios",
@@ -977,7 +977,7 @@
         },
         {
           "language": "en",
-          "amazon": "",
+          "amazon": "https://www.amazon.de/dp/B0HL83X2Q8",
           "cover": "images/cover-band10-en-spread.jpg",
           "coverSpread": true,
           "samples": [
@@ -1002,7 +1002,7 @@
         },
         {
           "language": "es",
-          "amazon": "",
+          "amazon": "https://www.amazon.de/dp/B0HL878MGJ",
           "cover": "images/cover-band10-es-spread.jpg",
           "coverSpread": true,
           "samples": [

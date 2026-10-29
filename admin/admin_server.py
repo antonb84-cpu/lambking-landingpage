@@ -570,8 +570,8 @@ def parse_amazon(html: str) -> dict:
         d["cover_url"] = cleaned_urls[0]
         d["image_urls"] = cleaned_urls[1:MAX_SAMPLE_IMAGES + 1]
 
-    haystack = f"{d.get('title', '')} {d.get('description', '')}".lower()
-    if "malbuch" in haystack or "ausmal" in haystack or "coloring book" in haystack:
+    haystack = f"{d.get('title', '')} {d.get('amazonDescription', '')}".lower()
+    if any(term in haystack for term in ("malbuch", "ausmal", "buntstift", "coloring book", "to color", "libro para colorear", "colorear")):
         d["category"] = "malbuecher"
     elif "comic" in haystack:
         d["category"] = "komics"

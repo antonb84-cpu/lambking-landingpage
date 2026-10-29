@@ -431,7 +431,12 @@ test('Alle Malbücher zeigen einheitlich Umfang (mindestens 70 Seiten), Format u
     }
     const coverAge = ['bibelgeschichten-zum-ausmalen-4', 'bibelgeschichten-zum-ausmalen-5'].includes(book.id) ? 'Ab 5 Jahren' : 'Ab 6 Jahren'
     assert(book.age === coverAge, `${book.title}: Altersangabe passt nicht zum aktuellen Cover`)
-    assert(book.detail.includes(book.id === 'bibelgeschichten-zum-ausmalen-2' ? '80 Seiten' : '70 Seiten'), `${book.title}: Seitenzahl passt nicht zur Ausgabe`)
+    const pageCounts = {
+      'bibelgeschichten-zum-ausmalen-2': '80 Seiten',
+      'bibelgeschichten-zum-ausmalen-4': '48 Seiten',
+      'bibelgeschichten-zum-ausmalen-5': '60 Seiten',
+    }
+    assert(book.detail.includes(pageCounts[book.id] ?? '70 Seiten'), `${book.title}: Seitenzahl passt nicht zur Ausgabe`)
   }
   for (const lang of ['de', 'en']) {
     const texts = defaults[lang].books

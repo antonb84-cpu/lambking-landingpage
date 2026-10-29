@@ -2,10 +2,19 @@
 
 import unittest
 
-from admin.admin_server import split_amazon_description
+from admin.admin_server import parse_amazon, split_amazon_description
 
 
 class AmazonDescriptionTests(unittest.TestCase):
+    def test_multilingual_coloring_books_keep_their_category(self):
+        for title in (
+            "Bible Stories to Color: David and Goliath",
+            "Historias bíblicas para colorear: David y Goliat",
+            "Mit Buntstift durch die Bibel: Die Schöpfung",
+        ):
+            html = f'<span id="productTitle">{title}</span>'
+            self.assertEqual(parse_amazon(html)["category"], "malbuecher")
+
     def test_story_and_product_facts_are_separate(self):
         story, facts = split_amazon_description(
             "David hütet die Schafe seines Vaters. Er vertraut Gott und tritt Goliath entgegen. "
