@@ -61,7 +61,7 @@ export default function PhoneCarousel() {
     >
       <div
         ref={trackRef}
-        className="flex snap-x snap-mandatory gap-5 overflow-x-auto px-[calc(50%-110px)] pb-6 pt-2 [--w:220px] [scrollbar-width:none] sm:gap-7 sm:px-[calc(50%-130px)] sm:[--w:260px] [&::-webkit-scrollbar]:hidden"
+        className="flex snap-x snap-mandatory gap-4 overflow-x-auto px-[calc(50%-80px)] pb-4 pt-1 [--w:160px] [scrollbar-width:none] sm:gap-5 sm:px-[calc(50%-95px)] sm:[--w:190px] [&::-webkit-scrollbar]:hidden"
         style={{ WebkitOverflowScrolling: 'touch' }}
       >
         {APP_SCREENS.map((s, i) => (
@@ -69,15 +69,15 @@ export default function PhoneCarousel() {
             key={s.src}
             data-slide
             onClick={() => i !== active && goTo(i)}
-            className={`w-[var(--w)] shrink-0 snap-center transition-all duration-300 ${i === active ? 'scale-100 opacity-100' : 'scale-[0.88] cursor-pointer opacity-70'}`}
+            className={`w-[var(--w)] shrink-0 snap-center transition-all duration-300 ${i === active ? 'scale-100 opacity-100' : 'scale-[0.9] cursor-pointer opacity-60'}`}
           >
-            <div className="rounded-[2.2rem] border-[7px] border-[#16213f] bg-[#16213f] shadow-2xl shadow-primary/25">
+            <div className="rounded-[1.8rem] border-[5px] border-[#16213f] bg-[#16213f] shadow-lg shadow-primary/15">
               <img
                 src={s.src}
                 alt={`${s[lang === 'en' ? 'en' : 'de'].title}`}
                 loading="lazy"
                 draggable={false}
-                className="aspect-[600/1162] w-full rounded-[1.7rem] object-cover"
+                className="aspect-[600/1162] w-full rounded-[1.4rem] object-cover"
               />
             </div>
           </figure>
@@ -89,25 +89,25 @@ export default function PhoneCarousel() {
         onClick={() => goTo(active - 1)}
         disabled={active === 0}
         aria-label={label.prev}
-        className="absolute left-1 top-[42%] hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-primary/20 bg-card text-primary shadow-md transition hover:border-primary/50 disabled:opacity-30 md:flex"
+        className="absolute left-1 top-[42%] hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-primary/20 bg-card text-primary shadow-sm transition hover:border-primary/50 disabled:opacity-30 md:flex"
       >
-        <ChevronLeft className="h-5 w-5" aria-hidden />
+        <ChevronLeft className="h-4 w-4" aria-hidden />
       </button>
       <button
         type="button"
         onClick={() => goTo(active + 1)}
         disabled={active === L - 1}
         aria-label={label.next}
-        className="absolute right-1 top-[42%] hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-primary/20 bg-card text-primary shadow-md transition hover:border-primary/50 disabled:opacity-30 md:flex"
+        className="absolute right-1 top-[42%] hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-primary/20 bg-card text-primary shadow-sm transition hover:border-primary/50 disabled:opacity-30 md:flex"
       >
-        <ChevronRight className="h-5 w-5" aria-hidden />
+        <ChevronRight className="h-4 w-4" aria-hidden />
       </button>
 
       <div className="mx-auto mt-1 max-w-sm px-4 text-center" aria-live="polite">
-        <p className="font-display text-lg font-semibold">{copy.title}</p>
-        <p className="mt-1 min-h-[2.75rem] text-sm leading-relaxed text-muted-foreground">{copy.text}</p>
+        <p className="font-display text-base font-semibold">{copy.title}</p>
+        <p className="mt-0.5 min-h-[2.5rem] text-[13px] leading-relaxed text-muted-foreground">{copy.text}</p>
       </div>
-      <div className="mt-3 flex items-center justify-center gap-1">
+      <div className="mt-1 flex items-center justify-center gap-0.5">
         {APP_SCREENS.map((s, i) => (
           <button
             key={s.src}
@@ -117,7 +117,7 @@ export default function PhoneCarousel() {
             aria-current={i === active}
             className="flex h-8 w-6 items-center justify-center"
           >
-            <span className={`block h-2.5 rounded-full transition-all ${i === active ? 'w-6 bg-primary' : 'w-2.5 bg-primary/25'}`} />
+            <span className={`block h-2 rounded-full transition-all ${i === active ? 'w-5 bg-primary' : 'w-2 bg-primary/25'}`} />
           </button>
         ))}
       </div>
