@@ -13,6 +13,7 @@ import Donate from '@/sections/Donate'
 import SupportedWorks from '@/sections/SupportedWorks'
 import CreatorPartnerTeaser from '@/sections/CreatorPartnerTeaser'
 import Faq from '@/sections/Faq'
+import Contact from '@/sections/Contact'
 import Footer from '@/sections/Footer'
 import { trackPageView } from '@/data/analytics'
 import CreatorPartnerPage from '@/pages/CreatorPartnerPage'
@@ -55,6 +56,7 @@ export default function App() {
         {!SITE.hiddenSections.includes('supportedWorks') && <SupportedWorks />}
         {SITE.creatorPartnerEnabled ? <CreatorPartnerTeaser /> : null}
         <Faq />
+        <Contact />
       </main>
       <Footer />
       <MobileCta />

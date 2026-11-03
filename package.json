@@ -9,7 +9,7 @@
     "prebuild": "node scripts/gen-legal.mjs",
     "build": "tsc -b && vite build && node scripts/postbuild.mjs",
     "lint": "eslint .",
-    "test": "node scripts/test.mjs && node scripts/test-analytics.mjs",
+    "test": "node scripts/test.mjs && node scripts/test-analytics.mjs && node --test contact-worker/test/contact.test.mjs",
     "test:e2e": "node scripts/e2e-nav.mjs",
     "test:seo": "node scripts/test-seo.mjs",
     "test:network": "node scripts/check-network-clean.mjs",

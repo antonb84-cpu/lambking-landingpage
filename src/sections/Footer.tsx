@@ -8,7 +8,33 @@ import { textsFor } from '@/data/texts'
 import { OPEN_LEGAL_EVENT, type LegalKind } from '@/data/openLegal'
 import { creatorPartnerHref, homeHref } from '@/data/routes'
 
-function LegalText({ text }: { text: string }) {
+const URL_PATTERN = /(https?:\/\/[^\s<>]*[^\s<>.,;:!?)])/g
+const CONTACT_FORM_URL = /^https:\/\/(?:www\.)?lambking\.store\/#kontakt$/
+
+// Web-Adressen im Text werden zu Links; der Link zum Kontaktformular schließt das Fenster und springt zum Formular
+function Linked({ text, onContact }: { text: string; onContact: () => void }) {
+  return (
+    <>
+      {text.split(URL_PATTERN).map((part, index) => {
+        if (index % 2 === 0) return part
+        const internal = CONTACT_FORM_URL.test(part)
+        return (
+          <a
+            key={index}
+            href={internal ? '#kontakt' : part}
+            onClick={internal ? (e) => { e.preventDefault(); onContact() } : undefined}
+            {...(internal ? {} : { target: '_blank', rel: 'noopener noreferrer' })}
+            className="font-bold text-primary underline underline-offset-2"
+          >
+            {part}
+          </a>
+        )
+      })}
+    </>
+  )
+}
+
+function LegalText({ text, onContact }: { text: string; onContact: () => void }) {
   // Leerzeile = neuer Absatz; eine Zeile, die wie eine Überschrift aussieht, wird fett
   const blocks = text.split(/\n\s*\n/)
   return (
@@ -22,10 +48,10 @@ function LegalText({ text }: { text: string }) {
             {looksLikeHeading ? (
               <>
                 <p className="font-bold text-foreground">{first}</p>
-                <p className="mt-1 whitespace-pre-line">{rest.join('\n')}</p>
+                <p className="mt-1 whitespace-pre-line"><Linked text={rest.join('\n')} onContact={onContact} /></p>
               </>
             ) : (
-              <p className="whitespace-pre-line">{b}</p>
+              <p className="whitespace-pre-line"><Linked text={b} onContact={onContact} /></p>
             )}
           </div>
         )
@@ -39,6 +65,12 @@ export default function Footer() {
   const [legal, setLegal] = useState<LegalKind | null>(null)
   const [contactOpen, setContactOpen] = useState(false)
   const legalText = legal === 'impressum' ? SITE.impressum : SITE.datenschutz
+  const hasForm = !!SITE.contactFormUrl
+
+  const goToContactForm = () => {
+    setLegal(null)
+    window.setTimeout(() => document.getElementById('kontakt')?.scrollIntoView({ behavior: 'smooth' }), 200)
+  }
 
   // Auch aus dem mobilen Menü heraus öffnen
   useEffect(() => {
@@ -52,6 +84,7 @@ export default function Footer() {
     ...(SITE.hiddenSections.includes('app') ? [] : [{ label: t.nav.app, href: homeHref('#app') }]),
     { label: t.nav.about, href: homeHref('#ueber') },
     { label: t.nav.faq, href: homeHref('#faq') },
+    ...(hasForm ? [{ label: t.nav.contact, href: homeHref('#kontakt') }] : []),
     ...(SITE.creatorPartnerEnabled
       ? [{ label: t.creatorPartner.navLabel, href: creatorPartnerHref() }]
       : []),
@@ -82,15 +115,25 @@ export default function Footer() {
         <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-primary-foreground/15 pt-6 text-xs text-primary-foreground/60 sm:flex-row">
           <p>© {new Date().getFullYear()} LambKing Stories. {t.footer.rights}</p>
           <div className="flex flex-wrap items-center justify-center gap-5">
-            {SITE.contactEmail && (
-              <button
-                type="button"
-                onClick={() => setContactOpen(true)}
+            {hasForm ? (
+              <a
+                href={homeHref('#kontakt')}
                 className="inline-flex items-center gap-2 rounded-full border-2 border-primary-foreground/25 px-4 py-1.5 font-bold text-primary-foreground transition-colors hover:border-primary-foreground/50 hover:bg-primary-foreground/10"
               >
                 <Mail className="h-3.5 w-3.5" aria-hidden />
                 {t.contact.write}
-              </button>
+              </a>
+            ) : (
+              SITE.contactEmail && (
+                <button
+                  type="button"
+                  onClick={() => setContactOpen(true)}
+                  className="inline-flex items-center gap-2 rounded-full border-2 border-primary-foreground/25 px-4 py-1.5 font-bold text-primary-foreground transition-colors hover:border-primary-foreground/50 hover:bg-primary-foreground/10"
+                >
+                  <Mail className="h-3.5 w-3.5" aria-hidden />
+                  {t.contact.write}
+                </button>
+              )
             )}
             {/* Öffnen ein Fenster auf derselben Seite – kein neuer Tab */}
             <button type="button" onClick={() => setLegal('impressum')} className="inline-flex min-h-11 items-center px-1 hover:text-primary-foreground">
@@ -132,7 +175,7 @@ export default function Footer() {
             </DialogDescription>
           </DialogHeader>
           {legalText ? (
-            <LegalText text={legalText} />
+            <LegalText text={legalText} onContact={goToContactForm} />
           ) : (
             <p className="text-sm text-muted-foreground">{t.footer.legalEmpty}</p>
           )}

@@ -20,3 +20,7 @@ public/images/sample-amazon-*.jpg
 # Entwürfe und Arbeitsmaterial (nicht veröffentlichen)
 /_Entwuerfe-und-Material/
 admin/backups/
+contact-worker/.dev.vars
+contact-worker/.wrangler/
+contact-worker/.setup-secrets.json
+contact-worker/wrangler.toml

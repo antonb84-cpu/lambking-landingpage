@@ -1,0 +1,18 @@
+{
+  "name": "lambking-contact-form",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "setup": "node setup.mjs",
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev",
+    "test": "node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "worker-mailer": "1.2.1"
+  },
+  "devDependencies": {
+    "wrangler": "4.131.0"
+  }
+}

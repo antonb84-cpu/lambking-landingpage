@@ -12,6 +12,13 @@ const site = data.site
 const esc = (s) =>
   String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 
+// Maskiert den Text und macht Web-Adressen zu Links (Adressen dieser Seite öffnen im selben Tab)
+const linkify = (s) =>
+  esc(s).replace(/https?:\/\/[^\s<>]*[^\s<>.,;:!?)]/g, (url) => {
+    const own = /^https:\/\/(?:www\.)?lambking\.store\//.test(url)
+    return `<a href="${url}"${own ? '' : ' target="_blank" rel="noopener noreferrer"'}>${url}</a>`
+  })
+
 export function legalHtml(title, text, assetPrefix = '', canonical = '') {
   const blocks = String(text)
     .split(/\n\s*\n/)
@@ -23,9 +30,9 @@ export function legalHtml(title, text, assetPrefix = '', canonical = '') {
       }
       const isHeading = rest.length > 0 && first.length < 70 && !first.endsWith('.')
       if (isHeading) {
-        return `<h2>${esc(first)}</h2><p>${esc(rest.join('\n')).replace(/\n/g, '<br>')}</p>`
+        return `<h2>${esc(first)}</h2><p>${linkify(rest.join('\n')).replace(/\n/g, '<br>')}</p>`
       }
-      return `<p>${esc(b).replace(/\n/g, '<br>')}</p>`
+      return `<p>${linkify(b).replace(/\n/g, '<br>')}</p>`
     })
     .join('\n')
 
@@ -52,6 +59,7 @@ ${canonical ? `<link rel="canonical" href="${esc(canonical)}">` : ''}
   h1 { font-family: 'Fraunces', Georgia, serif; font-size: clamp(26px, 7vw, 34px); overflow-wrap: anywhere; margin: 0 0 24px; }
   h2 { font-family: 'Fraunces', Georgia, serif; font-size: 20px; margin: 28px 0 6px; }
   p { line-height: 1.7; color: #45506B; margin: 0 0 14px; }
+  p a { color: #1F3461; font-weight: 700; overflow-wrap: anywhere; }
   @media (max-width: 400px) { header { padding: 14px 16px; gap: 8px; } header img { height: 54px; width: 54px; } header a { font-size: 14px; } }
 </style>
 </head>

@@ -145,6 +145,34 @@ try {
     if (!ok) fehler++
   }
 
+  // Kontaktformular: Link in der Fußzeile, Pflichtfelder, unsichtbarer Honeypot, kein Versand bei leerem Formular
+  {
+    const formRequests = []
+    const onMessage = (ev) => {
+      const msg = JSON.parse(ev.data)
+      if (msg.method === 'Network.requestWillBeSent' && String(msg.params.request.url).includes('/contact')) formRequests.push(msg.params.request.url)
+    }
+    ws.addEventListener('message', onMessage)
+    await send('Page.navigate', { url: `http://127.0.0.1:${HTTP_PORT}/` })
+    await new Promise((r) => setTimeout(r, 2500))
+    const before = await targetCount()
+    await evalJs(`[...document.querySelectorAll('footer a')].find(a => a.textContent.trim() === 'Schreib uns')?.click()`)
+    await new Promise((r) => setTimeout(r, 1500))
+    const nav = JSON.parse(await evalJs(`JSON.stringify({hash: location.hash, top: Math.round(document.getElementById('kontakt')?.getBoundingClientRect().top ?? -1)})`) || '{}')
+    const after = await targetCount()
+    const fields = await evalJs(`['name','email','message','consent','website'].every(n => document.querySelector('#kontakt [name="' + n + '"]'))`)
+    const honeypot = JSON.parse(await evalJs(`(() => { const i = document.querySelector('#kontakt input[name="website"]'); return JSON.stringify({right: i.getBoundingClientRect().right, tab: i.tabIndex}) })()`) || '{}')
+    await evalJs(`document.querySelector('#kontakt button[type="submit"]')?.click()`)
+    await new Promise((r) => setTimeout(r, 600))
+    const errorCount = await evalJs(`document.querySelectorAll('#kontakt [id^="contact-error-"]').length`)
+    const privacyLink = await evalJs(`document.querySelector('#kontakt a[href="datenschutz/"]')?.getAttribute('target')`)
+    ws.removeEventListener('message', onMessage)
+    const ok = nav.hash === '#kontakt' && nav.top >= 0 && nav.top < 400 && after === before && fields && honeypot.right < 0 && honeypot.tab === -1
+      && errorCount === 4 && formRequests.length === 0 && privacyLink === '_blank'
+    console.log(`${ok ? '✓' : '✗'} Kontaktformular: Fußzeilen-Link, Pflichtfelder, Honeypot unsichtbar, leer = kein Versand${ok ? '' : ` (Hash ${nav.hash}, oben ${nav.top}, Felder ${fields}, Honeypot ${JSON.stringify(honeypot)}, Fehler ${errorCount}, Anfragen ${formRequests.length}, Link ${privacyLink})`}`)
+    if (!ok) fehler++
+  }
+
   // Buchfenster: Mengenrabatt öffnet eine eigene, zweisprachige Information
   // mit der vereinbarten Staffel und direktem E-Mail-Kontakt.
   {

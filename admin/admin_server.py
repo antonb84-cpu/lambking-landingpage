@@ -156,6 +156,8 @@ def render_books_ts(state: dict):
     out.append(f"  showRatings: {'true' if s.get('showRatings', True) else 'false'},")
     out.append("  // Öffentliche Adresse des anonymen Zähldienstes; niemals ein geheimes Token.")
     out.append(f"  analyticsUrl: {ts_str(s.get('analyticsUrl', ''))},")
+    out.append("  // Öffentliche Adresse des Kontaktformular-Dienstes (contact-worker); leer = Formular ausgeblendet.")
+    out.append(f"  contactFormUrl: {ts_str(s.get('contactFormUrl', ''))},")
     out.append(f"  frontendTexts: {json.dumps(s.get('frontendTexts', {}), ensure_ascii=False)},")
     organizations = s.get('supportedOrganizations', [])[:MAX_SUPPORTED_ORGANIZATIONS]
     out.append(f"  supportedOrganizations: {json.dumps(organizations, ensure_ascii=False)},")

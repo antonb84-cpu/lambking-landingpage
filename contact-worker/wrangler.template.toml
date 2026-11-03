@@ -1,0 +1,25 @@
+name = "lambking-contact"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+compatibility_flags = ["nodejs_compat"]
+preview_urls = false
+
+[vars]
+ALLOWED_ORIGINS = "https://lambking.store,https://www.lambking.store,https://antonb84-cpu.github.io,http://localhost:8123,http://localhost:3000"
+MAIL_TO = "hello@lambking.store"
+MAIL_FROM = "hello@lambking.store"
+SMTP_HOST = "mail.spacemail.com"
+SMTP_PORT = "465"
+SMTP_USER = "hello@lambking.store"
+
+# Nur für das Rate Limiting: Zähler je IP-Hash, läuft nach höchstens einer Stunde von selbst ab.
+[[kv_namespaces]]
+binding = "RATE"
+id = "__KV_ID__"
+
+[observability]
+enabled = false
+
+[observability.logs]
+enabled = false
+invocation_logs = false

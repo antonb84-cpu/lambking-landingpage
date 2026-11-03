@@ -295,17 +295,50 @@ test('App-Datenschutz ist enthalten und unter der Store-URL erreichbar', () => {
   const previewServer = readFileSync(join(ROOT, 'admin/admin_server.py'), 'utf-8')
   assert(ds.includes('Nutzung der App „LambKing Stories“'), 'App-Abschnitt fehlt')
   assert(ds.includes('Render Services') && ds.includes('MongoDB Atlas'), 'App-Hosting fehlt')
-  const appSection = ds.split('8. Nutzung der App „LambKing Stories“')[1]?.split('9. Ihre Rechte')[0] || ''
+  const appSection = ds.split('9. Nutzung der App „LambKing Stories“')[1]?.split('10. Ihre Rechte')[0] || ''
   assert(!appSection.includes('zufällige Kennung') && !appSection.includes('pro Kennung') && !appSection.includes('13 Monaten'), 'Die entfernte Gerätekennung wird noch im App-Abschnitt beschrieben')
   assert(appSection.includes('Anonyme Buchdetailseiten-Aufrufe') && appSection.includes('gemeinsame Tagessummen'), 'Anonyme tägliche Buchdetailseiten-Zählung fehlt')
   assert(appSection.includes('keine persönlichen Informationen oder Nutzerkennungen') && appSection.includes('keine Wiedererkennung'), 'Datensparsame App-Zählung ist nicht beschrieben')
   assert(appSection.includes('Freiwillige einmalige Apple-In-App-Trinkgelder') && appSection.includes('Zahlungsabwicklung erfolgt über Apple'), 'Einmalige freiwillige Apple-Trinkgelder fehlen im App-Datenschutz')
   assert(!appSection.includes('keine In-App-Käufe'), 'Veraltete Aussage über fehlende In-App-Käufe')
   assert(!appSection.includes('Abfrage für Erwachsene'), 'Die entfernte Elternabfrage wird noch beschrieben')
-  assert(ds.includes('9. Ihre Rechte'), 'Rechte-Abschnitt wurde nicht korrekt verschoben')
+  assert(ds.includes('10. Ihre Rechte'), 'Rechte-Abschnitt wurde nicht korrekt verschoben')
   assert(legalGenerator.includes("join(privacyDir, 'index.html')"), 'Die Route /datenschutz/ wird nicht erzeugt')
   assert(postbuild.includes("'datenschutz/'"), 'Die Store-URL fehlt in der Sitemap')
   assert(previewServer.includes('"datenschutz/index.html"'), 'Die lokale Vorschau aktualisiert die Datenschutzroute nicht')
+})
+
+test('Kontaktformular: Felder, Honeypot, Einwilligung, eigener Dienst ohne Captcha-Anbieter', () => {
+  const form = readFileSync(join(SRC, 'sections/Contact.tsx'), 'utf-8')
+  const texts = JSON.parse(readFileSync(join(SRC, 'data/texts.defaults.json'), 'utf-8'))
+  for (const field of ['name="name"', 'name="email"', 'name="message"', 'name="consent"', 'name="website"']) {
+    assert(form.includes(field), `Formularfeld fehlt: ${field}`)
+  }
+  assert(form.includes('tabIndex={-1}') && form.includes('aria-hidden="true"') && form.includes("left: '-10000px'"), 'Honeypot ist nicht unsichtbar und unerreichbar')
+  assert(form.includes('href="datenschutz/"'), 'Link zur Datenschutzerklärung an der Einwilligung fehlt')
+  assert(form.includes('SITE.contactFormUrl') && form.includes("method: 'POST'"), 'Das Formular sendet nicht an den eigenen Dienst')
+  assert(!/recaptcha|hcaptcha|turnstile|google\.com/i.test(form), 'Externer Captcha-Dienst im Formular')
+  assert(/^https:\/\/[a-z0-9.-]+\.workers\.dev\/contact$/.test(booksJson.site.contactFormUrl), 'Adresse des Formular-Dienstes fehlt oder ist ungültig')
+  const de = texts.de.contactForm
+  assert(de.success === 'Danke für deine Nachricht! Ich melde mich bald.', 'Bestätigungstext stimmt nicht')
+  assert(de.consentBefore + de.consentLink + de.consentAfter === 'Ich habe die Datenschutzerklärung gelesen und bin einverstanden.', 'Text der Pflicht-Checkbox stimmt nicht')
+  assert(texts.en.contactForm.success && texts.en.contactForm.consentLink, 'Englische Formulartexte fehlen')
+})
+
+test('Datenschutz und Impressum zum Kontaktformular', () => {
+  const ds = booksJson.site.datenschutz || ''
+  const section = ds.split('8. Kontaktformular')[1]?.split('9. Nutzung der App')[0] || ''
+  for (const part of ['Name', 'E-Mail-Adresse', 'Inhalt Ihrer Nachricht', 'per E-Mail an hello@lambking.store', 'nicht in einer Datenbank', 'Rate Limiting', 'höchstens eine Stunde', 'automatisch gelöscht', 'Art. 6 Abs. 1 lit. a DSGVO', 'Art. 6 Abs. 1 lit. f DSGVO', 'kein Google reCAPTCHA']) {
+    assert(section.includes(part), `Datenschutz Kontaktformular: „${part}" fehlt`)
+  }
+  assert(ds.includes('c/o Vera Bike, Leopoldstraße 5B, 76133 Karlsruhe') && !ds.includes('Allmendstr'), 'Verantwortlicher in der Datenschutzerklärung hat nicht die Adresse aus dem Impressum')
+  const imp = booksJson.site.impressum || ''
+  for (const part of ['Angaben gemäß § 5 DDG', 'Anton Bernt', 'c/o Vera Bike', 'Leopoldstraße 5B', '76133 Karlsruhe', 'E-Mail: hello@lambking.store', 'Kontaktformular: https://lambking.store/#kontakt', 'Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV', 'Anschrift wie oben']) {
+    assert(imp.includes(part), `Impressum: „${part}" fehlt`)
+  }
+  assert(!/tel|fax|\+49|\b0\d{3,}/i.test(imp), 'Im Impressum steht eine Telefonnummer')
+  const html = readFileSync(join(ROOT, 'public/impressum.html'), 'utf-8')
+  assert(html.includes('<a href="https://lambking.store/#kontakt">'), 'Impressumsseite verlinkt das Kontaktformular nicht')
 })
 
 test('Kontakt, Amazon-Bewertung und App-Store-Einstellung sind konfigurierbar', () => {

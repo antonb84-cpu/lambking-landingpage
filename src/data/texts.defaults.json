@@ -7,7 +7,8 @@
       "about": "Über das Projekt",
       "faq": "FAQ",
       "support": "Unterstützen",
-      "languages": "Sprachen"
+      "languages": "Sprachen",
+      "contact": "Kontakt"
     },
     "contact": {
       "write": "Schreib uns",
@@ -475,6 +476,28 @@
       "cta": "Mengenrabatt anfragen",
       "freebie": "Gratis-Ausmalbild ansehen",
       "tiersTitle": "Ihr spart"
+    },
+    "contactForm": {
+      "eyebrow": "Kontakt",
+      "title": "Schreib mir eine Nachricht",
+      "intro": "Du hast eine Frage zu den Büchern, zur App oder zu einer Zusammenarbeit? Schreib mir hier direkt – ich melde mich bald.",
+      "nameLabel": "Name",
+      "emailLabel": "E-Mail-Adresse",
+      "messageLabel": "Nachricht",
+      "consentBefore": "Ich habe die ",
+      "consentLink": "Datenschutzerklärung",
+      "consentAfter": " gelesen und bin einverstanden.",
+      "submit": "Nachricht senden",
+      "sending": "Wird gesendet …",
+      "success": "Danke für deine Nachricht! Ich melde mich bald.",
+      "note": "Deine Angaben werden nur per E-Mail an mich weitergeleitet und nicht dauerhaft gespeichert.",
+      "emailAlternative": "Lieber direkt per E-Mail?",
+      "errorName": "Bitte gib deinen Namen ein.",
+      "errorEmail": "Bitte gib eine gültige E-Mail-Adresse ein.",
+      "errorMessage": "Bitte schreibe mindestens 10 Zeichen.",
+      "errorConsent": "Bitte bestätige die Datenschutzerklärung.",
+      "errorRate": "Du hast gerade mehrere Nachrichten gesendet. Bitte versuche es später noch einmal.",
+      "errorSend": "Das Senden hat leider nicht geklappt. Bitte versuche es später noch einmal oder schreibe direkt per E-Mail."
     }
   },
   "en": {
@@ -485,7 +508,8 @@
       "about": "About the project",
       "faq": "FAQ",
       "support": "Support",
-      "languages": "Languages"
+      "languages": "Languages",
+      "contact": "Contact"
     },
     "contact": {
       "write": "Write to us",
@@ -953,6 +977,28 @@
       "cta": "Request bulk discount",
       "freebie": "See the free coloring page",
       "tiersTitle": "You save"
+    },
+    "contactForm": {
+      "eyebrow": "Contact",
+      "title": "Send me a message",
+      "intro": "Do you have a question about the books, the app or working together? Write to me here – I'll get back to you soon.",
+      "nameLabel": "Name",
+      "emailLabel": "Email address",
+      "messageLabel": "Message",
+      "consentBefore": "I have read the ",
+      "consentLink": "privacy policy",
+      "consentAfter": " and agree.",
+      "submit": "Send message",
+      "sending": "Sending …",
+      "success": "Thank you for your message! I'll get back to you soon.",
+      "note": "Your details are only forwarded to me by email and are not stored permanently.",
+      "emailAlternative": "Prefer plain email?",
+      "errorName": "Please enter your name.",
+      "errorEmail": "Please enter a valid email address.",
+      "errorMessage": "Please write at least 10 characters.",
+      "errorConsent": "Please confirm the privacy policy.",
+      "errorRate": "You have just sent several messages. Please try again later.",
+      "errorSend": "Sorry, sending did not work. Please try again later or write to me by email."
     }
   }
 }

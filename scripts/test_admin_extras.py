@@ -477,15 +477,15 @@ class MediaTests(ServerTests):
         added = self.post_multipart("/api/media/appscreens/add", {"titleDe": "Neu", "textDe": "Satz", "titleEn": "New", "textEn": "Sentence"}, {"image": ("s.png", make_image(900, 1900))})
         self.assertTrue(added["ok"], added)
         screens = added["media"]["appScreens"]
-        self.assertEqual(len(screens), 7)
+        self.assertEqual(len(screens), 8)
         self.assertEqual(screens[-1]["en"]["title"], "New")
-        updated = self.post_json("/api/media/appscreens/update", {"index": 6, "titleDe": "Geändert", "textDe": "x", "titleEn": "Changed", "textEn": "y"})
-        self.assertEqual(updated["media"]["appScreens"][6]["de"]["title"], "Geändert")
-        self.post_json("/api/media/appscreens/move", {"index": 6, "dir": -1})
-        self.assertEqual(self.state()["site"]["appScreens"][5]["de"]["title"], "Geändert")
-        removed = self.post_json("/api/media/appscreens/delete", {"index": 5})
+        updated = self.post_json("/api/media/appscreens/update", {"index": 7, "titleDe": "Geändert", "textDe": "x", "titleEn": "Changed", "textEn": "y"})
+        self.assertEqual(updated["media"]["appScreens"][7]["de"]["title"], "Geändert")
+        self.post_json("/api/media/appscreens/move", {"index": 7, "dir": -1})
+        self.assertEqual(self.state()["site"]["appScreens"][6]["de"]["title"], "Geändert")
+        removed = self.post_json("/api/media/appscreens/delete", {"index": 6})
         self.assertTrue(removed["ok"])
-        self.assertEqual(len(removed["media"]["appScreens"]), 6)
+        self.assertEqual(len(removed["media"]["appScreens"]), 7)
         self.assertIn('"title": "Willkommen"', self.ts())
 
     def test_letzten_screenshot_nicht_loeschbar(self):
