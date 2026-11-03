@@ -339,7 +339,7 @@
         },
         {
           "q": "Gibt es die Geschichten auch digital?",
-          "a": "Ja. Die kostenlose LambKing App ist bei Google Play erhältlich. Eine Version für den App Store ist in Vorbereitung."
+          "a": "Ja. Die kostenlose LambKing App gibt es bei Google Play und im App Store."
         },
         {
           "q": "Wie kann ich LambKing Stories unterstützen?",
@@ -347,7 +347,7 @@
         },
         {
           "q": "Wie kann ich Kontakt aufnehmen?",
-          "a": "Du erreichst mich per E-Mail – ich freue mich über Nachrichten, Feedback und Anregungen."
+          "a": "Am einfachsten über das Kontaktformular unten auf dieser Seite oder per E-Mail – ich freue mich über Nachrichten, Feedback und Anregungen."
         }
       ],
       "webAppLink": "Web-App öffnen →"
@@ -486,11 +486,11 @@
       "messageLabel": "Nachricht",
       "consentBefore": "Ich habe die ",
       "consentLink": "Datenschutzerklärung",
-      "consentAfter": " gelesen und bin einverstanden.",
+      "consentAfter": " gelesen und zur Kenntnis genommen.",
       "submit": "Nachricht senden",
       "sending": "Wird gesendet …",
       "success": "Danke für deine Nachricht! Ich melde mich bald.",
-      "note": "Deine Angaben werden nur per E-Mail an mich weitergeleitet und nicht dauerhaft gespeichert.",
+      "note": "Deine Angaben werden nur per E-Mail an mich weitergeleitet und nicht auf der Website oder in einer Datenbank gespeichert.",
       "emailAlternative": "Lieber direkt per E-Mail?",
       "errorName": "Bitte gib deinen Namen ein.",
       "errorEmail": "Bitte gib eine gültige E-Mail-Adresse ein.",
@@ -840,7 +840,7 @@
         },
         {
           "q": "Are the stories available digitally?",
-          "a": "Yes. The free LambKing app is available on Google Play. An App Store version is in preparation."
+          "a": "Yes. The free LambKing app is available on Google Play and the App Store."
         },
         {
           "q": "How can I support LambKing Stories?",
@@ -848,7 +848,7 @@
         },
         {
           "q": "How can I get in touch?",
-          "a": "You can reach me by email – I look forward to messages, feedback, and suggestions."
+          "a": "The easiest way is the contact form at the bottom of this page, or by email – I look forward to messages, feedback, and suggestions."
         }
       ],
       "webAppLink": "Open the web app →"
@@ -985,13 +985,13 @@
       "nameLabel": "Name",
       "emailLabel": "Email address",
       "messageLabel": "Message",
-      "consentBefore": "I have read the ",
+      "consentBefore": "I have read and taken note of the ",
       "consentLink": "privacy policy",
-      "consentAfter": " and agree.",
+      "consentAfter": ".",
       "submit": "Send message",
       "sending": "Sending …",
       "success": "Thank you for your message! I'll get back to you soon.",
-      "note": "Your details are only forwarded to me by email and are not stored permanently.",
+      "note": "Your details are only forwarded to me by email and are not stored on the website or in a database.",
       "emailAlternative": "Prefer plain email?",
       "errorName": "Please enter your name.",
       "errorEmail": "Please enter a valid email address.",

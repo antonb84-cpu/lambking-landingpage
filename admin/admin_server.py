@@ -784,7 +784,8 @@ def precheck(state: dict) -> list:
     no_cover = [b["title"] for b in visible if not (IMAGES / Path(b["cover"]).name).is_file()]
     checks.append(("rot" if no_cover else "gruen",
                    "Alle Cover vorhanden" if not no_cover else f"Cover fehlt: {', '.join(no_cover)}"))
-    no_amazon = [b["title"] for b in visible if not (
+    # „Bald erhältlich“-Bücher haben bewusst noch keinen Kauflink
+    no_amazon = [b["title"] for b in visible if not b.get("comingSoon") and not (
         b.get("amazon", "").startswith("https://") or
         any(e.get("amazon", "").startswith("https://") for e in b.get("editions", []))
     )]
