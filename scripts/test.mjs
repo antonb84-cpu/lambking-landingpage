@@ -301,7 +301,7 @@ test('App-Datenschutz ist enthalten und unter der Store-URL erreichbar', () => {
   assert(appSection.includes('keine persönlichen Informationen oder Nutzerkennungen') && appSection.includes('keine Wiedererkennung'), 'Datensparsame App-Zählung ist nicht beschrieben')
   assert(appSection.includes('Freiwillige einmalige Apple-In-App-Trinkgelder') && appSection.includes('Zahlungsabwicklung erfolgt über Apple'), 'Einmalige freiwillige Apple-Trinkgelder fehlen im App-Datenschutz')
   assert(!appSection.includes('keine In-App-Käufe'), 'Veraltete Aussage über fehlende In-App-Käufe')
-  for (const part of ['Abos und Käufe in der App', 'LambKing Plus', 'Apple (App Store) bzw. Google (Google Play)', 'an unseren Server werden keine Daten zu Käufen übermittelt', 'bis zu 14 Tage', '§ 25 Abs. 2 Nr. 2 TDDDG']) {
+  for (const part of ['Familien-Stimmen und Mikrofon', 'ausschließlich auf dem Gerät gespeichert, die App lädt sie nicht hoch', 'Eltern-Übersicht, Dankbuch und Sammlung', 'Abos und Käufe in der App', 'LambKing Plus', 'Apple (App Store) bzw. Google (Google Play)', 'an unseren Server werden keine Daten zu Käufen übermittelt', 'bis zu 14 Tage', '§ 25 Abs. 2 Nr. 2 TDDDG']) {
     assert(appSection.includes(part), `App-Datenschutz Käufe: „${part}" fehlt`)
   }
   assert(!appSection.includes('Abfrage für Erwachsene'), 'Die entfernte Elternabfrage wird noch beschrieben')
