@@ -569,7 +569,7 @@ test('Anonyme Statistik speichert keine Besucherkennungen', () => {
   assert(analytics.includes('counterSelfTest') && readFileSync(join(SRC, 'App.tsx'), 'utf-8').includes("has('zaehler-test')"), 'Zähler-Selbsttest fehlt')
   const ratingSrc = readFileSync(join(SRC, 'components/AmazonRating.tsx'), 'utf-8')
   assert(ratingSrc.includes('trackAmazonClick(book.id, book.lang)'), 'Klick auf die Sterne (führt zu Amazon) wird nicht gezählt')
-  for (const file of ['components/BuyButton.tsx', 'components/PaypalButton.tsx', 'components/KofiButton.tsx', 'sections/AppSection.tsx', 'components/AmazonRating.tsx']) {
+  for (const file of ['components/BuyButton.tsx', 'components/PaypalButton.tsx', 'components/KofiButton.tsx', 'components/StoreBadges.tsx', 'components/AmazonRating.tsx']) {
     assert(readFileSync(join(SRC, file), 'utf-8').includes('onAuxClick'), `${file}: Klick mit der mittleren Maustaste wird nicht gezählt`)
   }
   // Admin-Programm und Oberfläche müssen dieselbe Version haben, sonst läuft noch ein altes Programm
@@ -579,7 +579,7 @@ test('Anonyme Statistik speichert keine Besucherkennungen', () => {
   for (const link of ['paypal', 'kofi', 'playstore', 'appstore']) {
     assert(pattern.test(`link-${link}`), `Klickziel link-${link} wird vom Zähler abgelehnt`)
   }
-  for (const [file, name] of [['components/PaypalButton.tsx', 'paypal'], ['components/KofiButton.tsx', 'kofi'], ['sections/AppSection.tsx', 'playstore'], ['sections/AppSection.tsx', 'appstore']]) {
+  for (const [file, name] of [['components/PaypalButton.tsx', 'paypal'], ['components/KofiButton.tsx', 'kofi'], ['components/StoreBadges.tsx', 'playstore'], ['components/StoreBadges.tsx', 'appstore']]) {
     assert(readFileSync(join(SRC, file), 'utf-8').includes(`trackLinkClick('${name}')`), `Klicks auf ${name} werden nicht gezählt`)
   }
   assert(!/localStorage|sessionStorage|document\.cookie|fingerprint/i.test(analytics), 'Frontend-Zähler verwendet eine Wiedererkennungstechnik')

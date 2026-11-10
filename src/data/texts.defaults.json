@@ -302,7 +302,7 @@
     "app": {
       "eyebrow": "Die App",
       "title": "Entdecke die LambKing App",
-      "text": "In der kostenlosen LambKing App entdecken Kinder biblische Geschichten auf lebendige und leicht verständliche Weise – liebevoll erzählt und werbefrei.",
+      "text": "In der LambKing App entdecken Kinder biblische Geschichten auf lebendige und leicht verständliche Weise – liebevoll erzählt und ohne Werbung. Kostenlos laden und gleich loslegen.",
       "ctaWebApp": "Web-App kostenlos öffnen",
       "playSoon": "Google-Play-Link folgt",
       "playAlt": "Jetzt bei Google Play",
@@ -339,7 +339,7 @@
         },
         {
           "q": "Gibt es die Geschichten auch digital?",
-          "a": "Ja. Die kostenlose LambKing App gibt es bei Google Play und im App Store."
+          "a": "Ja. Die LambKing App gibt es bei Google Play und im App Store. Das Laden ist kostenlos."
         },
         {
           "q": "Wie kann ich LambKing Stories unterstützen?",
@@ -370,12 +370,12 @@
     "donate": {
       "eyebrow": "Ein evangelistisches Herzensprojekt",
       "title": "Hilf mit, dass Gottes Geschichten Kinder erreichen",
-      "text": "LambKing Stories erzählt Bibelgeschichten für Kinder – in Büchern und in einer kostenlosen, werbefreien App. Neue Geschichten zu schreiben, zu illustrieren und in weitere Sprachen zu bringen kostet viel Zeit und Geld. Mit deiner freiwilligen Unterstützung wird das möglich.",
+      "text": "LambKing Stories erzählt Bibelgeschichten für Kinder – in Büchern und in einer werbefreien App. Neue Geschichten zu schreiben, zu illustrieren und in weitere Sprachen zu bringen kostet viel Zeit und Geld. Mit deiner freiwilligen Unterstützung wird das möglich.",
       "itemsTitle": "Damit ermöglichst du",
       "items": [
         "Neue Bibelgeschichten schreiben und liebevoll gestalten",
         "Bücher in weiteren Sprachen veröffentlichen",
-        "Die App kostenlos und werbefrei halten"
+        "Die App werbefrei halten und Geschichten für alle Kinder gratis lassen"
       ],
       "note": "Freiwillig und ohne Gegenleistung – jede Gabe hilft. Von Herzen danke, dass du mitträgst!"
     },
@@ -456,8 +456,8 @@
           "text": "Bücher in mehreren Sprachen"
         },
         {
-          "title": "Kostenlose App",
-          "text": "Geschichten für unterwegs"
+          "title": "LambKing App",
+          "text": "Kostenlos laden, ohne Werbung"
         }
       ]
     },
@@ -803,7 +803,7 @@
     "app": {
       "eyebrow": "The app",
       "title": "Discover the LambKing App",
-      "text": "In the free LambKing App, children discover Bible stories in a vivid and easy-to-understand way – lovingly told and ad-free.",
+      "text": "In the LambKing App, children discover Bible stories in a vivid and easy-to-understand way – lovingly told and without ads. Free to download, ready to start.",
       "ctaWebApp": "Open the free web app",
       "playSoon": "Google Play link coming shortly",
       "playAlt": "Get it on Google Play",
@@ -840,7 +840,7 @@
         },
         {
           "q": "Are the stories available digitally?",
-          "a": "Yes. The free LambKing app is available on Google Play and the App Store."
+          "a": "Yes. The LambKing app is available on Google Play and the App Store. It is free to download."
         },
         {
           "q": "How can I support LambKing Stories?",
@@ -871,12 +871,12 @@
     "donate": {
       "eyebrow": "An evangelistic labor of love",
       "title": "Help God's stories reach children",
-      "text": "LambKing Stories tells Bible stories for children – in books and in a free, ad-free app. Writing, illustrating and translating new stories takes a lot of time and money. Your voluntary support makes it possible.",
+      "text": "LambKing Stories tells Bible stories for children – in books and in an ad-free app. Writing, illustrating and translating new stories takes a lot of time and money. Your voluntary support makes it possible.",
       "itemsTitle": "Your gift makes possible",
       "items": [
         "Writing and lovingly creating new Bible stories",
         "Publishing books in more languages",
-        "Keeping the app free and ad-free"
+        "Keeping the app ad-free and stories free for every child"
       ],
       "note": "Voluntary and with nothing expected in return – every gift helps. Heartfelt thanks for standing with us!"
     },
@@ -957,8 +957,8 @@
           "text": "Books in several languages"
         },
         {
-          "title": "Free app",
-          "text": "Stories on the go"
+          "title": "LambKing app",
+          "text": "Free to download, no ads"
         }
       ]
     },

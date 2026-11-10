@@ -182,7 +182,7 @@
         "app": {
           "eyebrow": "Die App",
           "title": "Entdecke die LambKing App",
-          "text": "In der kostenlosen LambKing App entdecken Kinder biblische Geschichten auf lebendige und leicht verständliche Weise – liebevoll erzählt und werbefrei.",
+          "text": "In der LambKing App entdecken Kinder biblische Geschichten auf lebendige und leicht verständliche Weise – liebevoll erzählt und ohne Werbung. Kostenlos laden und gleich loslegen.",
           "ctaWebApp": "Web-App kostenlos öffnen",
           "playSoon": "Google-Play-Link folgt",
           "playAlt": "Jetzt bei Google Play",
@@ -219,7 +219,7 @@
             },
             {
               "q": "Gibt es die Geschichten auch digital?",
-              "a": "Ja. Die kostenlose LambKing App gibt es bei Google Play und im App Store."
+              "a": "Ja. Die LambKing App gibt es bei Google Play und im App Store. Das Laden ist kostenlos."
             },
             {
               "q": "Wie kann ich LambKing Stories unterstützen?",
@@ -257,8 +257,8 @@
               "text": "Bücher in mehreren Sprachen"
             },
             {
-              "title": "Kostenlose App",
-              "text": "Geschichten für unterwegs"
+              "title": "LambKing App",
+              "text": "Kostenlos laden, ohne Werbung"
             }
           ]
         },
@@ -442,7 +442,7 @@
         "app": {
           "eyebrow": "The app",
           "title": "Discover the LambKing App",
-          "text": "In the free LambKing App, children discover Bible stories in a vivid and easy-to-understand way – lovingly told and ad-free.",
+          "text": "In the LambKing App, children discover Bible stories in a vivid and easy-to-understand way – lovingly told and without ads. Free to download, ready to start.",
           "ctaWebApp": "Open the free web app",
           "playSoon": "Google Play link coming shortly",
           "playAlt": "Get it on Google Play",
@@ -479,7 +479,7 @@
             },
             {
               "q": "Are the stories available digitally?",
-              "a": "Yes. The free LambKing app is available on Google Play and the App Store."
+              "a": "Yes. The LambKing app is available on Google Play and the App Store. It is free to download."
             },
             {
               "q": "How can I support LambKing Stories?",
@@ -517,8 +517,8 @@
               "text": "Books in several languages"
             },
             {
-              "title": "Free app",
-              "text": "Stories on the go"
+              "title": "LambKing app",
+              "text": "Free to download, no ads"
             }
           ]
         },

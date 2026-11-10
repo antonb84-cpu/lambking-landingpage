@@ -15,15 +15,15 @@ export type Lang = 'de' | 'en'
 const META: Record<'home' | 'creatorPartner', Record<Lang, { title: string; description: string; canonical: string }>> = {
   home: {
     de: {
-      title: 'LambKing Stories – Bibelgeschichten zum Ausmalen',
+      title: 'LambKing Stories – Bibelgeschichten für Kinder: Malbücher & App',
       description:
-        'Biblisch fundierte Malbücher und Kinderbücher von LambKing Stories. Inhalt ansehen und direkt bei Amazon bestellen.',
+        'Bibelgeschichten für Kinder: Malbücher und Kinderbücher zum Reinschauen und Bestellen bei Amazon – und die LambKing App mit Geschichten zum Lesen, Hören und Ausmalen, ohne Werbung.',
       canonical: 'https://lambking.store/',
     },
     en: {
-      title: 'LambKing Stories – Bible Stories to Color',
+      title: 'LambKing Stories – Bible Stories for Kids: Coloring Books & App',
       description:
-        "Bible-based coloring books and children's books by LambKing Stories. Look inside and order via Amazon.",
+        "Bible stories for kids: coloring books and children's books to look inside and order via Amazon – and the LambKing app with stories to read, hear and color, without ads.",
       canonical: 'https://lambking.store/',
     },
   },

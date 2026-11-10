@@ -2,6 +2,7 @@ import type { CSSProperties } from 'react'
 import { BookOpen, HandHeart, Star } from 'lucide-react'
 import Reveal from '@/components/Reveal'
 import RichText from '@/components/RichText'
+import StoreBadges from '@/components/StoreBadges'
 import { BOOKS, SITE } from '@/data/books'
 import { useLang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
@@ -84,6 +85,8 @@ export default function Hero() {
               {t.hero.ctaSupport}
             </a>
           </div>
+          {/* Die App gleich oben: am Handy kamen die Store-Knöpfe sonst erst nach zwei Dritteln der Seite */}
+          {!SITE.hiddenSections.includes('app') ? <StoreBadges onlyLinks className="mt-5" /> : null}
           {summary ? (
             <a
               href="#buecher"
