@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Menu, Search, X } from 'lucide-react'
+import { ArrowLeft, Menu, Search, X } from 'lucide-react'
 import { setLang, useLang, type Lang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
 import { openLegal } from '@/data/openLegal'
@@ -7,7 +7,8 @@ import { creatorPartnerHref, homeHref } from '@/data/routes'
 import { BOOKS, CATEGORIES, SITE } from '@/data/books'
 import { catLabelOf } from '@/data/bookView'
 import { editionsOf } from '@/data/editions'
-import { SHOP_FILTER_EVENT, applyShopFilter, initialShopFilter, isHomePage, shopHref, shopTexts, type ShopFilter } from '@/data/shop'
+import { SHOP_FILTER_EVENT, applyShopFilter, initialShopFilter, isHomePage, lastShopFilter, shopHref, shopTexts, type ShopFilter } from '@/data/shop'
+import { isBookPath } from '@/data/bookLink'
 import type { FormEvent, MouseEvent, ReactNode } from 'react'
 
 function FlagDE() {
@@ -212,6 +213,21 @@ export default function Header() {
             </div>
           </div>
         </nav>
+
+        {/* Auf einer Buchseite: immer sichtbarer Weg zurück zur Liste, mit der zuletzt gewählten Buchart und Suche */}
+        {isBookPath() ? (
+          <div className="border-t border-border/70 bg-background/95">
+            <div className="mx-auto max-w-7xl px-4 py-1.5 sm:px-6">
+              <a
+                href={shopHref(lastShopFilter())}
+                className="inline-flex min-h-10 items-center gap-2 rounded-full border border-primary/25 bg-card px-4 text-sm font-bold text-primary transition-colors hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/60"
+              >
+                <ArrowLeft className="h-4 w-4" aria-hidden />
+                {s.backAll}
+              </a>
+            </div>
+          </div>
+        ) : null}
 
         {/* Mobiles Menü */}
         {menuOpen && (

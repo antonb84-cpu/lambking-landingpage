@@ -26,6 +26,23 @@ export function shopHref(filter: ShopFilter = {}): string {
   return url.href
 }
 
+const LAST_FILTER_KEY = 'lk-shop-filter'
+
+/** Merkt sich die zuletzt gewählte Auswahl (Buchart, Suche), damit „Zurück zu allen Büchern“ dort wieder ankommt. */
+export function saveShopFilter(filter: ShopFilter) {
+  try {
+    sessionStorage.setItem(LAST_FILTER_KEY, JSON.stringify(filter))
+  } catch { /* Speicher gesperrt: dann geht es zur ganzen Liste */ }
+}
+
+export function lastShopFilter(): ShopFilter {
+  try {
+    return JSON.parse(sessionStorage.getItem(LAST_FILTER_KEY) ?? '{}') as ShopFilter
+  } catch {
+    return {}
+  }
+}
+
 export function initialShopFilter(): ShopFilter {
   const params = new URLSearchParams(window.location.search)
   return { category: params.get('kat') ?? undefined, query: params.get('q') ?? undefined }
@@ -78,6 +95,7 @@ const TEXTS = {
     soldVia: 'Bestellung, Druck und Versand über Amazon',
     editionLabel: 'Sprache der Ausgabe',
     backToBooks: 'Alle Bücher ansehen',
+    backAll: 'Zurück zu allen Büchern',
     notFound: 'Dieses Buch gibt es hier nicht mehr.',
   },
   en: {
@@ -107,6 +125,7 @@ const TEXTS = {
     soldVia: 'Ordering, printing and shipping via Amazon',
     editionLabel: 'Edition language',
     backToBooks: 'See all books',
+    backAll: 'Back to all books',
     notFound: 'This book is no longer available here.',
   },
 }

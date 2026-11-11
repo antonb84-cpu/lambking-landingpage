@@ -9,7 +9,7 @@ import { catLabelOf, localizedBook } from '@/data/bookView'
 import { editionsOf } from '@/data/editions'
 import { useLang } from '@/data/lang'
 import { OPEN_BOOK_EVENT } from '@/data/openBook'
-import { AGE_BUCKETS, SHOP_FILTER_EVENT, ageBucketsOf, applyShopFilter, initialShopFilter, shopTexts, type ShopFilter } from '@/data/shop'
+import { AGE_BUCKETS, SHOP_FILTER_EVENT, ageBucketsOf, applyShopFilter, initialShopFilter, saveShopFilter, shopTexts, type ShopFilter } from '@/data/shop'
 import { textsFor } from '@/data/texts'
 import { splitTitle } from '@/data/titles'
 
@@ -30,6 +30,9 @@ export default function Shop() {
   const [age, setAge] = useState<string>('all')
   const [sort, setSort] = useState<Sort>('recommended')
   const [query, setQuery] = useState<string>(() => initialShopFilter().query ?? '')
+
+  // Auswahl merken: „Zurück zu allen Büchern“ auf den Buchseiten führt dorthin zurück
+  useEffect(() => saveShopFilter({ category: category === 'all' ? undefined : category, query: query.trim() || undefined }), [category, query])
 
   // Kopfzeile (Kategorien, Suche) meldet Filter über ein Ereignis
   useEffect(() => {
