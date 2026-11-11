@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react'
-import { BookOpen, HandHeart, Star } from 'lucide-react'
+import { BookOpen, Star } from 'lucide-react'
 import Reveal from '@/components/Reveal'
 import RichText from '@/components/RichText'
 import StoreBadges from '@/components/StoreBadges'
@@ -76,13 +76,6 @@ export default function Hero() {
             >
               <BookOpen className="h-5 w-5" aria-hidden />
               {t.hero.ctaBooks}
-            </a>
-            <a
-              href="#unterstuetzen"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-accent px-7 py-3.5 font-bold text-accent-foreground shadow-lg shadow-accent/30 transition-transform hover:scale-[1.03]"
-            >
-              <HandHeart className="h-5 w-5" aria-hidden />
-              {t.hero.ctaSupport}
             </a>
           </div>
           {/* Die App gleich oben: am Handy kamen die Store-Knöpfe sonst erst nach zwei Dritteln der Seite */}

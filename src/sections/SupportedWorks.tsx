@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ExternalLink, HandHeart, Landmark, Sprout } from 'lucide-react'
+import { ExternalLink, Landmark, Sprout } from 'lucide-react'
 import Reveal from '@/components/Reveal'
 import RichText from '@/components/RichText'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -158,15 +158,6 @@ export default function SupportedWorks() {
             })}
           </div>
         ) : null}
-        <div className="mt-10 text-center">
-          <a
-            href="#unterstuetzen"
-            className="inline-flex items-center justify-center gap-2 rounded-full bg-accent px-7 py-3.5 font-bold text-accent-foreground shadow-lg shadow-accent/30 transition-transform hover:scale-[1.03]"
-          >
-            <HandHeart className="h-5 w-5" aria-hidden />
-            {t.supportCta}
-          </a>
-        </div>
       </div>
 
       <Dialog open={!!activeFlyer} onOpenChange={(open) => !open && setActiveFlyer(null)}>
