@@ -7,7 +7,8 @@ import TryIt from '@/sections/TryIt'
 import MobileCta from '@/components/MobileCta'
 import FlipBookDialog from '@/components/FlipBookDialog'
 import Family from '@/sections/Family'
-import Books from '@/sections/Books'
+import Shop from '@/sections/Shop'
+import ProductPage from '@/sections/ProductPage'
 import AppSection from '@/sections/AppSection'
 import Donate from '@/sections/Donate'
 import SupportedWorks from '@/sections/SupportedWorks'
@@ -20,7 +21,8 @@ import CreatorPartnerPage from '@/pages/CreatorPartnerPage'
 import { isCreatorPartnerPath } from '@/data/routes'
 import { useLang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
-import { SITE } from '@/data/books'
+import { BOOKS, SITE } from '@/data/books'
+import { bookIdFromLocation, bookPath, isBookPath } from '@/data/bookLink'
 import CounterSelfTest from '@/components/CounterSelfTest'
 
 export default function App() {
@@ -32,6 +34,23 @@ export default function App() {
 
   if (SITE.creatorPartnerEnabled && isCreatorPartnerPath()) {
     return <CreatorPartnerPage />
+  }
+
+  // Eigene Produktseite je Buch (buch/<name>/); der alte Link ?buch=<id> führt dorthin weiter
+  const linkedBook = BOOKS.find((book) => book.id === bookIdFromLocation())
+  if (linkedBook && !isBookPath()) {
+    window.location.replace(bookPath(linkedBook))
+    return null
+  }
+  if (linkedBook) {
+    return (
+      <div className="min-h-screen">
+        <Header />
+        <ProductPage book={linkedBook} />
+        <Footer />
+        <FlipBookDialog />
+      </div>
+    )
   }
 
   return (
@@ -46,15 +65,15 @@ export default function App() {
       <Header />
       <main id="inhalt">
         <Hero />
+        <Shop />
         <UspBand />
-        <Books />
+        {!SITE.hiddenSections.includes('app') && <AppSection />}
         {!SITE.hiddenSections.includes('tryit') && <TryIt />}
         <Family />
-        <Donate />
         <Mascot />
-        {!SITE.hiddenSections.includes('app') && <AppSection />}
         {!SITE.hiddenSections.includes('supportedWorks') && <SupportedWorks />}
         {SITE.creatorPartnerEnabled ? <CreatorPartnerTeaser /> : null}
+        <Donate />
         <Faq />
         <Contact />
       </main>

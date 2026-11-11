@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { ArrowLeft, ArrowRight, BookOpen, CheckCircle2, Copy, HelpCircle, Languages, Mail, PackageCheck, Palette, Play, Ruler, ShieldCheck, ChevronDown, X, ScrollText } from 'lucide-react'
+import { ArrowLeft, ArrowRight, BookOpen, CheckCircle2, Copy, HelpCircle, Languages, Mail, PackageCheck, Play, Ruler, ShieldCheck, ChevronDown, X } from 'lucide-react'
 import Reveal from '@/components/Reveal'
 import RichText from '@/components/RichText'
 import AmazonRating from '@/components/AmazonRating'
@@ -17,84 +17,10 @@ import { editionsOf } from '@/data/editions'
 import { hasFlipbook } from '@/data/flipbooks'
 import { splitTitle, volumeLabel } from '@/data/titles'
 import { bookIdFromLocation, bookPath, isBookPath } from '@/data/bookLink'
-
-// Kategorie-Helfer (Labels/Typen kommen aus den Buchdaten, sprachabhängig)
-const catDefOf = (id: string) => CATEGORIES.find((c) => c.id === id)
-const typeLabelOf = (b: Book, lang: 'de' | 'en'): string => {
-  const c = catDefOf(b.category)
-  return c ? (lang === 'en' ? c.typeEn : c.typeDe) : b.category
-}
-const catLabelOf = (id: string, lang: 'de' | 'en'): string => {
-  const c = catDefOf(id)
-  return c ? (lang === 'en' ? c.labelEn : c.labelDe) : id
-}
+import { booksCopyForEdition, catDefOf, catLabelOf, highlightIcon, isColoringBook, localizedBook, typeLabelOf, type BooksCopy } from '@/data/bookView'
 
 
-type BooksCopy = ReturnType<typeof textsFor>['books']
-const editionCopyOverrides: Record<string, Partial<BooksCopy>> = {
-  es: {
-    seePrice: 'Consultar el precio actual en Amazon', samplesHint: 'Mira el interior – haz clic para ampliar',
-    samplePage: 'Página de muestra', enlargedSamplePage: 'página de muestra ampliada', zoom: 'Ampliar',
-    backToBook: 'Volver al libro', previousPage: 'Página anterior', nextPage: 'Página siguiente', page: 'Página',
-    buyAmazon: 'Ver en Amazon', availableLanguages: 'Disponible en',
-    bookInfoTitle: 'Datos del libro', mediaGallery: 'Galería del libro', mediaCover: 'Portada',
-    mediaLifestyle: 'Foto del libro (imagen ilustrativa)', mediaVideo: 'Reproducir vídeo del libro',
-    mediaSwipeHint: 'Desliza o usa las flechas', previousImage: 'Imagen anterior', nextImage: 'Imagen siguiente',
-    coloringFactsTitle: 'Qué contiene cada libro para colorear de LambKing',
-    coloringFacts: ['Mínimo 70 páginas', 'Tamaño aprox. DIN A4', 'Fiel a la Biblia', 'Además, 5 páginas con juegos, preguntas y pasatiempos', 'Disponible en varios idiomas'],
-    coloringAge: 'A partir de 6 años', coloringFormat: 'Mínimo 70 páginas · aprox. DIN A4',
-    amazonPending: 'Aún no hay un enlace de Amazon para esta edición. El botón de compra aparecerá cuando se añada en la administración.',
-  },
-  ro: {
-    seePrice: 'Vezi prețul actual pe Amazon', samplesHint: 'Răsfoiește cartea – apasă pentru a mări',
-    samplePage: 'Pagină de prezentare', enlargedSamplePage: 'pagină de prezentare mărită', zoom: 'Mărește',
-    backToBook: 'Înapoi la carte', previousPage: 'Pagina anterioară', nextPage: 'Pagina următoare', page: 'Pagina',
-    buyAmazon: 'Vezi pe Amazon', availableLanguages: 'Disponibilă în',
-    bookInfoTitle: 'Pe scurt despre carte', mediaGallery: 'Galeria cărții', mediaCover: 'Copertă',
-    mediaLifestyle: 'Fotografie a cărții (imagine ilustrativă)', mediaVideo: 'Redă videoclipul cărții',
-    mediaSwipeHint: 'Glisează sau folosește săgețile', previousImage: 'Imaginea precedentă', nextImage: 'Imaginea următoare',
-    coloringFactsTitle: 'Ce conține fiecare carte de colorat LambKing',
-    coloringFacts: ['Minimum 70 de pagini', 'Mărime aprox. DIN A4', 'Fidelă Bibliei', 'În plus, 5 pagini cu jocuri, întrebări și puzzle-uri', 'Disponibilă în mai multe limbi'],
-    coloringAge: 'De la 6 ani', coloringFormat: 'Minimum 70 de pagini · aprox. DIN A4',
-    amazonPending: 'Nu există încă un link Amazon pentru această ediție. Butonul de cumpărare va apărea după adăugarea linkului în administrare.',
-  },
-}
-
-const booksCopyForEdition = (siteLanguage: 'de' | 'en', editionLanguage: string | null): BooksCopy => {
-  if (editionLanguage === 'de' || editionLanguage === 'en') return textsFor(editionLanguage).books
-  return { ...textsFor(siteLanguage).books, ...(editionLanguage ? editionCopyOverrides[editionLanguage] : {}) }
-}
-
-const localizedBook = (book: Book, language: string): Book => {
-  const edition = editionsOf(book).find((item) => item.language === language)
-  if (!edition) return book
-  return {
-    ...book,
-    title: edition.title || book.title,
-    series: edition.series || book.series,
-    age: edition.age || book.age,
-    detail: edition.detail || book.detail,
-    description: edition.description || book.description,
-    highlights: edition.highlights?.length ? edition.highlights : book.highlights,
-    samples: edition.samples?.length ? edition.samples : book.samples,
-    amazon: edition.amazon,
-    cover: coverFor(book, edition).src,
-    coverFront: undefined,
-    coverSpread: coverFor(book, edition).spread,
-    lifestyleImages: edition.lifestyleImages ?? (edition.language === book.lang ? book.lifestyleImages : []),
-    previewVideo: edition.previewVideo ?? (edition.language === book.lang ? book.previewVideo : undefined),
-  }
-}
-
-function highlightIcon(text: string) {
-  if (/bibelstelle|bible passage|pasaje|pasaj/i.test(text)) return ScrollText
-  if (/seite|page|página|pagin/i.test(text)) return BookOpen
-  if (/ausmal|color|colorear|colorat/i.test(text)) return Palette
-  if (/sprach|language|idioma|limb/i.test(text)) return Languages
-  return CheckCircle2
-}
-
-function BookCover({ book, variant }: { book: Book; variant: 'card' | 'dialog' }) {
+export function BookCover({ book, variant }: { book: Book; variant: 'card' | 'dialog' }) {
   const { src: coverSrc, spread: coverIsSpread } = coverFor(book)
   const shared = variant === 'card'
     ? 'max-h-full w-auto max-w-full rounded-[3px] shadow-[0_1px_2px_rgba(21,30,60,0.35),0_10px_14px_-6px_rgba(21,49,103,0.45),0_26px_30px_-14px_rgba(21,49,103,0.4)] transition-[transform,box-shadow] duration-300 group-hover:-translate-y-1 group-hover:-rotate-1 group-hover:scale-[1.03] group-hover:shadow-[0_2px_3px_rgba(21,30,60,0.35),0_16px_20px_-6px_rgba(21,49,103,0.5),0_38px_40px_-14px_rgba(21,49,103,0.45)]'
@@ -134,7 +60,7 @@ function BookCover({ book, variant }: { book: Book; variant: 'card' | 'dialog' }
   )
 }
 
-function BookMediaGallery({ book, onZoom, copy }: { book: Book; onZoom: (src: string) => void; copy: BooksCopy }) {
+export function BookMediaGallery({ book, onZoom, copy, page = false }: { book: Book; onZoom: (src: string) => void; copy: BooksCopy; page?: boolean }) {
   const [index, setIndex] = useState(0)
   const touchStart = useRef<{ x: number; y: number } | null>(null)
   const slides = [
@@ -147,7 +73,7 @@ function BookMediaGallery({ book, onZoom, copy }: { book: Book; onZoom: (src: st
   const move = (direction: -1 | 1) => setIndex((value) => (value + direction + slides.length) % slides.length)
 
   return (
-    <div className="min-w-0 bg-secondary/60 px-5 pb-5 pt-8 lg:sticky lg:top-0 lg:self-start lg:px-7 lg:pt-10" aria-label={`${book.title} – ${copy.mediaGallery}`}>
+    <div className={`min-w-0 bg-secondary/60 px-5 pb-5 pt-8 lg:sticky lg:self-start lg:px-7 lg:pt-10 ${page ? 'rounded-2xl border border-[#e6dcc3] lg:top-44' : 'lg:top-0'}`} aria-label={`${book.title} – ${copy.mediaGallery}`}>
       <div
         className="relative flex h-[320px] items-center justify-center sm:h-[460px]"
         onTouchStart={(event) => { touchStart.current = event.touches[0] ? { x: event.touches[0].clientX, y: event.touches[0].clientY } : null }}
@@ -181,7 +107,6 @@ function BookMediaGallery({ book, onZoom, copy }: { book: Book; onZoom: (src: st
   )
 }
 
-const isColoringBook = (book: Book) => book.category === 'malbuecher'
 
 // Schmale Chips unter der Überschrift der Rubrik
 // Hinweis-Chips gelten nur, wenn sie für ALLE Bücher der Rubrik stimmen:
@@ -210,7 +135,7 @@ function ColoringBookFacts({ items }: { items: Book[] }) {
   )
 }
 
-function LanguageEditions({
+export function LanguageEditions({
   book,
   compact = false,
   label,
@@ -254,7 +179,7 @@ function LanguageEditions({
   )
 }
 
-function BulkDiscountDialog({
+export function BulkDiscountDialog({
   open,
   onOpenChange,
   bookTitle,
@@ -494,7 +419,7 @@ function BookDialog({
   )
 }
 
-function Lightbox({
+export function Lightbox({
   src,
   sources,
   onClose,
