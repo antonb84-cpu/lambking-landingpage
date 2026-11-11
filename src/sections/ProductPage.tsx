@@ -2,10 +2,11 @@ import { useState } from 'react'
 import { BookOpen, ChevronRight, PackageCheck, Truck } from 'lucide-react'
 import AmazonRating from '@/components/AmazonRating'
 import BuyButton from '@/components/BuyButton'
+import FlipBook from '@/components/FlipBook'
 import ProductCard from '@/components/ProductCard'
 import RichText from '@/components/RichText'
 import { Badge } from '@/components/ui/badge'
-import { BookMediaGallery, BulkDiscountDialog, LanguageEditions, Lightbox } from '@/sections/Books'
+import { BookMediaGallery, BulkDiscountDialog, LanguageEditions } from '@/sections/Books'
 import { BOOKS, type Book } from '@/data/books'
 import { booksCopyForEdition, catLabelOf, highlightIcon, isColoringBook, localizedBook, typeLabelOf } from '@/data/bookView'
 import { editionsOf } from '@/data/editions'
@@ -20,7 +21,8 @@ const seriesName = (b: Book) => (b.series ?? '').split('·')[0].trim()
 const closeness = (b: Book, to: Book) => (seriesName(b) && seriesName(b) === seriesName(to) ? 2 : 0) + (b.category === to.category ? 1 : 0)
 
 // Eigene Produktseite je Buch (buch/<name>/): Bilder links, rechts Titel, Bewertung, Ausgaben und der Kaufkasten,
-// darunter Beschreibung, Eckdaten, Blick ins Buch und passende weitere Bücher.
+// darunter Beschreibung, Eckdaten, das Buch zum Durchblättern und passende weitere Bücher.
+// Einzelne Probeseiten gibt es hier nicht mehr: das Blätterbuch zeigt, wie das Buch wirklich aussieht.
 export default function ProductPage({ book }: { book: Book }) {
   const lang = useLang()
   const s = shopTexts(lang)
@@ -32,7 +34,6 @@ export default function ProductPage({ book }: { book: Book }) {
       ?? editions[0]?.language
       ?? null,
   )
-  const [zoom, setZoom] = useState<string | null>(null)
   const [bulkOpen, setBulkOpen] = useState(false)
 
   const edition = editions.find((item) => item.language === editionLanguage)
@@ -40,6 +41,7 @@ export default function ProductPage({ book }: { book: Book }) {
   const copy = booksCopyForEdition(lang, editionLanguage)
   const { main, sub } = splitTitle(shown)
   const canBuy = !book.comingSoon && !!edition?.amazon.startsWith('https://')
+  const canFlip = hasFlipbook(book.id) || book.samples.length > 0
   const typeLabel = editionLanguage === 'es' && isColoringBook(book)
     ? 'Libro para colorear'
     : editionLanguage === 'ro' && isColoringBook(book)
@@ -65,7 +67,7 @@ export default function ProductPage({ book }: { book: Book }) {
         </nav>
 
         <div className="mt-5 grid gap-8 lg:grid-cols-[minmax(0,440px)_1fr] lg:gap-12" lang={editionLanguage ?? lang}>
-          <BookMediaGallery key={`${book.id}:${editionLanguage ?? lang}`} book={shown} onZoom={setZoom} copy={copy} page />
+          <BookMediaGallery key={`${book.id}:${editionLanguage ?? lang}`} book={{ ...shown, samples: [] }} onZoom={() => {}} copy={copy} page />
 
           <div className="min-w-0">
             <div className="flex flex-wrap gap-2">
@@ -106,10 +108,10 @@ export default function ProductPage({ book }: { book: Book }) {
               ) : (
                 <p className="text-sm font-semibold text-foreground">{copy.amazonPending}</p>
               )}
-              {hasFlipbook(book.id) ? (
+              {canFlip ? (
                 <button
                   type="button"
-                  onClick={() => openFlipBookById(book.id)}
+                  onClick={() => document.getElementById('blick-ins-buch')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
                   className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-full bg-primary px-6 py-2 text-sm font-bold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/60"
                 >
                   <BookOpen className="h-5 w-5" aria-hidden />
@@ -144,23 +146,13 @@ export default function ProductPage({ book }: { book: Book }) {
           </div>
         </div>
 
-        {shown.samples.length > 0 ? (
-          <section className="mt-12" aria-label={s.insideTitle}>
+        {canFlip ? (
+          <section id="blick-ins-buch" className="mt-12 scroll-mt-44" aria-label={s.insideTitle}>
             <h2 className="font-display text-2xl font-semibold">{s.insideTitle}</h2>
-            <ul className="mt-4 flex gap-3 overflow-x-auto pb-3">
-              {shown.samples.map((src, index) => (
-                <li key={src} className="shrink-0">
-                  <button
-                    type="button"
-                    onClick={() => setZoom(src)}
-                    aria-label={`${copy.samplePage} ${index + 1} – ${copy.zoom}`}
-                    className="block overflow-hidden rounded-lg border border-[#e6dcc3] bg-white shadow-sm transition-transform hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/60"
-                  >
-                    <img src={src} alt="" loading="lazy" className="h-44 w-auto sm:h-56" />
-                  </button>
-                </li>
-              ))}
-            </ul>
+            <p className="mt-1 text-sm text-muted-foreground">{s.insideHint}</p>
+            <div className="mt-5 rounded-3xl border border-[#e6dcc3] bg-[radial-gradient(120%_90%_at_50%_0%,#fff,#efe6d0)] px-3 py-6 sm:px-6 sm:py-8">
+              <FlipBook key={`${book.id}-${lang}`} book={book} onFullscreen={() => openFlipBookById(book.id)} />
+            </div>
           </section>
         ) : null}
 
@@ -187,17 +179,6 @@ export default function ProductPage({ book }: { book: Book }) {
         </div>
       ) : null}
 
-      <Lightbox
-        src={zoom}
-        sources={shown.samples}
-        onClose={() => setZoom(null)}
-        onNavigate={setZoom}
-        label={copy.backToBook}
-        previousLabel={copy.previousPage}
-        nextLabel={copy.nextPage}
-        pageLabel={copy.page}
-        imageAlt={`${shown.title} – ${copy.enlargedSamplePage}`}
-      />
       <BulkDiscountDialog open={bulkOpen} onOpenChange={setBulkOpen} bookTitle={shown.title} />
     </main>
   )
