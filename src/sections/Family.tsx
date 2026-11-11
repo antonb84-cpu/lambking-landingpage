@@ -1,23 +1,19 @@
 import LoopVideo from '@/components/LoopVideo'
 import Reveal from '@/components/Reveal'
-import Freebie from '@/sections/Freebie'
 import { SITE } from '@/data/books'
 import { useLang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
 
-// „So malen Kinder mit LambKing": Standbilder (Video lädt erst beim Antippen), darunter das kostenlose
-// Ausmalbild. Videos und Ausmalbild werden im Admin gepflegt und können einzeln ausgeblendet werden.
+// „So malen Kinder mit LambKing": Standbilder (Video lädt erst beim Antippen). Die Videos werden im Admin
+// gepflegt und können ausgeblendet werden. Das kostenlose Ausmalbild ist in der Shop-Fassung entfallen.
 export default function Family() {
   const k = textsFor(useLang()).kids
   const showVideos = !SITE.hiddenSections.includes('kids') && SITE.kidsVideos.length > 0
-  const showFreebie = !SITE.hiddenSections.includes('freebie')
-  if (!showVideos && !showFreebie) return null
+  if (!showVideos) return null
 
   return (
-    <section id="kinder" className="scroll-mt-28 pb-0 pt-12 lg:pt-16">
+    <section id="kinder" className="scroll-mt-28 py-12 lg:py-16">
       <div className="mx-auto max-w-4xl px-4 sm:px-6">
-        {showVideos ? (
-          <>
             <Reveal className="mx-auto max-w-2xl text-center">
               <h2 className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">{k.title}</h2>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground sm:text-base">{k.text}</p>
@@ -38,14 +34,6 @@ export default function Family() {
                 </Reveal>
               ))}
             </div>
-          </>
-        ) : null}
-
-        {showFreebie ? (
-          <div className={showVideos ? 'mt-14 lg:mt-20' : ''}>
-            <Freebie embedded />
-          </div>
-        ) : null}
       </div>
     </section>
   )

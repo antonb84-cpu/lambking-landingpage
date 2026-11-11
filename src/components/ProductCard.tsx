@@ -53,11 +53,11 @@ export default function ProductCard({ book }: { book: Book }) {
           />
         )}
       </a>
-      <div className="flex flex-1 flex-col p-3.5 sm:p-4">
+      <div className="flex flex-1 flex-col p-3 sm:p-4">
         <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-accent sm:text-[11px]">
           {typeLabelOf(book, lang)}{volume ? ` · ${volume}` : ''}
         </p>
-        <h3 className="mt-1 font-display text-[0.95rem] font-semibold leading-tight sm:text-base">
+        <h3 className="mt-1 hyphens-auto break-words font-display text-[0.8rem] font-semibold leading-tight min-[420px]:text-[0.95rem] sm:text-base">
           <a href={href} className="hover:underline">{main}</a>
         </h3>
         {sub ? <p className="mt-0.5 line-clamp-2 text-xs leading-snug text-muted-foreground sm:text-sm">{sub}</p> : null}

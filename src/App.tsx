@@ -10,7 +10,6 @@ import Family from '@/sections/Family'
 import Shop from '@/sections/Shop'
 import ProductPage from '@/sections/ProductPage'
 import AppSection from '@/sections/AppSection'
-import Donate from '@/sections/Donate'
 import SupportedWorks from '@/sections/SupportedWorks'
 import CreatorPartnerTeaser from '@/sections/CreatorPartnerTeaser'
 import Faq from '@/sections/Faq'
@@ -73,7 +72,6 @@ export default function App() {
         <Mascot />
         {!SITE.hiddenSections.includes('supportedWorks') && <SupportedWorks />}
         {SITE.creatorPartnerEnabled ? <CreatorPartnerTeaser /> : null}
-        <Donate />
         <Faq />
         <Contact />
       </main>

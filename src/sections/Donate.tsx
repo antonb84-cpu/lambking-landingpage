@@ -13,7 +13,7 @@ import { textsFor } from '@/data/texts'
 // Die Links kommen aus dem Admin (SITE.paypalUrl / SITE.kofiUrl).
 const isDonateHash = () => typeof window !== 'undefined' && window.location.hash === '#unterstuetzen'
 
-export default function Donate() {
+export default function Donate({ embedded = false }: { embedded?: boolean }) {
   const lang = useLang()
   const t = textsFor(lang).donate
   const [open, setOpen] = useState(isDonateHash)
@@ -28,10 +28,7 @@ export default function Donate() {
 
   if (!SITE.paypalUrl && !SITE.kofiUrl) return null
 
-  return (
-    <section id="unterstuetzen" className="scroll-mt-28 pb-6 pt-4 lg:pb-8 lg:pt-6">
-      <div className="mx-auto max-w-3xl px-4 sm:px-6">
-        <Reveal>
+  const row = (
           <div className="rounded-2xl border border-border bg-card/60">
             <button
               type="button"
@@ -71,7 +68,14 @@ export default function Donate() {
               </div>
             ) : null}
           </div>
-        </Reveal>
+  )
+
+  // Im Bereich „Unsere Vision“ (embedded) steht die Zeile ohne eigenen Abschnitt unter dem Text
+  if (embedded) return <div id="unterstuetzen" className="scroll-mt-44"><Reveal>{row}</Reveal></div>
+  return (
+    <section id="unterstuetzen" className="scroll-mt-28 pb-6 pt-4 lg:pb-8 lg:pt-6">
+      <div className="mx-auto max-w-3xl px-4 sm:px-6">
+        <Reveal>{row}</Reveal>
       </div>
     </section>
   )

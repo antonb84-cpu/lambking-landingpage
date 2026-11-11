@@ -1,6 +1,7 @@
 import { Crown, Heart, ScrollText } from 'lucide-react'
 import Reveal from '@/components/Reveal'
 import RichText from '@/components/RichText'
+import Donate from '@/sections/Donate'
 import { SITE } from '@/data/books'
 import { useLang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
@@ -63,6 +64,11 @@ export default function Mascot() {
             })}
           </ul>
         </Reveal>
+
+        {/* Freiwillige Unterstützung: leise Zeile zum Aufklappen, gehört zur Vision */}
+        <div className="mx-auto mt-8 max-w-3xl">
+          <Donate embedded />
+        </div>
       </div>
     </section>
   )
