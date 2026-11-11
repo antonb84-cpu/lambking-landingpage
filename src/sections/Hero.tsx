@@ -1,10 +1,11 @@
 import type { CSSProperties } from 'react'
-import { BookOpen, Star } from 'lucide-react'
+import { Star } from 'lucide-react'
 import Reveal from '@/components/Reveal'
 import RichText from '@/components/RichText'
 import StoreBadges from '@/components/StoreBadges'
 import { BOOKS, SITE } from '@/data/books'
 import { useLang } from '@/data/lang'
+import { shopTexts } from '@/data/shop'
 import { textsFor } from '@/data/texts'
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, Number.isFinite(value) ? value : min))
@@ -61,16 +62,13 @@ export default function Hero() {
             <p className="mt-3 text-base font-medium leading-relaxed text-foreground/80">
               <RichText text={t.hero.subtitle} />
             </p>
-            <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <a
-                href="#buecher"
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-7 py-3 font-bold text-primary-foreground shadow-lg shadow-primary/25 transition-transform hover:scale-[1.03]"
-              >
-                <BookOpen className="h-5 w-5" aria-hidden />
-                {t.hero.ctaBooks}
-              </a>
-            </div>
-            {!SITE.hiddenSections.includes('app') ? <StoreBadges onlyLinks className="mt-4" /> : null}
+            {/* Statt eines Knopfes zu den Büchern (die beginnen gleich darunter): ein Hinweis auf die App mit den Store-Knöpfen */}
+            {!SITE.hiddenSections.includes('app') ? (
+              <div className="mt-6">
+                <p className="font-display text-xl font-semibold leading-tight">{shopTexts(lang).heroApp}</p>
+                <StoreBadges onlyLinks className="mt-3" />
+              </div>
+            ) : null}
             {summary ? (
               <a href="#buecher" className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-foreground/80">
                 <span className="flex items-center gap-0.5 text-accent" aria-hidden>

@@ -52,6 +52,7 @@ export function ageBucketsOf(book: Book): string[] {
 
 const TEXTS = {
   de: {
+    heroApp: 'Entdecke unsere App',
     searchPlaceholder: 'Buch suchen',
     searchLabel: 'Bücher durchsuchen',
     allBooks: 'Alle Bücher',
@@ -80,6 +81,7 @@ const TEXTS = {
     notFound: 'Dieses Buch gibt es hier nicht mehr.',
   },
   en: {
+    heroApp: 'Discover our app',
     searchPlaceholder: 'Search books',
     searchLabel: 'Search the books',
     allBooks: 'All books',
