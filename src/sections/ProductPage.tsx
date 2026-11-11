@@ -6,7 +6,7 @@ import FlipBook from '@/components/FlipBook'
 import ProductCard from '@/components/ProductCard'
 import RichText from '@/components/RichText'
 import { Badge } from '@/components/ui/badge'
-import { BookMediaGallery, BulkDiscountDialog, LanguageEditions } from '@/sections/Books'
+import { BookMediaGallery, BulkDiscountDialog, LanguageEditions, Lightbox } from '@/sections/Books'
 import { BOOKS, type Book } from '@/data/books'
 import { booksCopyForEdition, catLabelOf, highlightIcon, isColoringBook, localizedBook, typeLabelOf } from '@/data/bookView'
 import { editionsOf } from '@/data/editions'
@@ -22,7 +22,8 @@ const closeness = (b: Book, to: Book) => (seriesName(b) && seriesName(b) === ser
 
 // Eigene Produktseite je Buch (buch/<name>/): Bilder links, rechts Titel, Bewertung, Ausgaben und der Kaufkasten,
 // darunter Beschreibung, Eckdaten, das Buch zum Durchblättern und passende weitere Bücher.
-// Einzelne Probeseiten gibt es hier nicht mehr: das Blätterbuch zeigt, wie das Buch wirklich aussieht.
+// Hat das Buch ein Blätterbuch, ersetzt es die einzelnen Probeseiten: es zeigt, wie das Buch wirklich aussieht.
+// Ohne Blätterbuch (noch nicht aus der PDF erzeugt) bleiben die Probeseiten in der Bildergalerie.
 export default function ProductPage({ book }: { book: Book }) {
   const lang = useLang()
   const s = shopTexts(lang)
@@ -35,13 +36,14 @@ export default function ProductPage({ book }: { book: Book }) {
       ?? null,
   )
   const [bulkOpen, setBulkOpen] = useState(false)
+  const [zoom, setZoom] = useState<string | null>(null)
 
   const edition = editions.find((item) => item.language === editionLanguage)
   const shown = edition ? localizedBook(book, edition.language) : book
   const copy = booksCopyForEdition(lang, editionLanguage)
   const { main, sub } = splitTitle(shown)
   const canBuy = !book.comingSoon && !!edition?.amazon.startsWith('https://')
-  const canFlip = hasFlipbook(book.id) || book.samples.length > 0
+  const canFlip = hasFlipbook(book.id)
   const typeLabel = editionLanguage === 'es' && isColoringBook(book)
     ? 'Libro para colorear'
     : editionLanguage === 'ro' && isColoringBook(book)
@@ -67,7 +69,7 @@ export default function ProductPage({ book }: { book: Book }) {
         </nav>
 
         <div className="mt-5 grid gap-8 lg:grid-cols-[minmax(0,440px)_1fr] lg:gap-12" lang={editionLanguage ?? lang}>
-          <BookMediaGallery key={`${book.id}:${editionLanguage ?? lang}`} book={{ ...shown, samples: [] }} onZoom={() => {}} copy={copy} page />
+          <BookMediaGallery key={`${book.id}:${editionLanguage ?? lang}`} book={canFlip ? { ...shown, samples: [] } : shown} onZoom={setZoom} copy={copy} page />
 
           <div className="min-w-0">
             <div className="flex flex-wrap gap-2">
@@ -179,6 +181,19 @@ export default function ProductPage({ book }: { book: Book }) {
         </div>
       ) : null}
 
+      {canFlip ? null : (
+        <Lightbox
+          src={zoom}
+          sources={shown.samples}
+          onClose={() => setZoom(null)}
+          onNavigate={setZoom}
+          label={copy.backToBook}
+          previousLabel={copy.previousPage}
+          nextLabel={copy.nextPage}
+          pageLabel={copy.page}
+          imageAlt={`${shown.title} – ${copy.enlargedSamplePage}`}
+        />
+      )}
       <BulkDiscountDialog open={bulkOpen} onOpenChange={setBulkOpen} bookTitle={shown.title} />
     </main>
   )
