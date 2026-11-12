@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { X } from 'lucide-react'
+import { ChevronDown, SlidersHorizontal, X } from 'lucide-react'
 import ProductCard from '@/components/ProductCard'
 import Reveal from '@/components/Reveal'
 import RichText from '@/components/RichText'
@@ -14,6 +14,11 @@ import { textsFor } from '@/data/texts'
 import { splitTitle } from '@/data/titles'
 
 type Sort = 'recommended' | 'newest' | 'title'
+
+const smallChip = (active: boolean) =>
+  `inline-flex min-h-9 items-center rounded-full border px-3 py-1 text-[13px] font-bold transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/60 ${
+    active ? 'border-primary bg-primary text-primary-foreground' : 'border-[#d9cdb0] bg-white text-foreground/80 hover:border-primary/50 hover:text-foreground'
+  }`
 
 const chipClass = (active: boolean) =>
   `inline-flex min-h-10 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm font-bold transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/60 ${
@@ -30,6 +35,8 @@ export default function Shop() {
   const [age, setAge] = useState<string>('all')
   const [sort, setSort] = useState<Sort>('recommended')
   const [query, setQuery] = useState<string>(() => initialShopFilter().query ?? '')
+  // Alter und Sortierung stehen eingeklappt hinter einem kleinen Knopf (nur die Buchart bleibt groß sichtbar)
+  const [filtersOpen, setFiltersOpen] = useState(false)
 
   // Auswahl merken: „Zurück zu allen Büchern“ auf den Buchseiten führt dorthin zurück
   useEffect(() => saveShopFilter({ category: category === 'all' ? undefined : category, query: query.trim() || undefined }), [category, query])
@@ -114,28 +121,48 @@ export default function Shop() {
               </button>
             ))}
           </div>
-          <div className="mt-3 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t border-[#eadfc2] pt-3">
-            {ages.length > 1 ? (
-              <div className="flex flex-wrap items-center gap-2" role="group" aria-label={s.ageLabel}>
-                <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{s.ageLabel}</span>
-                <button type="button" className={chipClass(activeAge === 'all')} aria-pressed={activeAge === 'all'} onClick={() => setAge('all')}>{s.allAges}</button>
-                {ages.map((key) => (
-                  <button key={key} type="button" className={chipClass(activeAge === key)} aria-pressed={activeAge === key} onClick={() => setAge(key)}>{s.ages[key]}</button>
-                ))}
+          <div className="mt-2 border-t border-[#eadfc2] pt-2">
+            <button
+              type="button"
+              onClick={() => setFiltersOpen((open) => !open)}
+              aria-expanded={filtersOpen}
+              aria-controls="shop-filter-panel"
+              className="inline-flex min-h-9 items-center gap-2 rounded-full px-2 text-[13px] font-bold text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/60"
+            >
+              <SlidersHorizontal className="h-4 w-4" aria-hidden />
+              {s.filterToggle}
+              {activeAge !== 'all' || sort !== 'recommended' ? (
+                <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[11px] text-primary-foreground" aria-label={s.filterActive}>
+                  {(activeAge !== 'all' ? 1 : 0) + (sort !== 'recommended' ? 1 : 0)}
+                </span>
+              ) : null}
+              <ChevronDown className={`h-4 w-4 transition-transform ${filtersOpen ? 'rotate-180' : ''}`} aria-hidden />
+            </button>
+            {filtersOpen ? (
+              <div id="shop-filter-panel" className="mt-2 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 pb-1">
+                {ages.length > 1 ? (
+                  <div className="flex flex-wrap items-center gap-1.5" role="group" aria-label={s.ageLabel}>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{s.ageLabel}</span>
+                    <button type="button" className={smallChip(activeAge === 'all')} aria-pressed={activeAge === 'all'} onClick={() => setAge('all')}>{s.allAges}</button>
+                    {ages.map((key) => (
+                      <button key={key} type="button" className={smallChip(activeAge === key)} aria-pressed={activeAge === key} onClick={() => setAge(key)}>{s.ages[key]}</button>
+                    ))}
+                  </div>
+                ) : <span />}
+                <label className="flex items-center gap-2 text-[13px] font-semibold text-muted-foreground">
+                  {s.sortLabel}
+                  <select
+                    value={sort}
+                    onChange={(event) => setSort(event.target.value as Sort)}
+                    className="min-h-9 rounded-full border border-[#d9cdb0] bg-white px-3 py-1 text-[13px] font-bold text-foreground focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/60"
+                  >
+                    <option value="recommended">{s.sortRecommended}</option>
+                    <option value="newest">{s.sortNewest}</option>
+                    <option value="title">{s.sortTitle}</option>
+                  </select>
+                </label>
               </div>
-            ) : <span />}
-            <label className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
-              {s.sortLabel}
-              <select
-                value={sort}
-                onChange={(event) => setSort(event.target.value as Sort)}
-                className="min-h-10 rounded-full border border-[#d9cdb0] bg-white px-3 py-1.5 text-sm font-bold text-foreground focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/60"
-              >
-                <option value="recommended">{s.sortRecommended}</option>
-                <option value="newest">{s.sortNewest}</option>
-                <option value="title">{s.sortTitle}</option>
-              </select>
-            </label>
+            ) : null}
           </div>
         </div>
 
