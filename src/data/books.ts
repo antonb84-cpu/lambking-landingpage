@@ -89,6 +89,14 @@ export const CATEGORIES: CategoryDef[] = [
     typeEn: "Comic",
     color: '#B3402E',
   },
+  {
+    id: 'geschichtsbuecher',
+    labelDe: "Geschichtsbuch",
+    labelEn: "History Book",
+    typeDe: "Sachbuch",
+    typeEn: "Non-fiction Book",
+    color: '#8A5A14',
+  },
 ]
 
 export interface BookEdition {
@@ -447,7 +455,7 @@ export const BOOKS: Book[] = [
     lang: 'de',
     title: "Völker der Bibel – Eine Zeitreise zu den ersten Zivilisationen",
     series: "Sachbuch · Band 1",
-    category: 'geschichten',
+    category: 'geschichtsbuecher',
     age: "ab 10 Jahren",
     detail: "Bildsachbuch · 88 Seiten",
     cover: 'images/cover-voelker-band-1.jpg',

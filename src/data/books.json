@@ -1353,7 +1353,7 @@
       "id": "voelker-der-bibel-band-1",
       "title": "Völker der Bibel – Eine Zeitreise zu den ersten Zivilisationen",
       "series": "Sachbuch · Band 1",
-      "category": "geschichten",
+      "category": "geschichtsbuecher",
       "age": "ab 10 Jahren",
       "detail": "Bildsachbuch · 88 Seiten",
       "cover": "images/cover-voelker-band-1.jpg",
@@ -1478,6 +1478,14 @@
       "typeDe": "Comic",
       "typeEn": "Comic",
       "color": "#B3402E"
+    },
+    {
+      "id": "geschichtsbuecher",
+      "labelDe": "Geschichtsbuch",
+      "labelEn": "History Book",
+      "typeDe": "Sachbuch",
+      "typeEn": "Non-fiction Book",
+      "color": "#8A5A14"
     }
   ]
 }
