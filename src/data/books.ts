@@ -500,7 +500,7 @@ export const BOOKS: Book[] = [
     detail: "78 Seiten · Großformat",
     cover: 'images/front/cover-buntstift-band10.jpg',
     coverFront: 'images/front/cover-buntstift-band10.webp',
-    description: "Jesus zieht in Jerusalem ein und teilt das letzte Mahl mit seinen Freunden. Am Ostermorgen finden sie das Grab leer. Kinder erleben, wie Maria Magdalena und die Jünger Jesus wiedersehen.",
+    description: "Jesus zieht nach Jerusalem. Seine Freunde teilen das letzte Mahl mit ihm, erleben seinen Abschied und entdecken am Ostermorgen: Das Grab ist leer. Jesus lebt! Dieses Mal- und Geschichtenbuch erzählt die Ostergeschichte in kurzen, warmen Texten für Kinder von 5 bis 8 Jahren. Jede Geschichte steht einer passenden Ausmalseite gegenüber. 38 unterschiedliche Motive laden zum genauen Hinsehen, gemeinsamen Lesen und kreativen Gestalten ein. Die traurigen Ereignisse werden behutsam und ohne drastische Bilder dargestellt. Viel Raum erhalten die Auferstehungsbotschaft, Maria Magdalenas Begegnung mit Jesus, der Weg nach Emmaus und das frohe Wiedersehen mit seinen Freunden. Zu jeder Geschichte gehört eine Bibelstellenangabe.",
     highlights: ["38 kurze Geschichten mit Bibelstellen", "38 passende Ausmalbilder", "Ostern vom Einzug in Jerusalem bis zu den Begegnungen mit dem auferstandenen Jesus"],
     samples: [
       'images/buntstift-band10-seite-2.jpg',
@@ -510,9 +510,9 @@ export const BOOKS: Book[] = [
       'images/buntstift-band10-seite-44.jpg',
       'images/buntstift-band10-seite-45.jpg',
     ],
-    amazon: "",
-    editions: [],
-    comingSoon: true,
+    amazon: "https://www.amazon.de/dp/B0HS2SF6Y1",
+    editions: [{"language": "de", "amazon": "https://www.amazon.de/dp/B0HS2SF6Y1"}],
+    releaseDate: '2026-11-17',
   },
   {
     id: 'voelker-der-bibel-band-1',
