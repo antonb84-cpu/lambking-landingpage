@@ -123,8 +123,24 @@ try {
   await send('Page.navigate', { url: `http://127.0.0.1:${HTTP_PORT}/` })
   await new Promise((r) => setTimeout(r, 5000))
 
+  // „Alle Bücher“ filtert den Bücherbereich auf der Startseite und scrollt dorthin (kein Anker in der Adresse)
+  {
+    const before = await targetCount()
+    const res = await evalJs(`(() => {
+      const a = [...document.querySelectorAll('header nav a')].find(x => x.textContent.trim() === 'Alle Bücher')
+      if (!a) return 'NICHT GEFUNDEN'
+      a.click(); return 'ok'
+    })()`)
+    await new Promise((r) => setTimeout(r, 1200))
+    const after = await targetCount()
+    const scrollY = await evalJs(`Math.round(window.scrollY)`)
+    const cards = await evalJs(`document.querySelectorAll('#buecher article').length`)
+    const ok = res === 'ok' && after === before && scrollY > 50 && cards > 10
+    console.log(`${ok ? '✓' : '✗'} Alle Bücher → Bücherbereich (Tabs ${before}→${after}, ScrollY ${scrollY}, Karten ${cards})`)
+    if (!ok) fehler++
+  }
+
   const tests = [
-    ['Bücher', '#buecher'],
     ['App', '#app'],
     ['Über das Projekt', '#ueber'],
     ['FAQ', '#faq'],
@@ -173,40 +189,34 @@ try {
     if (!ok) fehler++
   }
 
-  // Buchfenster: Mengenrabatt öffnet eine eigene, zweisprachige Information
-  // mit der vereinbarten Staffel und direktem E-Mail-Kontakt.
+  // Buchseite: Bildergalerie (Cover → Buchfoto → aufgeschlagenes Buch) und Mengenrabatt mit eigener,
+  // zweisprachiger Information (vereinbarte Staffel, direkter E-Mail-Kontakt).
   {
-    await send('Page.navigate', { url: `http://127.0.0.1:${HTTP_PORT}/#buecher` })
-    await new Promise((r) => setTimeout(r, 1400))
-    await evalJs(`document.querySelector('#buecher article button[aria-label^="Inhalt ansehen:"]')?.click()`)
-    await waitForPageState(`document.querySelectorAll('[role="dialog"]').length === 1`)
-    const galleryStart = await evalJs(`document.querySelector('[role="dialog"]')?.textContent.includes('Cover · 1/')`)
-    await evalJs(`document.querySelector('[role="dialog"] button[aria-label="Nächstes Bild"]')?.click()`)
-    const lifestyleShown = await waitForPageState(`document.querySelector('[role="dialog"] img[alt*="Buchfoto"]') !== null`)
-    await evalJs(`document.querySelector('[role="dialog"] button[aria-label="Nächstes Bild"]')?.click()`)
-    const openBookShown = await waitForPageState(`document.querySelector('[role="dialog"] img[src*="schoepfung-de-offen-rechts.png"]') !== null`)
-    await evalJs(`document.querySelector('[role="dialog"] button[aria-label="Nächstes Bild"]')?.click()`)
-    const sampleShown = await waitForPageState(`document.querySelector('[role="dialog"] img[src*="schoepfung-de-originalseite-05.jpg"]') !== null`)
-    const galleryOk = galleryStart && lifestyleShown && openBookShown && sampleShown
-    console.log(`${galleryOk ? '✓' : '✗'} Buchgalerie: Cover → Buchfoto → aufgeschlagenes Buch → echte Vorschauseite`)
+    await send('Page.navigate', { url: `http://127.0.0.1:${HTTP_PORT}/buch/die-schoepfung-gott-macht-die-welt/` })
+    const galleryStart = await waitForPageState(`document.body.textContent.includes('Cover · 1/') && !!document.querySelector('button[aria-label="Nächstes Bild"]')`, 12000)
+    await evalJs(`document.querySelector('button[aria-label="Nächstes Bild"]')?.click()`)
+    const lifestyleShown = await waitForPageState(`document.querySelector('main img[src*="schoepfung-de-hochformat.png"]') !== null`)
+    await evalJs(`document.querySelector('button[aria-label="Nächstes Bild"]')?.click()`)
+    const openBookShown = await waitForPageState(`document.querySelector('main img[src*="schoepfung-de-offen-rechts.png"]') !== null`)
+    const galleryOk = galleryStart && lifestyleShown && openBookShown
+    console.log(`${galleryOk ? '✓' : '✗'} Buchseite: Galerie Cover → Buchfoto → aufgeschlagenes Buch`)
     if (!galleryOk) fehler++
-    await send('Emulation.setDeviceMetricsOverride', { width: 820, height: 900, deviceScaleFactor: 1, mobile: false })
+    await send('Emulation.setDeviceMetricsOverride', { width: 1100, height: 900, deviceScaleFactor: 1, mobile: false })
     const buttonLayoutJson = await evalJs(`(() => {
-      const dialog = document.querySelector('[role="dialog"]')
-      const amazon = dialog.querySelector('a[href*="amazon."] img[src*="buttons/amazon"]')?.closest('a')?.getBoundingClientRect()
-      const discount = [...dialog.querySelectorAll('button')].find(b => b.textContent.includes('Mengenrabatt ab 10 Stück'))?.getBoundingClientRect()
+      const box = document.querySelector('main h1').closest('div')
+      const amazon = box.querySelector('a[href*="amazon."] img[src*="buttons/amazon"]')?.closest('a')?.getBoundingClientRect()
+      const discount = [...box.querySelectorAll('button')].find(b => b.textContent.includes('Mengenrabatt ab 10 Stück'))?.getBoundingClientRect()
       return JSON.stringify({amazon:{x:amazon?.x,width:amazon?.width}, discount:{x:discount?.x,width:discount?.width}})
     })()`)
     await send('Emulation.clearDeviceMetricsOverride')
     const buttonLayout = JSON.parse(buttonLayoutJson || '{}')
-    const aligned = Math.abs(buttonLayout.amazon?.x - buttonLayout.discount?.x) < 2 && Math.abs(buttonLayout.amazon?.width - buttonLayout.discount?.width) < 2
-    console.log(`${aligned ? '✓' : '✗'} Mittlere Breite: Mengenrabatt direkt unter Amazon und gleich breit`)
+    const aligned = Math.abs(buttonLayout.amazon?.x - buttonLayout.discount?.x) < 2 && buttonLayout.discount?.width > 100
+    console.log(`${aligned ? '✓' : '✗'} Buchseite: Mengenrabatt steht direkt unter dem Amazon-Knopf`)
     if (!aligned) fehler++
     await evalJs(`[...document.querySelectorAll('button')].find(b => b.textContent.includes('Mengenrabatt ab 10 Stück'))?.click()`)
     const discountStateJson = await waitForPageState(`(() => {
-      const dialogs = [...document.querySelectorAll('[role="dialog"]')]
-      const dialog = dialogs.at(-1)
-      if (dialogs.length !== 2 || !dialog) return ''
+      const dialog = document.querySelector('[role="dialog"]')
+      if (!dialog) return ''
       return JSON.stringify({
         text: dialog.textContent,
         email: dialog.querySelector('a[href^="mailto:"]')?.getAttribute('href') || '',
@@ -218,7 +228,7 @@ try {
       && ['ab 10 Stück', '15 %', 'ab 25 Stück', '25 %', 'ab 50 Stück', '35 %', 'ab 100 Stück', '40 %']
         .every((part) => discountState.text?.includes(part))
       && discountState.email.startsWith('mailto:hello@lambking.store?subject=')
-    console.log(`${ok ? '✓' : '✗'} Mengenrabatt: vier Rabattstufen und E-Mail-Kontakt im Buchfenster`)
+    console.log(`${ok ? '✓' : '✗'} Mengenrabatt: vier Rabattstufen und E-Mail-Kontakt`)
     if (!ok) fehler++
     await evalJs(`Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: async (text) => { window.__copiedEmail = text } } })`)
     await evalJs(`[...document.querySelectorAll('button')].find(b => b.textContent.includes('E-Mail-Adresse kopieren'))?.click()`)
@@ -226,8 +236,6 @@ try {
     const copyOk = copied === true
     console.log(`${copyOk ? '✓' : '✗'} Mengenrabatt: E-Mail-Adresse wird kopiert und sichtbar bestätigt`)
     if (!copyOk) fehler++
-    await evalJs(`[...document.querySelectorAll('[role="dialog"]')].at(-1)?.querySelector('[data-slot="dialog-close"]')?.click()`)
-    await waitForPageState(`document.querySelectorAll('[role="dialog"]').length === 1`)
     await send('Page.navigate', { url: `http://127.0.0.1:${HTTP_PORT}/` })
     await new Promise((r) => setTimeout(r, 1200))
   }
@@ -277,13 +285,12 @@ try {
     await new Promise((r) => setTimeout(r, 1800))
   }
 
-  // Großes Blätterbuch: Knopf an der Buchkarte öffnet ein Fenster mit Teil-Vorschau, das Ende verweist auf Amazon
+  // Großes Blätterbuch: Auf der Buchseite öffnet „Groß ansehen“ ein Fenster mit Teil-Vorschau, das Ende verweist auf Amazon
   {
+    await send('Page.navigate', { url: `http://127.0.0.1:${HTTP_PORT}/buch/die-schoepfung-gott-macht-die-welt/` })
+    await waitForPageState(`!!document.querySelector('#blick-ins-buch')`, 8000)
     const before = await targetCount()
-    // „Reinblättern“ liegt im Buchfenster: erst das Cover anklicken, dann den Knopf im Fenster
-    await evalJs(`document.querySelector('#buecher .stall-cover')?.click()`)
-    await waitForPageState(`!!document.querySelector('[role="dialog"]')`, 8000)
-    await evalJs(`[...document.querySelectorAll('[role="dialog"] button')].find(b => /Reinblättern/.test(b.textContent))?.click()`)
+    await evalJs(`[...document.querySelectorAll('#blick-ins-buch button')].find(b => /Groß ansehen/.test(b.textContent))?.click()`)
     const opened = await waitForPageState(`/Leseprobe: \\d+ von \\d+ Seiten/.test(document.querySelector('[role="dialog"]')?.textContent || '')`, 8000)
     await evalJs(`[...document.querySelectorAll('[role="dialog"] button')].find(b => /Rückseite/.test(b.getAttribute('aria-label') || ''))?.click()`)
     await new Promise((r) => setTimeout(r, 1800))
@@ -298,22 +305,23 @@ try {
     await new Promise((r) => setTimeout(r, 1500))
   }
 
-  // Buchtitel ist ein echter Link auf die Buchseite (für Suchmaschinen); ein normaler Klick öffnet nur das Buchfenster
+  // Buchtitel ist ein echter Link auf die Buchseite (für Suchmaschinen) und führt dorthin, ohne neuen Tab
   {
     const before = await targetCount()
     const href = await evalJs(`document.querySelector('#buecher h3 a')?.getAttribute('href') || ''`)
     await evalJs(`document.querySelector('#buecher h3 a')?.click()`)
-    const opened = await waitForPageState(`!!document.querySelector('[role="dialog"]') && location.pathname.indexOf('/buch/') === -1`, 8000)
+    const opened = await waitForPageState(`location.pathname.indexOf('/buch/') !== -1 && !!document.querySelector('main h1')`, 8000)
+    const backLink = await waitForPageState(`[...document.querySelectorAll('a')].some(a => /Zurück zu allen Büchern/.test(a.textContent))`, 12000)
     const after = await targetCount()
-    const ok = /^buch\/[a-z0-9-]+\/$/.test(href) && opened === true && after === before
-    console.log(`${ok ? '✓' : '✗'} Buchtitel: echter Link (${href}), Klick öffnet das Buchfenster ohne neuen Tab`)
+    const ok = /^buch\/[a-z0-9-]+\/$/.test(href) && opened === true && backLink === true && after === before
+    console.log(`${ok ? '✓' : '✗'} Buchtitel: echter Link (${href}), öffnet die Buchseite mit „Zurück zu allen Büchern“ ohne neuen Tab${ok ? '' : ` (geöffnet ${opened}, Rückweg ${backLink}, Tabs ${before}→${after})`}`)
     if (!ok) fehler++
     await send('Page.navigate', { url: `http://127.0.0.1:${HTTP_PORT}/` })
     await new Promise((r) => setTimeout(r, 1500))
   }
 
   {
-    await evalJs(`[...document.querySelectorAll('button')].find(b => /^EN(English)?$/.test(b.textContent.trim()))?.click()`)
+    await evalJs(`document.querySelector('button[aria-label="English"]')?.click()`)
     await new Promise((r) => setTimeout(r, 1500))
     const s = JSON.parse(await evalJs(`JSON.stringify({
       lang: document.documentElement.lang,
@@ -325,7 +333,7 @@ try {
   }
 
   // Rechts-Fenster: Impressum & Datenschutz öffnen ein Fenster (kein neuer Tab)
-  await evalJs(`[...document.querySelectorAll('button')].find(b => /^DE(Deutsch)?$/.test(b.textContent.trim()))?.click()`)
+  await evalJs(`document.querySelector('button[aria-label="Deutsch"]')?.click()`)
   await new Promise((r) => setTimeout(r, 1000))
   for (const [label, marker] of [['Impressum', 'Anton Bernt'], ['Datenschutz', 'GitHub']]) {
     const before = await targetCount()
@@ -364,7 +372,7 @@ try {
   }
 
   {
-    await evalJs(`[...document.querySelectorAll('button')].find(b => /^EN(English)?$/.test(b.textContent.trim()))?.click()`)
+    await evalJs(`document.querySelector('button[aria-label="English"]')?.click()`)
     await new Promise((r) => setTimeout(r, 900))
     const s = JSON.parse(await evalJs(`JSON.stringify({
       lang: document.documentElement.lang,
