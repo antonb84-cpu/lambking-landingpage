@@ -1282,6 +1282,74 @@
       "coverFront": "images/front/cover-buntstift-band05.webp"
     },
     {
+      "id": "buntstift-06",
+      "title": "Mit Buntstift durch die Bibel: David – Der Hirtenjunge und der Riese",
+      "series": "Mit Buntstift durch die Bibel · Band 6",
+      "category": "malbuecher",
+      "age": "5–8 Jahre",
+      "detail": "70 Seiten · Großformat",
+      "cover": "images/front/cover-buntstift-band06.jpg",
+      "description": "David hütet Schafe und spielt auf seiner Leier. Als der Riese Goliath alle einschüchtert, vertraut der junge Hirte auf Gott. Am Königshof findet er in Jonatan einen Freund.",
+      "lifestyleImages": [],
+      "highlights": [
+        "34 kurze Geschichten mit Bibelstellen",
+        "34 passende Ausmalbilder",
+        "Geschichte links, Ausmalbild rechts"
+      ],
+      "samples": [
+        "images/buntstift-band06-seite-2.jpg",
+        "images/buntstift-band06-seite-3.jpg",
+        "images/buntstift-band06-seite-20.jpg",
+        "images/buntstift-band06-seite-21.jpg",
+        "images/buntstift-band06-seite-44.jpg",
+        "images/buntstift-band06-seite-45.jpg"
+      ],
+      "amazon": "https://www.amazon.de/dp/B0HQ5397V9",
+      "releaseDate": "2026-11-02",
+      "lang": "de",
+      "editions": [
+        {
+          "language": "de",
+          "amazon": "https://www.amazon.de/dp/B0HQ5397V9"
+        }
+      ],
+      "coverFront": "images/front/cover-buntstift-band06.webp"
+    },
+    {
+      "id": "buntstift-07",
+      "title": "Mit Buntstift durch die Bibel: Daniel und seine Freunde – Mutig mit Gott",
+      "series": "Mit Buntstift durch die Bibel · Band 7",
+      "category": "malbuecher",
+      "age": "6–8 Jahre",
+      "detail": "78 Seiten · Großformat",
+      "cover": "images/front/cover-buntstift-band07.jpg",
+      "description": "In Babylon halten Daniel und seine Freunde zusammen. Sie vertrauen Gott am Königshof, im Feuerofen und in der Löwengrube.",
+      "lifestyleImages": [],
+      "highlights": [
+        "38 kurze Geschichten mit Bibelstellen",
+        "38 passende Ausmalbilder",
+        "Geschichte links, Ausmalbild rechts"
+      ],
+      "samples": [
+        "images/buntstift-band07-seite-2.jpg",
+        "images/buntstift-band07-seite-3.jpg",
+        "images/buntstift-band07-seite-20.jpg",
+        "images/buntstift-band07-seite-21.jpg",
+        "images/buntstift-band07-seite-44.jpg",
+        "images/buntstift-band07-seite-45.jpg"
+      ],
+      "amazon": "https://www.amazon.de/dp/B0HQ59KCGR",
+      "releaseDate": "2026-11-02",
+      "lang": "de",
+      "editions": [
+        {
+          "language": "de",
+          "amazon": "https://www.amazon.de/dp/B0HQ59KCGR"
+        }
+      ],
+      "coverFront": "images/front/cover-buntstift-band07.webp"
+    },
+    {
       "id": "buntstift-08",
       "title": "Mit Buntstift durch die Bibel: Jesus wird geboren – Das Wunder von Bethlehem",
       "series": "Mit Buntstift durch die Bibel · Band 8",
@@ -1348,6 +1416,35 @@
         }
       ],
       "coverFront": "images/front/cover-buntstift-band09.webp"
+    },
+    {
+      "id": "buntstift-10",
+      "title": "Mit Buntstift durch die Bibel: Jesus lebt – Die wunderbare Ostergeschichte",
+      "series": "Mit Buntstift durch die Bibel · Band 10",
+      "category": "malbuecher",
+      "age": "5–8 Jahre",
+      "detail": "78 Seiten · Großformat",
+      "cover": "images/front/cover-buntstift-band10.jpg",
+      "description": "Jesus zieht in Jerusalem ein und teilt das letzte Mahl mit seinen Freunden. Am Ostermorgen finden sie das Grab leer. Kinder erleben, wie Maria Magdalena und die Jünger Jesus wiedersehen.",
+      "lifestyleImages": [],
+      "highlights": [
+        "38 kurze Geschichten mit Bibelstellen",
+        "38 passende Ausmalbilder",
+        "Ostern vom Einzug in Jerusalem bis zu den Begegnungen mit dem auferstandenen Jesus"
+      ],
+      "samples": [
+        "images/buntstift-band10-seite-2.jpg",
+        "images/buntstift-band10-seite-3.jpg",
+        "images/buntstift-band10-seite-20.jpg",
+        "images/buntstift-band10-seite-21.jpg",
+        "images/buntstift-band10-seite-44.jpg",
+        "images/buntstift-band10-seite-45.jpg"
+      ],
+      "amazon": "",
+      "lang": "de",
+      "editions": [],
+      "comingSoon": true,
+      "coverFront": "images/front/cover-buntstift-band10.webp"
     },
     {
       "id": "voelker-der-bibel-band-1",
