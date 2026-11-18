@@ -24,3 +24,4 @@ contact-worker/.dev.vars
 contact-worker/.wrangler/
 contact-worker/.setup-secrets.json
 contact-worker/wrangler.toml
+.admin-port

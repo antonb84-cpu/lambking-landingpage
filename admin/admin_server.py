@@ -2372,17 +2372,64 @@ def acquire_instance_lock():
     return handle
 
 
+def is_admin_on(port: int) -> bool:
+    """Antwortet auf diesem Port wirklich das LambKing-Admin-Programm (und nicht ein anderes Programm)?"""
+    try:
+        with urllib.request.urlopen(f"http://127.0.0.1:{port}/", timeout=2) as response:
+            return "LambKing Admin" in response.read(6000).decode("utf-8", "ignore")
+    except Exception:
+        return False
+
+
+PORT_FILE = ROOT / ".admin-port"
+
+
+def open_browser(url: str):
+    if not os.environ.get("LAMBKING_NO_BROWSER"):
+        webbrowser.open(url)
+
+
+def report_already_running(port: int):
+    url = f"http://localhost:{port}/"
+    print("=" * 56)
+    print("  LambKing Admin läuft bereits!")
+    print(f"  Öffne einfach: {url}")
+    print("=" * 56)
+    open_browser(url)
+    if sys.stdin.isatty():
+        try:
+            input("\n  Zum Schließen Enter drücken …")
+        except EOFError:
+            pass
+
+
 def main():
     IMAGES.mkdir(parents=True, exist_ok=True)
     FLYERS.mkdir(parents=True, exist_ok=True)
-    url = f"http://localhost:{PORT}/"
     instance_lock = acquire_instance_lock()
     if instance_lock is None:
-        print("=" * 56)
-        print("  LambKing Admin läuft bereits!")
-        print(f"  Öffne einfach: {url}")
-        print("=" * 56)
-        webbrowser.open(url)
+        # Das Admin-Programm läuft schon: auf dem Port, den es sich gemerkt hat
+        try:
+            running_port = int(PORT_FILE.read_text(encoding="utf-8").strip())
+        except (OSError, ValueError):
+            running_port = PORT
+        report_already_running(running_port)
+        return
+    # Ist der gewünschte Port von einem ANDEREN Programm belegt (z. B. dem Test-Server der App),
+    # weicht das Admin-Programm auf den nächsten freien Port aus, statt dieses fremde Programm zu öffnen.
+    server = None
+    port = PORT
+    for candidate in range(PORT, PORT + 20):
+        try:
+            server = ThreadingHTTPServer(("127.0.0.1", candidate), Handler)
+            port = candidate
+            break
+        except OSError:
+            if is_admin_on(candidate):
+                report_already_running(candidate)
+                return
+    if server is None:
+        print("  Kein freier Port für das Admin-Programm gefunden (8123–8142 sind belegt).")
         if sys.stdin.isatty():
             try:
                 input("\n  Zum Schließen Enter drücken …")
@@ -2390,26 +2437,18 @@ def main():
                 pass
         return
     try:
-        server = ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
+        PORT_FILE.write_text(str(port), encoding="utf-8")
     except OSError:
-        # Port belegt – meist läuft das Admin-Programm schon.
-        print("=" * 56)
-        print("  LambKing Admin läuft bereits!")
-        print(f"  Öffne einfach: {url}")
-        print("=" * 56)
-        webbrowser.open(url)
-        if sys.stdin.isatty():
-            try:
-                input("\n  Zum Schließen Enter drücken …")
-            except EOFError:
-                pass
-        return
+        pass
+    url = f"http://localhost:{port}/"
     print("=" * 56)
     print("  LambKing Admin läuft!")
+    if port != PORT:
+        print(f"  (Port {PORT} ist von einem anderen Programm belegt, deshalb Port {port}.)")
     print(f"  Verwaltungsseite: {url}")
     print("  Zum Beenden dieses Fenster einfach schließen.")
     print("=" * 56)
-    webbrowser.open(url)
+    open_browser(url)
     try:
         server.serve_forever()
     except KeyboardInterrupt:
