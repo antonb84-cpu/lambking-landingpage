@@ -31,10 +31,11 @@ export default function ProductCard({ book }: { book: Book }) {
 
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-[#e6dcc3] bg-white shadow-[0_14px_26px_-20px_rgba(21,49,103,0.5)] transition-shadow hover:shadow-[0_22px_34px_-18px_rgba(21,49,103,0.55)]">
-      <a
-        href={href}
-        aria-label={`${s.details}: ${cardBook.title}`}
-        className="relative flex aspect-[4/5] items-center justify-center bg-[radial-gradient(120%_90%_at_50%_0%,#fff,#efe6d0)] p-4 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-accent/60 sm:p-6"
+      {/* Das Cover öffnet die Buchseite per Klick, ist aber bewusst kein Link: sonst blendet der Browser beim Überfliegen
+          unten links ständig die Adresse ein und aus. Der Titel darunter bleibt der echte Link (Tastatur, Suchmaschinen). */}
+      <div
+        onClick={() => window.location.assign(href)}
+        className="relative flex aspect-[4/5] cursor-pointer items-center justify-center bg-[radial-gradient(120%_90%_at_50%_0%,#fff,#efe6d0)] p-4 sm:p-6"
       >
         {book.comingSoon ? (
           <span className="absolute left-3 top-3 z-10 rounded-full bg-primary px-2.5 py-1 text-[10px] font-bold leading-none text-primary-foreground shadow sm:text-xs">{t.comingSoonBadge}</span>
@@ -52,7 +53,7 @@ export default function ProductCard({ book }: { book: Book }) {
             className="max-h-full w-auto max-w-full rounded-[3px] shadow-[0_1px_2px_rgba(21,30,60,0.4),0_10px_14px_-6px_rgba(40,25,10,0.55),0_22px_24px_-12px_rgba(40,25,10,0.45)] transition-transform duration-300 group-hover:-translate-y-1.5"
           />
         )}
-      </a>
+      </div>
       <div className="flex flex-1 flex-col p-3 sm:p-4">
         <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-accent sm:text-[11px]">
           {typeLabelOf(book, lang)}{volume ? ` · ${volume}` : ''}

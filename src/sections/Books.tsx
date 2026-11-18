@@ -34,9 +34,18 @@ export function BookCover({ book, variant }: { book: Book; variant: 'card' | 'di
   )
 
   if (!coverIsSpread) {
+    // Buchseite: Das Bild behält sein eigenes Seitenverhältnis (auch quadratische Bilderbücher), Höhe wie die Galerie
+    if (variant === 'dialog') {
+      return (
+        <span className="relative mx-auto inline-flex max-w-full">
+          <img src={coverSrc} alt={book.title} className="block h-auto w-auto max-h-[320px] max-w-full rounded-[3px] shadow-2xl shadow-primary/25 sm:max-h-[460px]" />
+          {crease}
+        </span>
+      )
+    }
     return (
-      <span className={`relative inline-flex max-h-full max-w-full ${variant === 'dialog' ? 'h-full' : ''}`}>
-        <img src={coverSrc} alt={book.title} loading={variant === 'card' ? 'lazy' : undefined} className={shared} />
+      <span className="relative inline-flex max-h-full max-w-full">
+        <img src={coverSrc} alt={book.title} loading="lazy" className={shared} />
         {crease}
       </span>
     )
@@ -60,7 +69,7 @@ export function BookCover({ book, variant }: { book: Book; variant: 'card' | 'di
   )
 }
 
-export function BookMediaGallery({ book, onZoom, copy, page = false }: { book: Book; onZoom: (src: string) => void; copy: BooksCopy; page?: boolean }) {
+export function BookMediaGallery({ book, onZoom, copy, page = false, onCoverClick, coverClickLabel }: { book: Book; onZoom: (src: string) => void; copy: BooksCopy; page?: boolean; onCoverClick?: () => void; coverClickLabel?: string }) {
   const [index, setIndex] = useState(0)
   const touchStart = useRef<{ x: number; y: number } | null>(null)
   const slides = [
@@ -85,8 +94,20 @@ export function BookMediaGallery({ book, onZoom, copy, page = false }: { book: B
           touchStart.current = null
         }}
       >
-        {current.kind === 'cover' && <BookCover book={book} variant="dialog" />}
-        {current.kind === 'lifestyle' && <img src={current.src} alt={`${book.title} – ${current.label}`} className="max-h-full w-auto max-w-full rounded-md object-contain shadow-xl" loading="lazy" />}
+        {current.kind === 'cover' && (onCoverClick
+          ? (
+            <button type="button" onClick={onCoverClick} aria-label={coverClickLabel} title={coverClickLabel} className="flex h-full max-w-full cursor-pointer items-center justify-center focus-visible:rounded-md focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/60">
+              <BookCover book={book} variant="dialog" />
+            </button>
+          )
+          : <BookCover book={book} variant="dialog" />)}
+        {current.kind === 'lifestyle' && (onCoverClick
+          ? (
+            <button type="button" onClick={onCoverClick} aria-label={coverClickLabel} title={coverClickLabel} className="flex h-full max-w-full cursor-pointer items-center justify-center focus-visible:rounded-md focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/60">
+              <img src={current.src} alt={`${book.title} – ${current.label}`} className="max-h-full w-auto max-w-full rounded-md object-contain shadow-xl" loading="lazy" />
+            </button>
+          )
+          : <img src={current.src} alt={`${book.title} – ${current.label}`} className="max-h-full w-auto max-w-full rounded-md object-contain shadow-xl" loading="lazy" />)}
         {current.kind === 'sample' && (
           <button type="button" onClick={() => onZoom(current.src)} className="flex h-full max-w-full items-center justify-center focus-visible:rounded-md focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/60" aria-label={`${current.label} – ${copy.zoom}`}>
             <img src={current.src} alt={`${book.title} – ${current.label}`} className="max-h-full w-auto max-w-full rounded-md bg-white object-contain shadow-xl" loading="lazy" />

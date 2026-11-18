@@ -201,6 +201,15 @@ try {
     const galleryOk = galleryStart && lifestyleShown && openBookShown
     console.log(`${galleryOk ? '✓' : '✗'} Buchseite: Galerie Cover → Buchfoto → aufgeschlagenes Buch`)
     if (!galleryOk) fehler++
+    // Klick auf das Buchbild führt zum Durchblättern; „Reinblättern“ steht nicht im Bestellkasten
+    await evalJs(`scrollTo(0, 0)`)
+    await evalJs(`document.querySelector('button[aria-label="Reinblättern"][title]')?.click()`)
+    const flipTop = await waitForPageState(`(() => { const t = document.getElementById('blick-ins-buch')?.getBoundingClientRect().top; return t !== undefined && t < 400 && t > -200 ? 'ja' : '' })()`, 6000)
+    const flipInBuyBox = await evalJs(`[...document.querySelector('main h1').closest('div').querySelectorAll('button')].some(b => /Reinblättern/.test(b.textContent))`)
+    const flipOk = flipTop === 'ja' && flipInBuyBox === false
+    console.log(`${flipOk ? '✓' : '✗'} Buchseite: Klick auf das Buchbild führt zum Durchblättern, Reinblättern-Knopf steht außerhalb des Bestellkastens${flipOk ? '' : ` (Ziel ${flipTop || 'nicht erreicht'}, im Kasten ${flipInBuyBox})`}`)
+    if (!flipOk) fehler++
+    await evalJs(`scrollTo(0, 0)`)
     await send('Emulation.setDeviceMetricsOverride', { width: 1100, height: 900, deviceScaleFactor: 1, mobile: false })
     const buttonLayoutJson = await evalJs(`(() => {
       const box = document.querySelector('main h1').closest('div')

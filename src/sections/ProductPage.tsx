@@ -44,6 +44,7 @@ export default function ProductPage({ book }: { book: Book }) {
   const { main, sub } = splitTitle(shown)
   const canBuy = !book.comingSoon && !!edition?.amazon.startsWith('https://')
   const canFlip = hasFlipbook(book.id)
+  const scrollToFlip = () => document.getElementById('blick-ins-buch')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   const typeLabel = editionLanguage === 'es' && isColoringBook(book)
     ? 'Libro para colorear'
     : editionLanguage === 'ro' && isColoringBook(book)
@@ -69,7 +70,27 @@ export default function ProductPage({ book }: { book: Book }) {
         </nav>
 
         <div className="mt-5 grid gap-8 lg:grid-cols-[minmax(0,440px)_1fr] lg:gap-12" lang={editionLanguage ?? lang}>
-          <BookMediaGallery key={`${book.id}:${editionLanguage ?? lang}`} book={canFlip ? { ...shown, samples: [] } : shown} onZoom={setZoom} copy={copy} page />
+          <div className="min-w-0 lg:sticky lg:top-44 lg:self-start">
+            <BookMediaGallery
+              key={`${book.id}:${editionLanguage ?? lang}`}
+              book={canFlip ? { ...shown, samples: [] } : shown}
+              onZoom={setZoom}
+              copy={copy}
+              page
+              onCoverClick={canFlip ? scrollToFlip : undefined}
+              coverClickLabel={siteCopy.flipInside}
+            />
+            {canFlip ? (
+              <button
+                type="button"
+                onClick={scrollToFlip}
+                className="mt-4 flex min-h-14 w-full items-center justify-center gap-3 rounded-full bg-accent px-6 py-3 text-base font-extrabold text-accent-foreground shadow-[0_10px_20px_-10px_rgba(160,110,10,0.8)] transition-transform hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/40"
+              >
+                <BookOpen className="h-6 w-6" aria-hidden />
+                {siteCopy.flipInside}
+              </button>
+            ) : null}
+          </div>
 
           <div className="min-w-0">
             <div className="flex flex-wrap gap-2">
@@ -110,16 +131,6 @@ export default function ProductPage({ book }: { book: Book }) {
               ) : (
                 <p className="text-sm font-semibold text-foreground">{copy.amazonPending}</p>
               )}
-              {canFlip ? (
-                <button
-                  type="button"
-                  onClick={() => document.getElementById('blick-ins-buch')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-                  className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-full bg-primary px-6 py-2 text-sm font-bold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/60"
-                >
-                  <BookOpen className="h-5 w-5" aria-hidden />
-                  {siteCopy.flipInside}
-                </button>
-              ) : null}
             </div>
 
             <h2 className="mt-9 font-display text-xl font-semibold">{s.description}</h2>
