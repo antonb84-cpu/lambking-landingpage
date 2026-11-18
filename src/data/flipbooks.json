@@ -5,19 +5,22 @@
       "dir": "images/buch-bibelgeschichten-zum-ausmalen-de",
       "count": 15,
       "total": 70,
-      "ext": "webp"
+      "ext": "webp",
+      "back": "images/buch-bibelgeschichten-zum-ausmalen-de/rueckseite.webp"
     },
     "en": {
       "dir": "images/buch-bibelgeschichten-zum-ausmalen-en",
       "count": 15,
       "total": 70,
-      "ext": "webp"
+      "ext": "webp",
+      "back": "images/buch-bibelgeschichten-zum-ausmalen-en/rueckseite.webp"
     },
     "es": {
       "dir": "images/buch-bibelgeschichten-zum-ausmalen-es",
       "count": 15,
       "total": 70,
-      "ext": "webp"
+      "ext": "webp",
+      "back": "images/buch-bibelgeschichten-zum-ausmalen-es/rueckseite.webp"
     }
   },
   "david": {
@@ -48,19 +51,22 @@
       "dir": "images/buch-bibelgeschichten-zum-ausmalen-3-de",
       "count": 15,
       "total": 70,
-      "ext": "webp"
+      "ext": "webp",
+      "back": "images/buch-bibelgeschichten-zum-ausmalen-3-de/rueckseite.webp"
     },
     "en": {
       "dir": "images/buch-bibelgeschichten-zum-ausmalen-3-en",
       "count": 15,
       "total": 70,
-      "ext": "webp"
+      "ext": "webp",
+      "back": "images/buch-bibelgeschichten-zum-ausmalen-3-en/rueckseite.webp"
     },
     "es": {
       "dir": "images/buch-bibelgeschichten-zum-ausmalen-3-es",
       "count": 15,
       "total": 70,
-      "ext": "webp"
+      "ext": "webp",
+      "back": "images/buch-bibelgeschichten-zum-ausmalen-3-es/rueckseite.webp"
     }
   },
   "bibelgeschichten-zum-ausmalen-2": {
@@ -68,19 +74,22 @@
       "dir": "images/buch-bibelgeschichten-zum-ausmalen-2-de",
       "count": 15,
       "total": 80,
-      "ext": "webp"
+      "ext": "webp",
+      "back": "images/buch-bibelgeschichten-zum-ausmalen-2-de/rueckseite.webp"
     },
     "en": {
       "dir": "images/buch-bibelgeschichten-zum-ausmalen-2-en",
       "count": 15,
       "total": 80,
-      "ext": "webp"
+      "ext": "webp",
+      "back": "images/buch-bibelgeschichten-zum-ausmalen-2-en/rueckseite.webp"
     },
     "es": {
       "dir": "images/buch-bibelgeschichten-zum-ausmalen-2-es",
       "count": 15,
       "total": 80,
-      "ext": "webp"
+      "ext": "webp",
+      "back": "images/buch-bibelgeschichten-zum-ausmalen-2-es/rueckseite.webp"
     }
   },
   "zachaeus": {
@@ -98,7 +107,8 @@
       "count": 15,
       "total": 74,
       "ext": "webp",
-      "ratio": 0.7667
+      "ratio": 0.7667,
+      "back": "images/buch-buntstift-01-de/rueckseite.webp"
     }
   },
   "buntstift-02": {
@@ -107,7 +117,8 @@
       "count": 15,
       "total": 82,
       "ext": "webp",
-      "ratio": 0.7667
+      "ratio": 0.7667,
+      "back": "images/buch-buntstift-02-de/rueckseite.webp"
     }
   },
   "buntstift-03": {
@@ -116,7 +127,8 @@
       "count": 15,
       "total": 70,
       "ext": "webp",
-      "ratio": 0.7667
+      "ratio": 0.7667,
+      "back": "images/buch-buntstift-03-de/rueckseite.webp"
     }
   },
   "buntstift-05": {
@@ -125,7 +137,8 @@
       "count": 15,
       "total": 70,
       "ext": "webp",
-      "ratio": 0.7667
+      "ratio": 0.7667,
+      "back": "images/buch-buntstift-05-de/rueckseite.webp"
     }
   },
   "buntstift-09": {
@@ -134,7 +147,8 @@
       "count": 15,
       "total": 90,
       "ext": "webp",
-      "ratio": 0.7667
+      "ratio": 0.7667,
+      "back": "images/buch-buntstift-09-de/rueckseite.webp"
     }
   },
   "buntstift-04": {
@@ -143,7 +157,8 @@
       "count": 15,
       "total": 86,
       "ext": "webp",
-      "ratio": 0.7667
+      "ratio": 0.7667,
+      "back": "images/buch-buntstift-04-de/rueckseite.webp"
     }
   },
   "buntstift-08": {
@@ -152,7 +167,8 @@
       "count": 15,
       "total": 72,
       "ext": "webp",
-      "ratio": 0.7667
+      "ratio": 0.7667,
+      "back": "images/buch-buntstift-08-de/rueckseite.webp"
     }
   },
   "buntstift-06": {
@@ -161,7 +177,8 @@
       "count": 15,
       "total": 70,
       "ext": "webp",
-      "ratio": 0.7667
+      "ratio": 0.7667,
+      "back": "images/buch-buntstift-06-de/rueckseite.webp"
     }
   },
   "buntstift-07": {
@@ -170,7 +187,8 @@
       "count": 15,
       "total": 78,
       "ext": "webp",
-      "ratio": 0.7667
+      "ratio": 0.7667,
+      "back": "images/buch-buntstift-07-de/rueckseite.webp"
     }
   },
   "buntstift-10": {
@@ -179,7 +197,8 @@
       "count": 15,
       "total": 78,
       "ext": "webp",
-      "ratio": 0.7667
+      "ratio": 0.7667,
+      "back": "images/buch-buntstift-10-de/rueckseite.webp"
     }
   }
 }
