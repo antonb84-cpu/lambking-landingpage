@@ -661,6 +661,346 @@
   "comingSoon": [],
   "books": [
     {
+      "id": "buntstift-01",
+      "title": "Mit Buntstift durch die Bibel: Gott Erschafft die Welt",
+      "series": "Mit Buntstift durch die Bibel · Band 1",
+      "category": "malbuecher",
+      "age": "5–8 Jahre",
+      "detail": "74 Seiten · Großformat",
+      "cover": "images/cover-buntstift-band01.jpg",
+      "description": "Lesen. Malen. Staunen. Am Anfang wird es hell. Blumen wachsen, Tiere bevölkern die Erde, und Adam und Eva entdecken den Garten Eden. Doch die listige Schlange bringt sie auf eine falsche Idee. Als sie den Garten verlassen müssen, bleibt die Hoffnung: Gott hat einen Plan, die Menschen zu retten. „Gott Erschafft die Welt“ verbindet eine kindgerechte Nacherzählung mit liebevoll gestalteten Ausmalbildern für Kinder von 5 bis 8 Jahren.",
+      "lifestyleImages": [],
+      "highlights": [
+        "Über 70 Seiten zum Lesen und Ausmalen",
+        "Geschichte links, passendes Ausmalbild rechts",
+        "Nach 1. Mose 1–3, mit Bibelstellenangaben"
+      ],
+      "samples": [
+        "images/buntstift-band01-seite-3.jpg",
+        "images/buntstift-band01-seite-13.jpg",
+        "images/buntstift-band01-seite-27.jpg",
+        "images/buntstift-band01-seite-41.jpg",
+        "images/buntstift-band01-seite-55.jpg",
+        "images/buntstift-band01-seite-69.jpg"
+      ],
+      "amazon": "https://www.amazon.de/dp/B0HMX9J4Q9",
+      "releaseDate": "2026-10-08",
+      "lang": "de",
+      "editions": [
+        {
+          "language": "de",
+          "amazon": "https://www.amazon.de/dp/B0HMX9J4Q9"
+        }
+      ],
+      "coverFront": "images/front/cover-buntstift-band01.webp"
+    },
+    {
+      "id": "buntstift-02",
+      "title": "Mit Buntstift durch die Bibel: Noah – Die Arche und der Regenbogen",
+      "series": "Mit Buntstift durch die Bibel · Band 2",
+      "category": "malbuecher",
+      "age": "5–8 Jahre",
+      "detail": "82 Seiten · Großformat",
+      "cover": "images/cover-buntstift-band02.jpg",
+      "description": "Noah, die Arche und ein Regenbogen voller Hoffnung. In Band 2 der Reihe „Mit Buntstift durch die Bibel“ entdecken Kinder von 5 bis 8 Jahren die Geschichte von Noah. Sie begleiten ihn beim Bau der Arche, begrüßen die Tiere und erleben den Regen, das Leben an Bord und den Neubeginn. 40 abwechslungsreiche Ausmalbilder und kurze, lebendige Geschichten laden zum gemeinsamen Lesen und Malen ein.",
+      "lifestyleImages": [],
+      "highlights": [
+        "82 Seiten mit großen und mittleren Ausmalflächen",
+        "Viele verschiedene Tierpaare, Noah und seine Familie",
+        "Nach 1. Mose 6–9, mit Bibelstellenangaben"
+      ],
+      "samples": [
+        "images/buntstift-band02-seite-3.jpg",
+        "images/buntstift-band02-seite-13.jpg",
+        "images/buntstift-band02-seite-27.jpg",
+        "images/buntstift-band02-seite-41.jpg",
+        "images/buntstift-band02-seite-55.jpg",
+        "images/buntstift-band02-seite-69.jpg"
+      ],
+      "amazon": "https://www.amazon.de/dp/B0HN1375XN",
+      "releaseDate": "2026-10-08",
+      "lang": "de",
+      "editions": [
+        {
+          "language": "de",
+          "amazon": "https://www.amazon.de/dp/B0HN1375XN"
+        }
+      ],
+      "coverFront": "images/front/cover-buntstift-band02.webp"
+    },
+    {
+      "id": "buntstift-03",
+      "title": "Mit Buntstift durch die Bibel: Abraham – Unterwegs mit Gottes Versprechen",
+      "series": "Mit Buntstift durch die Bibel · Band 3",
+      "category": "malbuecher",
+      "age": "5–8 Jahre",
+      "detail": "70 Seiten · Großformat",
+      "cover": "images/cover-buntstift-band03.jpg",
+      "description": "Abraham verlässt seine Heimat und macht sich auf den Weg, weil er Gott vertraut. Kinder begleiten ihn von der Stadt Ur nach Kanaan, entdecken sein Leben mit Zelten, Herden und Helfern und erleben, wie Gottes Versprechen wahr wird. Die Geburt Isaaks und der gemeinsame Weg auf den Berg erzählen von Liebe, Hoffnung und großem Vertrauen. Der Abschluss erinnert an Jesus, das Lamm Gottes. 34 abwechslungsreiche Ausmalbilder und verständliche Geschichten: Der Text steht links, das passende Bild rechts.",
+      "lifestyleImages": [],
+      "highlights": [
+        "34 abwechslungsreiche Ausmalbilder",
+        "Von Ur nach Kanaan: Abrahams Weg mit Gott",
+        "Zum Vorlesen, ersten Selberlesen und Ausmalen"
+      ],
+      "samples": [
+        "images/buntstift-band03-seite-3.jpg",
+        "images/buntstift-band03-seite-13.jpg",
+        "images/buntstift-band03-seite-27.jpg",
+        "images/buntstift-band03-seite-41.jpg",
+        "images/buntstift-band03-seite-55.jpg",
+        "images/buntstift-band03-seite-69.jpg"
+      ],
+      "amazon": "https://www.amazon.de/dp/B0HN9DPCCB",
+      "releaseDate": "2026-10-17",
+      "lang": "de",
+      "editions": [
+        {
+          "language": "de",
+          "amazon": "https://www.amazon.de/dp/B0HN9DPCCB"
+        }
+      ],
+      "coverFront": "images/front/cover-buntstift-band03.webp"
+    },
+    {
+      "id": "buntstift-04",
+      "title": "Mit Buntstift durch die Bibel: Josef – Gott lässt dich nicht allein",
+      "series": "Mit Buntstift durch die Bibel · Band 4",
+      "category": "malbuecher",
+      "age": "5–8 Jahre",
+      "detail": "86 Seiten · Großformat",
+      "cover": "images/cover-buntstift-band04.jpg",
+      "description": "Josefs Brüder sind neidisch auf ihn und verkaufen ihn nach Ägypten. Dort erlebt Josef schwere Zeiten, doch Gott begleitet ihn. Später hilft Josef vielen Menschen in einer Hungersnot. Als er seine Brüder wiedersieht, vergibt er ihnen und die Familie findet wieder zusammen.",
+      "lifestyleImages": [],
+      "highlights": [
+        "42 kurze Geschichten mit Bibelstellen",
+        "42 passende Schwarz-Weiß-Ausmalbilder",
+        "Geschichte links, Ausmalbild rechts"
+      ],
+      "samples": [
+        "images/buntstift-band04-seite-3.jpg",
+        "images/buntstift-band04-seite-13.jpg",
+        "images/buntstift-band04-seite-27.jpg",
+        "images/buntstift-band04-seite-41.jpg",
+        "images/buntstift-band04-seite-55.jpg",
+        "images/buntstift-band04-seite-83.jpg"
+      ],
+      "amazon": "https://www.amazon.de/dp/B0HPKBQ5GF",
+      "releaseDate": "2026-10-28",
+      "lang": "de",
+      "editions": [
+        {
+          "language": "de",
+          "amazon": "https://www.amazon.de/dp/B0HPKBQ5GF"
+        }
+      ],
+      "coverFront": "images/front/cover-buntstift-band04.webp"
+    },
+    {
+      "id": "buntstift-05",
+      "title": "Mit Buntstift durch die Bibel: Mose – Mit Gott in die Freiheit",
+      "series": "Mit Buntstift durch die Bibel · Band 5",
+      "category": "malbuecher",
+      "age": "5–8 Jahre",
+      "detail": "70 Seiten · Großformat",
+      "cover": "images/cover-buntstift-band05.jpg",
+      "description": "Ein kleiner Korb auf dem Fluss, ein brennender Busch und ein Weg mitten durch das Meer: Begleite Mose und das Volk Israel von Ägypten bis zum Berg Sinai. Kindgerechte Nacherzählungen und 34 abwechslungsreiche Ausmalbilder: Die Geschichte steht links, das passende Bild rechts. So können Kinder zuhören, selbst lesen, entdecken und die Bilder mit ihren eigenen Farben gestalten.",
+      "lifestyleImages": [],
+      "highlights": [
+        "Von Moses Rettung als Baby über Gottes Wunder bis zum Auszug und Sinai",
+        "Große und mittlere Ausmalflächen mit vielen Dingen zum Entdecken",
+        "Gut lesbare Schrift und Bibelstellen zu den Geschichten"
+      ],
+      "samples": [
+        "images/buntstift-band05-seite-3.jpg",
+        "images/buntstift-band05-seite-13.jpg",
+        "images/buntstift-band05-seite-27.jpg",
+        "images/buntstift-band05-seite-41.jpg",
+        "images/buntstift-band05-seite-55.jpg",
+        "images/buntstift-band05-seite-69.jpg"
+      ],
+      "amazon": "https://www.amazon.de/dp/B0HN92YP3K",
+      "releaseDate": "2026-10-16",
+      "lang": "de",
+      "editions": [
+        {
+          "language": "de",
+          "amazon": "https://www.amazon.de/dp/B0HN92YP3K"
+        }
+      ],
+      "coverFront": "images/front/cover-buntstift-band05.webp"
+    },
+    {
+      "id": "buntstift-06",
+      "title": "Mit Buntstift durch die Bibel: David – Der Hirtenjunge und der Riese",
+      "series": "Mit Buntstift durch die Bibel · Band 6",
+      "category": "malbuecher",
+      "age": "5–8 Jahre",
+      "detail": "70 Seiten · Großformat",
+      "cover": "images/front/cover-buntstift-band06.jpg",
+      "description": "David hütet Schafe und spielt auf seiner Leier. Als der Riese Goliath alle einschüchtert, vertraut der junge Hirte auf Gott. Am Königshof findet er in Jonatan einen Freund.",
+      "lifestyleImages": [],
+      "highlights": [
+        "34 kurze Geschichten mit Bibelstellen",
+        "34 passende Ausmalbilder",
+        "Geschichte links, Ausmalbild rechts"
+      ],
+      "samples": [
+        "images/buntstift-band06-seite-2.jpg",
+        "images/buntstift-band06-seite-3.jpg",
+        "images/buntstift-band06-seite-20.jpg",
+        "images/buntstift-band06-seite-21.jpg",
+        "images/buntstift-band06-seite-44.jpg",
+        "images/buntstift-band06-seite-45.jpg"
+      ],
+      "amazon": "https://www.amazon.de/dp/B0HQ5397V9",
+      "releaseDate": "2026-11-02",
+      "lang": "de",
+      "editions": [
+        {
+          "language": "de",
+          "amazon": "https://www.amazon.de/dp/B0HQ5397V9"
+        }
+      ],
+      "coverFront": "images/front/cover-buntstift-band06.webp"
+    },
+    {
+      "id": "buntstift-07",
+      "title": "Mit Buntstift durch die Bibel: Daniel und seine Freunde – Mutig mit Gott",
+      "series": "Mit Buntstift durch die Bibel · Band 7",
+      "category": "malbuecher",
+      "age": "6–8 Jahre",
+      "detail": "78 Seiten · Großformat",
+      "cover": "images/front/cover-buntstift-band07.jpg",
+      "description": "In Babylon halten Daniel und seine Freunde zusammen. Sie vertrauen Gott am Königshof, im Feuerofen und in der Löwengrube.",
+      "lifestyleImages": [],
+      "highlights": [
+        "38 kurze Geschichten mit Bibelstellen",
+        "38 passende Ausmalbilder",
+        "Geschichte links, Ausmalbild rechts"
+      ],
+      "samples": [
+        "images/buntstift-band07-seite-2.jpg",
+        "images/buntstift-band07-seite-3.jpg",
+        "images/buntstift-band07-seite-20.jpg",
+        "images/buntstift-band07-seite-21.jpg",
+        "images/buntstift-band07-seite-44.jpg",
+        "images/buntstift-band07-seite-45.jpg"
+      ],
+      "amazon": "https://www.amazon.de/dp/B0HQ59KCGR",
+      "releaseDate": "2026-11-02",
+      "lang": "de",
+      "editions": [
+        {
+          "language": "de",
+          "amazon": "https://www.amazon.de/dp/B0HQ59KCGR"
+        }
+      ],
+      "coverFront": "images/front/cover-buntstift-band07.webp"
+    },
+    {
+      "id": "buntstift-08",
+      "title": "Mit Buntstift durch die Bibel: Jesus wird geboren – Das Wunder von Bethlehem",
+      "series": "Mit Buntstift durch die Bibel · Band 8",
+      "category": "malbuecher",
+      "age": "5–8 Jahre",
+      "detail": "72 Seiten · Großformat",
+      "cover": "images/cover-buntstift-band08.jpg",
+      "description": "Ein Engel besucht Maria und kündigt ihr die Geburt Jesu an. Maria und Josef reisen nach Bethlehem, wo Jesus zur Welt kommt. Hirten hören die frohe Botschaft, und Weise folgen dem Stern. Die Geschichte begleitet die Familie bis zu ihrer Rückkehr nach Nazareth.",
+      "lifestyleImages": [],
+      "highlights": [
+        "35 kurze Geschichten mit Bibelstellen",
+        "35 passende Schwarz-Weiß-Ausmalbilder",
+        "Geschichte links, Ausmalbild rechts"
+      ],
+      "samples": [
+        "images/buntstift-band08-seite-3.jpg",
+        "images/buntstift-band08-seite-13.jpg",
+        "images/buntstift-band08-seite-27.jpg",
+        "images/buntstift-band08-seite-41.jpg",
+        "images/buntstift-band08-seite-55.jpg",
+        "images/buntstift-band08-seite-69.jpg"
+      ],
+      "amazon": "https://www.amazon.de/dp/B0HPMG85DB",
+      "releaseDate": "2026-10-28",
+      "lang": "de",
+      "editions": [
+        {
+          "language": "de",
+          "amazon": "https://www.amazon.de/dp/B0HPMG85DB"
+        }
+      ],
+      "coverFront": "images/front/cover-buntstift-band08.webp"
+    },
+    {
+      "id": "buntstift-09",
+      "title": "Mit Buntstift durch die Bibel: Mit Jesus unterwegs – Wunder und Begegnungen",
+      "series": "Mit Buntstift durch die Bibel · Band 9",
+      "category": "malbuecher",
+      "age": "5–8 Jahre",
+      "detail": "90 Seiten · Großformat",
+      "cover": "images/cover-buntstift-band09.jpg",
+      "description": "Lesen. Malen. Staunen. Dieser Band begleitet Kinder auf Jesu Wegen: vom Jordan über den See Genezareth bis zu Begegnungen mit Zachäus, Bartimäus und Lazarus. 44 kurze Geschichten mit Bibelstellen und 44 passende Ausmalbilder laden zum gemeinsamen Entdecken ein. Erzählt werden Wunder, Begegnungen und Gleichnisse: Jesus stillt den Sturm, macht Kranke gesund, segnet Kinder und erzählt vom verlorenen Schaf und vom barmherzigen Samariter.",
+      "lifestyleImages": [],
+      "highlights": [
+        "44 kurze Geschichten mit Bibelstellen",
+        "44 detailreiche Schwarz-Weiß-Ausmalbilder",
+        "Wunder, Begegnungen und Gleichnisse"
+      ],
+      "samples": [
+        "images/buntstift-band09-seite-3.jpg",
+        "images/buntstift-band09-seite-13.jpg",
+        "images/buntstift-band09-seite-27.jpg",
+        "images/buntstift-band09-seite-41.jpg",
+        "images/buntstift-band09-seite-55.jpg",
+        "images/buntstift-band09-seite-69.jpg"
+      ],
+      "amazon": "https://www.amazon.de/dp/B0HNMPLWNN",
+      "releaseDate": "2026-10-19",
+      "lang": "de",
+      "editions": [
+        {
+          "language": "de",
+          "amazon": "https://www.amazon.de/dp/B0HNMPLWNN"
+        }
+      ],
+      "coverFront": "images/front/cover-buntstift-band09.webp"
+    },
+    {
+      "id": "buntstift-10",
+      "title": "Mit Buntstift durch die Bibel: Jesus lebt – Die wunderbare Ostergeschichte",
+      "series": "Mit Buntstift durch die Bibel · Band 10",
+      "category": "malbuecher",
+      "age": "5–8 Jahre",
+      "detail": "78 Seiten · Großformat",
+      "cover": "images/front/cover-buntstift-band10.jpg",
+      "description": "Jesus zieht nach Jerusalem. Seine Freunde teilen das letzte Mahl mit ihm, erleben seinen Abschied und entdecken am Ostermorgen: Das Grab ist leer. Jesus lebt! Dieses Mal- und Geschichtenbuch erzählt die Ostergeschichte in kurzen, warmen Texten für Kinder von 5 bis 8 Jahren. Jede Geschichte steht einer passenden Ausmalseite gegenüber. 38 unterschiedliche Motive laden zum genauen Hinsehen, gemeinsamen Lesen und kreativen Gestalten ein. Die traurigen Ereignisse werden behutsam und ohne drastische Bilder dargestellt. Viel Raum erhalten die Auferstehungsbotschaft, Maria Magdalenas Begegnung mit Jesus, der Weg nach Emmaus und das frohe Wiedersehen mit seinen Freunden. Zu jeder Geschichte gehört eine Bibelstellenangabe.",
+      "lifestyleImages": [],
+      "highlights": [
+        "38 kurze Geschichten mit Bibelstellen",
+        "38 passende Ausmalbilder",
+        "Ostern vom Einzug in Jerusalem bis zu den Begegnungen mit dem auferstandenen Jesus"
+      ],
+      "samples": [
+        "images/buntstift-band10-seite-2.jpg",
+        "images/buntstift-band10-seite-3.jpg",
+        "images/buntstift-band10-seite-20.jpg",
+        "images/buntstift-band10-seite-21.jpg",
+        "images/buntstift-band10-seite-44.jpg",
+        "images/buntstift-band10-seite-45.jpg"
+      ],
+      "amazon": "https://www.amazon.de/dp/B0HS2SF6Y1",
+      "lang": "de",
+      "editions": [
+        {
+          "language": "de",
+          "amazon": "https://www.amazon.de/dp/B0HS2SF6Y1"
+        }
+      ],
+      "coverFront": "images/front/cover-buntstift-band10.webp",
+      "releaseDate": "2026-11-17"
+    },
+    {
       "id": "bibelgeschichten-zum-ausmalen",
       "samples": [
         "images/schoepfung-de-originalseite-05.jpg",
@@ -1110,346 +1450,6 @@
       "amazonRatingCount": 1,
       "coverFront": "images/front/cover-band10-de.webp",
       "ageGroup": "9-12"
-    },
-    {
-      "id": "buntstift-01",
-      "title": "Mit Buntstift durch die Bibel: Gott Erschafft die Welt",
-      "series": "Mit Buntstift durch die Bibel · Band 1",
-      "category": "malbuecher",
-      "age": "5–8 Jahre",
-      "detail": "74 Seiten · Großformat",
-      "cover": "images/cover-buntstift-band01.jpg",
-      "description": "Lesen. Malen. Staunen. Am Anfang wird es hell. Blumen wachsen, Tiere bevölkern die Erde, und Adam und Eva entdecken den Garten Eden. Doch die listige Schlange bringt sie auf eine falsche Idee. Als sie den Garten verlassen müssen, bleibt die Hoffnung: Gott hat einen Plan, die Menschen zu retten. „Gott Erschafft die Welt“ verbindet eine kindgerechte Nacherzählung mit liebevoll gestalteten Ausmalbildern für Kinder von 5 bis 8 Jahren.",
-      "lifestyleImages": [],
-      "highlights": [
-        "Über 70 Seiten zum Lesen und Ausmalen",
-        "Geschichte links, passendes Ausmalbild rechts",
-        "Nach 1. Mose 1–3, mit Bibelstellenangaben"
-      ],
-      "samples": [
-        "images/buntstift-band01-seite-3.jpg",
-        "images/buntstift-band01-seite-13.jpg",
-        "images/buntstift-band01-seite-27.jpg",
-        "images/buntstift-band01-seite-41.jpg",
-        "images/buntstift-band01-seite-55.jpg",
-        "images/buntstift-band01-seite-69.jpg"
-      ],
-      "amazon": "https://www.amazon.de/dp/B0HMX9J4Q9",
-      "releaseDate": "2026-10-08",
-      "lang": "de",
-      "editions": [
-        {
-          "language": "de",
-          "amazon": "https://www.amazon.de/dp/B0HMX9J4Q9"
-        }
-      ],
-      "coverFront": "images/front/cover-buntstift-band01.webp"
-    },
-    {
-      "id": "buntstift-02",
-      "title": "Mit Buntstift durch die Bibel: Noah – Die Arche und der Regenbogen",
-      "series": "Mit Buntstift durch die Bibel · Band 2",
-      "category": "malbuecher",
-      "age": "5–8 Jahre",
-      "detail": "82 Seiten · Großformat",
-      "cover": "images/cover-buntstift-band02.jpg",
-      "description": "Noah, die Arche und ein Regenbogen voller Hoffnung. In Band 2 der Reihe „Mit Buntstift durch die Bibel“ entdecken Kinder von 5 bis 8 Jahren die Geschichte von Noah. Sie begleiten ihn beim Bau der Arche, begrüßen die Tiere und erleben den Regen, das Leben an Bord und den Neubeginn. 40 abwechslungsreiche Ausmalbilder und kurze, lebendige Geschichten laden zum gemeinsamen Lesen und Malen ein.",
-      "lifestyleImages": [],
-      "highlights": [
-        "82 Seiten mit großen und mittleren Ausmalflächen",
-        "Viele verschiedene Tierpaare, Noah und seine Familie",
-        "Nach 1. Mose 6–9, mit Bibelstellenangaben"
-      ],
-      "samples": [
-        "images/buntstift-band02-seite-3.jpg",
-        "images/buntstift-band02-seite-13.jpg",
-        "images/buntstift-band02-seite-27.jpg",
-        "images/buntstift-band02-seite-41.jpg",
-        "images/buntstift-band02-seite-55.jpg",
-        "images/buntstift-band02-seite-69.jpg"
-      ],
-      "amazon": "https://www.amazon.de/dp/B0HN1375XN",
-      "releaseDate": "2026-10-08",
-      "lang": "de",
-      "editions": [
-        {
-          "language": "de",
-          "amazon": "https://www.amazon.de/dp/B0HN1375XN"
-        }
-      ],
-      "coverFront": "images/front/cover-buntstift-band02.webp"
-    },
-    {
-      "id": "buntstift-03",
-      "title": "Mit Buntstift durch die Bibel: Abraham – Unterwegs mit Gottes Versprechen",
-      "series": "Mit Buntstift durch die Bibel · Band 3",
-      "category": "malbuecher",
-      "age": "5–8 Jahre",
-      "detail": "70 Seiten · Großformat",
-      "cover": "images/cover-buntstift-band03.jpg",
-      "description": "Abraham verlässt seine Heimat und macht sich auf den Weg, weil er Gott vertraut. Kinder begleiten ihn von der Stadt Ur nach Kanaan, entdecken sein Leben mit Zelten, Herden und Helfern und erleben, wie Gottes Versprechen wahr wird. Die Geburt Isaaks und der gemeinsame Weg auf den Berg erzählen von Liebe, Hoffnung und großem Vertrauen. Der Abschluss erinnert an Jesus, das Lamm Gottes. 34 abwechslungsreiche Ausmalbilder und verständliche Geschichten: Der Text steht links, das passende Bild rechts.",
-      "lifestyleImages": [],
-      "highlights": [
-        "34 abwechslungsreiche Ausmalbilder",
-        "Von Ur nach Kanaan: Abrahams Weg mit Gott",
-        "Zum Vorlesen, ersten Selberlesen und Ausmalen"
-      ],
-      "samples": [
-        "images/buntstift-band03-seite-3.jpg",
-        "images/buntstift-band03-seite-13.jpg",
-        "images/buntstift-band03-seite-27.jpg",
-        "images/buntstift-band03-seite-41.jpg",
-        "images/buntstift-band03-seite-55.jpg",
-        "images/buntstift-band03-seite-69.jpg"
-      ],
-      "amazon": "https://www.amazon.de/dp/B0HN9DPCCB",
-      "releaseDate": "2026-10-17",
-      "lang": "de",
-      "editions": [
-        {
-          "language": "de",
-          "amazon": "https://www.amazon.de/dp/B0HN9DPCCB"
-        }
-      ],
-      "coverFront": "images/front/cover-buntstift-band03.webp"
-    },
-    {
-      "id": "buntstift-04",
-      "title": "Mit Buntstift durch die Bibel: Josef – Gott lässt dich nicht allein",
-      "series": "Mit Buntstift durch die Bibel · Band 4",
-      "category": "malbuecher",
-      "age": "5–8 Jahre",
-      "detail": "86 Seiten · Großformat",
-      "cover": "images/cover-buntstift-band04.jpg",
-      "description": "Josefs Brüder sind neidisch auf ihn und verkaufen ihn nach Ägypten. Dort erlebt Josef schwere Zeiten, doch Gott begleitet ihn. Später hilft Josef vielen Menschen in einer Hungersnot. Als er seine Brüder wiedersieht, vergibt er ihnen und die Familie findet wieder zusammen.",
-      "lifestyleImages": [],
-      "highlights": [
-        "42 kurze Geschichten mit Bibelstellen",
-        "42 passende Schwarz-Weiß-Ausmalbilder",
-        "Geschichte links, Ausmalbild rechts"
-      ],
-      "samples": [
-        "images/buntstift-band04-seite-3.jpg",
-        "images/buntstift-band04-seite-13.jpg",
-        "images/buntstift-band04-seite-27.jpg",
-        "images/buntstift-band04-seite-41.jpg",
-        "images/buntstift-band04-seite-55.jpg",
-        "images/buntstift-band04-seite-83.jpg"
-      ],
-      "amazon": "https://www.amazon.de/dp/B0HPKBQ5GF",
-      "releaseDate": "2026-10-28",
-      "lang": "de",
-      "editions": [
-        {
-          "language": "de",
-          "amazon": "https://www.amazon.de/dp/B0HPKBQ5GF"
-        }
-      ],
-      "coverFront": "images/front/cover-buntstift-band04.webp"
-    },
-    {
-      "id": "buntstift-05",
-      "title": "Mit Buntstift durch die Bibel: Mose – Mit Gott in die Freiheit",
-      "series": "Mit Buntstift durch die Bibel · Band 5",
-      "category": "malbuecher",
-      "age": "5–8 Jahre",
-      "detail": "70 Seiten · Großformat",
-      "cover": "images/cover-buntstift-band05.jpg",
-      "description": "Ein kleiner Korb auf dem Fluss, ein brennender Busch und ein Weg mitten durch das Meer: Begleite Mose und das Volk Israel von Ägypten bis zum Berg Sinai. Kindgerechte Nacherzählungen und 34 abwechslungsreiche Ausmalbilder: Die Geschichte steht links, das passende Bild rechts. So können Kinder zuhören, selbst lesen, entdecken und die Bilder mit ihren eigenen Farben gestalten.",
-      "lifestyleImages": [],
-      "highlights": [
-        "Von Moses Rettung als Baby über Gottes Wunder bis zum Auszug und Sinai",
-        "Große und mittlere Ausmalflächen mit vielen Dingen zum Entdecken",
-        "Gut lesbare Schrift und Bibelstellen zu den Geschichten"
-      ],
-      "samples": [
-        "images/buntstift-band05-seite-3.jpg",
-        "images/buntstift-band05-seite-13.jpg",
-        "images/buntstift-band05-seite-27.jpg",
-        "images/buntstift-band05-seite-41.jpg",
-        "images/buntstift-band05-seite-55.jpg",
-        "images/buntstift-band05-seite-69.jpg"
-      ],
-      "amazon": "https://www.amazon.de/dp/B0HN92YP3K",
-      "releaseDate": "2026-10-16",
-      "lang": "de",
-      "editions": [
-        {
-          "language": "de",
-          "amazon": "https://www.amazon.de/dp/B0HN92YP3K"
-        }
-      ],
-      "coverFront": "images/front/cover-buntstift-band05.webp"
-    },
-    {
-      "id": "buntstift-06",
-      "title": "Mit Buntstift durch die Bibel: David – Der Hirtenjunge und der Riese",
-      "series": "Mit Buntstift durch die Bibel · Band 6",
-      "category": "malbuecher",
-      "age": "5–8 Jahre",
-      "detail": "70 Seiten · Großformat",
-      "cover": "images/front/cover-buntstift-band06.jpg",
-      "description": "David hütet Schafe und spielt auf seiner Leier. Als der Riese Goliath alle einschüchtert, vertraut der junge Hirte auf Gott. Am Königshof findet er in Jonatan einen Freund.",
-      "lifestyleImages": [],
-      "highlights": [
-        "34 kurze Geschichten mit Bibelstellen",
-        "34 passende Ausmalbilder",
-        "Geschichte links, Ausmalbild rechts"
-      ],
-      "samples": [
-        "images/buntstift-band06-seite-2.jpg",
-        "images/buntstift-band06-seite-3.jpg",
-        "images/buntstift-band06-seite-20.jpg",
-        "images/buntstift-band06-seite-21.jpg",
-        "images/buntstift-band06-seite-44.jpg",
-        "images/buntstift-band06-seite-45.jpg"
-      ],
-      "amazon": "https://www.amazon.de/dp/B0HQ5397V9",
-      "releaseDate": "2026-11-02",
-      "lang": "de",
-      "editions": [
-        {
-          "language": "de",
-          "amazon": "https://www.amazon.de/dp/B0HQ5397V9"
-        }
-      ],
-      "coverFront": "images/front/cover-buntstift-band06.webp"
-    },
-    {
-      "id": "buntstift-07",
-      "title": "Mit Buntstift durch die Bibel: Daniel und seine Freunde – Mutig mit Gott",
-      "series": "Mit Buntstift durch die Bibel · Band 7",
-      "category": "malbuecher",
-      "age": "6–8 Jahre",
-      "detail": "78 Seiten · Großformat",
-      "cover": "images/front/cover-buntstift-band07.jpg",
-      "description": "In Babylon halten Daniel und seine Freunde zusammen. Sie vertrauen Gott am Königshof, im Feuerofen und in der Löwengrube.",
-      "lifestyleImages": [],
-      "highlights": [
-        "38 kurze Geschichten mit Bibelstellen",
-        "38 passende Ausmalbilder",
-        "Geschichte links, Ausmalbild rechts"
-      ],
-      "samples": [
-        "images/buntstift-band07-seite-2.jpg",
-        "images/buntstift-band07-seite-3.jpg",
-        "images/buntstift-band07-seite-20.jpg",
-        "images/buntstift-band07-seite-21.jpg",
-        "images/buntstift-band07-seite-44.jpg",
-        "images/buntstift-band07-seite-45.jpg"
-      ],
-      "amazon": "https://www.amazon.de/dp/B0HQ59KCGR",
-      "releaseDate": "2026-11-02",
-      "lang": "de",
-      "editions": [
-        {
-          "language": "de",
-          "amazon": "https://www.amazon.de/dp/B0HQ59KCGR"
-        }
-      ],
-      "coverFront": "images/front/cover-buntstift-band07.webp"
-    },
-    {
-      "id": "buntstift-08",
-      "title": "Mit Buntstift durch die Bibel: Jesus wird geboren – Das Wunder von Bethlehem",
-      "series": "Mit Buntstift durch die Bibel · Band 8",
-      "category": "malbuecher",
-      "age": "5–8 Jahre",
-      "detail": "72 Seiten · Großformat",
-      "cover": "images/cover-buntstift-band08.jpg",
-      "description": "Ein Engel besucht Maria und kündigt ihr die Geburt Jesu an. Maria und Josef reisen nach Bethlehem, wo Jesus zur Welt kommt. Hirten hören die frohe Botschaft, und Weise folgen dem Stern. Die Geschichte begleitet die Familie bis zu ihrer Rückkehr nach Nazareth.",
-      "lifestyleImages": [],
-      "highlights": [
-        "35 kurze Geschichten mit Bibelstellen",
-        "35 passende Schwarz-Weiß-Ausmalbilder",
-        "Geschichte links, Ausmalbild rechts"
-      ],
-      "samples": [
-        "images/buntstift-band08-seite-3.jpg",
-        "images/buntstift-band08-seite-13.jpg",
-        "images/buntstift-band08-seite-27.jpg",
-        "images/buntstift-band08-seite-41.jpg",
-        "images/buntstift-band08-seite-55.jpg",
-        "images/buntstift-band08-seite-69.jpg"
-      ],
-      "amazon": "https://www.amazon.de/dp/B0HPMG85DB",
-      "releaseDate": "2026-10-28",
-      "lang": "de",
-      "editions": [
-        {
-          "language": "de",
-          "amazon": "https://www.amazon.de/dp/B0HPMG85DB"
-        }
-      ],
-      "coverFront": "images/front/cover-buntstift-band08.webp"
-    },
-    {
-      "id": "buntstift-09",
-      "title": "Mit Buntstift durch die Bibel: Mit Jesus unterwegs – Wunder und Begegnungen",
-      "series": "Mit Buntstift durch die Bibel · Band 9",
-      "category": "malbuecher",
-      "age": "5–8 Jahre",
-      "detail": "90 Seiten · Großformat",
-      "cover": "images/cover-buntstift-band09.jpg",
-      "description": "Lesen. Malen. Staunen. Dieser Band begleitet Kinder auf Jesu Wegen: vom Jordan über den See Genezareth bis zu Begegnungen mit Zachäus, Bartimäus und Lazarus. 44 kurze Geschichten mit Bibelstellen und 44 passende Ausmalbilder laden zum gemeinsamen Entdecken ein. Erzählt werden Wunder, Begegnungen und Gleichnisse: Jesus stillt den Sturm, macht Kranke gesund, segnet Kinder und erzählt vom verlorenen Schaf und vom barmherzigen Samariter.",
-      "lifestyleImages": [],
-      "highlights": [
-        "44 kurze Geschichten mit Bibelstellen",
-        "44 detailreiche Schwarz-Weiß-Ausmalbilder",
-        "Wunder, Begegnungen und Gleichnisse"
-      ],
-      "samples": [
-        "images/buntstift-band09-seite-3.jpg",
-        "images/buntstift-band09-seite-13.jpg",
-        "images/buntstift-band09-seite-27.jpg",
-        "images/buntstift-band09-seite-41.jpg",
-        "images/buntstift-band09-seite-55.jpg",
-        "images/buntstift-band09-seite-69.jpg"
-      ],
-      "amazon": "https://www.amazon.de/dp/B0HNMPLWNN",
-      "releaseDate": "2026-10-19",
-      "lang": "de",
-      "editions": [
-        {
-          "language": "de",
-          "amazon": "https://www.amazon.de/dp/B0HNMPLWNN"
-        }
-      ],
-      "coverFront": "images/front/cover-buntstift-band09.webp"
-    },
-    {
-      "id": "buntstift-10",
-      "title": "Mit Buntstift durch die Bibel: Jesus lebt – Die wunderbare Ostergeschichte",
-      "series": "Mit Buntstift durch die Bibel · Band 10",
-      "category": "malbuecher",
-      "age": "5–8 Jahre",
-      "detail": "78 Seiten · Großformat",
-      "cover": "images/front/cover-buntstift-band10.jpg",
-      "description": "Jesus zieht nach Jerusalem. Seine Freunde teilen das letzte Mahl mit ihm, erleben seinen Abschied und entdecken am Ostermorgen: Das Grab ist leer. Jesus lebt! Dieses Mal- und Geschichtenbuch erzählt die Ostergeschichte in kurzen, warmen Texten für Kinder von 5 bis 8 Jahren. Jede Geschichte steht einer passenden Ausmalseite gegenüber. 38 unterschiedliche Motive laden zum genauen Hinsehen, gemeinsamen Lesen und kreativen Gestalten ein. Die traurigen Ereignisse werden behutsam und ohne drastische Bilder dargestellt. Viel Raum erhalten die Auferstehungsbotschaft, Maria Magdalenas Begegnung mit Jesus, der Weg nach Emmaus und das frohe Wiedersehen mit seinen Freunden. Zu jeder Geschichte gehört eine Bibelstellenangabe.",
-      "lifestyleImages": [],
-      "highlights": [
-        "38 kurze Geschichten mit Bibelstellen",
-        "38 passende Ausmalbilder",
-        "Ostern vom Einzug in Jerusalem bis zu den Begegnungen mit dem auferstandenen Jesus"
-      ],
-      "samples": [
-        "images/buntstift-band10-seite-2.jpg",
-        "images/buntstift-band10-seite-3.jpg",
-        "images/buntstift-band10-seite-20.jpg",
-        "images/buntstift-band10-seite-21.jpg",
-        "images/buntstift-band10-seite-44.jpg",
-        "images/buntstift-band10-seite-45.jpg"
-      ],
-      "amazon": "https://www.amazon.de/dp/B0HS2SF6Y1",
-      "lang": "de",
-      "editions": [
-        {
-          "language": "de",
-          "amazon": "https://www.amazon.de/dp/B0HS2SF6Y1"
-        }
-      ],
-      "coverFront": "images/front/cover-buntstift-band10.webp",
-      "releaseDate": "2026-11-17"
     },
     {
       "id": "voelker-der-bibel-band-1",
