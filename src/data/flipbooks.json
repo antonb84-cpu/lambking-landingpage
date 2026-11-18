@@ -154,5 +154,32 @@
       "ext": "webp",
       "ratio": 0.7667
     }
+  },
+  "buntstift-06": {
+    "de": {
+      "dir": "images/buch-buntstift-06-de",
+      "count": 15,
+      "total": 70,
+      "ext": "webp",
+      "ratio": 0.7667
+    }
+  },
+  "buntstift-07": {
+    "de": {
+      "dir": "images/buch-buntstift-07-de",
+      "count": 15,
+      "total": 78,
+      "ext": "webp",
+      "ratio": 0.7667
+    }
+  },
+  "buntstift-10": {
+    "de": {
+      "dir": "images/buch-buntstift-10-de",
+      "count": 15,
+      "total": 78,
+      "ext": "webp",
+      "ratio": 0.7667
+    }
   }
 }
