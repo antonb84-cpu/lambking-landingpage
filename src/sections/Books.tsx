@@ -38,7 +38,7 @@ export function BookCover({ book, variant }: { book: Book; variant: 'card' | 'di
     if (variant === 'dialog') {
       return (
         <span className="relative mx-auto inline-flex max-w-full">
-          <img src={coverSrc} alt={book.title} className="block h-auto w-auto max-h-[320px] max-w-full rounded-[3px] shadow-2xl shadow-primary/25 sm:max-h-[460px]" />
+          <img src={coverSrc} alt={book.title} className="block h-auto w-auto max-h-[var(--cover-h)] max-w-full rounded-[3px] shadow-2xl shadow-primary/25" />
           {crease}
         </span>
       )
@@ -82,9 +82,9 @@ export function BookMediaGallery({ book, onZoom, copy, page = false, onCoverClic
   const move = (direction: -1 | 1) => setIndex((value) => (value + direction + slides.length) % slides.length)
 
   return (
-    <div className={`min-w-0 bg-secondary/60 px-5 pb-5 pt-8 lg:sticky lg:self-start lg:px-7 lg:pt-10 ${page ? 'rounded-2xl border border-[#e6dcc3] lg:top-44' : 'lg:top-0'}`} aria-label={`${book.title} – ${copy.mediaGallery}`}>
+    <div className={`min-w-0 bg-secondary/60 px-5 pb-5 pt-8 lg:px-7 lg:pt-10 ${page ? 'rounded-2xl border border-[#e6dcc3]' : 'lg:sticky lg:self-start lg:top-0'}`} aria-label={`${book.title} – ${copy.mediaGallery}`}>
       <div
-        className="relative flex h-[320px] items-center justify-center sm:h-[460px]"
+        className={`relative flex h-[var(--cover-h)] items-center justify-center [--cover-h:320px] ${page ? 'sm:[--cover-h:400px]' : 'sm:[--cover-h:460px]'}`}
         onTouchStart={(event) => { touchStart.current = event.touches[0] ? { x: event.touches[0].clientX, y: event.touches[0].clientY } : null }}
         onTouchEnd={(event) => {
           if (!touchStart.current || !event.changedTouches[0]) return

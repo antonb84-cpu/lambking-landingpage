@@ -70,7 +70,8 @@ export default function ProductPage({ book }: { book: Book }) {
         </nav>
 
         <div className="mt-5 grid gap-8 lg:grid-cols-[minmax(0,440px)_1fr] lg:gap-12" lang={editionLanguage ?? lang}>
-          <div className="min-w-0 lg:sticky lg:top-44 lg:self-start">
+          {/* Galerie und Reinblättern-Knopf bleiben beim Lesen der Beschreibung zusammen im Bild */}
+          <div className="min-w-0 lg:sticky lg:top-36 lg:self-start">
             <BookMediaGallery
               key={`${book.id}:${editionLanguage ?? lang}`}
               book={canFlip ? { ...shown, samples: [] } : shown}
@@ -84,9 +85,9 @@ export default function ProductPage({ book }: { book: Book }) {
               <button
                 type="button"
                 onClick={scrollToFlip}
-                className="mt-4 flex min-h-14 w-full items-center justify-center gap-3 rounded-full bg-accent px-6 py-3 text-base font-extrabold text-accent-foreground shadow-[0_10px_20px_-10px_rgba(160,110,10,0.8)] transition-transform hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/40"
+                className={`mx-auto mt-3 ${canBuy ? 'hidden md:flex' : 'flex'} min-h-11 items-center justify-center gap-2 rounded-full bg-accent px-6 py-2 text-sm font-extrabold text-accent-foreground shadow-[0_8px_16px_-10px_rgba(160,110,10,0.8)] transition-transform hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/40`}
               >
-                <BookOpen className="h-6 w-6" aria-hidden />
+                <BookOpen className="h-5 w-5" aria-hidden />
                 {siteCopy.flipInside}
               </button>
             ) : null}
@@ -187,7 +188,18 @@ export default function ProductPage({ book }: { book: Book }) {
       {/* Handy: Kaufknopf bleibt am unteren Rand sichtbar */}
       {canBuy ? (
         <div className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-between gap-3 border-t border-border bg-background/95 px-4 py-2.5 shadow-[0_-8px_20px_-16px_rgba(30,42,74,0.45)] backdrop-blur md:hidden">
-          <p className="min-w-0 truncate text-sm font-bold">{main}</p>
+          {canFlip ? (
+            <button
+              type="button"
+              onClick={scrollToFlip}
+              className="inline-flex min-h-11 min-w-0 items-center justify-center gap-1.5 rounded-full bg-accent px-4 text-sm font-extrabold text-accent-foreground shadow-sm focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/40"
+            >
+              <BookOpen className="h-4 w-4 shrink-0" aria-hidden />
+              <span className="truncate">{siteCopy.flipInside}</span>
+            </button>
+          ) : (
+            <p className="min-w-0 truncate text-sm font-bold">{main}</p>
+          )}
           <div className="w-[190px] shrink-0"><BuyButton book={shown} preferredLanguage={editionLanguage || undefined} label={copy.buyAmazon} /></div>
         </div>
       ) : null}
