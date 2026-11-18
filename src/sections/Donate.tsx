@@ -6,6 +6,7 @@ import KofiButton from '@/components/KofiButton'
 import PaypalButton from '@/components/PaypalButton'
 import { SITE } from '@/data/books'
 import { useLang } from '@/data/lang'
+import { OPEN_DONATE_EVENT } from '@/data/shop'
 import { textsFor } from '@/data/texts'
 
 // Bereich für freiwillige Unterstützung (PayPal & Ko-fi), bewusst leise: eine schmale Zeile, die sich erst
@@ -22,29 +23,38 @@ export default function Donate({ embedded = false }: { embedded?: boolean }) {
     const onHash = () => {
       if (isDonateHash()) setOpen(true)
     }
+    // Knopf „Projekt unterstützen“ in der Kopfzeile: Feld öffnen und ins Bild holen
+    const onOpen = () => {
+      setOpen(true)
+      window.setTimeout(() => document.getElementById('unterstuetzen')?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 60)
+    }
     window.addEventListener('hashchange', onHash)
-    return () => window.removeEventListener('hashchange', onHash)
+    window.addEventListener(OPEN_DONATE_EVENT, onOpen)
+    return () => {
+      window.removeEventListener('hashchange', onHash)
+      window.removeEventListener(OPEN_DONATE_EVENT, onOpen)
+    }
   }, [])
 
   if (!SITE.paypalUrl && !SITE.kofiUrl) return null
 
   const row = (
-          <div className="rounded-2xl border border-border bg-card/60">
+          <div className="overflow-hidden rounded-2xl border-2 border-[#0070BA] bg-card shadow-sm">
             <button
               type="button"
               onClick={() => setOpen((value) => !value)}
               aria-expanded={open}
               aria-controls="unterstuetzen-inhalt"
-              className="flex w-full items-center justify-between gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-foreground/75 transition-colors hover:text-foreground sm:px-5"
+              className="flex w-full items-center justify-between gap-3 bg-[#0070BA] px-4 py-3 text-left text-sm font-bold text-white transition-colors hover:bg-[#005EA6] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#009CDE]/50 sm:px-5"
             >
               <span className="flex items-center gap-2.5">
-                <HandHeart className="h-4 w-4 shrink-0 text-accent" aria-hidden />
+                <HandHeart className="h-4 w-4 shrink-0 text-white" aria-hidden />
                 {t.eyebrow}
               </span>
               <ChevronDown className={`h-4 w-4 shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden />
             </button>
             {open ? (
-              <div id="unterstuetzen-inhalt" className="border-t border-border px-4 pb-5 pt-4 sm:px-5">
+              <div id="unterstuetzen-inhalt" className="px-4 pb-5 pt-4 sm:px-5">
                 <h2 className="font-display text-xl font-semibold leading-tight tracking-tight sm:text-2xl">{t.title}</h2>
                 <p className="mt-2 text-sm leading-relaxed text-foreground/75">
                   <RichText text={t.text} />

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { ArrowLeft, Menu, Search, X } from 'lucide-react'
+import { ArrowLeft, HandHeart, Menu, Search, X } from 'lucide-react'
 import { setLang, useLang, type Lang } from '@/data/lang'
 import { textsFor } from '@/data/texts'
 import { openLegal } from '@/data/openLegal'
@@ -7,7 +7,7 @@ import { creatorPartnerHref, homeHref } from '@/data/routes'
 import { BOOKS, CATEGORIES, SITE } from '@/data/books'
 import { catLabelOf } from '@/data/bookView'
 import { editionsOf } from '@/data/editions'
-import { SHOP_FILTER_EVENT, applyShopFilter, initialShopFilter, isHomePage, lastShopFilter, shopHref, shopTexts, type ShopFilter } from '@/data/shop'
+import { OPEN_DONATE_EVENT, SHOP_FILTER_EVENT, applyShopFilter, initialShopFilter, isHomePage, lastShopFilter, shopHref, shopTexts, type ShopFilter } from '@/data/shop'
 import { isBookPath } from '@/data/bookLink'
 import type { FormEvent, MouseEvent, ReactNode } from 'react'
 
@@ -36,18 +36,18 @@ function FlagGB() {
 function LangSwitch() {
   const lang = useLang()
   const t = textsFor(lang)
-  const btn = (l: Lang, flag: ReactNode, label: string) => (
+  const btn = (l: Lang, flag: ReactNode) => (
     <button
       type="button"
       onClick={() => setLang(l)}
       aria-pressed={lang === l}
       title={l === 'de' ? 'Deutsch' : 'English'}
+      aria-label={l === 'de' ? 'Deutsch' : 'English'}
       className={`flex items-center gap-1.5 rounded-full min-h-9 px-2.5 py-1 text-xs font-bold transition-colors ${
         lang === l ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'
       }`}
     >
       {flag}
-      <span className="sm:hidden">{label}</span>
       <span className="hidden sm:inline">{l === 'de' ? 'Deutsch' : 'English'}</span>
     </button>
   )
@@ -57,9 +57,31 @@ function LangSwitch() {
       role="group"
       aria-label={t.a11y.languageChooser}
     >
-      {btn('de', <FlagDE />, 'DE')}
-      {btn('en', <FlagGB />, 'EN')}
+      {btn('de', <FlagDE />)}
+      {btn('en', <FlagGB />)}
     </div>
+  )
+}
+
+// „Projekt unterstützen“: öffnet das aufklappbare Feld im Bereich „Unsere Vision“ (von Buchseiten aus: Startseite mit Anker)
+function SupportButton() {
+  const lang = useLang()
+  const s = shopTexts(lang)
+  const onClick = (event: MouseEvent) => {
+    if (!isHomePage()) return
+    event.preventDefault()
+    window.dispatchEvent(new Event(OPEN_DONATE_EVENT))
+  }
+  return (
+    <a
+      href={homeHref('#unterstuetzen')}
+      onClick={onClick}
+      className="inline-flex min-h-11 items-center gap-1.5 rounded-full border-2 border-[#0070BA] bg-card px-2.5 text-xs font-bold text-[#0070BA] transition-colors hover:bg-[#0070BA] hover:text-white focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#009CDE]/50 sm:gap-2 sm:px-4 sm:text-sm"
+    >
+      <HandHeart className="h-4 w-4 shrink-0" aria-hidden />
+      <span className="sm:hidden">{s.supportBtnShort}</span>
+      <span className="hidden sm:inline">{s.supportBtn}</span>
+    </a>
   )
 }
 
@@ -167,16 +189,17 @@ export default function Header() {
         </ul>
       </div>
       <header className="sticky top-0 z-40 border-b border-border/70 bg-background/95 backdrop-blur-md">
-        <div className="mx-auto flex h-[68px] max-w-7xl items-center gap-3 px-4 sm:h-20 sm:px-6">
+        <div className="mx-auto flex h-[68px] max-w-7xl items-center gap-2 px-4 sm:h-20 sm:px-6">
           <a href={homeHref()} className="flex shrink-0 items-center" aria-label={t.a11y.brandHome}>
             <img
               src="images/lambking-stories-logo-v2-256.webp?v=2"
               alt="LambKing Stories"
-              className="h-[62px] w-[62px] object-contain transition-transform hover:scale-[1.04] sm:h-[74px] sm:w-[74px]"
+              className="h-[54px] w-[54px] object-contain transition-transform hover:scale-[1.04] sm:h-[74px] sm:w-[74px]"
             />
           </a>
           <SearchForm />
-          <div className="ml-auto flex shrink-0 items-center gap-2">
+          <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
+            <SupportButton />
             <LangSwitch />
             <button
               ref={menuBtnRef}

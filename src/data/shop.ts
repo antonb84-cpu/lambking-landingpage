@@ -6,6 +6,8 @@ import { isCreatorPartnerPath } from './routes'
 // Shop-Ansicht (Vorschau): Filter, Suche und Texte. Die Texte ziehen später ins Admin um (texts.defaults.json).
 
 export const SHOP_FILTER_EVENT = 'lambking:shop-filter'
+/** Öffnet das aufklappbare Unterstützen-Feld (Knopf in der Kopfzeile). */
+export const OPEN_DONATE_EVENT = 'lambking:open-donate'
 
 export interface ShopFilter {
   category?: string
@@ -70,6 +72,8 @@ export function ageBucketsOf(book: Book): string[] {
 const TEXTS = {
   de: {
     heroApp: 'Entdecke unsere App',
+    supportBtn: 'Projekt unterstützen',
+    supportBtnShort: 'Unterstützen',
     searchPlaceholder: 'Buch suchen',
     searchLabel: 'Bücher durchsuchen',
     allBooks: 'Alle Bücher',
@@ -102,6 +106,8 @@ const TEXTS = {
   },
   en: {
     heroApp: 'Discover our app',
+    supportBtn: 'Support the project',
+    supportBtnShort: 'Support',
     searchPlaceholder: 'Search books',
     searchLabel: 'Search the books',
     allBooks: 'All books',
