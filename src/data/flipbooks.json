@@ -108,7 +108,7 @@
       "total": 74,
       "ext": "webp",
       "ratio": 0.7667,
-      "back": "images/buch-buntstift-01-de/rueckseite.webp"
+      "back": "images/buch-buntstift-01-de/rueckseite-v2.webp"
     }
   },
   "buntstift-02": {
@@ -118,7 +118,7 @@
       "total": 82,
       "ext": "webp",
       "ratio": 0.7667,
-      "back": "images/buch-buntstift-02-de/rueckseite.webp"
+      "back": "images/buch-buntstift-02-de/rueckseite-v2.webp"
     },
     "en": {
       "dir": "images/buch-buntstift-02-en",
@@ -136,7 +136,7 @@
       "total": 70,
       "ext": "webp",
       "ratio": 0.7667,
-      "back": "images/buch-buntstift-03-de/rueckseite.webp"
+      "back": "images/buch-buntstift-03-de/rueckseite-v2.webp"
     }
   },
   "buntstift-05": {
@@ -146,7 +146,7 @@
       "total": 70,
       "ext": "webp",
       "ratio": 0.7667,
-      "back": "images/buch-buntstift-05-de/rueckseite.webp"
+      "back": "images/buch-buntstift-05-de/rueckseite-v2.webp"
     }
   },
   "buntstift-09": {
@@ -156,7 +156,7 @@
       "total": 90,
       "ext": "webp",
       "ratio": 0.7667,
-      "back": "images/buch-buntstift-09-de/rueckseite.webp"
+      "back": "images/buch-buntstift-09-de/rueckseite-v2.webp"
     }
   },
   "buntstift-04": {
@@ -166,7 +166,7 @@
       "total": 86,
       "ext": "webp",
       "ratio": 0.7667,
-      "back": "images/buch-buntstift-04-de/rueckseite.webp"
+      "back": "images/buch-buntstift-04-de/rueckseite-v2.webp"
     }
   },
   "buntstift-08": {
@@ -176,7 +176,7 @@
       "total": 72,
       "ext": "webp",
       "ratio": 0.7667,
-      "back": "images/buch-buntstift-08-de/rueckseite.webp"
+      "back": "images/buch-buntstift-08-de/rueckseite-v2.webp"
     }
   },
   "buntstift-06": {
@@ -186,7 +186,7 @@
       "total": 70,
       "ext": "webp",
       "ratio": 0.7667,
-      "back": "images/buch-buntstift-06-de/rueckseite.webp"
+      "back": "images/buch-buntstift-06-de/rueckseite-v2.webp"
     }
   },
   "buntstift-07": {
@@ -196,7 +196,7 @@
       "total": 78,
       "ext": "webp",
       "ratio": 0.7667,
-      "back": "images/buch-buntstift-07-de/rueckseite.webp"
+      "back": "images/buch-buntstift-07-de/rueckseite-v2.webp"
     }
   },
   "buntstift-10": {
@@ -206,7 +206,7 @@
       "total": 78,
       "ext": "webp",
       "ratio": 0.7667,
-      "back": "images/buch-buntstift-10-de/rueckseite.webp"
+      "back": "images/buch-buntstift-10-de/rueckseite-v2.webp"
     }
   }
 }
