@@ -29,12 +29,15 @@ export default function ProductPage({ book }: { book: Book }) {
   const s = shopTexts(lang)
   const siteCopy = textsFor(lang).books
   const editions = editionsOf(book)
-  const [editionLanguage, setEditionLanguage] = useState<string | null>(
-    () => editions.find((item) => item.language === lang)?.language
-      ?? editions.find((item) => item.language === book.lang)?.language
-      ?? editions[0]?.language
-      ?? null,
-  )
+  // Ausgabe des Buches: Wahl per Flagge gilt für die aktuelle Seitensprache; wechselt die Seitensprache (DE/EN oben),
+  // folgt die Ausgabe, wenn es das Buch in dieser Sprache gibt
+  const defaultEdition = editions.find((item) => item.language === lang)?.language
+    ?? editions.find((item) => item.language === book.lang)?.language
+    ?? editions[0]?.language
+    ?? null
+  const [picked, setPicked] = useState<{ lang: string; edition: string } | null>(null)
+  const editionLanguage = picked && picked.lang === lang ? picked.edition : defaultEdition
+  const setEditionLanguage = (edition: string) => setPicked({ lang, edition })
   const [bulkOpen, setBulkOpen] = useState(false)
   const [zoom, setZoom] = useState<string | null>(null)
 
