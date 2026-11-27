@@ -10,6 +10,7 @@ import { creatorPartnerHref, homeHref } from '@/data/routes'
 
 const URL_PATTERN = /(https?:\/\/[^\s<>]*[^\s<>.,;:!?)])/g
 const CONTACT_FORM_URL = /^https:\/\/(?:www\.)?lambking\.store\/#kontakt$/
+const SHOP_TEST_URL = import.meta.env.VITE_SHOP_TEST_URL
 
 // Web-Adressen im Text werden zu Links; der Link zum Kontaktformular schließt das Fenster und springt zum Formular
 function Linked({ text, onContact }: { text: string; onContact: () => void }) {
@@ -88,6 +89,7 @@ export default function Footer() {
     ...(SITE.creatorPartnerEnabled
       ? [{ label: t.creatorPartner.navLabel, href: creatorPartnerHref() }]
       : []),
+    ...(SHOP_TEST_URL ? [{ label: 'Testkasse', href: SHOP_TEST_URL }] : []),
   ]
 
   return (
