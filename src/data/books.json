@@ -1508,6 +1508,40 @@
       "comingSoon": true
     },
     {
+      "id": "nacht-voller-freude",
+      "title": "Eine Nacht voller Freude – Jesus wird geboren",
+      "series": "LambKing Bilderbücher · Band 1",
+      "category": "geschichten",
+      "age": "8–10 Jahre",
+      "detail": "38 Seiten · farbiges Bilderbuch",
+      "cover": "images/cover-nacht-voller-freude.jpg",
+      "description": "Maria bekommt eine Nachricht, die alles verändert. Mit Josef macht sie sich auf den weiten Weg nach Bethlehem. Und draußen auf den Feldern erschrecken die Hirten, als ein Engel zu ihnen tritt. Komm mit in die Nacht, in der Jesus geboren wurde!",
+      "lifestyleImages": [],
+      "highlights": [
+        "Weihnachtsgeschichte nach Lukas",
+        "Warm gemalte Bilder",
+        "Zum Vorlesen und Selberlesen"
+      ],
+      "samples": [
+        "images/nacht-voller-freude-seite-1.jpg",
+        "images/nacht-voller-freude-seite-2.jpg",
+        "images/nacht-voller-freude-seite-3.jpg",
+        "images/nacht-voller-freude-seite-4.jpg",
+        "images/nacht-voller-freude-seite-5.jpg",
+        "images/nacht-voller-freude-seite-6.jpg"
+      ],
+      "amazon": "",
+      "lang": "de",
+      "editions": [
+        {
+          "language": "de",
+          "amazon": ""
+        }
+      ],
+      "comingSoon": true,
+      "coverFront": "images/front/cover-nacht-voller-freude.webp"
+    },
+    {
       "id": "zachaeus",
       "title": "Der Mann im Baum – Zachäus begegnet Jesus",
       "series": "Bilderbuch",
