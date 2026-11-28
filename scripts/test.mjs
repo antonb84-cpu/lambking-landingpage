@@ -202,7 +202,8 @@ test('Buchgalerie und kurze Inhaltsangaben sind pro Buch gepflegt', () => {
     assert(book.description?.length > 50, `${book.id}: kurze Inhaltsangabe fehlt`)
     assert(!/70 Seiten|70 pages|70 páginas|DIN A4|21,6 × 27,9/.test(book.description), `${book.id}: allgemeine Buchfakten stehen in der Geschichte`)
     // Die Bände der Reihe „Mit Buntstift durch die Bibel“ haben noch kein Buchfoto (folgt mit den Probeexemplaren); Cover und Vorschauseiten genügen bis dahin
-    if (book.id !== 'bibelgeschichten-zum-ausmalen-2' && !book.id.startsWith('buntstift-') && !book.comingSoon) assert(book.lifestyleImages?.length, `${book.id}: Buchfoto fehlt`)
+    // „Eine Nacht voller Freude“ (27.11.2026): ebenso, bis es ein Foto vom gedruckten Buch gibt
+    if (book.id !== 'bibelgeschichten-zum-ausmalen-2' && book.id !== 'nacht-voller-freude' && !book.id.startsWith('buntstift-') && !book.comingSoon) assert(book.lifestyleImages?.length, `${book.id}: Buchfoto fehlt`)
     for (const image of book.lifestyleImages) {
       const path = join(ROOT, 'public', image)
       assert(existsSync(path), `${book.id}: Buchfoto fehlt (${image})`)

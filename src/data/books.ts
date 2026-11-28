@@ -567,9 +567,9 @@ export const BOOKS: Book[] = [
       'images/nacht-voller-freude-seite-5.jpg',
       'images/nacht-voller-freude-seite-6.jpg',
     ],
-    amazon: "",
-    editions: [{"language": "de", "amazon": ""}],
-    comingSoon: true,
+    amazon: "https://www.amazon.de/dp/B0HT4VWJ2V",
+    editions: [{"language": "de", "amazon": "https://www.amazon.de/dp/B0HT4VWJ2V"}],
+    releaseDate: '2026-11-27',
   },
   {
     id: 'zachaeus',

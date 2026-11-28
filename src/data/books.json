@@ -1530,16 +1530,16 @@
         "images/nacht-voller-freude-seite-5.jpg",
         "images/nacht-voller-freude-seite-6.jpg"
       ],
-      "amazon": "",
+      "amazon": "https://www.amazon.de/dp/B0HT4VWJ2V",
       "lang": "de",
       "editions": [
         {
           "language": "de",
-          "amazon": ""
+          "amazon": "https://www.amazon.de/dp/B0HT4VWJ2V"
         }
       ],
-      "comingSoon": true,
-      "coverFront": "images/front/cover-nacht-voller-freude.webp"
+      "coverFront": "images/front/cover-nacht-voller-freude.webp",
+      "releaseDate": "2026-11-27"
     },
     {
       "id": "zachaeus",
